@@ -61,6 +61,7 @@ h1 .n{color:var(--gold)}
 .r-group{grid-column:1/-1;font-family:var(--display);letter-spacing:.16em;text-transform:uppercase;font-size:12px;color:var(--gold);margin-top:8px}
 .pl .rk-n{color:var(--gold);font-family:var(--display);font-weight:500;margin-right:4px}
 section.block{margin-bottom:38px}
+.plr{max-width:460px;margin-bottom:6px}
 .grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(330px,1fr));gap:14px}
 .empty{border:1px solid var(--line-2);border-radius:var(--radius);padding:20px 22px;color:var(--muted);font-size:13px;background:rgba(255,255,255,.02);line-height:1.6}
 
@@ -482,17 +483,19 @@ function card(m){
     </div>`;
   };
   const pending = !fin && !live && m.date < ukDate();
-  const when = live ? `<span class="when today"><span class="pulse"></span>In progress</span>` : fin ? `<span class="when fin">Final · ${esc(dayLabel(m.date))}</span>`
+  const when = live ? `<span class="when today"><span class="pulse"></span>In progress</span>` : fin ? `<span class="when fin">${esc(dayLabel(m.date))}</span>`
     : pending ? `<span class="when fin">${esc(dayLabel(m.date))} · result pending</span>`
     : `<span class="when ${today ? "today" : ""}">${esc(dayLabel(m.date))}</span>`;
   const times = !fin && !live && !pending
-    ? (m.source === "itf"
+    ? (m.source === "itf" || m.source === "te"
       ? `<div class="times"><span>Order of play</span><b>${m.slot ? esc(m.slot) + " (local time)" : "Time TBC"}</b></div>`
       : `<div class="times"><span>Approx. start</span>${m.time ? `<b>${esc(m.time)} UK</b><b>${esc(esTime(m.date, m.time))} Spain</b>` : "<b>Time TBC</b>"}</div>`) : "";
   const p = byId[m.p1Id] || byId[m.p2Id];
   const link = safeUrl(p?.sofa);
   const itfLink = m.source === "itf" && /^https:\/\/www\.itftennis\.com\//.test(m.link || "") ? m.link : null;
+  const teLink = m.source === "te" && /^https:\/\/te\.tournamentsoftware\.com\//.test(m.link || "") ? m.link : null;
   const btn = itfLink ? `<a class="live-btn" href="${esc(itfLink)}" target="_blank" rel="noopener"><span class="dot"></span>ITF draw &amp; results</a>`
+    : teLink ? `<a class="live-btn" href="${esc(teLink)}" target="_blank" rel="noopener"><span class="dot"></span>Tennis Europe draw</a>`
     : !fin && link ? `<a class="live-btn" href="${esc(link)}" target="_blank" rel="noopener"><span class="dot"></span>${pending ? "Check result" : "Check live score"}</a>` : "";
   return `<article class="match ${(today && !fin) || live ? "today" : ""} ${live ? "is-live" : ""}">
     <div class="m-top"><span class="t">${esc(m.tournament)}<span class="r">${esc(m.round || "")}</span></span>${when}</div>
@@ -540,7 +543,9 @@ function renderScores(){
   setStale("#staleScores", STATE && (!lc || Date.now() - lc > 26 * 36e5)
     ? `<b>Heads up:</b> the match schedule hasn't updated since ${lc ? fmtWhen(lc) : "it was set up"}. Matches and results below may be out of date. Check SofaScore for anything important.`
     : STATE?.itfChecked && Date.now() - new Date(STATE.itfChecked) > 36 * 36e5
-    ? `<b>Heads up:</b> ITF junior matches haven't updated since ${fmtWhen(new Date(STATE.itfChecked))}. Check the ITF website for the latest junior draws and results.` : "");
+    ? `<b>Heads up:</b> ITF junior matches haven't updated since ${fmtWhen(new Date(STATE.itfChecked))}. Check the ITF website for the latest junior draws and results.`
+    : STATE?.teChecked && Date.now() - new Date(STATE.teChecked) > 36 * 36e5
+    ? `<b>Heads up:</b> Tennis Europe matches haven't updated since ${fmtWhen(new Date(STATE.teChecked))}. Check the Tennis Europe website for the latest draws and results.` : "");
   const ms = (STATE?.matches || []).slice();
   const today = ukDate();
   const key = m => `${m.date} ${m.time || "99"}`;
@@ -557,11 +562,7 @@ function renderScores(){
   // and on the same day the one furthest into the event - e.g. a quarter-final, not the round before it too
   const ydD = new Date(new Date(today + "T12:00:00Z").getTime() - 864e5), yday = ydD.toISOString().slice(0, 10);
   const wkStart = new Date(ydD.getTime() - ((ydD.getUTCDay() + 6) % 7) * 864e5).toISOString().slice(0, 10);
-  const stage = r => { r = (r || "").replace(/\(.*\)/, "").trim().toLowerCase(); let n;
-    if (/^q/.test(r) && !/^qf/.test(r)) return 1 + (+(r.match(/\d+/) || [0])[0]);
-    if (/semi|^sf/.test(r)) return 90; if (/quarter|^qf/.test(r)) return 80; if (/final|^f$/.test(r)) return 100;
-    if ((n = r.match(/^r(\d+)$/)) && +n[1] >= 8) return 70 - 10 * Math.log2(+n[1] / 16);
-    if ((n = r.match(/^r(\d)$|^(\d)r$/))) return 10 + +(n[1] || n[2]); return 5; };
+  const stage = roundStage;
   const best = {};
   for (const m of ms.filter(m => m.date <= yday && m.date >= wkStart && (m.status === "finished" || m.status === "scheduled")))
     for (const id of ours(m)) { const b = best[id];
@@ -908,6 +909,18 @@ function juniorBody(x, p, rank){
       ${x.partners.length ? `<section><h3 class="pk">Partner line-up</h3><div class="partners">${x.partners.map(n => `<span>${esc(n)}</span>`).join("")}</div></section>` : ""}
       <section><h3 class="pk">Results</h3><div class="yrs">${years.map(y => `<div class="yr"><b>${y}</b><ul>${x.res[y].map(r => `<li>${esc(r)}</li>`).join("")}</ul></div>`).join("")}</div></section>`;
 }
+/* how far into an event a round is, so the furthest match can be picked (qualifying < early rounds < QF < SF < final) */
+function roundStage(r){ r = (r || "").replace(/\(.*\)/, "").trim().toLowerCase(); let n;
+  if (/^q/.test(r) && !/^qf/.test(r)) return 1 + (+(r.match(/\d+/) || [0])[0]);
+  if (/semi|^sf/.test(r)) return 90; if (/quarter|^qf/.test(r)) return 80; if (/final|^f$/.test(r)) return 100;
+  if ((n = r.match(/^r(\d+)$/)) && +n[1] >= 8) return 70 - 10 * Math.log2(+n[1] / 16);
+  if ((n = r.match(/^r(\d)$|^(\d)r$/))) return 10 + +(n[1] || n[2]); return 5; }
+// a player's latest result (from before today, as on the Competition Zone), furthest round first on the same day
+function latestResult(id){
+  const today = ukDate();
+  return (STATE?.matches || []).filter(m => m.status === "finished" && m.date < today && (m.p1Id === id || m.p2Id === id))
+    .sort((a, b) => b.date.localeCompare(a.date) || roundStage(b.round) - roundStage(a.round))[0] || null;
+}
 function openProfile(id){
   const x = profById[id], p = byId[id];
   if (!x || !p) return;
@@ -930,6 +943,7 @@ function openProfile(id){
       <div class="facts">${facts.map(([k, v]) => `<span>${esc(k)} <b>${esc(v)}</b></span>`).join("")}</div>
     </div>
     <div class="pb">
+      ${(lr => lr ? `<section><h3 class="pk">Latest result</h3><div class="plr">${card(lr)}</div></section>` : "")(latestResult(id))}
       ${x.kind === "junior" ? juniorBody(x, p, rank) : proBody(x, p, rank)}
       <div class="pnav"><button data-go="${prev.x.id}">← ${esc(prev.p.last)}</button>${safeUrl(p.sofa) ? `<a class="live-btn" href="${esc(safeUrl(p.sofa))}" target="_blank" rel="noopener"><span class="dot"></span>SofaScore profile</a>` : ""}<button data-go="${next.x.id}">${esc(next.p.last)} →</button></div>
     </div>`;
@@ -950,8 +964,8 @@ $("#prof").addEventListener("close", () => { if (location.hash.startsWith("#play
 function render(){ renderScores(); renderRankings(); renderPlayers(); }
 
 /* ITF junior matches (itfm.json, refreshed about twice a day): added to the match list, skipping any the main feed already has */
-function addItfMatches(st, im){
-  st.itfChecked = im.checked || null;
+function addItfMatches(st, im, src = "itf"){
+  st[src + "Checked"] = im.checked || null;
   const last = s => (s || "").split(" ").pop().toLowerCase();
   const nm = id => byId[id] ? `${byId[id].first[0]}. ${byId[id].last}` : "";
   const seen = new Set((st.matches || []).flatMap(m => [m.p1Id, m.p2Id].filter(Boolean).map(id => `${m.date}|${id}|${last(m.p1Id === id ? m.p2 : m.p1)}`)));
@@ -970,6 +984,7 @@ async function load(){
     if (!r.ok) throw new Error(r.status);
     STATE = await r.json();
     try { const rm = await fetch("itfm.json?t=" + Date.now(), { cache: "no-store" }); if (rm.ok) addItfMatches(STATE, await rm.json()); } catch (e) {}
+    try { const rt = await fetch("te.json?t=" + Date.now(), { cache: "no-store" }); if (rt.ok) addItfMatches(STATE, await rt.json(), "te"); } catch (e) {}
     try { const ri = await fetch("itf.json?t=" + Date.now(), { cache: "no-store" }); if (ri.ok) ITF = await ri.json(); } catch (e) {}
     render();
   } catch (e) {
