@@ -314,6 +314,8 @@ select.sq-in option{background:var(--navy-2);color:var(--white)}
 }
 /* Home portal */
 body.on-home header nav{display:none}
+.hp-sep{display:inline-block;width:1px;height:32px;background:var(--line);margin:0 18px;vertical-align:-2px}
+.hp-stat > div > span strong{color:var(--white);font-weight:600}
 #page-home{padding-bottom:30px}
 .hp-hero{position:relative;overflow:hidden;isolation:isolate;margin:28px 0 26px;padding:54px 48px 46px;border-radius:28px;border:1px solid var(--line);
   background:radial-gradient(900px 420px at 100% 0%,rgba(208,165,121,.22),transparent 60%),radial-gradient(600px 300px at 0% 100%,rgba(208,165,121,.08),transparent 60%),linear-gradient(160deg,var(--navy-3),#0B1230)}
@@ -1239,8 +1241,10 @@ function renderHome(){
   // 02 Rankings: the roster's highest-ranked player
   const ranked = ROSTER.map(p => ({ p, r: playerRank(p.id) })).filter(o => o.r).sort((a, b) => a.r - b.r);
   if (ranked.length) {
-    $("#hpT2").innerHTML = `#${ranked[0].r}<small>${ranked[0].p.tour}</small>`;
-    $("#hpS2").textContent = `${ranked[0].p.first} ${ranked[0].p.last} leads the roster · ${ranked.filter(o => o.r <= 100).length} players in the top 100`;
+    const lead = ["ATP", "WTA"].map(t => ranked.find(o => o.p.tour === t)).filter(Boolean);
+    $("#hpT2").innerHTML = lead.map(o => `#${o.r}<small>${o.p.tour}</small>`).join(`<span class="hp-sep"></span>`);
+    $("#hpS2").innerHTML = lead.map(o => `Top ${o.p.tour}: <strong>${esc(o.p.first + " " + o.p.last)}</strong>`).join(" · ")
+      + `<br>${ranked.filter(o => o.r <= 100).length} players in the top 100 · ${ranked.filter(o => o.r <= 50).length} in the top 50`;
   }
   // 03 Players
   const tours = t => ROSTER.filter(p => p.tour === t).length;
