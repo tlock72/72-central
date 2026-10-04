@@ -215,6 +215,15 @@ blockquote.q{margin:0;padding:26px 28px 24px 64px;position:relative;border-radiu
 blockquote.q::before{content:"\201C";position:absolute;left:18px;top:4px;font-family:Georgia,serif;font-size:72px;color:var(--gold);line-height:1}
 blockquote.q p{margin:0;font-size:16px;line-height:1.65;color:var(--white);font-style:italic}
 blockquote.q cite{display:block;margin-top:12px;font-style:normal;font-family:var(--display);letter-spacing:.2em;text-transform:uppercase;font-size:12px;color:var(--gold)}
+.hls{display:flex;flex-wrap:wrap;gap:8px}
+.hls span{font-size:13px;color:var(--white);border:1px solid var(--line);border-radius:12px;padding:10px 14px;background:linear-gradient(135deg,rgba(208,165,121,.14),rgba(208,165,121,.04))}
+.yrs{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:14px}
+.yr{border:1px solid var(--line-2);border-radius:16px;padding:16px 18px;background:rgba(255,255,255,.02)}
+.yr b{font-family:var(--display);font-size:22px;color:var(--gold);letter-spacing:.06em}
+.yr ul{list-style:none;margin:10px 0 0;padding:0;display:grid;gap:7px}
+.yr li{font-size:13px;color:var(--text);padding-left:16px;position:relative;line-height:1.4}
+.yr li::before{content:"";position:absolute;left:0;top:7px;width:6px;height:6px;border-radius:50%;background:var(--gold)}
+#page-rankings .hero{align-items:flex-end}
 .pnav{display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:10px;border-top:1px solid var(--line);padding-top:20px}
 .pnav button{font-family:var(--display);text-transform:uppercase;letter-spacing:.14em;font-size:12px;color:var(--muted);padding:8px 0}
 .pnav button:hover{color:var(--gold)}
@@ -299,22 +308,33 @@ blockquote.q cite{display:block;margin-top:12px;font-style:normal;font-family:va
         <h1><span class="n">72</span> Rankings</h1>
         <p class="sub" id="rankSub">Official ATP and WTA singles rankings for the 72 roster.</p>
       </div>
+      <div class="chips" role="group" aria-label="Choose rankings"><button class="chip rt on" data-rt="tour">ATP &amp; WTA</button><button class="chip rt" data-rt="itf">ITF Juniors</button></div>
     </div>
+    <div id="rk-tour">
     <div class="stats" id="stats"></div>
     <div class="tours">
       <div class="tour"><div class="tour-h"><h3><span>ATP</span> Singles</h3><span class="k" id="atpN"></span></div><div id="atpList"></div></div>
       <div class="tour"><div class="tour-h"><h3><span>WTA</span> Singles</h3><span class="k" id="wtaN"></span></div><div id="wtaList"></div></div>
     </div>
     <p class="src" id="rankSrc"></p>
+    </div>
+    <div id="rk-itf" hidden>
+    <div class="stats" id="itfStats"></div>
+    <div class="tours">
+      <div class="tour"><div class="tour-h"><h3><span>ITF</span> Junior Boys</h3><span class="k" id="itfBN"></span></div><div id="itfBoys"></div></div>
+      <div class="tour"><div class="tour-h"><h3><span>ITF</span> Junior Girls</h3><span class="k" id="itfGN"></span></div><div id="itfGirls"></div></div>
+    </div>
+    <p class="src" id="itfSrc"></p>
+    </div>
   </div>
   <div id="page-players" hidden>
     <div class="hero">
       <div>
         <div class="eyebrow">SeventyTwo Sports Group</div>
         <h1><span class="n">72</span> Players</h1>
-        <p class="sub">The 2026 tennis roster. Tap a player for their full profile: titles, partners, social reach and more.</p>
+        <p class="sub">The 2026 tennis roster. Juniors with an ATP or WTA ranking sit with the tour players; the rest are Next Gen. Tap a player for their full profile.</p>
       </div>
-      <div class="chips" role="group" aria-label="Filter by tour"><button class="chip on" data-f="ALL">All</button><button class="chip" data-f="ATP">ATP</button><button class="chip" data-f="WTA">WTA</button></div>
+      <div class="chips" role="group" aria-label="Filter by tour"><button class="chip on" data-f="ALL">All</button><button class="chip" data-f="ATP">ATP</button><button class="chip" data-f="WTA">WTA</button><button class="chip" data-f="NEXT">Next Gen</button></div>
     </div>
     <div class="pgrid" id="pgrid"></div>
   </div>
@@ -346,28 +366,30 @@ const ROSTER = [
   { id:"mackenzie", first:"Jamie", last:"Mackenzie", tour:"ATP", country:"GER", sofa:"https://www.sofascore.com/team/tennis/mackenzie-jamie/549693" },
   { id:"choi", first:"Fu Wang", last:"Choi", tour:"ATP", country:"HKG", sofa:"https://www.sofascore.com/team/tennis/fu-wang-choi/1162829" },
   { id:"qi", first:"Hongjin", last:"Qi", tour:"ATP", country:"CHN", sofa:"https://www.sofascore.com/team/tennis/qi-hongjin/1120615" },
-  { id:"chavez", first:"Tito", last:"Chávez", tour:"ATP", country:"ECU", sofa:"https://www.sofascore.com/team/tennis/chavez-tito/1122785" },
-  { id:"mateo", first:"Jorge", last:"Mateo", tour:"ATP", country:"" },
-  { id:"drijver", first:"Laurens", last:"Drijver", tour:"ATP", country:"" },
-  { id:"davies", first:"Fletcher", last:"Davies", tour:"ATP", country:"" },
-  { id:"tarlazzi", first:"Diego", last:"Tarlazzi", tour:"ATP", country:"" },
-  { id:"fazekas", first:"Vencel", last:"Fazekas", tour:"ATP", country:"" },
-  { id:"farkxodov", first:"Saidaslam", last:"Farkxodov", tour:"ATP", country:"" },
-  { id:"daraban", first:"Luca", last:"Daraban", tour:"ATP", country:"" },
+  { id:"chavez", first:"Tito", last:"Chávez", tour:"ATP", country:"ESP", sofa:"https://www.sofascore.com/team/tennis/chavez-tito/1122785" },
+  { id:"mateo", first:"Jorge", last:"Mateo", tour:"ATP", country:"ESP" },
+  { id:"drijver", first:"Laurens", last:"Drijver", tour:"ATP", country:"NED" },
+  { id:"davies", first:"Fletcher", last:"Davies", tour:"ATP", country:"GBR" },
+  { id:"tarlazzi", first:"Diego", last:"Tarlazzi", tour:"ATP", country:"ITA" },
+  { id:"fazekas", first:"Vencel", last:"Fazekas", tour:"ATP", country:"HUN" },
+  { id:"farkxodov", first:"Saidaslam", last:"Farkxodov", tour:"ATP", country:"UZB" },
+  { id:"daraban", first:"Luca", last:"Daraban", tour:"ATP", country:"ROU" },
   { id:"romero", first:"Leyre", last:"Romero", tour:"WTA", country:"ESP", sofa:"https://www.sofascore.com/team/tennis/romero-gormaz-leyre/236833" },
   { id:"ristic", first:"Mia", last:"Ristić", tour:"WTA", country:"SRB", sofa:"https://www.sofascore.com/team/tennis/ristic-mia/348715" },
-  { id:"rajeshwaran", first:"Maaya", last:"Rajeshwaran", tour:"WTA", country:"IND", sofa:"https://www.sofascore.com/team/tennis/rajeshwaran-revathi-maaya/507584" },
+  { id:"rajeshwaran", first:"Maaya", last:"Rajeshwaran Revathi", tour:"WTA", country:"IND", sofa:"https://www.sofascore.com/team/tennis/rajeshwaran-revathi-maaya/507584" },
   { id:"dotsenko", first:"Ekaterina", last:"Dotsenko", tour:"WTA", country:"RUS", sofa:"https://www.sofascore.com/team/tennis/dotsenko-ekaterina/1232561" },
   { id:"newman", first:"Welles", last:"Newman", tour:"WTA", country:"USA", sofa:"https://www.sofascore.com/team/tennis/newman-welles/853817" },
   { id:"lin", first:"Yu Jun", last:"Lin", tour:"WTA", country:"CHN", sofa:"https://www.sofascore.com/team/tennis/lin-yu-jun/825378" },
   { id:"pinera", first:"Paola", last:"Piñera", tour:"WTA", country:"ESP", sofa:"https://www.sofascore.com/team/tennis/pinera-celorio-paola/1040552" },
-  { id:"iwasa", first:"Ayaka", last:"Iwasa", tour:"WTA", country:"" },
-  { id:"skryp", first:"Violetta", last:"Skryp", tour:"WTA", country:"" },
-  { id:"kurylova", first:"Nicole", last:"Kurylová", tour:"WTA", country:"" },
+  { id:"iwasa", first:"Ayaka", last:"Iwasa", tour:"WTA", country:"JPN" },
+  { id:"skryp", first:"Violetta", last:"Skryp", tour:"WTA", country:"UKR" },
+  { id:"kurylova", first:"Nicole", last:"Kurylová", tour:"WTA", country:"CZE" },
   { id:"dudeney", first:"Alicia", last:"Dudeney", tour:"WTA", country:"GBR", sofa:"https://www.sofascore.com/team/tennis/dudeney-alicia/350973" },
   { id:"mmakarova", first:"Mariia", last:"Makarova", tour:"WTA", country:"RUS" },
-  { id:"vmakarova", first:"Varvara", last:"Makarova", tour:"WTA", country:"" },
-  { id:"momot", first:"Henry", last:"Momot", tour:"ATP", country:"" },
+  { id:"vmakarova", first:"Varvara", last:"Makarova", tour:"WTA", country:"RUS" },
+  { id:"momot", first:"Henry", last:"Momot", tour:"ATP", country:"GBR" },
+  { id:"kanabar", first:"Jensi", last:"Kanabar", tour:"WTA", country:"IND" },
+  { id:"liu", first:"Xichen", last:"Liu", tour:"ATP", country:"CHN" },
 ];
 const byId = Object.fromEntries(ROSTER.map(p => [p.id, p]));
 const $ = s => document.querySelector(s);
@@ -511,7 +533,31 @@ const RANK_FALLBACK = { asOf:"2026-09-28", source:"ATP & WTA singles rankings", 
 // live rankings, with the list above filling any player the data feed has no ranking for
 const mergeRanks = s => { const out = { ...RANK_FALLBACK.players }; for (const [k, v] of Object.entries(s || {})) if (v && (v.rank || !out[k]?.rank)) out[k] = v; return out; };
 const mv = m => m == null ? `<span class="mv same"></span>` : m > 0 ? `<span class="mv up">▲ ${m}</span>` : m < 0 ? `<span class="mv down">▼ ${Math.abs(m)}</span>` : `<span class="mv same">–</span>`;
+let rankTab = "tour", ITF = null;
+function renderItf(){
+  const rows = tour => JUNIOR_PROFILES.map(x => ({ x, p: byId[x.id], d: itfOf(x.id) || {} })).filter(o => o.p && o.p.tour === tour)
+    .sort((a, b) => (a.d.rank ?? 1e9) - (b.d.rank ?? 1e9) || a.x.born - b.x.born || a.p.last.localeCompare(b.p.last));
+  const html = list => list.map(({ x, p, d }) => `<div class="rk">
+      <div class="no ${d.rank ? "" : "na"}">${d.rank ? `<span class="hash">#</span>${d.rank}` : "—"}</div>
+      <div class="who"><div class="nm">${esc(p.first)} ${esc(p.last)}</div><div class="ct">${esc([p.country, "b. " + x.born, d.rank ? "" : (x.head ? `${x.head[0]} #${x.head[1]}` : "Not ITF-ranked")].filter(Boolean).join(" · "))}</div></div>
+      <div class="pts">${d.high ? "#" + d.high : ""}<small>${d.high ? "BEST" : ""}</small></div>
+      ${mv(d.rank ? d.move : null)}</div>`).join("");
+  const b = rows("ATP"), g = rows("WTA");
+  $("#itfBoys").innerHTML = html(b); $("#itfGirls").innerHTML = html(g);
+  $("#itfBN").textContent = b.length + " players"; $("#itfGN").textContent = g.length + " players";
+  const rb = b.find(o => o.d.rank), rg = g.find(o => o.d.rank), ranked = [...b, ...g].filter(o => o.d.rank);
+  $("#itfStats").innerHTML = `
+    <div class="stat"><div class="k">Top boy</div><div class="v">#${rb?.d.rank ?? "–"}<small>${esc(rb?.p.last || "")}</small></div></div>
+    <div class="stat"><div class="k">Top girl</div><div class="v">#${rg?.d.rank ?? "–"}<small>${esc(rg?.p.last || "")}</small></div></div>
+    <div class="stat"><div class="k">ITF top 10</div><div class="v">${ranked.filter(o => o.d.rank <= 10).length}<small>players</small></div></div>
+    <div class="stat"><div class="k">ITF top 100</div><div class="v">${ranked.filter(o => o.d.rank <= 100).length}<small>players</small></div></div>`;
+  const wk = ITF?.rankDate ? `, week of ${ITF.rankDate}` : "";
+  $("#itfSrc").textContent = ITF ? `Source: ITF World Tennis Junior Rankings${wk}. Updated every Monday. Players without an ITF junior ranking show the ranking from their profile.` : "Loading ITF junior rankings…";
+}
 function renderRankings(){
+  $("#rk-tour").hidden = rankTab !== "tour"; $("#rk-itf").hidden = rankTab !== "itf";
+  document.querySelectorAll(".chip.rt").forEach(c => c.classList.toggle("on", c.dataset.rt === rankTab));
+  renderItf();
   const r = STATE?.rankings ? { asOf: STATE.rankingsAsOf, source: STATE.rankingsSource, players: mergeRanks(STATE.rankings) } : RANK_FALLBACK;
   const rows = tour => ROSTER.filter(p => p.tour === tour).map(p => ({ p, d: r.players[p.id] || {} })).sort((a,b) => (a.d.rank ?? 1e9) - (b.d.rank ?? 1e9));
   const html = list => list.map(({p,d}) => `<div class="rk">
@@ -530,82 +576,168 @@ function renderRankings(){
     <div class="stat"><div class="k">In top 50</div><div class="v">${ranked.filter(x => x.d.rank <= 50).length}<small>players</small></div></div>
     <div class="stat"><div class="k">In top 100</div><div class="v">${ranked.filter(x => x.d.rank <= 100).length}<small>players</small></div></div>`;
   const asOf = r.asOf ? new Date(r.asOf + "T12:00:00Z").toLocaleDateString("en-GB", { day:"numeric", month:"long", year:"numeric", timeZone:"UTC" }) : "";
-  $("#rankSub").textContent = `Official ATP and WTA singles rankings for the 72 roster${asOf ? ", as of " + asOf : ""}.`;
+  $("#rankSub").textContent = rankTab === "itf" ? "ITF World Tennis Junior Rankings for the 72 juniors." : `Official ATP and WTA singles rankings for the 72 roster${asOf ? ", as of " + asOf : ""}.`;
   $("#rankSrc").textContent = `Source: ${r.source || "ATP & WTA"}. Updated every Monday.`;
 }
 
 /* ---------- 72 players (profiles from the 2026 roster deck) ---------- */
 const K = 1e3, M = 1e6;
+const BH = "Right-handed · two-handed backhand";
 const PROFILES = [
-  { id:"deminaur", age:27, nat:"Australian", plays:"Right-handed · two-handed backhand", high:5,
+  { id:"deminaur", age:27, nat:"Australian", plays:BH, high:5,
     titles:[{ k:"ATP titles", n:11, p:[["500",4],["250",7]] }, { k:"Team titles", team:1, n:2, p:[["Laver Cup",2]] }],
     partners:["Wilson","SAJ","SAP","Gerald Charles","Pepperstone","La Roche-Posay","Weet-Bix"],
-    social:{ Instagram:551*K, TikTok:54*K, X:74*K },
+    social:{ Instagram:554*K, TikTok:57*K, X:74*K },
     quote:["I've been watching Alex for a while, and his work ethic and dedication to the game are impressive. He has a great attitude and the kind of tenacity that can take him far.","Pat Rafter"] },
-  { id:"rublev", age:28, nat:"Russian", plays:"Right-handed · two-handed backhand", high:5,
+  { id:"rublev", age:28, nat:"Russian", plays:BH, high:5,
     titles:[{ k:"ATP titles", n:18, p:[["Masters 1000",2],["500",6],["250",10]] }, { k:"Team titles", team:1, n:4, p:[["Davis Cup",1],["Laver Cup",1],["ATP Cup",1],["Tokyo 2020",1]] }],
     partners:["waterdrop","K-Swiss","HEAD","Vanguart","PRYPCO Blocks"],
-    social:{ Instagram:626*K, TikTok:42*K, X:130*K, Xiaohongshu:27*K },
+    social:{ Instagram:630*K, TikTok:42*K, X:131*K, Xiaohongshu:27*K },
     quote:["He is an avid supporter of peace and unity, and proved so the day after Russia invaded Ukraine.","NBC Sports"] },
-  { id:"svitolina", age:31, nat:"Ukrainian", plays:"Right-handed · two-handed backhand", high:3,
+  { id:"svitolina", age:32, nat:"Ukrainian", plays:BH, high:3,
     titles:[{ k:"WTA titles", n:20, p:[["WTA Finals",1],["1000",5],["Tour",14]] }, { k:"Team titles", team:1, n:4, note:"Including Tokyo 2020" }],
     partners:["waterdrop","MacPaw","adidas","Mercedes-Benz","VISA","Diadem","United24","EA7","WhiteBIT"],
-    social:{ Instagram:1.8*M, TikTok:82*K, X:350*K },
+    social:{ Instagram:1.8*M, TikTok:83*K, X:431*K },
     quote:["I will not stand aside. I will do my best to help Ukraine win its most important fight.","Elina Svitolina"] },
-  { id:"kasatkina", age:29, nat:"Australian", plays:"Right-handed · two-handed backhand", high:8,
+  { id:"kasatkina", age:29, nat:"Australian", plays:BH, high:8,
     titles:[{ k:"WTA titles", n:9, p:[["500",3],["250",5],["125",1]] }],
     partners:["adidas","Artengo","Royaltiz","Decathlon"],
-    social:{ Instagram:347*K, TikTok:19*K, X:44*K, YouTube:70*K },
+    social:{ Instagram:345*K, TikTok:19*K, X:44*K, YouTube:70*K },
     quote:["It's really incredible that she's coming out and she's standing for what she believes in.","Naomi Osaka"] },
-  { id:"buse", age:22, nat:"Peruvian", plays:"Right-handed · two-handed backhand",
+  { id:"buse", age:22, nat:"Peruvian", plays:BH,
     titles:[{ k:"ATP titles", n:3, p:[["500",1],["Challenger 125",1],["Challenger 100",1]] }, { k:"ITF titles", n:3, p:[["M25",3]] }],
     partners:["Banco Falabella","Herbalife","TEC","Carles Ferrer Salat","ISDIN","Peugeot","ETNA","Wilson","Lotto"],
-    social:{ Instagram:184*K, TikTok:52*K } },
-  { id:"altmaier", age:27, nat:"German", plays:"Right-handed · two-handed backhand",
+    social:{ Instagram:199*K, TikTok:55*K } },
+  { id:"altmaier", age:28, nat:"German", plays:BH,
     titles:[{ k:"ATP Challenger titles", n:7, p:[["Challenger",7]] }],
-    partners:["Yonex"], social:{ Instagram:47*K } },
-  { id:"jabeur", age:31, nat:"Tunisian", plays:"Right-handed · two-handed backhand", high:2,
+    partners:["Yonex"], social:{ Instagram:48*K } },
+  { id:"jabeur", age:32, nat:"Tunisian", plays:BH, high:2,
     titles:[{ k:"WTA titles", n:5, p:[["1000",1],["500",2],["250",2]] }],
-    partners:["Kayanee"], social:{ Instagram:1.3*M, TikTok:102*K, X:575*K, Facebook:1.3*M } },
-  { id:"monfils", age:39, nat:"French", plays:"Right-handed · two-handed backhand", high:6,
+    partners:["Kayanee"], social:{ Instagram:1.3*M, TikTok:102*K, X:654*K, Facebook:1.3*M } },
+  { id:"monfils", age:40, nat:"French", plays:BH, high:6,
     titles:[{ k:"ATP titles", n:13, p:[["500",3],["250",10]] }],
     partners:["Artengo","MacPaw","Bitpanda"],
-    social:{ Instagram:1.4*M, TikTok:280*K, Facebook:449*K, X:802*K, YouTube:88*K, Twitch:138*K },
+    social:{ Instagram:1.3*M, TikTok:279*K, Facebook:449*K, X:880*K, YouTube:90*K, Twitch:138*K },
     quote:["Monfils is a special player, a different player, a spectacular player.","Rafael Nadal"] },
-  { id:"bejlek", age:20, nat:"Czech", plays:"Right-handed · two-handed backhand",
+  { id:"bejlek", age:20, nat:"Czech", plays:BH,
     titles:[{ k:"WTA titles", n:5, p:[["500",1],["125",4]] }, { k:"ITF titles", n:7, p:[["W75",1],["W60",3],["W25",3]] }],
-    partners:["AGEL","Babolat","THAYA"], social:{ Instagram:29*K } },
-  { id:"starodubtseva", age:26, nat:"Ukrainian", plays:"Right-handed · two-handed backhand",
+    partners:["AGEL","Babolat","THAYA"], social:{ Instagram:45*K } },
+  { id:"starodubtseva", age:26, nat:"Ukrainian", plays:BH,
     titles:[{ k:"ITF titles", n:4, p:[["W60",3],["W25",1]] }],
-    partners:["adidas"], social:{ Instagram:16*K },
+    partners:["adidas"], social:{ Instagram:17*K },
     quote:["Starodubtseva has become only the seventh player since 2009 to make the last eight in her first WTA 1000 main draw. Yuliia is the first woman in the Open Era to qualify for all four majors in a single season.","WTA"] },
-  { id:"coric", age:29, nat:"Croatian", plays:"Right-handed · two-handed backhand", high:12,
+  { id:"coric", age:29, nat:"Croatian", plays:BH, high:12,
     titles:[{ k:"ATP titles", n:3, p:[["Masters 1000",1],["500",1],["250",1]] }],
-    partners:["ASICS","HEAD"], social:{ Instagram:233*K, Facebook:145*K, X:63*K },
+    partners:["ASICS","HEAD"], social:{ Instagram:232*K, Facebook:145*K, X:63*K },
     quote:["No one is surprised to see Borna win Cincinnati. He was the leader of the next gen, he has so much game and deserves to be at the top.","Serena Williams"] },
-  { id:"kym", age:23, nat:"Swiss", plays:"Right-handed · two-handed backhand",
+  { id:"kym", age:23, nat:"Swiss", plays:BH,
     titles:[{ k:"Titles", n:5, p:[["Challenger",2],["ITF Futures",3]] }],
-    partners:["HEAD"], social:{ Instagram:10*K } },
+    partners:["HEAD"], social:{ Instagram:11*K } },
   { id:"schwaerzler", age:20, nat:"Austrian", plays:"Left-handed · two-handed backhand", junior:1,
-    titles:[{ k:"Titles", n:5, p:[["Challenger",1],["ITF Futures",4]] }],
-    partners:["AlphaTauri","BMW","Haemo Pharma","HEAD","Red Bull"], social:{ Instagram:15*K } },
-  { id:"romero", age:24, nat:"Spanish", plays:"Right-handed · two-handed backhand", high:123,
+    titles:[{ k:"Titles", n:7, p:[["Challenger",3],["ITF Futures",4]] }],
+    partners:["AlphaTauri","BMW","Haemo Pharma","HEAD","Red Bull"], social:{ Instagram:16*K } },
+  { id:"romero", age:24, nat:"Spanish", plays:BH, high:123,
     titles:[{ k:"WTA titles", n:1, p:[["125",1]] }, { k:"ITF titles", n:5, p:[["W50",2],["W35",1],["W25",2]] }],
     partners:["Joma","Yonex","ElPozo"], social:{ Instagram:6.4*K } },
-  { id:"kuzuhara", age:22, nat:"American", plays:"Right-handed · two-handed backhand", high:394,
+  { id:"kuzuhara", age:22, nat:"American", plays:BH, high:394,
     titles:[{ k:"Titles", n:2, p:[["ITF Futures",2]] }],
-    partners:["Dunlop"], social:{ Instagram:4.6*K } },
-  { id:"sawangkaew", age:23, nat:"Thai", plays:"Right-handed · two-handed backhand",
+    partners:["Dunlop"], social:{ Instagram:4.5*K } },
+  { id:"sawangkaew", age:23, nat:"Thai", plays:BH,
     titles:[{ k:"WTA titles", n:1, p:[["125",1]] }, { k:"ITF titles", n:8, p:[["W50",1],["W40",2],["W25",3],["W15",2]] }],
-    partners:["ASICS","Wilson","PTT"], social:{ Instagram:6.7*K } },
-  { id:"jones", age:25, nat:"British", plays:"Right-handed · two-handed backhand",
+    partners:["ASICS","Wilson","PTT"], social:{ Instagram:6.9*K } },
+  { id:"jones", age:25, nat:"British", plays:BH,
     titles:[{ k:"WTA titles", n:4, p:[["125",4]] }, { k:"ITF titles", n:6, p:[["W75",3],["W60",1],["W25",2]] }],
-    partners:["adidas","Wilson"], social:{ Instagram:10.3*K } },
-  { id:"ristic", age:20, nat:"Serbian", plays:"Right-handed · two-handed backhand",
-    titles:[{ k:"ITF titles", n:3, p:[["W75",1],["W60",1],["W25",1]] }],
-    partners:["adidas","Dunlop"], social:{ Instagram:8.6*K } },
+    partners:["adidas","Wilson"], social:{ Instagram:10.6*K } },
+  { id:"ristic", age:20, nat:"Serbian", plays:BH,
+    titles:[{ k:"ITF titles", n:4, p:[["W75",2],["W60",1],["W25",1]] }],
+    partners:["adidas","Dunlop"], social:{ Instagram:10*K } },
 ];
-const profById = Object.fromEntries(PROFILES.map(p => [p.id, p]));
+/* Juniors: group, born, nationality, Instagram, the ranking the deck headlines, highlights, partners, results by year */
+const RNA = "Rafa Nadal Academy";
+const JUNIOR_PROFILES = [
+  { id:"ivanov", grp:"U18", born:2008, nat:"Bulgarian", ig:"ivan.ivanovofficial", head:["ITF junior ranking",1],
+    hl:["US Open & Wimbledon junior champion 2025","Roland Garros junior semi-finalist 2025"],
+    partners:["adidas","Mastercard","HEAD",RNA,"UBB","NEXO","Devin"],
+    res:{2026:["Tarragona, Spain ITF M25"],2025:["Roehampton, GB ITF J300 (RU)","Szentendre, Hungary ITF M15","Milan, Italy ITF J500 (RU)","Beaulieu-sur-Mer, France ITF J300","Porto Alegre, Brazil ITF J300 (RU)"],2024:["Sofia, Bulgaria ITF M15 (RU)","Bytom, Poland ITF J300 (RU)"],2023:["Lousada, Portugal ITF J100","Manacor, Spain ITF J100","Vilas Tennis Academy Trophy (U16)"]} },
+  { id:"bonding", grp:"U18", born:2007, nat:"British", ig:"oliverbonding", head:["Highest ITF junior ranking",8],
+    partners:["Dunlop"],
+    res:{2026:["Columbia, USA ITF M15","Lakewood, USA ITF M15"],2025:["Wimbledon (Doubles RU)","Roehampton, GB ITF J300","U18 British National Championships","Lannion, France ITF M15"],2024:["U18 British National Championships","Blumenau, Brazil ITF J500"],2023:["Barranquilla, Colombia ITF G1","Indian Wells, USA ITF G1 (RU)","Oslo, Norway ITF G5","Aldershot, GB ITF G4","Johannesburg, South Africa ITF G3","Pretoria, South Africa ITF G3","U16 Junior Davis Cup & European Championships"]} },
+  { id:"mackenzie", grp:"U18", born:2008, nat:"German", ig:"jamie_mackenzie_tennis", head:["Highest ITF junior ranking",2],
+    partners:["HEAD"],
+    res:{2026:["US Open Junior (SF)","Bonn, Germany ATP Challenger 75 (RU)","Roehampton, GB ITF J300 (Doubles)","Roland Garros Junior (Doubles)","Milan, Italy ITF J500","Offenbach, Germany ITF J500"],2025:["Osaka, Japan ITF J500","Beijing, China ITF J300","Bamberg, Germany ITF J300","Milan, Italy ITF J500","Benicarló, Spain ITF J300","Valencia, Spain ITF J200"],2024:["Vigo, Spain ITF J200","Rutesheim, Germany ITF J200","Maaseik, Belgium ITF J100","Basel, Switzerland ITF J200","Szczecin, Poland ITF J60"]} },
+  { id:"chavez", grp:"U18", born:2008, nat:"Spanish", ig:"titochavez_official", head:["Highest ITF junior ranking",19],
+    partners:["HEAD","ASICS"],
+    res:{2026:["Kranjska Gora, Slovenia ITF M15 (RU)","Cairo, Egypt ITF J300"],2025:["Osaka, Japan ITF J500","Beijing, China ITF J300","Bamberg, Germany ITF J300","Prato, Italy ITF J200"],2024:["Parma, Italy TEJT U16","El Prat de Llobregat, Spain ITF J100","Barcelona, Spain ITF J100","Barcelona, Spain ITF J100"],2023:["Cairo, Egypt ITF J30","Alexandria, Egypt ITF J30"]} },
+  { id:"rajeshwaran", grp:"U16", born:2009, nat:"Indian", ig:"maayarajesh.09", head:["Highest ITF junior ranking",17],
+    partners:["Infosys",RNA,"Nike","Yonex"],
+    res:{2026:["US Open Junior (Doubles SF)","Bamberg, Germany ITF J300","Beaulieu-sur-Mer, France ITF J300","Traralgon, Australia ITF J300"],2025:["Mumbai Open WTA 125 (SF)","Gladbeck, Germany ITF J200","New Delhi, India ITF J300","Fort Lauderdale, USA ITF J500"],2024:["Zapopan, Mexico ITF J100"],2023:["Pune, India ITF J100","Perak, Malaysia ITF J60","Seremban, Malaysia ITF J60","Hyderabad, India ITF J60","Chennai, India ITF J60"]} },
+  { id:"qi", grp:"U16", born:2010, nat:"Chinese", ig:"hongjin.qi", head:["Ranked 2010-born Chinese player",1],
+    partners:["Wilson","Nike",RNA],
+    res:{2026:["The Hague, Netherlands ITF J100 (RU)"],2025:["Aridaia, Greece ITF J100","Hillegom, Netherlands ITF J60","Hong Kong ITF J60"],2024:["U14 Orange Bowl International Championship","U14 Eddie Herr International Championship"],2023:["Selection Program U13","Yingkai Cup"],2022:["China Year End Finals Boys Singles U12"]} },
+  { id:"pinera", grp:"U16", born:2010, nat:"Spanish", ig:"paolapinera", head:["Best ITF junior ranking",11],
+    partners:["Yonex","Nike"],
+    res:{2026:["College Park, USA ITF J300","Beaulieu-sur-Mer, France ITF J300","Vrsar, Croatia ITF J300","Villena, Spain ITF J300","Marsa, Tunisia ITF J200","Hammamet, Tunisia ITF J200"],2025:["Cairo, Egypt ITF J200","Castricum, Netherlands ITF J200","Holte, Denmark ITF J60","Vigo, Spain ITF J200"],2024:["Barcelona, Spain ITF J100","Rabat, Morocco ITF J60","Valldoreix, Spain ITF J60"]} },
+  { id:"fazekas", grp:"U16", born:2011, nat:"Hungarian", ig:"vencel_fazekas", head:["Tennis Europe U16 ranking",24],
+    partners:["Yonex"],
+    res:{2026:["Szentes, Hungary ITF J30 (RU)","Banja Luka, Bosnia ITF J30 (RU)","Šiauliai, Lithuania TEJT U16"],2025:["Slovenská Ľupča, Slovakia TEJT U16","Tuzla, Bosnia & Herzegovina TEJT U14","Košice, Slovakia TEJT U14","Sainte-Geneviève-des-Bois, France U14"],2024:["Budapest, Hungary TEJT U14","Mogyoród, Hungary TEJT U14","Skopje, North Macedonia TEJT U14"]} },
+  { id:"skryp", grp:"U16", born:2011, nat:"Ukrainian", ig:"violetta_skryp", head:["Tennis Europe U14 ranking (2025)",2],
+    hl:["U14 European doubles champion"], partners:["Yonex",RNA],
+    res:{2025:["U14 David Ferrer TEJT, Spain","U14 European Doubles Champion, Czechia","U14 TEJT Winter Cup (Zone B team event)"],2024:["U14 Agel Indoor Open, Czechia","U14 Alibaba Open, Humenné, Slovakia","U14 Peter Hagedorn International","U16 Peugeot Pepas Cup, Slovakia","U18 Pobiedziski Klub Tenisowy, Poland","U14 Prešov Cup, Slovakia"]} },
+  { id:"choi", grp:"U16", born:2011, nat:"Hong Kong", ig:"choifuwang", head:["ITF 2011-born ranking",2],
+    partners:["Wilson",RNA],
+    res:{2026:["Cholpon-Ata, Kyrgyzstan ITF J100 (RU)","Cholpon-Ata, Kyrgyzstan ITF J60","Esch/Alzette, Luxembourg ITF J60 (RU)"],2025:["AO U14 (RU)","Chengdu, China ITF J100","Hong Kong ITF J100 (SF)","Colombo, Sri Lanka ITF J30"],2024:["Manila, Philippines ITF J30 (SF)"]} },
+  { id:"mmakarova", grp:"U16", born:2010, nat:"Russian", ig:"maria.makarova_", head:["ITF junior ranking",7],
+    partners:["Yonex","Nike"],
+    res:{2026:["College Park, USA ITF J300 (RU)","Milan, Italy ITF J500 (RU)","Traralgon, Australia ITF J300 (RU)"],2025:["Cairo, Egypt ITF J200","Cairo, Egypt ITF J200","Sanxenxo, Spain ITF J300","Santa Croce sull'Arno, Italy ITF J300 (RU)","Izmir, Türkiye ITF J100"],2024:["Hong Kong ITF J200","Hong Kong ITF J100","Maribor, Slovenia ITF J60","Kranj, Slovenia ITF J60","Sundsvall, Sweden ITF J30","Kramfors, Sweden ITF J30"]} },
+  { id:"vmakarova", grp:"U16", born:2013, nat:"Russian", ig:"makarovavaryatennis", head:["Best Tennis Europe ranking",57],
+    hl:["Les Petits As doubles champion 2026"], partners:["Yonex","Nike"],
+    res:{2026:["Les Petits As (Doubles champion)","Telavi, Georgia ITF J60 (RU)"],2025:["U14 Soul Cup, Türkiye","U14 ATDSK Cup, Türkiye","U14 Herodotou Academy G2, Cyprus","U14 Eleon Club G3, Cyprus"]} },
+  { id:"dotsenko", grp:"U16", born:2011, nat:"Russian", ig:"dotsenko_kate_tennis", head:["ITF 2011-born ranking",1],
+    hl:["Les Petits As champion 2025","US Open & Roland Garros junior quarter-finalist 2026"], partners:["Yonex"],
+    res:{2026:["Monastir, Tunisia ITF W15","US Open Junior (QF)","Pančevo, Serbia ITF J300 (RU)","Monastir, Tunisia ITF W15 (RU)","Roland Garros Junior (QF)","New Delhi, India ITF J300"],2025:["Les Petits As (Champion)","Aridaia, Greece ITF J100","Čakovec, Croatia ITF J100","Seoul, Korea ITF J100","Maaseik, Belgium ITF J100","Bludenz, Austria ITF J60","Cairo, Egypt ITF J60","Domsjö, Sweden ITF J30"]} },
+  { id:"drijver", grp:"U16", born:2011, nat:"Dutch", ig:"laurensdrijver", head:["Tennis Europe U16 ranking",69],
+    hl:["U14 Dutch champion 2025"], partners:["Wilson"],
+    res:{2026:["Hilversum, Netherlands ITF J60 (Doubles)","Rotterdam, Netherlands ITF J30","Sint-Katelijne-Waver, Belgium ITF J30"],2025:["U14 Dutch Champion","U14 Torneo Avvenire, Italy","U14 Lexus Junior International Bolton, GB"],2023:["U14 Porto Rafti Tour, Greece","U14 Focus Tennis Academy, Netherlands","U14 Hugo Ekker Tennis Academy Cup, Netherlands","U14 Approach Tennis Europe Borne, Netherlands","U14 Roza Prudnikova Memorial Cup, Armenia","U14 De Wildenhorst, Netherlands"]} },
+  { id:"lin", grp:"U16", born:2010, nat:"Chinese", head:["Best ITF junior ranking",23],
+    partners:["Wilson"],
+    res:{2026:["Tianjin, China ITF W15 (Doubles)","Roehampton, GB ITF J300 (RU)","Roland Garros Junior (R16)","Santa Croce sull'Arno, Italy ITF J300","Nonthaburi, Thailand ITF J300"],2025:["Nanjing, China ITF J200","Shenzhen, China ITF J60","Ma'anshan, China ITF J30"]} },
+  { id:"daraban", grp:"U16", born:2011, nat:"Romanian", ig:"luca_darabann", head:["Best Tennis Europe U14 ranking",4],
+    partners:["Lotto","Wilson"],
+    res:{2026:["Emilio Sánchez Academy Youth Cup U16 (RU)","Chișinău, Moldova ITF J30 (Doubles)","Vadul lui Vodă, Romania ITF J30"],2025:["U14 Memorial Liberto Hernández, Spain"],2024:["U14 Gran Canaria Yellow Bowl, Spain"],2023:["U12 Internacionales de Andalucía, Spain","U12 Emilio Sánchez Academy Kids Cup, Spain","U12 Austrian Youth Open Kufstein, Austria","U12 Daimon Cup, Romania","U12 ATIK 23 April Cup, Türkiye"]} },
+  { id:"newman", grp:"U16", born:2010, nat:"American", ig:"wellesnewman", head:["Best ITF junior ranking",20],
+    partners:["Babolat"],
+    res:{2026:["Roland Garros Junior (Doubles RU)","Orlando, USA ITF W15","Boca Raton, USA ITF W35"],2025:["Bogotá, Colombia ITF J200","Medellín, Colombia ITF J100","Londrina, Brazil ITF J100","Cap d'Ail, France ITF J200"],2024:["Coral Gables, USA ITF J100","Santa Cruz, Bolivia ITF J200","La Paz, Bolivia ITF J200"],2023:["Orange Bowl (RU)","Les Petits As USA","Grand Cayman, Cayman Islands ITF J30"]} },
+  { id:"tarlazzi", grp:"U16", born:2011, nat:"Italian", ig:"dig_tarla11", head:["Best Tennis Europe U16 ranking",69],
+    partners:["Wilson"],
+    res:{2026:["Cuneo, Italy ITF J30","Dubrovnik, Croatia ITF J30","Banja Luka, Bosnia ITF J30","Nikšić, Montenegro ITF J30"],2025:["U14 Italy's Singles Championship","U14 World TEC Cup, Spain","U14 Open du Stade Français, France","U14 Burgenland Open, Austria","U14 Torneo Città di Correggio, Italy","U14 Torneo Pavia, Italy","U14 Salona Cup, Croatia","U14 FOCUS Academy Open, Netherlands"]} },
+  { id:"kanabar", grp:"U16", born:2012, nat:"Indian", head:["Highest ITF junior ranking",49],
+    partners:[],
+    res:{2026:["Astana, Kazakhstan ITF J200","Pune, India ITF J300"],2025:["Guwahati, India ITF J60","Ahmedabad, India ITF J30"]} },
+  { id:"farkxodov", grp:"U14", born:2012, nat:"Uzbek", ig:"farkhodovsaidaslam", head:["Tennis Europe U14 ranking",76], head2:["National ranking",1],
+    partners:[],
+    res:{2026:["Wimbledon U14 (6th place)","ATF U14 Category A (Central Asia)","TE U14 Cat. 2 International Championships of Romania","TE U14 Cat. 3 Ahmet Ergüden Cup"],2025:["TE U14 Cat. 3 Karen Kureghyan Memorial Cup","TE U14 Cat. 3 Autumn Cup","TE U14 Cat. 3 Rena & Dato Cup"]} },
+  { id:"kurylova", grp:"U14", born:2013, nat:"Czech", ig:"nicolekurylova_tennis", head:["Tennis Europe U14 ranking",7],
+    partners:["Nike","Babolat"],
+    res:{2026:["TE U16 Cat. 3 Passau Open (RU)","TE U14 Cat. 1 Rakovník","TE U16 Cat. 3 Vilar Junior Trophy","TE U14 Cat. 3 Vilar Cup","TE U14 Cat. 3 Svedala Open","TE U14 Cat. 3 Lexus Junior International Liverpool"]} },
+  { id:"iwasa", grp:"U14", born:2012, nat:"Japanese", ig:"ayaka_iwasa_0630", head:["Best Tennis Europe U14 ranking",3],
+    partners:["Yonex"],
+    res:{2026:["World Tennis 14&U Junior Team Finals (RU)","Eindhoven, Netherlands ITF J30 (RU)"],2025:["U14 Junior Orange Bowl","Taoyuan, Chinese Taipei ITF J30","U14 IMG Academy International Championships","Müller Junior Cup","Peter Hagedorn International","Koblenz Junior Open","TE U16 Crema","TE U14 Pescara"]} },
+  { id:"mateo", grp:"U14", born:2012, nat:"Spanish", ig:"jorge__mateo_2012", head:["Best Tennis Europe U14 ranking",9],
+    hl:["European 14 & Under runner-up 2026"], partners:["HEAD"],
+    res:{2026:["European Junior Championships 14 & Under (RU)"],2025:["Ganimedes, Portugal TEJT U14 Cat. 2","Pontevedra, Spain TEJT U14 Cat. 2","David Ferrer TEJT U14 Cat. 1","Portimão, Portugal TEJT U14 Cat. 3"]} },
+  { id:"davies", grp:"U14", born:2015, nat:"British", ig:"sweatyboyfletch9",
+    hl:["Welsh national champion 2025"], partners:["Nike","Wilson"],
+    res:{2026:["U12 Lexus Junior International Aldershot","U12 Lexus Junior International Wrexham"],2025:["Welsh National Champion","U12 British National Championships (RU)","U12 Tennis Europe (RU)"]} },
+  { id:"momot", grp:"U14", born:2015, nat:"British", ig:"henry_momot2015",
+    partners:["Castore","Wilson"],
+    res:{2026:["U11 Lexus Grass Court Championships","Lexus Junior International Bradfield","Lexus Junior National Championships (Singles)","Lexus Junior National Championships (Doubles)"]} },
+  { id:"liu", grp:"U14", born:2015, nat:"Chinese", ig:"lxc20150730",
+    partners:["Yonex"],
+    res:{2026:["U12 Rafa Nadal Tour Madrid","U12 Rafa Nadal Tour Valldoreix","U12 Comunitat Valenciana Championship"],2025:["U10 Jiangsu Province Championship"]} },
+];
+JUNIOR_PROFILES.forEach(j => j.kind = "junior");
+const ALL_PROFILES = [...PROFILES, ...JUNIOR_PROFILES];
+const profById = Object.fromEntries(ALL_PROFILES.map(p => [p.id, p]));
 const TONES = ["#E6C9A5","#D0A579","#A97F55","#7E5E3F","#F3E3CF","#5C4630"];
 const fmtN = n => n >= M ? (Math.round(n / M * 10) / 10) + "M" : n >= K ? (Math.round(n / K * 10) / 10) + "K" : String(n);
 const pad2 = n => n == null ? "—" : String(n).padStart(2, "0");
@@ -617,37 +749,41 @@ function playerRank(id){
   const r = mergeRanks(STATE?.rankings)[id];
   return r?.rank ?? null;
 }
+const itfOf = id => ITF?.players?.[id] || null;
+// Pros sit under their tour. Juniors join ATP/WTA once they hold an ATP/WTA ranking, otherwise they are Next Gen.
+const groupOf = (x, p) => x.kind === "junior" && !playerRank(x.id) ? "NEXT" : p.tour;
 function playerList(){
-  return PROFILES.map(x => ({ x, p: byId[x.id], rank: playerRank(x.id) }))
-    .filter(o => o.p && (pFilter === "ALL" || o.p.tour === pFilter))
-    .sort((a, b) => (a.rank ?? 1e9) - (b.rank ?? 1e9) || a.p.last.localeCompare(b.p.last));
+  const key = o => o.x.kind === "junior" ? (o.rank ? 2e4 + o.rank : 4e4 + (o.itf ?? 9e3)) : (o.rank ?? 1e4);
+  return ALL_PROFILES.map(x => ({ x, p: byId[x.id], rank: playerRank(x.id), itf: itfOf(x.id)?.rank ?? null }))
+    .filter(o => o.p && (pFilter === "ALL" || groupOf(o.x, o.p) === pFilter))
+    .sort((a, b) => key(a) - key(b) || a.p.last.localeCompare(b.p.last));
+}
+function cardNums(x, rank){
+  if (x.kind !== "junior") {
+    const titles = x.titles.reduce((s, t) => s + (t.team ? 0 : t.n), 0);
+    return [[rank ? pad2(rank) : "—", "Ranking"], [pad2(bestOf(x.high, rank)), "Career high"], [pad2(titles), "Titles"]];
+  }
+  const it = itfOf(x.id);
+  return [[it?.rank ? pad2(it.rank) : "—", "ITF junior"], [rank ? rank : "—", byId[x.id].tour === "WTA" ? "WTA rank" : "ATP rank"], [x.born, "Born"]];
 }
 function renderPlayers(){
   const list = playerList();
   $("#pgrid").innerHTML = list.map(({ x, p, rank }) => {
-    const titles = x.titles.reduce((s, t) => s + (t.team ? 0 : t.n), 0);
-    const best = bestOf(x.high, rank);
+    const g = groupOf(x, p);
     return `<button class="pc" data-id="${x.id}" aria-label="Open ${esc(p.first)} ${esc(p.last)} profile">
       <span class="bg" aria-hidden="true" style="background-image:url('img/${x.id}.webp')"></span><span class="shade" aria-hidden="true"></span>
       <span class="mono" aria-hidden="true">${initials(p)}</span>
-      <div class="top"><span class="tr">${p.tour}</span><span class="cc">${esc(p.country)}</span></div>
+      <div class="top"><span class="tr">${g === "NEXT" ? "NEXT GEN" : p.tour}</span><span class="cc">${esc(x.kind === "junior" ? x.grp + " · " + p.country : p.country)}</span></div>
       <div class="fn">${esc(p.first)}</div>
       <div class="ln">${esc(p.last)}</div>
-      <div class="meta">${x.age} · ${esc(x.nat)}</div>
-      <div class="nums">
-        <div><b>${rank ? pad2(rank) : "—"}</b><span>Ranking</span></div>
-        <div><b>${best ? pad2(best) : "—"}</b><span>Career high</span></div>
-        <div><b>${pad2(titles)}</b><span>Titles</span></div>
-      </div>
+      <div class="meta">${x.kind === "junior" ? `Born ${x.born}` : x.age} · ${esc(x.nat)}</div>
+      <div class="nums">${cardNums(x, rank).map(([v, k]) => `<div><b>${esc(v)}</b><span>${esc(k)}</span></div>`).join("")}</div>
       <span class="go">View profile <i>→</i></span>
     </button>`;
-  }).join("");
-  document.querySelectorAll(".chip").forEach(c => c.classList.toggle("on", c.dataset.f === pFilter));
+  }).join("") || `<p class="sec-d">No players in this group right now.</p>`;
+  document.querySelectorAll(".chip:not(.rt)").forEach(c => c.classList.toggle("on", c.dataset.f === pFilter));
 }
-function openProfile(id){
-  const x = profById[id], p = byId[id];
-  if (!x || !p) return;
-  const rank = playerRank(id);
+function proBody(x, p, rank){
   const best = bestOf(x.high, rank);
   const titles = x.titles.reduce((s, t) => s + (t.team ? 0 : t.n), 0);
   const reach = Object.values(x.social).reduce((s, v) => s + v, 0);
@@ -658,20 +794,7 @@ function openProfile(id){
       : `<div class="leg" style="margin-top:12px">${esc(t.note || "")}</div>`;
     return `<div class="tb"><div class="h"><span>${esc(t.k)}</span><b>${pad2(t.n)}</b></div>${bar}</div>`;
   };
-  const list = playerList(), i = list.findIndex(o => o.x.id === id);
-  const prev = list[(i - 1 + list.length) % list.length], next = list[(i + 1) % list.length];
-  $("#prof").innerHTML = `
-    <div class="ph">
-      <span class="pblur" aria-hidden="true" style="background-image:url('img/${x.id}.webp')"></span>
-      <img class="pimg" src="img/${x.id}.webp" alt="" onerror="this.remove()">
-      <span class="mono" aria-hidden="true">${initials(p)}</span>
-      <button class="x" data-close aria-label="Close">✕</button>
-      <div class="fn">${esc(p.first)}</div>
-      <div class="ln">${esc(p.last)}</div>
-      <div class="facts"><span>Age <b>${x.age}</b></span><span>Nationality <b>${esc(x.nat)}</b></span><span>Plays <b>${esc(x.plays)}</b></span><span>Tour <b>${p.tour}</b></span></div>
-    </div>
-    <div class="pb">
-      <div class="big">
+  return `<div class="big">
         <div><b>${rank ? `<small>#</small>${rank}` : "—"}</b><span>Current ${p.tour} ranking</span></div>
         <div><b>${x.junior ? `<small>#</small>${x.junior}` : best ? `<small>#</small>${best}` : "—"}</b><span>${x.junior ? "Highest ITF junior ranking" : "Career-high ranking"}</span></div>
         <div><b>${pad2(titles)}</b><span>Career titles${x.titles.some(t => t.team) ? " (excl. team)" : ""}</span></div>
@@ -683,8 +806,47 @@ function openProfile(id){
         <div class="tot"><b>${fmtN(reach)}</b><span>Combined following</span></div>
         ${Object.entries(x.social).map(([k, v]) => `<div><b>${fmtN(v)}</b><span>${esc(k)}</span></div>`).join("")}
       </div></section>
-      ${x.quote ? `<blockquote class="q"><p>${esc(x.quote[0])}</p><cite>${esc(x.quote[1])}</cite></blockquote>` : ""}
-      <div class="pnav"><button data-go="${prev.x.id}">← ${esc(prev.p.last)}</button>${p.sofa ? `<a class="live-btn" href="${esc(safeUrl(p.sofa) || "#")}" target="_blank" rel="noopener"><span class="dot"></span>SofaScore profile</a>` : ""}<button data-go="${next.x.id}">${esc(next.p.last)} →</button></div>
+      ${x.quote ? `<blockquote class="q"><p>${esc(x.quote[0])}</p><cite>${esc(x.quote[1])}</cite></blockquote>` : ""}`;
+}
+function juniorBody(x, p, rank){
+  const it = itfOf(x.id);
+  const tiles = [
+    [it?.rank ? `<small>#</small>${it.rank}` : "—", "ITF junior ranking" + (it?.rank ? "" : " · not ranked")],
+    [it?.high ? `<small>#</small>${it.high}` : "—", "ITF junior career high"],
+    [rank ? `<small>#</small>${rank}` : "—", `${p.tour} ranking`],
+    [String(x.born), "Born"],
+  ];
+  const hl = [...(x.hl || []), ...[x.head, x.head2].filter(Boolean).map(([k, v]) => `${k} #${v}`)];
+  const years = Object.keys(x.res || {}).sort((a, b) => b - a);
+  return `<div class="big">${tiles.map(([v, k]) => `<div><b>${v}</b><span>${esc(k)}</span></div>`).join("")}</div>
+      ${hl.length ? `<section><h3 class="pk">Highlights</h3><div class="hls">${hl.map(h => `<span>★ ${esc(h)}</span>`).join("")}</div></section>` : ""}
+      ${x.partners.length ? `<section><h3 class="pk">Partner line-up</h3><div class="partners">${x.partners.map(n => `<span>${esc(n)}</span>`).join("")}</div></section>` : ""}
+      <section><h3 class="pk">Results</h3><div class="yrs">${years.map(y => `<div class="yr"><b>${y}</b><ul>${x.res[y].map(r => `<li>${esc(r)}</li>`).join("")}</ul></div>`).join("")}</div></section>`;
+}
+function openProfile(id){
+  const x = profById[id], p = byId[id];
+  if (!x || !p) return;
+  const rank = playerRank(id);
+  const list = playerList(); let i = list.findIndex(o => o.x.id === id);
+  const nav = i < 0 ? ALL_PROFILES.map(x2 => ({ x: x2, p: byId[x2.id] })) : list;
+  if (i < 0) i = nav.findIndex(o => o.x.id === id);
+  const prev = nav[(i - 1 + nav.length) % nav.length], next = nav[(i + 1) % nav.length];
+  const facts = x.kind === "junior"
+    ? [["Born", x.born], ["Nationality", x.nat], ["Age group", x.grp], ...(x.ig ? [["Instagram", "@" + x.ig]] : [])]
+    : [["Age", x.age], ["Nationality", x.nat], ["Plays", x.plays], ["Tour", p.tour]];
+  $("#prof").innerHTML = `
+    <div class="ph">
+      <span class="pblur" aria-hidden="true" style="background-image:url('img/${x.id}.webp')"></span>
+      <img class="pimg" src="img/${x.id}.webp" alt="" onerror="this.remove()">
+      <span class="mono" aria-hidden="true">${initials(p)}</span>
+      <button class="x" data-close aria-label="Close">✕</button>
+      <div class="fn">${esc(p.first)}</div>
+      <div class="ln">${esc(p.last)}</div>
+      <div class="facts">${facts.map(([k, v]) => `<span>${esc(k)} <b>${esc(v)}</b></span>`).join("")}</div>
+    </div>
+    <div class="pb">
+      ${x.kind === "junior" ? juniorBody(x, p, rank) : proBody(x, p, rank)}
+      <div class="pnav"><button data-go="${prev.x.id}">← ${esc(prev.p.last)}</button>${safeUrl(p.sofa) ? `<a class="live-btn" href="${esc(safeUrl(p.sofa))}" target="_blank" rel="noopener"><span class="dot"></span>SofaScore profile</a>` : ""}<button data-go="${next.x.id}">${esc(next.p.last)} →</button></div>
     </div>`;
   const d = $("#prof");
   if (!d.open) d.showModal();
@@ -693,7 +855,8 @@ function openProfile(id){
 }
 document.addEventListener("click", e => {
   const card = e.target.closest(".pc"); if (card) return openProfile(card.dataset.id);
-  const chip = e.target.closest(".chip"); if (chip) { pFilter = chip.dataset.f; return renderPlayers(); }
+  const chip = e.target.closest(".chip:not(.rt)"); if (chip) { pFilter = chip.dataset.f; return renderPlayers(); }
+  const rt = e.target.closest("[data-rt]"); if (rt) { rankTab = rt.dataset.rt; return renderRankings(); }
   const go = e.target.closest("[data-go]"); if (go) return openProfile(go.dataset.go);
   if (e.target.closest("[data-close]") || e.target.id === "prof") $("#prof").close();
 });
@@ -708,7 +871,9 @@ async function load(){
   try {
     const r = await fetch("data.json?t=" + Date.now(), { cache: "no-store" });
     if (!r.ok) throw new Error(r.status);
-    STATE = await r.json(); render();
+    STATE = await r.json();
+    try { const ri = await fetch("itf.json?t=" + Date.now(), { cache: "no-store" }); if (ri.ok) ITF = await ri.json(); } catch (e) {}
+    render();
   } catch (e) {
     if (!STATE) { STATE = { matches: [] }; render(); $("#checked").textContent = "Couldn't load the schedule. Reload the page."; }
   }
