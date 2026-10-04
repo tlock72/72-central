@@ -436,6 +436,7 @@ function route(){
   if (pid && profById[pid]) openProfile(pid);
   else if ($("#prof").open) $("#prof").close();
   document.querySelectorAll("nav a").forEach(a => a.classList.toggle("active", a.dataset.tab === tab));
+  if (tab === "scores") fitChamps();
 }
 window.addEventListener("hashchange", route);
 
@@ -506,18 +507,19 @@ function renderChamps(){
   }).join("<i>·</i>");
   el.innerHTML = wins.length ? `<div class="champ">🏆 <span class="k">Congratulations</span><span class="w"><span class="trk">${txt}</span></span></div>` : "";
   // ticker: "Congratulations" stays put, the wins slide back and forth on one line
-  const c = el.querySelector(".champ"), w = el.querySelector(".w"), t = el.querySelector(".trk");
-  if (c) {
-    // slides one way, pauses, then slides back (ping-pong) instead of looping
-    // only moves when the wins don't all fit on one line
-    const dist = w.clientWidth - t.scrollWidth;
-    if (dist < 0) {
-      c.style.setProperty("--dist", dist + "px");
-      c.style.setProperty("--dur", Math.max(5, Math.abs(dist) / 40) + "s");
-      c.classList.add("scroll");
-    }
-  }
+  fitChamps();
 }
+// slides one way, pauses, then slides back (ping-pong) - only when the wins don't all fit on one line
+function fitChamps(){
+  const c = document.querySelector("#champs .champ"); if (!c) return;
+  const w = c.querySelector(".w"), t = c.querySelector(".trk");
+  if (!w.clientWidth) return;  // page not visible yet; measured again when it is
+  const dist = w.clientWidth - t.scrollWidth;
+  c.style.setProperty("--dist", dist + "px");
+  c.style.setProperty("--dur", Math.max(5, Math.abs(dist) / 40) + "s");
+  c.classList.toggle("scroll", dist < 0);
+}
+window.addEventListener("resize", fitChamps);
 function renderScores(){
   renderChamps();
   const ms = (STATE?.matches || []).slice();
