@@ -1,0 +1,411 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>72 Hub</title>
+<link rel="icon" type="image/svg+xml" href="https://72sportsgroup.com/wp-content/uploads/2024/11/FAVICON.svg">
+<meta name="robots" content="noindex, nofollow">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700&family=Oswald:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+/* Layout: sticky brand bar + two tabbed views (match centre / rankings), single dark brand look (72 navy + gold) */
+:root{
+  color-scheme: dark;
+  --navy:#0C1431; --navy-2:#111B3F; --navy-3:#18234E;
+  --line:rgba(208,165,121,.20); --line-2:rgba(255,255,255,.09);
+  --gold:#D0A579; --gold-2:#E6C9A5; --gold-dim:rgba(208,165,121,.14);
+  --white:#FFFFFF; --text:#E9ECF5; --muted:#A1A9C4; --muted-2:#727C9C;
+  --up:#7FD3A0; --down:#E8908F;
+  --radius:14px;
+  --display:"Oswald","Arial Narrow",Impact,sans-serif;
+  --body:"Montserrat",system-ui,-apple-system,"Segoe UI",sans-serif;
+}
+*{box-sizing:border-box}
+html,body{background:var(--navy);color:var(--text)}
+body{margin:0;font-family:var(--body);font-size:14px;-webkit-font-smoothing:antialiased;min-height:100vh;
+  background:radial-gradient(1100px 480px at 88% -10%, rgba(208,165,121,.10), transparent 60%),
+             radial-gradient(900px 420px at -10% 0%, rgba(40,60,140,.32), transparent 60%), var(--navy)}
+a{color:inherit}
+button{font:inherit;color:inherit;background:none;border:0;cursor:pointer}
+:focus-visible{outline:2px solid var(--gold);outline-offset:2px;border-radius:6px}
+.wrap{max-width:1180px;margin:0 auto;padding-inline:24px}
+
+header{position:sticky;top:env(safe-area-inset-top,0px);z-index:10;background:rgba(12,20,49,.9);backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);border-bottom:1px solid var(--line)}
+.bar{display:flex;align-items:center;justify-content:space-between;gap:20px;padding-block:18px}
+.brand{display:flex;align-items:center;gap:18px;text-decoration:none;min-width:0}
+.brand img{height:30px;width:auto;display:block}
+.brand .tag{font-family:var(--display);font-weight:500;letter-spacing:.22em;font-size:11px;color:var(--muted);text-transform:uppercase;padding-left:18px;border-left:1px solid var(--line);white-space:nowrap}
+nav{display:flex;gap:6px;background:rgba(255,255,255,.04);border:1px solid var(--line-2);padding:5px;border-radius:999px}
+nav a{font-family:var(--display);text-transform:uppercase;letter-spacing:.12em;font-size:13px;font-weight:500;text-decoration:none;padding:10px 18px;border-radius:999px;color:var(--muted);transition:color .2s,background .2s;white-space:nowrap}
+nav a:hover{color:var(--white)}
+nav a.active{background:var(--gold);color:var(--navy)}
+
+.hero{padding-block:40px 20px;display:flex;align-items:flex-end;justify-content:space-between;gap:20px;flex-wrap:wrap}
+.eyebrow{font-family:var(--display);letter-spacing:.3em;font-size:12px;color:var(--gold);text-transform:uppercase;margin-bottom:10px}
+h1{font-family:var(--display);font-weight:600;text-transform:uppercase;letter-spacing:.02em;font-size:clamp(34px,5vw,56px);line-height:1;color:var(--white);margin:0;text-wrap:balance}
+h1 .n{color:var(--gold)}
+.sub{color:var(--muted);font-size:14px;margin:12px 0 0;max-width:600px;line-height:1.6}
+.checked{display:flex;flex-direction:column;align-items:flex-end;gap:4px;font-size:12px;color:var(--muted);text-align:right}
+.checked b{font-family:var(--display);font-weight:500;letter-spacing:.08em;color:var(--gold-2);font-size:14px}
+
+.sec-h{display:flex;align-items:center;gap:12px;margin:0 0 14px}
+.sec-h h2{font-family:var(--display);font-weight:500;letter-spacing:.16em;text-transform:uppercase;font-size:15px;color:var(--white);margin:0}
+.sec-h .count{font-family:var(--display);font-size:12px;color:var(--navy);background:var(--gold);border-radius:999px;padding:2px 9px;font-weight:600}
+.sec-h .rule{flex:1;height:1px;background:var(--line)}
+section.block{margin-bottom:38px}
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(330px,1fr));gap:14px}
+.empty{border:1px solid var(--line-2);border-radius:var(--radius);padding:20px 22px;color:var(--muted);font-size:13px;background:rgba(255,255,255,.02);line-height:1.6}
+
+/* match card */
+.match{display:flex;flex-direction:column;background:linear-gradient(180deg,var(--navy-2),rgba(17,27,63,.7));border:1px solid var(--line-2);border-radius:var(--radius);overflow:hidden;min-width:0}
+.match.today{border-color:rgba(208,165,121,.45);box-shadow:0 14px 40px -20px rgba(208,165,121,.4)}
+.m-top{display:flex;justify-content:space-between;align-items:center;gap:10px;padding:12px 16px;border-bottom:1px solid var(--line-2);font-size:11px;color:var(--muted)}
+.m-top .t{font-weight:600;color:var(--text);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;min-width:0}
+.m-top .r{color:var(--muted-2);margin-left:6px;font-weight:500}
+.when{font-family:var(--display);letter-spacing:.12em;text-transform:uppercase;font-size:11px;white-space:nowrap;color:var(--text)}
+.when.today{color:var(--gold)}
+.when.fin{color:var(--muted)}
+.m-body{padding:6px 0;flex:1}
+.row{display:grid;grid-template-columns:1fr auto;align-items:center;gap:10px;padding:9px 16px}
+.pname{display:flex;align-items:center;gap:8px;min-width:0;font-size:15px;font-weight:500;color:var(--muted)}
+.pname .nm{white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.row.ours .pname{color:var(--white);font-weight:700}
+.row.lost .pname{opacity:.55}
+.badge72{flex:none;font-family:var(--display);font-size:10px;font-weight:600;letter-spacing:.06em;color:var(--navy);background:var(--gold);border-radius:4px;padding:1px 5px}
+.tick{flex:none;color:var(--gold);font-size:12px}
+.sets{display:flex;gap:4px;font-variant-numeric:tabular-nums}
+.set{min-width:24px;text-align:center;font-family:var(--display);font-size:19px;font-weight:500;color:var(--muted)}
+.set.w{color:var(--white)}
+.set sup{font-size:10px;color:var(--muted-2);margin-left:1px}
+.match.is-live .row{grid-template-columns:12px 1fr auto auto}
+.serve{width:8px;height:8px;border-radius:50%}
+.serve.on{background:var(--gold);box-shadow:0 0 10px rgba(208,165,121,.8)}
+.game{min-width:36px;height:28px;display:grid;place-items:center;border-radius:7px;background:var(--gold-dim);color:var(--gold);font-family:var(--display);font-weight:600;font-size:14px;border:1px solid var(--line)}
+.pulse{display:inline-block;width:7px;height:7px;border-radius:50%;background:var(--gold);margin-right:6px;animation:pulse 1.8s infinite;vertical-align:middle}
+@keyframes pulse{0%{box-shadow:0 0 0 0 rgba(208,165,121,.6)}70%{box-shadow:0 0 0 8px rgba(208,165,121,0)}100%{box-shadow:0 0 0 0 rgba(208,165,121,0)}}
+.m-foot{display:flex;justify-content:space-between;align-items:center;gap:10px;padding:10px 16px;border-top:1px solid var(--line-2);font-size:11px;color:var(--muted-2)}
+.live-btn{display:inline-flex;align-items:center;gap:7px;text-decoration:none;font-family:var(--display);letter-spacing:.1em;text-transform:uppercase;font-size:11px;font-weight:500;color:var(--navy);background:var(--gold);padding:7px 12px;border-radius:999px;white-space:nowrap}
+.live-btn:hover{background:var(--gold-2)}
+.live-btn .dot{width:6px;height:6px;border-radius:50%;background:var(--navy)}
+.note{padding:0 16px 10px;font-size:11px;color:var(--muted-2)}
+
+/* roster strip */
+.roster{display:grid;grid-template-columns:repeat(auto-fill,minmax(250px,1fr));gap:10px}
+.pl{display:flex;justify-content:space-between;align-items:center;gap:10px;padding:12px 14px;border:1px solid var(--line-2);border-radius:12px;background:rgba(255,255,255,.025);min-width:0}
+.pl .who{min-width:0}
+.pl .nm{font-weight:700;color:var(--white);font-size:13px}
+.pl .st{font-size:11px;color:var(--muted);margin-top:3px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.pl.on .st{color:var(--gold)}
+.pl a{flex:none;font-size:11px;color:var(--gold);text-decoration:none;border:1px solid var(--line);border-radius:999px;padding:5px 10px}
+.pl a:hover{background:var(--gold-dim)}
+
+/* rankings */
+.stats{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;margin:0 0 30px}
+.stat{border:1px solid var(--line-2);border-radius:var(--radius);padding:18px 20px;background:rgba(255,255,255,.025)}
+.stat .k{font-size:11px;letter-spacing:.14em;text-transform:uppercase;color:var(--muted)}
+.stat .v{font-family:var(--display);font-size:34px;font-weight:600;color:var(--white);margin-top:6px;line-height:1}
+.stat .v small{font-size:14px;color:var(--gold);font-weight:500;margin-left:6px;letter-spacing:.04em}
+.tours{display:grid;grid-template-columns:1fr 1fr;gap:22px}
+.tour{border:1px solid var(--line-2);border-radius:18px;overflow:hidden;background:linear-gradient(180deg,var(--navy-2),rgba(17,27,63,.55));min-width:0}
+.tour-h{display:flex;justify-content:space-between;align-items:center;padding:18px 22px;border-bottom:1px solid var(--line)}
+.tour-h h3{font-family:var(--display);font-weight:600;letter-spacing:.14em;font-size:20px;color:var(--white);margin:0}
+.tour-h h3 span{color:var(--gold)}
+.tour-h .k{font-size:11px;color:var(--muted);letter-spacing:.1em;text-transform:uppercase}
+.rk{display:grid;grid-template-columns:72px 1fr auto 56px;align-items:center;gap:12px;padding:15px 22px;border-bottom:1px solid var(--line-2)}
+.rk:last-child{border-bottom:0}
+.rk .no{font-family:var(--display);font-weight:600;font-size:30px;color:var(--gold);line-height:1;font-variant-numeric:tabular-nums}
+.rk .no.na{color:var(--muted-2);font-size:22px}
+.rk .no .hash{font-size:15px;color:var(--muted-2);margin-right:2px;font-weight:400}
+.rk .who{min-width:0}
+.rk .who .nm{font-weight:700;color:var(--white);font-size:15px}
+.rk .who .ct{font-size:11px;color:var(--muted);letter-spacing:.12em;margin-top:3px}
+.rk .pts{text-align:right;font-family:var(--display);font-size:16px;color:var(--text);font-variant-numeric:tabular-nums}
+.rk .pts small{display:block;font-family:var(--body);font-size:10px;color:var(--muted-2);letter-spacing:.12em}
+.mv{justify-self:end;font-family:var(--display);font-size:13px}
+.mv.up{color:var(--up)} .mv.down{color:var(--down)} .mv.same{color:var(--muted-2)}
+.src{margin:18px 0 0;font-size:12px;color:var(--muted-2)}
+
+footer{border-top:1px solid var(--line);margin-top:30px;padding-block:24px 40px;color:var(--muted-2);font-size:12px}
+footer .wrap{display:flex;justify-content:space-between;gap:12px;flex-wrap:wrap}
+
+@media (max-width:860px){.tours{grid-template-columns:1fr}.stats{grid-template-columns:repeat(2,1fr)}}
+@media (max-width:640px){
+  .wrap{padding-inline:16px}
+  .bar{flex-direction:column;align-items:stretch;gap:12px;padding-block:14px}
+  .brand{justify-content:center}
+  .brand .tag{display:none}
+  nav a{flex:1;text-align:center;padding:10px 8px;font-size:12px}
+  .hero{padding-block:26px 16px}
+  .checked{align-items:flex-start;text-align:left}
+  .grid{grid-template-columns:1fr}
+  .rk{grid-template-columns:52px 1fr auto 44px;padding:13px 16px;gap:10px}
+  .rk .no{font-size:24px}
+  .stat .v{font-size:28px}
+}
+@media (prefers-reduced-motion:reduce){*{transition:none!important;animation:none!important}}
+</style>
+</head>
+<body>
+
+
+<header>
+  <div class="wrap bar">
+    <a class="brand" href="#scores" aria-label="72 Hub home">
+      <img src="https://72sportsgroup.com/wp-content/uploads/2024/11/LOGO.svg" alt="SeventyTwo Sports Group">
+      <span class="tag">Tennis Hub</span>
+    </a>
+    <nav>
+      <a href="#scores" data-tab="scores">72 Live Scores</a>
+      <a href="#rankings" data-tab="rankings">72 Rankings</a>
+    </nav>
+  </div>
+</header>
+
+<main class="wrap">
+  <div id="page-scores">
+    <div class="hero">
+      <div>
+        <div class="eyebrow">SeventyTwo Sports Group</div>
+        <h1><span class="n">72</span> Live Scores</h1>
+        <p class="sub">Every match on the 72 roster's schedule. Live scores refresh automatically. Tap <b>Live on SofaScore</b> for point-by-point detail.</p>
+      </div>
+      <div class="checked"><span>Schedule last checked</span><b id="checked">Loading…</b></div>
+    </div>
+
+    <section class="block">
+      <div class="sec-h"><h2>Live &amp; today</h2><span class="count" id="cToday">0</span><span class="rule"></span></div>
+      <div class="grid" id="gToday"></div>
+    </section>
+    <section class="block">
+      <div class="sec-h"><h2>Coming up</h2><span class="count" id="cNext">0</span><span class="rule"></span></div>
+      <div class="grid" id="gNext"></div>
+    </section>
+    <section class="block">
+      <div class="sec-h"><h2>Recent results</h2><span class="count" id="cDone">0</span><span class="rule"></span></div>
+      <div class="grid" id="gDone"></div>
+    </section>
+    <section class="block">
+      <div class="sec-h"><h2>The roster</h2><span class="rule"></span></div>
+      <div class="roster" id="roster"></div>
+    </section>
+  </div>
+
+  <div id="page-rankings" hidden>
+    <div class="hero">
+      <div>
+        <div class="eyebrow">SeventyTwo Sports Group</div>
+        <h1><span class="n">72</span> Rankings</h1>
+        <p class="sub" id="rankSub">Official ATP and WTA singles rankings for the 72 roster.</p>
+      </div>
+    </div>
+    <div class="stats" id="stats"></div>
+    <div class="tours">
+      <div class="tour"><div class="tour-h"><h3><span>ATP</span> Singles</h3><span class="k" id="atpN"></span></div><div id="atpList"></div></div>
+      <div class="tour"><div class="tour-h"><h3><span>WTA</span> Singles</h3><span class="k" id="wtaN"></span></div><div id="wtaList"></div></div>
+    </div>
+    <p class="src" id="rankSrc"></p>
+  </div>
+</main>
+
+<footer><div class="wrap"><span>© SeventyTwo Sports Group · Internal use only</span><span>All times UK time</span></div></footer>
+
+<script>
+const ROSTER = [
+  { id:"deminaur", first:"Alex", last:"de Minaur", tour:"ATP", country:"AUS", sofa:"https://www.sofascore.com/team/tennis/de-minaur-alex/201239" },
+  { id:"rublev", first:"Andrey", last:"Rublev", tour:"ATP", country:"RUS", sofa:"https://www.sofascore.com/team/tennis/rublev-andrey/106755" },
+  { id:"buse", first:"Ignacio", last:"Buse", tour:"ATP", country:"PER", sofa:"https://www.sofascore.com/team/tennis/buse-ignacio/322082" },
+  { id:"altmaier", first:"Daniel", last:"Altmaier", tour:"ATP", country:"GER", sofa:"https://www.sofascore.com/team/tennis/altmaier-daniel/127208" },
+  { id:"monfils", first:"Gael", last:"Monfils", tour:"ATP", country:"FRA", sofa:"https://www.sofascore.com/team/tennis/monfils-gael/14844" },
+  { id:"svitolina", first:"Elina", last:"Svitolina", tour:"WTA", country:"UKR", sofa:"https://www.sofascore.com/team/tennis/svitolina-elina/51293" },
+  { id:"bejlek", first:"Sara", last:"Bejlek", tour:"WTA", country:"CZE", sofa:"https://www.sofascore.com/team/tennis/bejlek-sara/360184" },
+  { id:"starodubtseva", first:"Yuliia", last:"Starodubtseva", tour:"WTA", country:"UKR", sofa:"https://www.sofascore.com/team/tennis/starodubtsewa-yulia/206617" },
+  { id:"kasatkina", first:"Daria", last:"Kasatkina", tour:"WTA", country:"AUS", sofa:"https://www.sofascore.com/team/tennis/kasatkina-daria/132370" },
+  { id:"sawangkaew", first:"Mananchaya", last:"Sawangkaew", tour:"WTA", country:"THA", sofa:"https://www.sofascore.com/team/tennis/sawangkaew-mananchaya/238275" },
+  { id:"jones", first:"Francesca", last:"Jones", tour:"WTA", country:"GBR", sofa:"https://www.sofascore.com/team/tennis/jones-francesca/193290" },
+  { id:"jabeur", first:"Ons", last:"Jabeur", tour:"WTA", country:"TUN", sofa:"https://www.sofascore.com/team/tennis/jabeur-ons/55401" },
+  { id:"coric", first:"Borna", last:"Ćorić", tour:"ATP", country:"CRO", sofa:"https://www.sofascore.com/team/tennis/coric-borna/64580" },
+  { id:"schwaerzler", first:"Joel", last:"Schwärzler", tour:"ATP", country:"AUT", sofa:"https://www.sofascore.com/team/tennis/schwarzler-joel-josef/448184" },
+  { id:"kym", first:"Jérôme", last:"Kym", tour:"ATP", country:"SUI", sofa:"https://www.sofascore.com/team/tennis/kym-jerome/309071" },
+  { id:"kuzuhara", first:"Bruno", last:"Kuzuhara", tour:"ATP", country:"USA", sofa:"https://www.sofascore.com/team/tennis/kuzuhara-bruno/328075" },
+  { id:"ivanov", first:"Ivan", last:"Ivanov", tour:"ATP", country:"BUL", sofa:"https://www.sofascore.com/team/tennis/ivanov-ivan/460276" },
+  { id:"bonding", first:"Oliver", last:"Bonding", tour:"ATP", country:"GBR", sofa:"https://www.sofascore.com/team/tennis/bonding-oliver/478944" },
+  { id:"mackenzie", first:"Jamie", last:"Mackenzie", tour:"ATP", country:"GER", sofa:"https://www.sofascore.com/team/tennis/mackenzie-jamie/549693" },
+  { id:"choi", first:"Fu Wang", last:"Choi", tour:"ATP", country:"HKG", sofa:"https://www.sofascore.com/team/tennis/fu-wang-choi/1162829" },
+  { id:"qi", first:"Hongjin", last:"Qi", tour:"ATP", country:"CHN", sofa:"https://www.sofascore.com/team/tennis/qi-hongjin/1120615" },
+  { id:"chavez", first:"Tito", last:"Chávez", tour:"ATP", country:"ECU", sofa:"https://www.sofascore.com/team/tennis/chavez-tito/1122785" },
+  { id:"mateo", first:"Jorge", last:"Mateo", tour:"ATP", country:"" },
+  { id:"drijver", first:"Laurens", last:"Drijver", tour:"ATP", country:"" },
+  { id:"davies", first:"Fletcher", last:"Davies", tour:"ATP", country:"" },
+  { id:"tarlazzi", first:"Diego", last:"Tarlazzi", tour:"ATP", country:"" },
+  { id:"fazekas", first:"Vencel", last:"Fazekas", tour:"ATP", country:"" },
+  { id:"farkxodov", first:"Saidaslam", last:"Farkxodov", tour:"ATP", country:"" },
+  { id:"daraban", first:"Luca", last:"Daraban", tour:"ATP", country:"" },
+  { id:"romero", first:"Leyre", last:"Romero", tour:"WTA", country:"ESP", sofa:"https://www.sofascore.com/team/tennis/romero-gormaz-leyre/236833" },
+  { id:"ristic", first:"Mia", last:"Ristić", tour:"WTA", country:"SRB", sofa:"https://www.sofascore.com/team/tennis/ristic-mia/348715" },
+  { id:"rajeshwaran", first:"Maaya", last:"Rajeshwaran", tour:"WTA", country:"IND", sofa:"https://www.sofascore.com/team/tennis/rajeshwaran-revathi-maaya/507584" },
+  { id:"dotsenko", first:"Ekaterina", last:"Dotsenko", tour:"WTA", country:"RUS", sofa:"https://www.sofascore.com/team/tennis/dotsenko-ekaterina/1232561" },
+  { id:"newman", first:"Welles", last:"Newman", tour:"WTA", country:"USA", sofa:"https://www.sofascore.com/team/tennis/newman-welles/853817" },
+  { id:"lin", first:"Yu Jun", last:"Lin", tour:"WTA", country:"CHN", sofa:"https://www.sofascore.com/team/tennis/lin-yu-jun/825378" },
+  { id:"pinera", first:"Paola", last:"Piñera", tour:"WTA", country:"ESP", sofa:"https://www.sofascore.com/team/tennis/pinera-celorio-paola/1040552" },
+  { id:"iwasa", first:"Ayaka", last:"Iwasa", tour:"WTA", country:"" },
+  { id:"skryp", first:"Violetta", last:"Skryp", tour:"WTA", country:"" },
+  { id:"kurylova", first:"Nicole", last:"Kurylová", tour:"WTA", country:"" },
+];
+const byId = Object.fromEntries(ROSTER.map(p => [p.id, p]));
+const $ = s => document.querySelector(s);
+const esc = s => String(s ?? "").replace(/[&<>"']/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
+const safeUrl = u => /^https:\/\/(www\.)?sofascore\.com\//.test(u || "") ? u : null;
+
+let STATE = null; // { lastChecked, rankingsAsOf, rankingsSource, rankings:{id:{rank,points,move,note}}, matches:[...] }
+
+/* ---------- dates in UK time ---------- */
+const ukDate = (d = new Date()) => new Intl.DateTimeFormat("en-CA", { timeZone: "Europe/London", year:"numeric", month:"2-digit", day:"2-digit" }).format(d);
+function dayLabel(iso){
+  const today = ukDate();
+  const t = new Date(today + "T12:00:00Z"), d = new Date(iso + "T12:00:00Z");
+  const diff = Math.round((d - t) / 864e5);
+  if (diff === 0) return "Today";
+  if (diff === 1) return "Tomorrow";
+  if (diff === -1) return "Yesterday";
+  return d.toLocaleDateString("en-GB", { weekday:"short", day:"numeric", month:"short", timeZone:"UTC" });
+}
+
+/* ---------- tabs ---------- */
+function route(){
+  const tab = location.hash === "#rankings" ? "rankings" : "scores";
+  $("#page-scores").hidden = tab !== "scores";
+  $("#page-rankings").hidden = tab !== "rankings";
+  document.querySelectorAll("nav a").forEach(a => a.classList.toggle("active", a.dataset.tab === tab));
+}
+window.addEventListener("hashchange", route);
+
+/* ---------- match centre ---------- */
+function scoreCells(score, side, live){
+  // score like "6-4, 3-6, 7-6(5)" from player-1's view
+  if (!score) return "";
+  return score.split(",").map(s => s.trim()).filter(Boolean).map(s => {
+    const m = s.match(/^(\d+)-(\d+)(?:\((\d+)\))?/); if (!m) return "";
+    const a = +m[1], b = +m[2], mine = side === 1 ? a : b, theirs = side === 1 ? b : a;
+    const tb = m[3] && mine < theirs ? `<sup>${esc(m[3])}</sup>` : "";
+    return { mine, theirs, tb };
+  }).filter(Boolean).map((x, i, arr) => `<span class="set ${(live ? (i < arr.length - 1 && x.mine > x.theirs) || (i === arr.length - 1) : x.mine > x.theirs) ? "w" : ""}">${x.mine}${x.tb}</span>`).join("");
+}
+function card(m){
+  const today = m.date === ukDate();
+  const fin = m.status === "finished";
+  const live = m.status === "live";
+  const ours = id => !!byId[id];
+  const row = (side) => {
+    const id = side === 1 ? m.p1Id : m.p2Id, name = side === 1 ? m.p1 : m.p2;
+    const lost = fin && m.winner && m.winner !== side;
+    const won = fin && m.winner === side;
+    return `<div class="row ${ours(id) ? "ours" : ""} ${lost ? "lost" : ""}">
+      ${live ? `<span class="serve ${m.server === side ? "on" : ""}"></span>` : ""}<span class="pname"><span class="nm">${esc(name)}</span>${ours(id) ? '<span class="badge72">72</span>' : ""}${won ? '<span class="tick" aria-label="winner">✓</span>' : ""}</span>
+      <span class="sets">${fin || live ? scoreCells(m.score, side, live) : ""}</span>
+      ${live ? `<span class="game">${esc((m.points || [])[side - 1] ?? "")}</span>` : ""}
+    </div>`;
+  };
+  const when = live ? `<span class="when today"><span class="pulse"></span>Live</span>` : fin ? `<span class="when fin">Final · ${esc(dayLabel(m.date))}</span>`
+    : `<span class="when ${today ? "today" : ""}">${esc(dayLabel(m.date))}${m.time ? " · " + esc(m.time) : ""}</span>`;
+  const p = byId[m.p1Id] || byId[m.p2Id];
+  const link = safeUrl(p?.sofa);
+  const btn = !fin && link ? `<a class="live-btn" href="${esc(link)}" target="_blank" rel="noopener"><span class="dot"></span>Live on SofaScore</a>` : "";
+  return `<article class="match ${(today && !fin) || live ? "today" : ""} ${live ? "is-live" : ""}">
+    <div class="m-top"><span class="t">${esc(m.tournament)}<span class="r">${esc(m.round || "")}</span></span>${when}</div>
+    <div class="m-body">${row(1)}${row(2)}</div>
+    ${m.note ? `<div class="note">${esc(m.note)}</div>` : ""}
+    <div class="m-foot"><span>${esc(m.category || "")}</span>${btn}</div>
+  </article>`;
+}
+function renderScores(){
+  const ms = (STATE?.matches || []).slice();
+  const today = ukDate();
+  const key = m => `${m.date} ${m.time || "99"}`;
+  const tday = ms.filter(m => m.status === "live" || (m.date === today && m.status !== "finished")).sort((a,b) => (b.status === "live") - (a.status === "live") || key(a).localeCompare(key(b)));
+  const next = ms.filter(m => m.date > today && m.status === "scheduled").sort((a,b) => key(a).localeCompare(key(b)));
+  const done = ms.filter(m => m.status === "finished").sort((a,b) => key(b).localeCompare(key(a))).slice(0, 24);
+  const fill = (el, arr, empty) => { $(el).innerHTML = arr.length ? arr.map(card).join("") : `<div class="empty">${empty}</div>`; };
+  if (!STATE) {
+    $("#gToday").innerHTML = `<div class="empty">Loading the match schedule…</div>`;
+    $("#gNext").innerHTML = ""; $("#gDone").innerHTML = "";
+  } else {
+    fill("#gToday", tday, "No 72 players are scheduled to play today.");
+    fill("#gNext", next, "Nothing scheduled yet. Orders of play are usually published the evening before.");
+    fill("#gDone", done, "No results in the last week.");
+  }
+  $("#cToday").textContent = tday.length; $("#cNext").textContent = next.length; $("#cDone").textContent = done.length;
+
+  // roster status
+  $("#roster").innerHTML = ROSTER.map(p => {
+    const mine = ms.filter(m => m.p1Id === p.id || m.p2Id === p.id);
+    const up = mine.filter(m => m.status !== "finished" && m.date >= today).sort((a,b) => key(a).localeCompare(key(b)))[0];
+    const last = mine.filter(m => m.status === "finished").sort((a,b) => key(b).localeCompare(key(a)))[0];
+    let st = "No match scheduled", on = false;
+    if (up) { const opp = up.p1Id === p.id ? up.p2 : up.p1; st = up.status === "live" ? `Playing now · vs ${opp} · ${up.tournament}` : `${dayLabel(up.date)}${up.time ? " " + up.time : ""} · vs ${opp} · ${up.tournament}`; on = up.date === today; }
+    else if (last) { const w = (last.winner === 1 && last.p1Id === p.id) || (last.winner === 2 && last.p2Id === p.id); st = `${w ? "Won" : "Lost"} ${last.round || ""} · ${last.tournament} · ${dayLabel(last.date)}`; }
+    if (STATE?.status?.[p.id]) st = STATE.status[p.id];
+    const link = safeUrl(p.sofa);
+    return `<div class="pl ${on ? "on" : ""}"><div class="who"><div class="nm">${esc(p.first)} ${esc(p.last)}</div><div class="st" title="${esc(st)}">${esc(st)}</div></div>${link ? `<a href="${esc(link)}" target="_blank" rel="noopener">SofaScore</a>` : ""}</div>`;
+  }).join("");
+
+  if (STATE?.lastChecked) {
+    const d = new Date(STATE.lastChecked);
+    $("#checked").textContent = d.toLocaleString("en-GB", { timeZone:"Europe/London", weekday:"short", day:"numeric", month:"short", hour:"2-digit", minute:"2-digit" });
+  } else $("#checked").textContent = STATE ? "Not yet" : "Loading…";
+}
+
+/* ---------- rankings ---------- */
+const RANK_FALLBACK = { asOf:"2026-09-28", source:"ATP & WTA singles rankings", players:{
+  deminaur:{rank:10,points:3150,move:-1}, rublev:{rank:24,points:2020,move:1}, buse:{rank:35,points:1447,move:0},
+  altmaier:{rank:67,points:849,move:0}, monfils:{rank:251,points:220,move:3}, svitolina:{rank:7,points:4809,move:0},
+  bejlek:{rank:29,points:1710,move:-1}, starodubtseva:{rank:45,points:1165,move:-3}, kasatkina:{rank:87,points:883,move:-3},
+  sawangkaew:{rank:90,points:868,move:-2}, jones:{rank:105,points:726,move:-1}, jabeur:{rank:null,points:null,move:null,note:"Not currently ranked"} } };
+const mv = m => m == null ? `<span class="mv same"></span>` : m > 0 ? `<span class="mv up">▲ ${m}</span>` : m < 0 ? `<span class="mv down">▼ ${Math.abs(m)}</span>` : `<span class="mv same">–</span>`;
+function renderRankings(){
+  const r = STATE?.rankings ? { asOf: STATE.rankingsAsOf, source: STATE.rankingsSource, players: STATE.rankings } : RANK_FALLBACK;
+  const rows = tour => ROSTER.filter(p => p.tour === tour).map(p => ({ p, d: r.players[p.id] || {} })).sort((a,b) => (a.d.rank ?? 1e9) - (b.d.rank ?? 1e9));
+  const html = list => list.map(({p,d}) => `<div class="rk">
+      <div class="no ${d.rank ? "" : "na"}">${d.rank ? `<span class="hash">#</span>${d.rank}` : "—"}</div>
+      <div class="who"><div class="nm">${esc(p.first)} ${esc(p.last)}</div><div class="ct">${esc([p.country, d.rank ? "" : (d.note || "Not ranked")].filter(Boolean).join(" · "))}</div></div>
+      <div class="pts">${d.points ? Number(d.points).toLocaleString("en-GB") : ""}<small>${d.points ? "PTS" : ""}</small></div>
+      ${mv(d.move)}</div>`).join("");
+  const atp = rows("ATP"), wta = rows("WTA");
+  $("#atpList").innerHTML = html(atp); $("#wtaList").innerHTML = html(wta);
+  $("#atpN").textContent = atp.length + " players"; $("#wtaN").textContent = wta.length + " players";
+  const ranked = [...atp, ...wta].filter(x => x.d.rank);
+  const bA = atp.find(x => x.d.rank), bW = wta.find(x => x.d.rank);
+  $("#stats").innerHTML = `
+    <div class="stat"><div class="k">Top ATP</div><div class="v">#${bA?.d.rank ?? "–"}<small>${esc(bA?.p.last || "")}</small></div></div>
+    <div class="stat"><div class="k">Top WTA</div><div class="v">#${bW?.d.rank ?? "–"}<small>${esc(bW?.p.last || "")}</small></div></div>
+    <div class="stat"><div class="k">In top 50</div><div class="v">${ranked.filter(x => x.d.rank <= 50).length}<small>players</small></div></div>
+    <div class="stat"><div class="k">In top 100</div><div class="v">${ranked.filter(x => x.d.rank <= 100).length}<small>players</small></div></div>`;
+  const asOf = r.asOf ? new Date(r.asOf + "T12:00:00Z").toLocaleDateString("en-GB", { day:"numeric", month:"long", year:"numeric", timeZone:"UTC" }) : "";
+  $("#rankSub").textContent = `Official ATP and WTA singles rankings for the 72 roster${asOf ? ", as of " + asOf : ""}.`;
+  $("#rankSrc").textContent = `Source: ${r.source || "ATP & WTA"}. Updated every Monday.`;
+}
+
+function render(){ renderScores(); renderRankings(); }
+
+/* ---------- boot ---------- */
+route();
+render();
+async function load(){
+  try {
+    const r = await fetch("data.json?t=" + Date.now(), { cache: "no-store" });
+    if (!r.ok) throw new Error(r.status);
+    STATE = await r.json(); render();
+  } catch (e) {
+    if (!STATE) { STATE = { matches: [] }; render(); $("#checked").textContent = "Couldn't load the schedule. Reload the page."; }
+  }
+}
+load();
+setInterval(() => { if (!document.hidden) load(); }, 60 * 1000);
+document.addEventListener("visibilitychange", () => { if (!document.hidden) load(); });
+// keep "Today / Tomorrow" labels correct if the page stays open past midnight
+setInterval(() => { if (!document.hidden) renderScores(); }, 5 * 60 * 1000);
+</script>
+
+</body>
+</html>
