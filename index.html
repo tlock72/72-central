@@ -470,7 +470,9 @@ function esTime(date, time){
 function card(m){
   const today = m.date === ukDate();
   const fin = m.status === "finished";
-  const live = m.status === "live"; // in progress: shown without a live scoreboard
+  // in progress (no live scoreboard) only if the feed confirmed it in the last 90 minutes; otherwise "result pending"
+  const fresh = m.status === "live" && m.seenLive && Date.now() - new Date(m.seenLive) < 90 * 60e3;
+  const live = !!fresh;
   const ours = id => !!byId[id];
   const row = (side) => {
     const id = side === 1 ? m.p1Id : m.p2Id, name = side === 1 ? m.p1 : m.p2;
@@ -481,7 +483,7 @@ function card(m){
       <span class="sets">${fin ? scoreCells(m.score, side) : ""}</span>
     </div>`;
   };
-  const pending = !fin && !live && m.date < ukDate();
+  const pending = !fin && !live && (m.date < ukDate() || m.status === "live");
   const when = live ? `<span class="when today"><span class="pulse"></span>In progress</span>` : fin ? `<span class="when fin">${esc(dayLabel(m.date))}</span>`
     : pending ? `<span class="when fin">${esc(dayLabel(m.date))} · result pending</span>`
     : `<span class="when ${today ? "today" : ""}">${esc(dayLabel(m.date))}</span>`;
