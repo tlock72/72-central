@@ -303,7 +303,7 @@ blockquote.q cite{display:block;margin-top:12px;font-style:normal;font-family:va
 
     <section class="block">
       <div class="sec-h"><h2>Today's matches<span id="todayLbl" class="dt"></span></h2><span class="count" id="cToday">0</span><span class="rule"></span></div>
-      <p class="sec-d">Every 72 match scheduled for today (UK date). Results are updated once a day: today's scores appear in <b>Past day results</b> tomorrow. To follow a match or see a result sooner, check SofaScore.</p>
+      <p class="sec-d">Every 72 match scheduled for today (UK date). Results are updated once a day: today's scores appear in <b>Latest results this week</b> tomorrow. To follow a match or see a result sooner, check SofaScore.</p>
       <div class="grid" id="gToday"></div>
     </section>
     <section class="block">
@@ -311,7 +311,7 @@ blockquote.q cite{display:block;margin-top:12px;font-style:normal;font-family:va
       <div class="grid" id="gNext"></div>
     </section>
     <section class="block">
-      <div class="sec-h"><h2>Past day results</h2><span class="count" id="cDone">0</span><span class="rule"></span></div>
+      <div class="sec-h"><h2>Latest results this week</h2><span class="count" id="cDone">0</span><span class="rule"></span></div>
       <div class="grid" id="gDone"></div>
     </section>
     <section class="block">
@@ -553,16 +553,19 @@ function renderScores(){
   const tday = ms.filter(m => (m.date === today || (m.status === "live" && m.date < today)) && !superseded(m)).map(asToday).sort((a,b) => key(a).localeCompare(key(b)));
   const next = ms.filter(m => m.date > today && m.status === "scheduled").sort((a,b) => key(a).localeCompare(key(b)));
   // results from the previous two days (UK dates) - never today's
-  // past day results: yesterday (UK date) only, and just each player's furthest match - e.g. a quarter-final, not the round before it too
-  const yday = new Date(new Date(today + "T12:00:00Z").getTime() - 864e5).toISOString().slice(0, 10);
+  // latest results this week (Monday up to yesterday, UK dates; on a Monday, last week): each player's most recent match only,
+  // and on the same day the one furthest into the event - e.g. a quarter-final, not the round before it too
+  const ydD = new Date(new Date(today + "T12:00:00Z").getTime() - 864e5), yday = ydD.toISOString().slice(0, 10);
+  const wkStart = new Date(ydD.getTime() - ((ydD.getUTCDay() + 6) % 7) * 864e5).toISOString().slice(0, 10);
   const stage = r => { r = (r || "").replace(/\(.*\)/, "").trim().toLowerCase(); let n;
     if (/^q/.test(r) && !/^qf/.test(r)) return 1 + (+(r.match(/\d+/) || [0])[0]);
     if (/semi|^sf/.test(r)) return 90; if (/quarter|^qf/.test(r)) return 80; if (/final|^f$/.test(r)) return 100;
     if ((n = r.match(/^r(\d+)$/)) && +n[1] >= 8) return 70 - 10 * Math.log2(+n[1] / 16);
     if ((n = r.match(/^r(\d)$|^(\d)r$/))) return 10 + +(n[1] || n[2]); return 5; };
   const best = {};
-  for (const m of ms.filter(m => m.date === yday && (m.status === "finished" || m.status === "scheduled")))
-    for (const id of ours(m)) if (!best[id] || stage(m.round) > stage(best[id].round)) best[id] = m;
+  for (const m of ms.filter(m => m.date <= yday && m.date >= wkStart && (m.status === "finished" || m.status === "scheduled")))
+    for (const id of ours(m)) { const b = best[id];
+      if (!b || m.date > b.date || (m.date === b.date && stage(m.round) > stage(b.round))) best[id] = m; }
   const done = [...new Set(Object.values(best))].sort((a,b) => key(b).localeCompare(key(a)));
   const fill = (el, arr, empty) => { $(el).innerHTML = arr.length ? arr.map(card).join("") : `<div class="empty">${empty}</div>`; };
   if (!STATE) {
@@ -571,7 +574,7 @@ function renderScores(){
   } else {
     fill("#gToday", tday, "No 72 players are scheduled to play today.");
     fill("#gNext", next, "Nothing scheduled yet. Orders of play are usually published the evening before.");
-    fill("#gDone", done, "No results from yesterday.");
+    fill("#gDone", done, "No results yet this week.");
   }
   $("#todayLbl").textContent = new Date().toLocaleDateString("en-GB", { weekday:"long", day:"numeric", month:"long", timeZone:"Europe/London" });
   $("#cToday").textContent = tday.length; $("#cNext").textContent = next.length; $("#cDone").textContent = done.length;
