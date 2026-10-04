@@ -1192,13 +1192,15 @@ function renderScouting(){
   if (SQ.c && !ctys.includes(SQ.c)) SQ.c = "";
   $("#sqC").innerHTML = `<option value="">All countries</option>` + ctys.map(c => `<option${c === SQ.c ? " selected" : ""}>${esc(c)}</option>`).join("");
   const rows = sqSort(sqRows());
-  const best = k => rows.filter(p => p[k] != null).sort((a, b) => (b[k] - b.rank) - (a[k] - a.rank) || a.rank - b.rank)[0];
+  // U21 to U18: climbers are picked from players now inside the top 500 only (younger groups use everyone)
+  const cap = SQ.age >= 18 ? 500 : Infinity, capTxt = cap < Infinity ? " · top 500 only" : "";
+  const best = k => rows.filter(p => p[k] != null && p.rank <= cap).sort((a, b) => (b[k] - b.rank) - (a[k] - a.rank) || a.rank - b.rank)[0];
   const top = rows.reduce((m, p) => !m || p.rank < m.rank ? p : m, null), b3 = best("m3"), b12 = best("m12");
   $("#sqStats").innerHTML = `
     <div class="stat"><div class="k">Players</div><div class="v">${rows.length}<small>U${SQ.age} · ${SQ.t.toUpperCase()}</small></div></div>
     <div class="stat"><div class="k">Highest ranked</div><div class="v nm">${top ? `${esc(top.name)}<small>#${top.rank}</small>` : "—"}</div></div>
-    <div class="stat"><div class="k">Biggest climb · 3 months</div><div class="v nm">${b3 && b3.m3 > b3.rank ? `${esc(b3.name)}<small>▲${b3.m3 - b3.rank}</small>` : "—"}</div></div>
-    <div class="stat"><div class="k">Biggest climb · 12 months</div><div class="v nm">${b12 && b12.m12 > b12.rank ? `${esc(b12.name)}<small>▲${b12.m12 - b12.rank}</small>` : "—"}</div></div>`;
+    <div class="stat"><div class="k">Biggest climb · 3 months${capTxt}</div><div class="v nm">${b3 && b3.m3 > b3.rank ? `${esc(b3.name)}<small>▲${b3.m3 - b3.rank}</small>` : "—"}</div></div>
+    <div class="stat"><div class="k">Biggest climb · 12 months${capTxt}</div><div class="v nm">${b12 && b12.m12 > b12.rank ? `${esc(b12.name)}<small>▲${b12.m12 - b12.rank}</small>` : "—"}</div></div>`;
   const cols = [["rank","Rank"],["name","Player"],["born","Born"],["w","1 wk"],["m3","3 mo"],["m12","12 mo"]];
   const head = `<div class="sq-row h">${cols.map(([k, l]) => `<button data-s="${k}" class="${SQ.sort === k ? "on" + (SQ.asc ? "" : " asc") : ""}">${l}</button>`).join("")}</div>`;
   const shown = SQ.all ? rows : rows.slice(0, 100);
