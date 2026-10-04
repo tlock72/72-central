@@ -1,34 +1,37 @@
-"""One-off check of ATP ranking sources for Scouting HQ (no API key used)."""
-import re, urllib.request
+"""One-off check of the Live Tennis API: prints response shapes (never the key)."""
+import json, os, urllib.request, urllib.parse
 
-UA = "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/126.0 Safari/537.36"
+KEY = os.environ["LIVETENNIS_API_KEY"]
+BASE = "https://api.livetennisapi.com/api/public/v1"
 
-
-def flat(s):
-    return re.sub(r"\s+", " ", s)
-
-
-def show(label, url, n=400, find=None):
-    req = urllib.request.Request(url, headers={"User-Agent": UA, "Accept": "application/json,text/html,*/*"})
+def get(path, **params):
+    url = f"{BASE}{path}" + ("?" + urllib.parse.urlencode(params, doseq=True) if params else "")
+    req = urllib.request.Request(url, headers={"X-API-Key": KEY, "Accept": "application/json"})
     try:
         with urllib.request.urlopen(req, timeout=30) as r:
-            st, body = r.status, r.read().decode("utf-8", "replace")
+            return r.status, json.loads(r.read().decode())
     except urllib.error.HTTPError as e:
-        st, body = e.code, e.read().decode("utf-8", "replace")
-    except Exception as e:
-        st, body = 0, repr(e)
-    print(f"##### {label} -> HTTP {st}, {len(body)} chars | {flat(body[:n])}")
-    if find:
-        i = body.find(find)
-        print(f"##### {label} at '{find}': {flat(body[max(i, 0):max(i, 0) + 700])}")
+        return e.code, e.read().decode()[:400]
 
+def show(label, res, n=1500):
+    status, body = res
+    print(f"\n===== {label} -> HTTP {status}")
+    print((json.dumps(body, indent=1) if not isinstance(body, str) else body)[:n])
 
-show("live-tennis.eu U21", "https://live-tennis.eu/en/atp-ranking-under-21", 200, "<tbody")
-show("live-tennis.eu official", "https://live-tennis.eu/en/official-atp-ranking", 200, "<tbody")
-show("tennisabstract ATP", "https://www.tennisabstract.com/reports/atpRankings.html", 300, "<tr")
-show("tennisabstract WTA", "https://www.tennisabstract.com/reports/wtaRankings.html", 200)
-show("sofascore ATP", "https://api.sofascore.com/api/v1/rankings/type/5", 500)
-show("sackmann ATP current", "https://raw.githubusercontent.com/JeffSackmann/tennis_atp/master/atp_rankings_current.csv", 60)
-show("UTS", "https://www.ultimatetennisstatistics.com/rankingsTableTable?current=1&rowCount=5&sort%5Brank%5D=asc&rankType=RANK", 600)
-show("ESPN ATP", "https://site.api.espn.com/apis/site/v2/sports/tennis/atp/rankings", 400)
-show("ATP PDF", "https://www.atptour.com/-/media/files/rankings/singles.pdf", 120)
+# Why has Joel Schwaerzler no ranking? List every matching player record and its detail.
+seen = set()
+for term in ("Schwaerzler", "Schwarzler", "Joel Josef", "Schw\u00e4rzler"):
+    st, body = get("/players", search=term, limit=20)
+    rows = body.get("data", []) if isinstance(body, dict) else []
+    print(f"\n===== search '{term}' -> HTTP {st}, {len(rows)} results")
+    for p in rows:
+        print(" ", p.get("id"), "|", p.get("name"), "| tour", p.get("tour"), "| rank", p.get("ranking"), "| pts", p.get("ranking_points"), "| born", p.get("birthday"), "| doubles", p.get("is_doubles_team"))
+        if "schw" in (p.get("name") or "").lower() and p.get("id") not in seen:
+            seen.add(p.get("id"))
+for pid in seen:
+    show(f"/players/{pid}", get(f"/players/{pid}"), 1500)
+st, body = get("/matches", status="upcoming", player=list(seen), limit=10)
+print("\n===== upcoming for those ids ->", st)
+for m in (body.get("data", []) if isinstance(body, dict) else []):
+    pl = m.get("players", {})
+    print(" ", m.get("id"), m.get("tournament"), m.get("scheduled_time"), "|", (pl.get("p1") or {}).get("id"), (pl.get("p1") or {}).get("name"), "vs", (pl.get("p2") or {}).get("id"), (pl.get("p2") or {}).get("name"))
