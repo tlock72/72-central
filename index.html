@@ -187,12 +187,11 @@ footer .wrap{display:flex;justify-content:space-between;gap:12px;flex-wrap:wrap}
     </section>
     <section class="block">
       <div class="sec-h"><h2>Coming up</h2><span class="count" id="cNext">0</span><span class="rule"></span></div>
-      <p class="sec-d">Scheduled matches for the next 7 days, soonest first. Orders of play are usually published the evening before.</p>
       <div class="grid" id="gNext"></div>
     </section>
     <section class="block">
       <div class="sec-h"><h2>Recent results</h2><span class="count" id="cDone">0</span><span class="rule"></span></div>
-      <p class="sec-d">Results from the last 7 days, newest first. A match still waiting for its score shows as result pending for up to 2 days.</p>
+      <p class="sec-d">Results from today and the previous 2 days, newest first. A match still waiting for its score shows as result pending.</p>
       <div class="grid" id="gDone"></div>
     </section>
     <section class="block">
@@ -349,7 +348,8 @@ function renderScores(){
   const key = m => `${m.date} ${m.time || "99"}`;
   const tday = ms.filter(m => m.status === "live" || (m.date === today && m.status !== "finished")).sort((a,b) => (b.status === "live") - (a.status === "live") || key(a).localeCompare(key(b)));
   const next = ms.filter(m => m.date > today && m.status === "scheduled").sort((a,b) => key(a).localeCompare(key(b)));
-  const done = ms.filter(m => m.status === "finished" || (m.status === "scheduled" && m.date < today)).sort((a,b) => key(b).localeCompare(key(a))).slice(0, 24);
+  const since = new Date(new Date(today + "T12:00:00Z").getTime() - 2 * 864e5).toISOString().slice(0, 10);
+  const done = ms.filter(m => m.date >= since && (m.status === "finished" || (m.status === "scheduled" && m.date < today))).sort((a,b) => key(b).localeCompare(key(a)));
   const fill = (el, arr, empty) => { $(el).innerHTML = arr.length ? arr.map(card).join("") : `<div class="empty">${empty}</div>`; };
   if (!STATE) {
     $("#gToday").innerHTML = `<div class="empty">Loading the match schedule…</div>`;
@@ -363,7 +363,7 @@ function renderScores(){
   $("#cToday").textContent = tday.length; $("#cNext").textContent = next.length; $("#cDone").textContent = done.length;
 
   // roster status
-  const rks = (STATE?.rankings && Object.keys(STATE.rankings).length) ? STATE.rankings : RANK_FALLBACK.players;
+  const rks = mergeRanks(STATE?.rankings);
   const items = ROSTER.map(p => {
     const mine = ms.filter(m => m.p1Id === p.id || m.p2Id === p.id);
     const up = mine.filter(m => m.status !== "finished" && m.date >= today).sort((a,b) => key(a).localeCompare(key(b)))[0];
@@ -393,10 +393,13 @@ const RANK_FALLBACK = { asOf:"2026-09-28", source:"ATP & WTA singles rankings", 
   deminaur:{rank:10,points:3150,move:-1}, rublev:{rank:24,points:2020,move:1}, buse:{rank:35,points:1447,move:0},
   altmaier:{rank:67,points:849,move:0}, monfils:{rank:251,points:220,move:3}, svitolina:{rank:7,points:4809,move:0},
   bejlek:{rank:29,points:1710,move:-1}, starodubtseva:{rank:45,points:1165,move:-3}, kasatkina:{rank:87,points:883,move:-3},
-  sawangkaew:{rank:90,points:868,move:-2}, jones:{rank:105,points:726,move:-1}, jabeur:{rank:null,points:null,move:null,note:"Not currently ranked"} } };
+  sawangkaew:{rank:90,points:868,move:-2}, jones:{rank:105,points:726,move:-1}, jabeur:{rank:null,points:null,move:null,note:"Not currently ranked"},
+  schwaerzler:{rank:185,points:305,move:null} } };
+// live rankings, with the list above filling any player the data feed has no ranking for
+const mergeRanks = s => { const out = { ...RANK_FALLBACK.players }; for (const [k, v] of Object.entries(s || {})) if (v && (v.rank || !out[k]?.rank)) out[k] = v; return out; };
 const mv = m => m == null ? `<span class="mv same"></span>` : m > 0 ? `<span class="mv up">▲ ${m}</span>` : m < 0 ? `<span class="mv down">▼ ${Math.abs(m)}</span>` : `<span class="mv same">–</span>`;
 function renderRankings(){
-  const r = STATE?.rankings ? { asOf: STATE.rankingsAsOf, source: STATE.rankingsSource, players: STATE.rankings } : RANK_FALLBACK;
+  const r = STATE?.rankings ? { asOf: STATE.rankingsAsOf, source: STATE.rankingsSource, players: mergeRanks(STATE.rankings) } : RANK_FALLBACK;
   const rows = tour => ROSTER.filter(p => p.tour === tour).map(p => ({ p, d: r.players[p.id] || {} })).sort((a,b) => (a.d.rank ?? 1e9) - (b.d.rank ?? 1e9));
   const html = list => list.map(({p,d}) => `<div class="rk">
       <div class="no ${d.rank ? "" : "na"}">${d.rank ? `<span class="hash">#</span>${d.rank}` : "—"}</div>
