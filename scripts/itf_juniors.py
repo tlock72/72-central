@@ -90,7 +90,7 @@ def main():
                 itf_id = find_id(name)
                 if not itf_id:
                     print("not found on ITF:", name)
-                    pending.append(pid); continue
+                    rec["noItf"] = True; continue  # no ITF junior profile (yet): not an error, looked for again next month
             rec["itfId"] = itf_id
             rec.pop("noItf", None)
             ov = get("/PlayerApi/GetPlayerOverview", circuitCode="JT", matchTypeCode="S", playerId=itf_id)
