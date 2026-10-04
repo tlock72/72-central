@@ -37,6 +37,8 @@ ROSTER = {
     "rajeshwaran": ("Maaya Rajeshwaran Revathi", "wta"), "dotsenko": ("Ekaterina Dotsenko", "wta"), "newman": ("Welles Newman", "wta"),
     "lin": ("Yu Jun Lin", "wta"), "pinera": ("Paola Pinera Celorio", "wta"), "iwasa": ("Ayaka Iwasa", "wta"),
     "skryp": ("Violetta Skryp", "wta"), "kurylova": ("Nicole Kurylova", "wta"),
+    "dudeney": ("Alicia Dudeney", "wta"), "mmakarova": ("Mariia Makarova", "wta"), "vmakarova": ("Varvara Makarova", "wta"),
+    "momot": ("Henry Momot", "atp"),
 }
 # Players whose name is shared with others: pick the one born in this year
 BORN = {"ivanov": "2008"}
