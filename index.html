@@ -314,7 +314,12 @@ select.sq-in option{background:var(--navy-2);color:var(--white)}
 }
 /* Home portal */
 body.on-home header nav{display:none}
-.hp-sep{display:inline-block;width:1px;height:32px;background:var(--line);margin:0 18px;vertical-align:-2px}
+.hp-sep{display:inline-block;width:1px;height:78px;background:var(--line);margin:0 22px;vertical-align:top}
+.hp-ld{display:inline-block;vertical-align:top}
+.hp-ld .lb{display:block;font-family:var(--body);font-weight:600;font-size:10px;letter-spacing:.16em;text-transform:uppercase;color:var(--gold);margin-bottom:6px}
+.hp-ld .nmx{display:block;font-family:var(--body);font-weight:600;font-size:15px;letter-spacing:0;color:var(--white);margin-top:8px}
+#hpT2{white-space:nowrap}
+@media (max-width:640px){.hp-sep{margin:0 12px;height:70px}.hp-ld .lb{font-size:9px;letter-spacing:.1em}.hp-ld .nmx{font-size:13px}#hpT2{font-size:34px}}
 .hp-stat > div > span strong{color:var(--white);font-weight:600}
 #page-home{padding-bottom:30px}
 .hp-hero{position:relative;overflow:hidden;isolation:isolate;margin:28px 0 26px;padding:54px 48px 46px;border-radius:28px;border:1px solid var(--line);
@@ -1242,9 +1247,8 @@ function renderHome(){
   const ranked = ROSTER.map(p => ({ p, r: playerRank(p.id) })).filter(o => o.r).sort((a, b) => a.r - b.r);
   if (ranked.length) {
     const lead = ["ATP", "WTA"].map(t => ranked.find(o => o.p.tour === t)).filter(Boolean);
-    $("#hpT2").innerHTML = lead.map(o => `#${o.r}<small>${o.p.tour}</small>`).join(`<span class="hp-sep"></span>`);
-    $("#hpS2").innerHTML = lead.map(o => `Top ${o.p.tour}: <strong>${esc(o.p.first + " " + o.p.last)}</strong>`).join(" · ")
-      + `<br>${ranked.filter(o => o.r <= 100).length} players in the top 100 · ${ranked.filter(o => o.r <= 50).length} in the top 50`;
+    $("#hpT2").innerHTML = lead.map(o => `<span class="hp-ld"><span class="lb">Top-ranked ${o.p.tour}</span>#${o.r}<span class="nmx">${esc(o.p.first + " " + o.p.last)}</span></span>`).join(`<span class="hp-sep"></span>`);
+    $("#hpS2").innerHTML = `<strong>${ranked.filter(o => o.r <= 100).length}</strong> players in the top 100 · <strong>${ranked.filter(o => o.r <= 50).length}</strong> in the top 50`;
   }
   // 03 Players
   const tours = t => ROSTER.filter(p => p.tour === t).length;
