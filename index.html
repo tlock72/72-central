@@ -68,6 +68,8 @@ section.block{margin-bottom:38px}
 .when{font-family:var(--display);letter-spacing:.12em;text-transform:uppercase;font-size:11px;white-space:nowrap;color:var(--text)}
 .when.today{color:var(--gold)}
 .when.fin{color:var(--muted)}
+.times{display:flex;flex-wrap:wrap;align-items:baseline;gap:6px 14px;padding:10px 16px 0;font-size:11px;color:var(--muted);text-transform:uppercase;letter-spacing:.1em}
+.times b{font-family:var(--display);font-weight:500;font-size:15px;color:var(--gold-2);letter-spacing:.06em;text-transform:none}
 .m-body{padding:6px 0;flex:1}
 .row{display:grid;grid-template-columns:1fr auto;align-items:center;gap:10px;padding:9px 16px}
 .pname{display:flex;align-items:center;gap:8px;min-width:0;font-size:15px;font-weight:500;color:var(--muted)}
@@ -170,7 +172,7 @@ footer .wrap{display:flex;justify-content:space-between;gap:12px;flex-wrap:wrap}
       <div>
         <div class="eyebrow">SeventyTwo Sports Group</div>
         <h1><span class="n">72</span> Live Scores</h1>
-        <p class="sub">Every match on the 72 roster's schedule. Live scores refresh automatically. Start times are approximate (UK time). Tap <b>Check live score</b> to follow any match on SofaScore.</p>
+        <p class="sub">Every match on the 72 roster's schedule. Live scores refresh automatically. Start times are approximate and shown in UK and Spain time. Tap <b>Check live score</b> to follow any match on SofaScore.</p>
       </div>
       <div class="checked"><span>Schedule last checked</span><b id="checked">Loading…</b></div>
     </div>
@@ -210,7 +212,7 @@ footer .wrap{display:flex;justify-content:space-between;gap:12px;flex-wrap:wrap}
   </div>
 </main>
 
-<footer><div class="wrap"><span>© SeventyTwo Sports Group · Internal use only</span><span>All times UK time</span></div></footer>
+<footer><div class="wrap"><span>© SeventyTwo Sports Group · Internal use only</span><span>Times shown in UK and Spain time</span></div></footer>
 
 <script>
 const ROSTER = [
@@ -293,6 +295,15 @@ function scoreCells(score, side, live){
     return { mine, theirs, tb };
   }).filter(Boolean).map((x, i, arr) => `<span class="set ${(live ? (i < arr.length - 1 && x.mine > x.theirs) || (i === arr.length - 1) : x.mine > x.theirs) ? "w" : ""}">${x.mine}${x.tb}</span>`).join("");
 }
+// UK local date + time -> the same moment in Spain (Europe/Madrid)
+function esTime(date, time){
+  const guess = new Date(`${date}T${time}:00Z`);
+  const p = new Intl.DateTimeFormat("en-GB", { timeZone:"Europe/London", hour:"2-digit", minute:"2-digit", hourCycle:"h23" }).formatToParts(guess);
+  const ukMin = +p.find(x => x.type === "hour").value * 60 + +p.find(x => x.type === "minute").value;
+  let off = ukMin - (guess.getUTCHours() * 60 + guess.getUTCMinutes()); if (off > 720) off -= 1440; if (off < -720) off += 1440;
+  const real = new Date(guess.getTime() - off * 60000);
+  return real.toLocaleTimeString("en-GB", { timeZone:"Europe/Madrid", hour:"2-digit", minute:"2-digit", hourCycle:"h23" });
+}
 function card(m){
   const today = m.date === ukDate();
   const fin = m.status === "finished";
@@ -311,12 +322,15 @@ function card(m){
   const pending = !fin && !live && m.date < ukDate();
   const when = live ? `<span class="when today"><span class="pulse"></span>Live now</span>` : fin ? `<span class="when fin">Final · ${esc(dayLabel(m.date))}</span>`
     : pending ? `<span class="when fin">${esc(dayLabel(m.date))} · result pending</span>`
-    : `<span class="when ${today ? "today" : ""}">${today ? "" : esc(dayLabel(m.date)) + " · "}${m.time ? "approx. " + esc(m.time) + " UK" : "time TBC"}</span>`;
+    : `<span class="when ${today ? "today" : ""}">${esc(dayLabel(m.date))}</span>`;
+  const times = !fin && !live && !pending
+    ? `<div class="times"><span>Approx. start</span>${m.time ? `<b>${esc(m.time)} UK</b><b>${esc(esTime(m.date, m.time))} Spain</b>` : "<b>Time TBC</b>"}</div>` : "";
   const p = byId[m.p1Id] || byId[m.p2Id];
   const link = safeUrl(p?.sofa);
   const btn = !fin && link ? `<a class="live-btn" href="${esc(link)}" target="_blank" rel="noopener"><span class="dot"></span>${pending ? "Check result" : "Check live score"}</a>` : "";
   return `<article class="match ${(today && !fin) || live ? "today" : ""} ${live ? "is-live" : ""}">
     <div class="m-top"><span class="t">${esc(m.tournament)}<span class="r">${esc(m.round || "")}</span></span>${when}</div>
+    ${times}
     <div class="m-body">${row(1)}${row(2)}</div>
     ${m.note ? `<div class="note">${esc(m.note)}</div>` : ""}
     <div class="m-foot"><span>${esc(m.category || "")}</span>${btn}</div>
@@ -347,7 +361,7 @@ function renderScores(){
     const up = mine.filter(m => m.status !== "finished" && m.date >= today).sort((a,b) => key(a).localeCompare(key(b)))[0];
     const last = mine.filter(m => m.status === "finished").sort((a,b) => key(b).localeCompare(key(a)))[0];
     let st = "No match scheduled", on = false;
-    if (up) { const opp = up.p1Id === p.id ? up.p2 : up.p1; st = up.status === "live" ? `Playing now · vs ${opp} · ${up.tournament}` : `${dayLabel(up.date)}${up.time ? " " + up.time : ""} · vs ${opp} · ${up.tournament}`; on = up.date === today; }
+    if (up) { const opp = up.p1Id === p.id ? up.p2 : up.p1; st = up.status === "live" ? `Playing now · vs ${opp} · ${up.tournament}` : `${dayLabel(up.date)}${up.time ? " ~" + up.time + " UK" : ""} · vs ${opp} · ${up.tournament}`; on = up.date === today; }
     else if (last) { const w = (last.winner === 1 && last.p1Id === p.id) || (last.winner === 2 && last.p2Id === p.id); st = `${w ? "Won" : "Lost"} ${last.round || ""} · ${last.tournament} · ${dayLabel(last.date)}`; }
     if (STATE?.status?.[p.id]) st = STATE.status[p.id];
     const link = safeUrl(p.sofa);
