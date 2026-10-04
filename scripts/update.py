@@ -154,6 +154,12 @@ def main():
     if not KEY:
         sys.exit("LIVETENNIS_API_KEY is not set")
     data = load("data.json", {})
+    # Two timers can start this job (GitHub's own schedule and the backup timer). If a timed run
+    # happened in the last 20 minutes, skip so the free daily allowance isn't used twice.
+    if os.environ.get("SOURCE") == "timer" and data.get("lastChecked"):
+        last = datetime.fromisoformat(data["lastChecked"].replace("Z", "+00:00"))
+        if NOW - last < timedelta(minutes=20):
+            print("ran", int((NOW - last).total_seconds() // 60), "min ago - skipping"); return
     players = load("players.json", {})          # roster id -> {"apiId": int|None, "checked": iso}
     data.setdefault("matches", [])
     data.setdefault("rankings", {})
