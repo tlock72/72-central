@@ -38,6 +38,8 @@ ROSTER = {
     "lin": ("Yu Jun Lin", "wta"), "pinera": ("Paola Pinera Celorio", "wta"), "iwasa": ("Ayaka Iwasa", "wta"),
     "skryp": ("Violetta Skryp", "wta"), "kurylova": ("Nicole Kurylova", "wta"),
 }
+# Players whose name is shared with others: pick the one born in this year
+BORN = {"ivanov": "2008"}
 
 
 def api(path, **params):
@@ -45,6 +47,7 @@ def api(path, **params):
     if CALLS >= MAX_CALLS:
         raise RuntimeError("per-run call limit reached")
     CALLS += 1
+    time.sleep(2.1)  # free plan allows 30 calls a minute
     q = urllib.parse.urlencode(params, doseq=True)
     req = urllib.request.Request(f"{BASE}{path}" + (f"?{q}" if q else ""),
                                  headers={"X-API-Key": KEY, "Accept": "application/json"})
@@ -126,16 +129,21 @@ def main():
     for rid, (full, tour) in ROSTER.items():
         rec = players.get(rid)
         stale = rec and rec.get("apiId") is None and (NOW - datetime.fromisoformat(rec["checked"])) > timedelta(days=7)
+        if rid in BORN and rec and not rec.get("bornChecked"):
+            stale = True
         if rec and not stale:
             continue
         try:
-            res = api("/players", search=full, limit=10).get("data", [])
+            res = api("/players", search=full, limit=50 if rid in BORN else 10).get("data", [])
         except Exception as e:
             print("player search failed", rid, e); break
         want = norm(full).split()
         hit = next((p for p in res if not p.get("is_doubles_team") and (p.get("tour") or tour) in (tour, "itf", "challenger", "juniors")
-                    and all(w in norm(p.get("name")).split() for w in want[-1:]) and norm(p.get("name"))[0] == want[0][0]), None)
-        players[rid] = {"apiId": hit["id"] if hit else None, "apiName": hit["name"] if hit else None, "checked": NOW.isoformat()}
+                    and all(w in norm(p.get("name")).split() for w in want[-1:]) and norm(p.get("name"))[0] == want[0][0]
+                    and (rid not in BORN or (p.get("birthday") or "").startswith(BORN[rid]))), None)
+        players[rid] = {"apiId": hit["id"] if hit else None, "apiName": hit["name"] if hit else None, "checked": NOW.isoformat(), **({"bornChecked": True} if rid in BORN else {})}
+        if rid in BORN:  # drop any ranking that belonged to a namesake
+            data["rankings"].pop(rid, None)
         if hit and hit.get("ranking"):  # the search result already carries the ranking
             prev = (data["rankings"].get(rid) or {}).get("rank")
             data["rankings"][rid] = {"rank": hit["ranking"], "points": hit.get("ranking_points"),
