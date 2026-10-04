@@ -539,7 +539,7 @@ function renderItf(){
     .sort((a, b) => (a.d.rank ?? 1e9) - (b.d.rank ?? 1e9) || a.x.born - b.x.born || a.p.last.localeCompare(b.p.last));
   const html = list => list.map(({ x, p, d }) => `<div class="rk">
       <div class="no ${d.rank ? "" : "na"}">${d.rank ? `<span class="hash">#</span>${d.rank}` : "—"}</div>
-      <div class="who"><div class="nm">${esc(p.first)} ${esc(p.last)}</div><div class="ct">${esc([p.country, "b. " + x.born, d.rank ? "" : (x.head ? `${x.head[0]} #${x.head[1]}` : "Not ITF-ranked")].filter(Boolean).join(" · "))}</div></div>
+      <div class="who"><div class="nm">${esc(p.first)} ${esc(p.last)}</div><div class="ct">${esc([p.country, "b. " + x.born, d.rank ? "" : d.high ? "No current ITF junior ranking" : (x.head ? `${x.head[0]} #${x.head[1]}` : "Not ITF-ranked")].filter(Boolean).join(" · "))}</div></div>
       <div class="pts">${d.high ? "#" + d.high : ""}<small>${d.high ? "BEST" : ""}</small></div>
       ${mv(d.rank ? d.move : null)}</div>`).join("");
   const b = rows("ATP"), g = rows("WTA");
