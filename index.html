@@ -85,7 +85,7 @@ section.block{margin-bottom:38px}
 .set{min-width:24px;text-align:center;font-family:var(--display);font-size:19px;font-weight:500;color:var(--muted)}
 .set.w{color:var(--white)}
 .set sup{font-size:10px;color:var(--muted-2);margin-left:1px}
-.match.is-live .row{grid-template-columns:12px 1fr auto auto}
+.match.is-live .row{grid-template-columns:1fr auto}
 .serve{width:8px;height:8px;border-radius:50%}
 .serve.on{background:var(--gold);box-shadow:0 0 10px rgba(208,165,121,.8)}
 .game{min-width:36px;height:28px;display:grid;place-items:center;border-radius:7px;background:var(--gold-dim);color:var(--gold);font-family:var(--display);font-weight:600;font-size:14px;border:1px solid var(--line)}
@@ -323,13 +323,12 @@ function card(m){
     const lost = fin && m.winner && m.winner !== side;
     const won = fin && m.winner === side;
     return `<div class="row ${ours(id) ? "ours" : ""} ${lost ? "lost" : ""}">
-      ${live ? `<span class="serve ${m.server === side ? "on" : ""}"></span>` : ""}<span class="pname"><span class="nm">${esc(name)}</span>${ours(id) ? '<span class="badge72">72</span>' : ""}${won ? '<span class="tick" aria-label="winner">✓</span>' : ""}</span>
-      <span class="sets">${fin || live ? scoreCells(m.score, side, live) : ""}</span>
-      ${live ? `<span class="game">${esc((m.points || [])[side - 1] ?? "")}</span>` : ""}
+      <span class="pname"><span class="nm">${esc(name)}</span>${ours(id) ? '<span class="badge72">72</span>' : ""}${won ? '<span class="tick" aria-label="winner">✓</span>' : ""}</span>
+      <span class="sets">${fin ? scoreCells(m.score, side) : ""}</span>
     </div>`;
   };
   const pending = !fin && !live && m.date < ukDate();
-  const when = live ? `<span class="when today"><span class="pulse"></span>Live now</span>` : fin ? `<span class="when fin">Final · ${esc(dayLabel(m.date))}</span>`
+  const when = live ? `<span class="when today"><span class="pulse"></span>In progress</span>` : fin ? `<span class="when fin">Final · ${esc(dayLabel(m.date))}</span>`
     : pending ? `<span class="when fin">${esc(dayLabel(m.date))} · result pending</span>`
     : `<span class="when ${today ? "today" : ""}">${esc(dayLabel(m.date))}</span>`;
   const times = !fin && !live && !pending
