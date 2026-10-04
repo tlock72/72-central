@@ -5,7 +5,7 @@ on:
   workflow_dispatch:
     inputs:
       source:
-        description: "Who started this run (the backup timer sends 'timer')"
+        description: "Who started this run (the timer sends 'timer'; the Monday 07:00 rankings timer sends 'rankings')"
         required: false
         default: manual
 concurrency:
@@ -17,13 +17,30 @@ permissions:
 jobs:
   update:
     runs-on: ubuntu-latest
-    timeout-minutes: 15
+    timeout-minutes: 25
     steps:
       - uses: actions/checkout@v6
       - run: python3 scripts/update.py
         env:
           LIVETENNIS_API_KEY: ${{ secrets.LIVETENNIS_API_KEY }}
           SOURCE: ${{ github.event_name == 'schedule' && 'timer' || inputs.source || 'manual' }}
+          RANKINGS: ${{ inputs.source == 'rankings' && '1' || '0' }}
+      - name: ITF junior rankings (Mondays 07:00 UK together with ATP/WTA, no Claude)
+        continue-on-error: true
+        timeout-minutes: 10
+        run: |
+          python3 - <<'PY' && python3 scripts/itf_juniors.py || echo "ITF junior rankings not due"
+          import json, os, sys
+          from datetime import datetime
+          from zoneinfo import ZoneInfo
+          n = datetime.now(ZoneInfo("Europe/London")); d = json.load(open("itf.json"))
+          due = (os.environ["RANKINGS"] == "1" or d.get("pending")
+                 or (n.weekday() == 0 and n.hour >= 9 and d.get("checked") != n.strftime("%Y-%m-%d")))
+          sys.exit(0 if due else 1)
+          PY
+        env:
+          RANKINGS: ${{ inputs.source == 'rankings' && '1' || '0' }}
+          FORCE: ${{ inputs.source == 'rankings' && '1' || '0' }}
       - name: ITF junior matches (about twice a day, no Claude)
         run: python3 scripts/itf_matches.py
         continue-on-error: true
@@ -38,7 +55,7 @@ jobs:
         run: |
           git config user.name "72 Hub updater"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git add data.json players.json $(ls itfm.json te.json 2>/dev/null)
+          git add data.json players.json itf.json $(ls itfm.json te.json 2>/dev/null)
           git diff --cached --quiet && echo "No changes" || (git commit -q -m "Update scores" && git pull -q --rebase && git push)
       - name: Tell Tobey about anything missed (GitHub issue + email)
         if: always()
