@@ -560,7 +560,7 @@ function renderRankings(){
   document.querySelectorAll(".chip.rt").forEach(c => c.classList.toggle("on", c.dataset.rt === rankTab));
   renderItf();
   const r = STATE?.rankings ? { asOf: STATE.rankingsAsOf, source: STATE.rankingsSource, players: mergeRanks(STATE.rankings) } : RANK_FALLBACK;
-  const rows = tour => ROSTER.filter(p => p.tour === tour).map(p => ({ p, d: r.players[p.id] || {} })).sort((a,b) => (a.d.rank ?? 1e9) - (b.d.rank ?? 1e9));
+  const rows = tour => ROSTER.filter(p => p.tour === tour).map(p => ({ p, d: r.players[p.id] || {} })).filter(x => x.d.rank).sort((a,b) => (a.d.rank ?? 1e9) - (b.d.rank ?? 1e9));
   const html = list => list.map(({p,d}) => `<div class="rk">
       <div class="no ${d.rank ? "" : "na"}">${d.rank ? `<span class="hash">#</span>${d.rank}` : "—"}</div>
       <div class="who"><div class="nm">${esc(p.first)} ${esc(p.last)}</div><div class="ct">${esc([p.country, d.rank ? "" : (d.note || "Not ranked")].filter(Boolean).join(" · "))}</div></div>
