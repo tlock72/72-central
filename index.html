@@ -224,15 +224,18 @@ blockquote.q cite{display:block;margin-top:12px;font-style:normal;font-family:va
 .yr li{font-size:13px;color:var(--text);padding-left:16px;position:relative;line-height:1.4}
 .yr li::before{content:"";position:absolute;left:0;top:7px;width:6px;height:6px;border-radius:50%;background:var(--gold)}
 #page-rankings .hero{align-items:flex-end}
-#champs{margin-top:28px;display:grid;gap:10px}
-.champ{position:relative;overflow:hidden;display:flex;align-items:center;gap:18px;padding:18px 22px;border-radius:18px;
-  background:linear-gradient(120deg,#E6C9A5 0%,#D0A579 45%,#B98C5E 100%);color:var(--navy);box-shadow:0 12px 34px rgba(208,165,121,.25)}
-.champ::after{content:"";position:absolute;inset:0;background:linear-gradient(100deg,transparent 30%,rgba(255,255,255,.35) 50%,transparent 70%);transform:translateX(-100%);animation:shine 4s ease-in-out infinite}
+#champs{margin-top:22px}
+.champ{position:relative;overflow:hidden;display:flex;align-items:center;gap:10px;padding:8px 16px;border-radius:999px;
+  background:linear-gradient(120deg,#E6C9A5 0%,#D0A579 50%,#B98C5E 100%);color:var(--navy);font-size:13px;line-height:1.3;white-space:nowrap}
+.champ::after{content:"";position:absolute;inset:0;background:linear-gradient(100deg,transparent 30%,rgba(255,255,255,.35) 50%,transparent 70%);transform:translateX(-100%);animation:shine 4s ease-in-out infinite;pointer-events:none}
 @keyframes shine{0%,60%{transform:translateX(-100%)}100%{transform:translateX(100%)}}
-.champ .tro{font-size:38px;line-height:1;flex:none}
-.champ .k{font-family:var(--display);letter-spacing:.22em;text-transform:uppercase;font-size:11px;font-weight:600;opacity:.75}
-.champ .t{font-family:var(--display);font-size:clamp(18px,2.4vw,24px);font-weight:600;letter-spacing:.02em;text-transform:uppercase;line-height:1.15;margin-top:2px}
-.champ .s{font-size:13px;margin-top:4px;font-weight:500}
+.champ .k{font-family:var(--display);letter-spacing:.16em;text-transform:uppercase;font-size:11px;font-weight:600;flex:none}
+.champ .w{overflow:hidden;min-width:0;flex:1}
+.champ .trk{display:inline-block}
+.champ.scroll .trk{animation:tick var(--dur,20s) linear infinite;padding-right:40px}
+@keyframes tick{from{transform:translateX(0)}to{transform:translateX(-50%)}}
+.champ .w b{font-weight:700}
+.champ .w i{font-style:normal;opacity:.6;margin:0 8px}
 .pnav{display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:10px;border-top:1px solid var(--line);padding-top:20px}
 .pnav button{font-family:var(--display);text-transform:uppercase;letter-spacing:.14em;font-size:12px;color:var(--muted);padding:8px 0}
 .pnav button:hover{color:var(--gold)}
@@ -492,12 +495,18 @@ function renderChamps(){
   const wins = (STATE?.matches || []).filter(m => m.status === "finished" && /^(final|f)$/i.test((m.round || "").trim()) && m.date >= cutoff && m.winner)
     .map(m => ({ m, id: m.winner === 1 ? m.p1Id : m.p2Id })).filter(w => byId[w.id])
     .sort((a, b) => b.m.date.localeCompare(a.m.date));
-  const el = $("#champs");
+  const el = $("#champs"), key = wins.map(w => w.m.date + w.id + w.m.tournament).join("|");
+  if (el.dataset.k === key) return;  // unchanged: don't restart the ticker
+  el.dataset.k = key;
   el.hidden = !wins.length;
-  el.innerHTML = wins.map(({ m, id }) => { const p = byId[id], opp = m.winner === 1 ? m.p2 : m.p1;
-    return `<div class="champ"><span class="tro" aria-hidden="true">🏆</span><div><div class="k">Congratulations</div>
-      <div class="t">${esc(p.first)} ${esc(p.last)} wins ${esc(m.tournament)}</div>
-      <div class="s">${esc([m.category, `beat ${opp}${m.score ? " " + m.score : ""}`, dayLabel(m.date)].filter(Boolean).join(" · "))}</div></div></div>`; }).join("");
+  const txt = wins.map(({ m, id }) => {
+    const p = byId[id];
+    return `<b>${esc(p.first[0])}. ${esc(p.last)}</b> won ${esc(m.tournament)}${m.category ? " " + esc(m.category.replace(/^ITF /, "")) : ""} (${esc(dayLabel(m.date))})`;
+  }).join("<i>·</i>");
+  el.innerHTML = wins.length ? `<div class="champ">🏆 <span class="k">Congratulations</span><span class="w"><span class="trk">${txt}</span></span></div>` : "";
+  // one line: if it doesn't fit, it scrolls gently like a ticker
+  const c = el.querySelector(".champ"), w = el.querySelector(".w"), t = el.querySelector(".trk");
+  if (c && t.scrollWidth > w.clientWidth) { t.innerHTML = txt + "<i>·</i>" + txt + "<i>·</i>"; c.classList.add("scroll"); c.style.setProperty("--dur", Math.max(12, t.scrollWidth / 60) + "s"); }
 }
 function renderScores(){
   renderChamps();
