@@ -1,0 +1,11 @@
+name: Check Live Tennis API (one-off)
+on:
+  workflow_dispatch: {}
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v6
+      - run: python3 scripts/discover.py
+        env:
+          LIVETENNIS_API_KEY: ${{ secrets.LIVETENNIS_API_KEY }}
