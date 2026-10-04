@@ -313,6 +313,7 @@ select.sq-in option{background:var(--navy-2);color:var(--white)}
   nav a{padding:9px 6px}
 }
 /* Home portal */
+body.on-home header nav{display:none}
 #page-home{padding-bottom:30px}
 .hp-hero{position:relative;overflow:hidden;isolation:isolate;margin:28px 0 26px;padding:54px 48px 46px;border-radius:28px;border:1px solid var(--line);
   background:radial-gradient(900px 420px at 100% 0%,rgba(208,165,121,.22),transparent 60%),radial-gradient(600px 300px at 0% 100%,rgba(208,165,121,.08),transparent 60%),linear-gradient(160deg,var(--navy-3),#0B1230)}
@@ -400,10 +401,8 @@ html.locked #gate{display:grid}
       <div class="mono" aria-hidden="true">72</div>
       <div class="eyebrow">SeventyTwo Sports Group · Internal portal</div>
       <h1><span class="n">72</span> Central</h1>
-      <p class="hp-greet" id="hpGreet">Welcome to 72 Central.</p>
       <div class="hp-meta" id="hpMeta"></div>
     </section>
-    <a class="hp-live" id="hpLive" href="#scores" hidden></a>
     <div class="hp-grid">
       <a class="hp-tile" href="#scores">
         <div class="no">01</div><h2>Competition Zone</h2>
@@ -597,6 +596,7 @@ function route(){
   const hash = location.hash;
   const tab = hash === "#rankings" ? "rankings" : hash === "#scouting" ? "scouting" : hash === "#scores" ? "scores" : hash.startsWith("#players") ? "players" : "home";
   $("#page-home").hidden = tab !== "home";
+  document.body.classList.toggle("on-home", tab === "home");
   $("#page-scores").hidden = tab !== "scores";
   $("#page-rankings").hidden = tab !== "rankings";
   $("#page-players").hidden = tab !== "players";
@@ -1221,10 +1221,6 @@ async function loadScouting(){
 /* ---------- Home portal ---------- */
 function renderHome(){
   if (!$("#page-home")) return;
-  const now = new Date();
-  const h = +new Intl.DateTimeFormat("en-GB", { timeZone:"Europe/London", hour:"numeric", hourCycle:"h23" }).format(now);
-  const part = h < 12 ? "Good morning" : h < 18 ? "Good afternoon" : "Good evening";
-  $("#hpGreet").innerHTML = `${part}. It's <b>${now.toLocaleDateString("en-GB", { weekday:"long", day:"numeric", month:"long", timeZone:"Europe/London" })}</b>. Pick a section to get started.`;
   const lc = STATE?.lastChecked ? new Date(STATE.lastChecked) : null;
   const fresh = lc && Date.now() - lc < 3 * 36e5;
   $("#hpMeta").innerHTML = STATE ? `<span class="hp-pill${fresh ? "" : " warn"}"><i></i>${lc ? `Scores updated ${lc.toLocaleTimeString("en-GB", { hour:"2-digit", minute:"2-digit", timeZone:"Europe/London" })} UK${fresh ? "" : ", " + lc.toLocaleDateString("en-GB", { day:"numeric", month:"short", timeZone:"Europe/London" })}` : "Scores not updated yet"}</span>`
@@ -1233,8 +1229,6 @@ function renderHome(){
   const ms = STATE?.matches || [], today = ukDate();
   const nm = m => [m.p1, m.p2].filter(Boolean).map(esc).join(" v ");
   const live = ms.filter(m => m.status === "live");
-  $("#hpLive").hidden = !live.length;
-  if (live.length) $("#hpLive").innerHTML = `<span class="k"><i></i>LIVE NOW</span>` + live.slice(0, 3).map(m => `<span>${nm(m)}<em>${esc(m.tournament || "")}</em></span>`).join("");
   if (STATE) {
     const tday = ms.filter(m => m.date === today);
     const nxt = ms.filter(m => m.status === "scheduled" && (m.date > today || (m.date === today && m.time)))
