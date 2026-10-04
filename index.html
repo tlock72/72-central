@@ -412,7 +412,7 @@ html.locked #gate{display:grid}
     </section>
     <div class="hp-grid">
       <a class="hp-tile" href="#scores">
-        <div class="no">01</div><h2>Competition Zone</h2>
+        <div class="no">01</div><h2>72 Competition Zone</h2>
         <p>Today's matches, what's coming up and this week's results for every 72 player.</p>
         <div class="hp-stat"><div><b id="hpT1">—</b><span id="hpS1">Loading the schedule…</span></div><span class="hp-go" aria-hidden="true">→</span></div>
       </a>
@@ -422,7 +422,7 @@ html.locked #gate{display:grid}
         <div class="hp-stat"><div><b id="hpT2">—</b><span id="hpS2">Loading rankings…</span></div><span class="hp-go" aria-hidden="true">→</span></div>
       </a>
       <a class="hp-tile" href="#players">
-        <div class="no">03</div><h2>Players</h2>
+        <div class="no">03</div><h2>72 Players</h2>
         <p>Profiles for the whole roster: titles, partners, social following and results.</p>
         <div class="hp-faces" id="hpFaces"></div>
         <div class="hp-stat"><div><b id="hpT3">—</b><span id="hpS3"></span></div><span class="hp-go" aria-hidden="true">→</span></div>
@@ -529,7 +529,7 @@ html.locked #gate{display:grid}
   <dialog class="prof" id="prof" aria-label="Player profile"></dialog>
 </main>
 
-<footer><div class="wrap"><span>© SeventyTwo Sports Group · Internal use only</span><span>Times shown in UK and Spain time</span></div></footer>
+<footer><div class="wrap"><span>Times shown in UK and Spain time</span></div></footer>
 
 <script>
 const ROSTER = [
@@ -612,7 +612,8 @@ function route(){
   if (pid && profById[pid]) openProfile(pid);
   else if ($("#prof").open) $("#prof").close();
   document.querySelectorAll("nav a").forEach(a => a.classList.toggle("active", a.dataset.tab === tab));
-  if (tab === "scores") fitChamps();
+  // the champions banner sits at the top of both the home page and Competition Zone
+  if (tab === "home" || tab === "scores") { $("#page-" + tab).prepend($("#champs")); fitChamps(); }
   if (tab === "home") renderHome();
   if (window._tab && window._tab !== tab) window.scrollTo(0, 0);
   window._tab = tab;
