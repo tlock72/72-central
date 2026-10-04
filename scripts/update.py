@@ -213,6 +213,20 @@ def main():
             new[aid] = m
         elif m["status"] == "scheduled" and not fetched_upcoming:
             new[aid] = m  # keep until the next upcoming refresh
+        elif m["status"] == "scheduled" and m["date"] <= uk_now.strftime("%Y-%m-%d"):
+            # left the upcoming list without being seen live: look up its final score
+            try:
+                sc = api(f"/matches/{aid}/score")
+            except Exception as e:
+                sc = None
+                print("score lookup failed", aid, e)
+            w = winner_from(sc)
+            if w:
+                m = dict(m, status="finished", score=score_str(sc), winner=w)
+                if w == 2:  # page shows the winner first
+                    m = dict(m, p1=m["p2"], p2=m["p1"], p1Id=m["p2Id"], p2Id=m["p1Id"], winner=1,
+                             score=", ".join("-".join(reversed(s.split("-"))) for s in m["score"].split(", ")) if m["score"] else "")
+            new[aid] = m
         elif m["status"] == "finished":
             new[aid] = m
 
@@ -227,8 +241,8 @@ def main():
     for m in manual + list(new.values()):
         if m["status"] == "finished" and m["date"] < cutoff:
             continue
-        if m["status"] == "scheduled" and m["date"] and m["date"] < today:
-            continue  # stale schedule entry
+        if m["status"] == "scheduled" and m["date"] and m["date"] < (uk_now - timedelta(days=2)).strftime("%Y-%m-%d"):
+            continue  # result never arrived; shown as 'result pending' for 2 days, then dropped
         merged.append(m)
     data["matches"] = merged
 
