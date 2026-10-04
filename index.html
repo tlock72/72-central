@@ -546,7 +546,11 @@ function renderScores(){
   const key = m => `${m.date} ${m.time || "99"}`;
   // today's matches always show as scheduled; their results only appear here the next day
   const asToday = m => m.status === "scheduled" ? m : { ...m, status: "scheduled", score: "", winner: null, note: "" };
-  const tday = ms.filter(m => m.date === today || (m.status === "live" && m.date < today)).map(asToday).sort((a,b) => key(a).localeCompare(key(b)));
+  // a match already played is hidden from today's list once that player's next round in the same event is confirmed
+  const ours = m => [m.p1Id, m.p2Id].filter(id => byId[id]);
+  const superseded = m => m.status === "finished" && ms.some(x => x !== m && x.status !== "finished" && x.tournament === m.tournament
+    && x.date >= m.date && ours(x).some(id => ours(m).includes(id)));
+  const tday = ms.filter(m => (m.date === today || (m.status === "live" && m.date < today)) && !superseded(m)).map(asToday).sort((a,b) => key(a).localeCompare(key(b)));
   const next = ms.filter(m => m.date > today && m.status === "scheduled").sort((a,b) => key(a).localeCompare(key(b)));
   // results from the previous two days (UK dates) - never today's
   const twoAgo = new Date(new Date(today + "T12:00:00Z").getTime() - 2 * 864e5).toISOString().slice(0, 10);
