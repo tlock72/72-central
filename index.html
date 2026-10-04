@@ -509,10 +509,13 @@ function renderChamps(){
   const c = el.querySelector(".champ"), w = el.querySelector(".w"), t = el.querySelector(".trk");
   if (c) {
     // slides one way, pauses, then slides back (ping-pong) instead of looping
-    const dist = Math.min(w.clientWidth - t.scrollWidth, -140);  // always some visible movement
-    c.style.setProperty("--dist", dist + "px");
-    c.style.setProperty("--dur", Math.max(5, Math.abs(dist) / 40) + "s");
-    c.classList.add("scroll");
+    // only moves when the wins don't all fit on one line
+    const dist = w.clientWidth - t.scrollWidth;
+    if (dist < 0) {
+      c.style.setProperty("--dist", dist + "px");
+      c.style.setProperty("--dur", Math.max(5, Math.abs(dist) / 40) + "s");
+      c.classList.add("scroll");
+    }
   }
 }
 function renderScores(){
