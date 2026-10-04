@@ -733,8 +733,8 @@ function renderScores(){
   const superseded = m => m.status === "finished" && ms.some(x => x !== m && x.status !== "finished" && x.tournament === m.tournament
     && x.date === m.date && ours(x).some(id => ours(m).includes(id)));
   // every match dated today stays in today's list all day, even once the player's next round is confirmed
-  const tday = ms.filter(m => m.date === today || (m.status === "live" && m.date < today)).sort((a,b) => key(a).localeCompare(key(b)));
-  const next = ms.filter(m => m.date > today && m.status === "scheduled").sort((a,b) => key(a).localeCompare(key(b)));
+  const tday = ms.filter(m => m.date === today || (m.status === "live" && m.date < today)).sort((a,b) => byTier(a, b) || key(a).localeCompare(key(b)));
+  const next = ms.filter(m => m.date > today && m.status === "scheduled").sort((a,b) => a.date.localeCompare(b.date) || byTier(a, b) || key(a).localeCompare(key(b)));
   // results from the previous two days (UK dates) - never today's
   // latest results this week (Monday up to yesterday, UK dates; on a Monday, last week): each player's most recent match only,
   // and on the same day the one furthest into the event - e.g. a quarter-final, not the round before it too
@@ -745,7 +745,7 @@ function renderScores(){
   for (const m of ms.filter(m => m.date <= yday && m.date >= wkStart && (m.status === "finished" || m.status === "scheduled")))
     for (const id of ours(m)) { const b = best[id];
       if (!b || m.date > b.date || (m.date === b.date && stage(m.round) > stage(b.round))) best[id] = m; }
-  const done = [...new Set(Object.values(best))].sort((a,b) => key(b).localeCompare(key(a)));
+  const done = [...new Set(Object.values(best))].sort((a,b) => byTier(a, b) || key(b).localeCompare(key(a)));
   const fill = (el, arr, empty) => { $(el).innerHTML = arr.length ? arr.map(card).join("") : `<div class="empty">${empty}</div>`; };
   if (!STATE) {
     $("#gToday").innerHTML = `<div class="empty">Loading the match schedule…</div>`;
@@ -1291,6 +1291,32 @@ function normalizeMatches(st){
   }
   st.matches = out;
 }
+/* tournament importance, used to order every match list: Slams down to ITF 15Ks, then ITF junior Slams down to J30,
+   then Tennis Europe Super Category down to Category 3 (lower number = more important) */
+function tier(m){
+  const c = `${m.category || ""} ${m.tournament || ""}`.toLowerCase();
+  const n = re => { const x = c.match(re); return x ? +x[1] : null; };
+  if (m.src === "te" || c.includes("tennis europe")) {
+    if (c.includes("super")) return 300;
+    const k = n(/cat(?:egory)?\.?\s*(\d)/); return k ? 300 + k * 10 : 340;
+  }
+  if (m.src === "itf" || c.includes("junior") || /\bj\d{2,3}\b/.test(c)) {
+    if (/grand slam|\bja\b|australian open|roland|wimbledon|us open/.test(c)) return 200;
+    const j = n(/\bj(\d{2,3})\b/); return j ? 200 + (500 - Math.min(j, 500)) / 10 + 1 : 260;
+  }
+  if (/grand slam|australian open|roland garros|french open|wimbledon|us open/.test(c)) return 0;
+  if (/finals/.test(c) && /atp|wta/.test(c)) return 5;
+  if (/\b1000\b|masters/.test(c)) return 10;
+  if (/\b500\b/.test(c)) return 20;
+  if (/\b250\b/.test(c)) return 30;
+  if (/wta 125|wta125/.test(c)) return 35;
+  if (c.includes("challenger")) { const k = n(/challenger\s*(\d{2,3})/); return k ? 40 + (175 - Math.min(k, 175)) / 25 : 43; }
+  const itf = n(/\b[mw]\s?(\d{2,3})\b/);
+  if (itf) return 50 + (100 - Math.min(itf, 100)) / 10;
+  if (c.includes("itf")) return 58.5;
+  return 70;
+}
+const byTier = (a, b) => tier(a) - tier(b);
 /* ---------- boot ---------- */
 route();
 render();
