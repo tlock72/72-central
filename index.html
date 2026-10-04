@@ -270,9 +270,24 @@ blockquote.q cite{display:block;margin-top:12px;font-style:normal;font-family:va
   .stat .v{font-size:28px}
 }
 @media (prefers-reduced-motion:reduce){*{transition:none!important;animation:none!important}}
+/* passcode screen */
+html.locked body > *:not(#gate){display:none !important}
+#gate{position:fixed;inset:0;z-index:1000;display:none;place-items:center;padding:16px;background:radial-gradient(900px 500px at 50% -10%,rgba(208,165,121,.12),transparent 60%),var(--navy)}
+html.locked #gate{display:grid}
+.gate-box{text-align:center;width:100%;max-width:380px}
+.gate-box img{width:180px;max-width:70%;margin-bottom:30px}
+.gate-box h2{font-family:var(--display);text-transform:uppercase;letter-spacing:.3em;font-size:12px;font-weight:500;color:var(--gold);margin:0 0 18px}
+.gate-digits{display:flex;gap:10px;justify-content:center}
+.gate-digits input{width:46px;height:58px;border-radius:12px;border:1px solid var(--line);background:var(--navy-2);color:#fff;font:600 24px var(--display);text-align:center;outline:none;padding:0}
+.gate-digits input:focus{border-color:var(--gold)}
+.gate-err{min-height:18px;margin-top:16px;font-size:12px;color:#E8908F}
+.gate-box.shake{animation:gshake .4s}
+@keyframes gshake{20%,60%{transform:translateX(-8px)}40%,80%{transform:translateX(8px)}}
+@media (max-width:380px){.gate-digits{gap:7px}.gate-digits input{width:40px;height:52px}}
 </style>
 </head>
 <body>
+<script>/* passcode: stays unlocked on this device for 30 days */try{const u=JSON.parse(localStorage.getItem("72c-unlock")||"null");if(!(u&&u.h==="89e1a9fa4a91850fd074bb35fc4770ed59a4906addbd786b09c8556e89d1459a"&&u.until>Date.now()))document.documentElement.classList.add("locked")}catch(e){document.documentElement.classList.add("locked")}</script>
 
 
 <header>
@@ -1000,5 +1015,41 @@ document.addEventListener("visibilitychange", () => { if (!document.hidden) load
 setInterval(() => { if (!document.hidden) renderScores(); }, 5 * 60 * 1000);
 </script>
 
+<div id="gate"><div class="gate-box">
+  <img id="gateLogo" alt="SeventyTwo Sports Group">
+  <h2>72 Central · Enter passcode</h2>
+  <div class="gate-digits"><input type="password" inputmode="numeric" maxlength="6" autocomplete="one-time-code" aria-label="Digit 1"><input type="password" inputmode="numeric" maxlength="6" autocomplete="one-time-code" aria-label="Digit 2"><input type="password" inputmode="numeric" maxlength="6" autocomplete="one-time-code" aria-label="Digit 3"><input type="password" inputmode="numeric" maxlength="6" autocomplete="one-time-code" aria-label="Digit 4"><input type="password" inputmode="numeric" maxlength="6" autocomplete="one-time-code" aria-label="Digit 5"><input type="password" inputmode="numeric" maxlength="6" autocomplete="one-time-code" aria-label="Digit 6"></div>
+  <div class="gate-err" id="gateErr"></div>
+</div></div>
+<script>(() => {
+  const H = "89e1a9fa4a91850fd074bb35fc4770ed59a4906addbd786b09c8556e89d1459a", ins = [...document.querySelectorAll(".gate-digits input")];
+  const hash = async s => [...new Uint8Array(await crypto.subtle.digest("SHA-256", new TextEncoder().encode("72central:" + s)))].map(x => x.toString(16).padStart(2, "0")).join("");
+  async function check(){
+    const code = ins.map(i => i.value).join("");
+    if (code.length < 6) return;
+    if (await hash(code) === H) {
+      try { localStorage.setItem("72c-unlock", JSON.stringify({ h: H, until: Date.now() + 30 * 864e5 })); } catch (e) {}
+      document.documentElement.classList.remove("locked");
+      window.dispatchEvent(new Event("resize"));
+    } else {
+      const b = document.querySelector(".gate-box"); b.classList.remove("shake"); void b.offsetWidth; b.classList.add("shake");
+      document.getElementById("gateErr").textContent = "Incorrect passcode";
+      ins.forEach(i => i.value = ""); ins[0].focus();
+    }
+  }
+  ins.forEach((inp, k) => {
+    inp.addEventListener("input", () => {
+      const v = inp.value.replace(/\D/g, "").split("");
+      inp.value = v[0] || "";
+      v.slice(1).forEach((c, j) => { if (ins[k + 1 + j]) ins[k + 1 + j].value = c; });
+      document.getElementById("gateErr").textContent = "";
+      const next = ins.find(i => !i.value);
+      if (next) next.focus(); else check();
+    });
+    inp.addEventListener("keydown", e => { if (e.key === "Backspace" && !inp.value && k > 0) { ins[k - 1].value = ""; ins[k - 1].focus(); } });
+  });
+  document.getElementById("gateLogo").src = document.querySelector(".brand img")?.src || "";
+  if (document.documentElement.classList.contains("locked")) ins[0].focus();
+})();</script>
 </body>
 </html>
