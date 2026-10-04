@@ -29,9 +29,13 @@ jobs:
         timeout-minutes: 8
         env:
           SOURCE: ${{ github.event_name == 'schedule' && 'timer' || inputs.source || 'manual' }}
+      - name: Tennis Europe matches (once a day from 07:30 UK, no Claude)
+        run: pip install -q beautifulsoup4 && python3 scripts/te_matches.py
+        continue-on-error: true
+        timeout-minutes: 6
       - name: Save changes
         run: |
           git config user.name "72 Hub updater"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git add data.json players.json $(ls itfm.json 2>/dev/null)
+          git add data.json players.json $(ls itfm.json te.json 2>/dev/null)
           git diff --cached --quiet && echo "No changes" || (git commit -q -m "Update scores" && git pull -q --rebase && git push)
