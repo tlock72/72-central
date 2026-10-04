@@ -52,6 +52,7 @@ h1 .n{color:var(--gold)}
 
 .sec-h{display:flex;align-items:center;gap:12px;margin:0 0 14px}
 .sec-h h2{font-family:var(--display);font-weight:500;letter-spacing:.16em;text-transform:uppercase;font-size:15px;color:var(--white);margin:0}
+.sec-h h2 .dt{color:var(--gold);margin-left:10px;font-size:13px;letter-spacing:.12em}
 .sec-h .count{font-family:var(--display);font-size:12px;color:var(--navy);background:var(--gold);border-radius:999px;padding:2px 9px;font-weight:600}
 .sec-h .rule{flex:1;height:1px;background:var(--line)}
 section.block{margin-bottom:38px}
@@ -169,13 +170,13 @@ footer .wrap{display:flex;justify-content:space-between;gap:12px;flex-wrap:wrap}
       <div>
         <div class="eyebrow">SeventyTwo Sports Group</div>
         <h1><span class="n">72</span> Live Scores</h1>
-        <p class="sub">Every match on the 72 roster's schedule. Live scores refresh automatically. Tap <b>Live on SofaScore</b> for point-by-point detail.</p>
+        <p class="sub">Every match on the 72 roster's schedule. Live scores refresh automatically. Start times are approximate (UK time). Tap <b>Check live score</b> to follow any match on SofaScore.</p>
       </div>
       <div class="checked"><span>Schedule last checked</span><b id="checked">Loading…</b></div>
     </div>
 
     <section class="block">
-      <div class="sec-h"><h2>Live &amp; today</h2><span class="count" id="cToday">0</span><span class="rule"></span></div>
+      <div class="sec-h"><h2>Today's matches<span id="todayLbl" class="dt"></span></h2><span class="count" id="cToday">0</span><span class="rule"></span></div>
       <div class="grid" id="gToday"></div>
     </section>
     <section class="block">
@@ -307,11 +308,13 @@ function card(m){
       ${live ? `<span class="game">${esc((m.points || [])[side - 1] ?? "")}</span>` : ""}
     </div>`;
   };
-  const when = live ? `<span class="when today"><span class="pulse"></span>Live</span>` : fin ? `<span class="when fin">Final · ${esc(dayLabel(m.date))}</span>`
-    : `<span class="when ${today ? "today" : ""}">${esc(dayLabel(m.date))}${m.time ? " · " + esc(m.time) : ""}</span>`;
+  const pending = !fin && !live && m.date < ukDate();
+  const when = live ? `<span class="when today"><span class="pulse"></span>Live now</span>` : fin ? `<span class="when fin">Final · ${esc(dayLabel(m.date))}</span>`
+    : pending ? `<span class="when fin">${esc(dayLabel(m.date))} · result pending</span>`
+    : `<span class="when ${today ? "today" : ""}">${today ? "" : esc(dayLabel(m.date)) + " · "}${m.time ? "approx. " + esc(m.time) + " UK" : "time TBC"}</span>`;
   const p = byId[m.p1Id] || byId[m.p2Id];
   const link = safeUrl(p?.sofa);
-  const btn = !fin && link ? `<a class="live-btn" href="${esc(link)}" target="_blank" rel="noopener"><span class="dot"></span>Live on SofaScore</a>` : "";
+  const btn = !fin && link ? `<a class="live-btn" href="${esc(link)}" target="_blank" rel="noopener"><span class="dot"></span>${pending ? "Check result" : "Check live score"}</a>` : "";
   return `<article class="match ${(today && !fin) || live ? "today" : ""} ${live ? "is-live" : ""}">
     <div class="m-top"><span class="t">${esc(m.tournament)}<span class="r">${esc(m.round || "")}</span></span>${when}</div>
     <div class="m-body">${row(1)}${row(2)}</div>
@@ -325,7 +328,7 @@ function renderScores(){
   const key = m => `${m.date} ${m.time || "99"}`;
   const tday = ms.filter(m => m.status === "live" || (m.date === today && m.status !== "finished")).sort((a,b) => (b.status === "live") - (a.status === "live") || key(a).localeCompare(key(b)));
   const next = ms.filter(m => m.date > today && m.status === "scheduled").sort((a,b) => key(a).localeCompare(key(b)));
-  const done = ms.filter(m => m.status === "finished").sort((a,b) => key(b).localeCompare(key(a))).slice(0, 24);
+  const done = ms.filter(m => m.status === "finished" || (m.status === "scheduled" && m.date < today)).sort((a,b) => key(b).localeCompare(key(a))).slice(0, 24);
   const fill = (el, arr, empty) => { $(el).innerHTML = arr.length ? arr.map(card).join("") : `<div class="empty">${empty}</div>`; };
   if (!STATE) {
     $("#gToday").innerHTML = `<div class="empty">Loading the match schedule…</div>`;
@@ -335,6 +338,7 @@ function renderScores(){
     fill("#gNext", next, "Nothing scheduled yet. Orders of play are usually published the evening before.");
     fill("#gDone", done, "No results in the last week.");
   }
+  $("#todayLbl").textContent = new Date().toLocaleDateString("en-GB", { weekday:"long", day:"numeric", month:"long", timeZone:"Europe/London" });
   $("#cToday").textContent = tday.length; $("#cNext").textContent = next.length; $("#cDone").textContent = done.length;
 
   // roster status
