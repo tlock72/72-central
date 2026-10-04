@@ -1,10 +1,12 @@
 """
 72 Central - tells Tobey when information has been missed (no Claude).
 
-Runs at the end of each update. Looks at the saved data for anything missing - a match with no
-result, a check that was blocked, rankings that could not be refreshed - and posts it to an open
-GitHub issue called "72 Central: missing info" (GitHub emails the repository owner). Each problem
-is only reported once.
+Runs at the end of each update, and every few hours on GitHub's own timer as a watchdog
+(.github/workflows/watchdog.yml), so it still speaks up if the 30-minute timer stops altogether.
+Looks for anything missing or broken - a match with no result, a check that was blocked, rankings
+or Scouting HQ that could not be refreshed, a part of the update that failed, updates that have
+stopped, or the website not publishing - and posts it to an open GitHub issue called
+"72 Central: missing info" (GitHub emails the repository owner). Each problem is only reported once.
 """
 import json, os, subprocess
 from datetime import datetime, timedelta, timezone
@@ -16,6 +18,16 @@ UK_NOW = NOW.astimezone(UK)
 TODAY = UK_NOW.date()
 TITLE = "72 Central: missing info"
 OWNER = os.environ.get("GITHUB_REPOSITORY_OWNER", "")
+REPO = os.environ.get("GITHUB_REPOSITORY", "tlock72/72-central")
+ACTIONS_URL = f"https://github.com/{REPO}/actions"
+STEP_NAMES = {
+    "scores": "live scores and ATP/WTA rankings (Live Tennis API)",
+    "itfrank": "ITF junior rankings",
+    "scouting": "Scouting HQ",
+    "itfm": "ITF junior matches",
+    "te": "Tennis Europe matches",
+    "save": "saving the new data (this usually sorts itself out on the next run)",
+}
 
 
 def load(f):
@@ -70,6 +82,49 @@ def gaps():
                    "Today's results and 'In progress' updates will be late until it resets overnight.")
     if d.get("rankingsAsOf") and d["rankingsAsOf"] < ago(9):
         out.append(f"ATP/WTA rankings haven't been fully updated since {d['rankingsAsOf']}.")
+    # 6) Scouting HQ: a list could not be refreshed today, or is stuck on an old ranking week
+    #    (16 days allows for the two-week events, when the tours publish no new ranking)
+    sq = load("scouting.json")
+    for t, name in (("atp", "ATP"), ("wta", "WTA")):
+        e = (sq.get("errors") or {}).get(t)
+        wk = (sq.get(t) or {}).get("week")
+        if e and ukday(e.get("at")) == TODAY:
+            out.append(f"Scouting HQ: the {name} list couldn't be refreshed on {TODAY} ({e.get('msg')}). "
+                       f"It still shows the ranking week of {wk or 'an earlier week'}.")
+        if wk and wk < ago(16):
+            out.append(f"Scouting HQ: the {name} list is still on the ranking week of {wk} - no newer week has been picked up.")
+    if not sq:
+        out.append("Scouting HQ has no data file (scouting.json is missing or unreadable).")
+    # 7) updates have stopped: live scores normally refresh every 30 minutes from 07:13 to 23:43 UK
+    lc = when(d.get("lastChecked"))
+    if UK_NOW.hour >= 9 and lc and NOW - lc > timedelta(hours=2):
+        out.append(f"Live scores haven't updated since {lc.astimezone(UK):%H:%M} UK on {lc.astimezone(UK):%a %d %b}. "
+                   "The 30-minute timer seems to have stopped: check the jobs on cron-job.org and that the GitHub "
+                   "token it uses hasn't expired (GitHub > Settings > Developer settings > Personal access tokens).")
+    # 8) a part of this update run failed (step outcomes are passed in by update-scores.yml)
+    try:
+        steps = json.loads(os.environ.get("STEPS_JSON") or "{}")
+    except Exception:
+        steps = {}
+    for sid, st in steps.items():
+        if (st or {}).get("outcome") == "failure":
+            what = STEP_NAMES.get(sid, sid)
+            out.append(f"Part of the update failed on {TODAY}: {what}. Details: {ACTIONS_URL}")
+    # 9) watchdog only: repeated failed runs, and the website not publishing
+    if os.environ.get("WATCHDOG") == "1":
+        try:
+            runs = json.loads(gh("run", "list", "--workflow", "update-scores.yml", "--limit", "4", "--json", "conclusion,status"))
+            done = [r for r in runs if r.get("status") == "completed"]
+            if len(done) >= 3 and all(r.get("conclusion") == "failure" for r in done):
+                out.append(f"The 'Update scores' job has failed {len(done)} times in a row (seen on {TODAY}). Details: {ACTIONS_URL}")
+        except Exception as e:
+            print("couldn't read recent runs:", e)
+        try:
+            b = json.loads(gh("api", f"repos/{REPO}/pages/builds/latest"))
+            if b.get("status") == "errored":
+                out.append(f"The website didn't publish its latest update (GitHub Pages build failed, seen on {TODAY}). Details: {ACTIONS_URL}")
+        except Exception as e:
+            print("couldn't read the Pages build:", e)
     return out
 
 

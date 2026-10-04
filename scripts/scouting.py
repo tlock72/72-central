@@ -132,6 +132,7 @@ def main():
     min_year = NOW.year - 21
     hist.setdefault("atp", {})
     changed = False
+    errors = data.get("errors") or {}  # tour -> {"at": iso, "msg": text}; read by report_gaps.py
 
     # ---- ATP ----
     try:
@@ -169,8 +170,10 @@ def main():
             print(f"Scouting HQ: ATP week {week}, {len(players)} players born {min_year}+, compared with {cmp}")
         else:
             print("Scouting HQ: ATP unchanged", week)
+        errors.pop("atp", None)
     except Exception as e:
         print("Scouting HQ: ATP failed:", e)
+        errors["atp"] = {"at": NOW.isoformat(timespec="seconds"), "msg": str(e)[:200]}
 
     # ---- WTA ----
     try:
@@ -200,10 +203,13 @@ def main():
             print(f"Scouting HQ: WTA week {week}, {len(players)} players born {min_year}+, compared with {cmp}")
         else:
             print("Scouting HQ: WTA unchanged", week)
+        errors.pop("wta", None)
     except Exception as e:
         print("Scouting HQ: WTA failed:", e)
+        errors["wta"] = {"at": NOW.isoformat(timespec="seconds"), "msg": str(e)[:200]}
 
     data["minYear"] = min_year
+    data["errors"] = errors
     if changed:
         data["updated"] = NOW.isoformat(timespec="seconds")
         save(HIST, hist, compact=True)
