@@ -211,6 +211,7 @@ dialog.prof{overflow-x:hidden}
 .partners span{font-family:var(--display);text-transform:uppercase;letter-spacing:.12em;font-size:13px;color:var(--text);border:1px solid var(--line);border-radius:999px;padding:8px 14px;background:rgba(208,165,121,.05)}
 .partners .kitrow{display:flex;flex-wrap:wrap;gap:10px;width:100%;margin-bottom:4px}
 .partners span.kit{font-size:18px;font-weight:600;color:var(--white);border:1.5px solid var(--gold);border-radius:14px;padding:10px 18px 11px;background:linear-gradient(135deg,rgba(208,165,121,.24),rgba(208,165,121,.08))}
+.partners span.kit.both{border-width:2px;padding-inline:22px}
 .partners span.kit em{display:block;font-style:normal;font-family:var(--body);font-weight:600;font-size:9px;letter-spacing:.2em;color:var(--gold);margin-bottom:3px}
 .soc{display:grid;grid-template-columns:repeat(auto-fill,minmax(130px,1fr));gap:10px}
 .soc div{border:1px solid var(--line-2);border-radius:14px;padding:14px 16px}
@@ -1057,10 +1058,13 @@ ALL_PROFILES.forEach(x => { const d = DOB[x.id]; if (!d) return; x.dob = d; x.ag
 /* racket and clothing partners are picked out in the partner line-up */
 const RACKET = ["wilson","yonex","head","babolat","dunlop","tecnifibre","prince","artengo","solinco","prokennex","volkl"];
 const APPAREL = ["nike","adidas","asics","lotto","k-swiss","joma","ea7","castore","lacoste","fila","on","diadora","ellesse","hydrogen","le coq sportif","uniqlo","new balance","mizuno","sergio tacchini","australian","bidi badu"];
-function partnersHtml(list){
+// players whose racket brand also dresses them (one brand for both)
+const SAME_KIT = new Set(["deminaur", "altmaier", "dotsenko"]);
+function partnersHtml(list, id){
   const lc = n => String(n).toLowerCase().trim();
   const r = list.find(n => RACKET.includes(lc(n))), a = list.find(n => n !== r && APPAREL.includes(lc(n)));
-  const kit = [[r, "Racket"], [a, "Apparel"]].filter(([n]) => n).map(([n, k]) => `<span class="kit"><em>${k}</em>${esc(n)}</span>`).join("");
+  const both = r && SAME_KIT.has(id);
+  const kit = (both ? [[r, "Racket &amp; Apparel"]] : [[r, "Racket"], [a, "Apparel"]]).filter(([n]) => n).map(([n, k]) => `<span class="kit${both ? " both" : ""}"><em>${k}</em>${esc(n)}</span>`).join("");
   const rest = list.filter(n => n !== r && n !== a).map(n => `<span>${esc(n)}</span>`).join("");
   return `<div class="partners">${kit ? `<div class="kitrow">${kit}</div>` : ""}${rest}</div>`;
 }
@@ -1129,7 +1133,7 @@ function proBody(x, p, rank){
         <div><b>${fmtN(reach)}</b><span>Social following</span></div>
       </div>
       <section><h3 class="pk">Titles</h3><div class="tg">${x.titles.map(tblock).join("")}</div></section>
-      <section><h3 class="pk">Partner line-up</h3>${partnersHtml(x.partners)}</section>
+      <section><h3 class="pk">Partner line-up</h3>${partnersHtml(x.partners, x.id)}</section>
       <section><h3 class="pk">Social media</h3><div class="soc">
         <div class="tot"><b>${fmtN(reach)}</b><span>Combined following</span></div>
         ${Object.entries(x.social).map(([k, v]) => `<div><b>${fmtN(v)}</b><span>${esc(k)}</span></div>`).join("")}
@@ -1148,7 +1152,7 @@ function juniorBody(x, p, rank){
   const years = Object.keys(x.res || {}).sort((a, b) => b - a);
   return `<div class="big">${tiles.map(([v, k]) => `<div><b>${v}</b><span>${esc(k)}</span></div>`).join("")}</div>
       ${hl.length ? `<section><h3 class="pk">Highlights</h3><div class="hls">${hl.map(h => `<span>★ ${esc(h)}</span>`).join("")}</div></section>` : ""}
-      ${x.partners.length ? `<section><h3 class="pk">Partner line-up</h3>${partnersHtml(x.partners)}</section>` : ""}
+      ${x.partners.length ? `<section><h3 class="pk">Partner line-up</h3>${partnersHtml(x.partners, x.id)}</section>` : ""}
       <section><h3 class="pk">Results</h3><div class="yrs">${years.map(y => `<div class="yr"><b>${y}</b><ul>${x.res[y].map(r => `<li>${esc(r)}</li>`).join("")}</ul></div>`).join("")}</div></section>`;
 }
 /* how far into an event a round is, so the furthest match can be picked (qualifying < early rounds < QF < SF < final) */
