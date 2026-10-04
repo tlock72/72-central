@@ -129,10 +129,20 @@ def flip(m):
     return dict(m, p1=m["p2"], p2=m["p1"], p1Id=m["p2Id"], p2Id=m["p1Id"], winner=1, score=core + (" ret." if ret else ""))
 
 
-def settle(aid, m):
-    """Look the match up once (free endpoint) and return it finished/cancelled, or None if not settled yet."""
+def poll(aid, m):
+    """Look up one of today's matches: finished/cancelled, 'live' if under way, or None if not started yet."""
     d = api(f"/matches/{aid}")
     d = d.get("data", d) if isinstance(d, dict) else {}
+    if (d.get("status") or "").lower() in ("live", "in_progress", "inprogress", "started", "playing"):
+        return dict(m, status="live")
+    return settle(aid, m, d)
+
+
+def settle(aid, m, d=None):
+    """Look the match up once (free endpoint) and return it finished/cancelled, or None if not settled yet."""
+    if d is None:
+        d = api(f"/matches/{aid}")
+        d = d.get("data", d) if isinstance(d, dict) else {}
     status, outcome, w = d.get("status"), d.get("outcome"), d.get("winner")
     if status == "completed" and w in (1, 2):
         score = score_str(d.get("score"))
@@ -231,10 +241,12 @@ def main():
     # 2) Live matches (hourly - the :13 run; the :43 run only does the cheap checks below, to stay well inside
     #    the free plan's 100 calls a day). Live matches aren't shown on the site; this just spots finished ones.
     live_run = NOW.minute < 30
+    fresh_live = set()
     if live_run:
         try:
             for m in api("/matches", status="live", player=ids, limit=200).get("data", []):
                 new[m["id"]] = to_match(m, "live")
+                fresh_live.add(m["id"])
         except Exception as e:
             print("live fetch failed", e); live_run = False
 
@@ -286,6 +298,28 @@ def main():
         except Exception as e:
             print("result check failed", aid, e); done = None
         new[aid] = done or dict(m, checked=today_s)
+
+    # 4c) Today's matches, about once an hour: any match whose start time has passed, or that is in
+    #     progress, is looked up, so the page shows "In progress" and then the
+    #     final score the same day. At most 5 lookups a run to protect the free daily allowance.
+    if live_run and os.environ.get("RANKINGS") != "1":
+        now_hm = uk_now.strftime("%H:%M")
+        polled = 0
+        for aid, m in list(new.items()):
+            if polled >= 5:
+                break
+            if m.get("date") != today_s or m["status"] not in ("scheduled", "live") or m.get("polled") == uk_now.strftime("%H"):
+                continue
+            if m["status"] == "scheduled" and (not m.get("time") or m["time"] > now_hm):
+                continue
+            if m["status"] == "live" and aid not in fresh_live and aid in old and old[aid]["status"] == "live":
+                continue  # just left the live list: already looked up in step 4
+            polled += 1
+            try:
+                got = poll(aid, m)
+            except Exception as e:
+                print("today's match lookup failed", aid, e); got = None
+            new[aid] = dict(got or m, polled=uk_now.strftime("%H")) if not got or got["status"] == "live" else got
 
     # 5) Merge: keep hand-entered matches (no apiId) unless the API now has the same match
     def key(m):
