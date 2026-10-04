@@ -381,6 +381,8 @@ html.locked #gate{display:grid}
 .gate-err{min-height:18px;margin-top:16px;font-size:12px;color:#E8908F}
 .gate-box.shake{animation:gshake .4s}
 @keyframes gshake{20%,60%{transform:translateX(-8px)}40%,80%{transform:translateX(8px)}}
+.gate-beta{display:table;margin:0 auto 16px;font-family:var(--display);font-weight:600;text-transform:uppercase;letter-spacing:.22em;font-size:10px;color:var(--navy);background:var(--gold);border-radius:999px;padding:4px 12px}
+.gate-note{margin:22px 0 0;font-size:12px;line-height:1.6;color:var(--muted)}
 @media (max-width:380px){.gate-digits{gap:7px}.gate-digits input{width:40px;height:52px}}
 </style>
 </head>
@@ -1317,9 +1319,11 @@ setInterval(() => { if (!document.hidden) renderScores(); }, 5 * 60 * 1000);
 
 <div id="gate"><div class="gate-box">
   <img id="gateLogo" alt="SeventyTwo Sports Group">
+  <div class="gate-beta">Beta</div>
   <h2>72 Central · Enter passcode</h2>
   <div class="gate-digits"><input type="password" inputmode="numeric" maxlength="6" autocomplete="one-time-code" aria-label="Digit 1"><input type="password" inputmode="numeric" maxlength="6" autocomplete="one-time-code" aria-label="Digit 2"><input type="password" inputmode="numeric" maxlength="6" autocomplete="one-time-code" aria-label="Digit 3"><input type="password" inputmode="numeric" maxlength="6" autocomplete="one-time-code" aria-label="Digit 4"><input type="password" inputmode="numeric" maxlength="6" autocomplete="one-time-code" aria-label="Digit 5"><input type="password" inputmode="numeric" maxlength="6" autocomplete="one-time-code" aria-label="Digit 6"></div>
   <div class="gate-err" id="gateErr"></div>
+  <p class="gate-note">For SeventyTwo Sports Group staff only.<br>72 Central is in beta, so some features may still change.</p>
 </div></div>
 <script>(() => {
   const H = "89e1a9fa4a91850fd074bb35fc4770ed59a4906addbd786b09c8556e89d1459a", ins = [...document.querySelectorAll(".gate-digits input")];
