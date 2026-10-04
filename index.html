@@ -262,7 +262,7 @@ blockquote.q cite{display:block;margin-top:12px;font-style:normal;font-family:va
   .brand{justify-content:center}
   .brand .tag{display:none}
   nav a{flex:auto;text-align:center;padding:10px 8px;font-size:11px;letter-spacing:.06em}
-  nav .n72{display:none}
+  nav a{white-space:normal;line-height:1.25}
   .hero{padding-block:26px 16px}
   .checked{align-items:flex-start;text-align:left}
   .grid{grid-template-columns:1fr}
@@ -312,6 +312,15 @@ select.sq-in option{background:var(--navy-2);color:var(--white)}
   nav{display:grid;grid-template-columns:1fr 1fr;border-radius:22px}
   nav a{padding:9px 6px}
 }
+/* Rankings: roster facts */
+.rk-facts{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:10px;margin:-14px 0 28px}
+.rk-facts .fact{border:1px solid var(--line-2);border-radius:14px;padding:12px 16px;background:transparent}
+.rk-facts .k{display:block;font-size:10px;letter-spacing:.14em;text-transform:uppercase;color:var(--muted-2)}
+.rk-facts b{display:block;font-family:var(--display);font-weight:500;font-size:22px;color:var(--text);margin-top:4px;line-height:1.1}
+.rk-facts b.sm{font-size:16px}
+.rk-facts .s{display:block;font-size:11px;color:var(--muted-2);margin-top:3px;line-height:1.4}
+.rk-sep{padding:10px 22px;font-size:10px;letter-spacing:.16em;text-transform:uppercase;color:var(--muted-2);border-bottom:1px solid var(--line-2);background:rgba(255,255,255,.02)}
+@media (max-width:860px){.rk-facts{grid-template-columns:repeat(2,minmax(0,1fr))}}
 /* Home portal */
 body.on-home header nav{display:none}
 .hp-sep{display:inline-block;width:1px;height:78px;background:var(--line);margin:0 22px;vertical-align:top}
@@ -399,7 +408,7 @@ html.locked #gate{display:grid}
       <a href="#scores" data-tab="scores"><span class="n72">72 </span>Competition Zone</a>
       <a href="#rankings" data-tab="rankings"><span class="n72">72 </span>Rankings</a>
       <a href="#players" data-tab="players"><span class="n72">72 </span>Players</a>
-      <a href="#scouting" data-tab="scouting">Age Filtered World Rankings</a>
+      <a href="#scouting" data-tab="scouting"><span class="n72">72 </span>Age Filtered World Rankings</a>
     </nav>
   </div>
 </header>
@@ -481,6 +490,7 @@ html.locked #gate{display:grid}
     <div id="rk-tour">
     <div class="stale" id="staleRanks" hidden></div>
     <div class="stats" id="stats"></div>
+    <div class="rk-facts" id="rkFacts"></div>
     <div class="tours">
       <div class="tour"><div class="tour-h"><h3><span>ATP</span> Singles</h3><span class="k" id="atpN"></span></div><div id="atpList"></div></div>
       <div class="tour"><div class="tour-h"><h3><span>WTA</span> Singles</h3><span class="k" id="wtaN"></span></div><div id="wtaList"></div></div>
@@ -822,14 +832,18 @@ function renderRankings(){
   setStale("#staleRanks", STATE && (!ra || Date.now() - ra > 9 * 864e5)
     ? `<b>Heads up:</b> these rankings were last updated ${ra ? ra.toLocaleDateString("en-GB", { day:"numeric", month:"long", timeZone:"UTC" }) : "a while ago"}, so they may be out of date. The weekly update hasn't run since.` : "");
   const rows = tour => ROSTER.filter(p => p.tour === tour).map(p => ({ p, d: r.players[p.id] || {} })).filter(x => x.d.rank).sort((a,b) => (a.d.rank ?? 1e9) - (b.d.rank ?? 1e9));
+  // players who have held an ATP/WTA ranking (a career high is on file) but are not ranked now go at the bottom
+  const former = tour => ROSTER.filter(p => p.tour === tour && !(r.players[p.id] || {}).rank && profById[p.id]?.high).map(p => ({ p, d: { note: `Not currently ranked · career high #${profById[p.id].high}` } }));
   const html = list => list.map(({p,d}) => `<div class="rk">
       <div class="no ${d.rank ? "" : "na"}">${d.rank ? `<span class="hash">#</span>${d.rank}` : "—"}</div>
       <div class="who"><div class="nm">${esc(p.first)} ${esc(p.last)}</div><div class="ct">${esc([p.country, d.rank ? "" : (d.note || "Not ranked")].filter(Boolean).join(" · "))}</div></div>
       <div class="pts">${d.points ? Number(d.points).toLocaleString("en-GB") : ""}<small>${d.points ? "PTS" : ""}</small></div>
       ${mv(d.move)}</div>`).join("");
   const atp = rows("ATP"), wta = rows("WTA");
-  $("#atpList").innerHTML = html(atp); $("#wtaList").innerHTML = html(wta);
-  $("#atpN").textContent = atp.length + " players"; $("#wtaN").textContent = wta.length + " players";
+  const fmr = list => list.length ? `<div class="rk-sep">Previously ranked</div>` + html(list) : "";
+  const fA = former("ATP"), fW = former("WTA");
+  $("#atpList").innerHTML = html(atp) + fmr(fA); $("#wtaList").innerHTML = html(wta) + fmr(fW);
+  $("#atpN").textContent = atp.length + " ranked" + (fA.length ? ` · ${fA.length} previously` : ""); $("#wtaN").textContent = wta.length + " ranked" + (fW.length ? ` · ${fW.length} previously` : "");
   const ranked = [...atp, ...wta].filter(x => x.d.rank);
   const bA = atp.find(x => x.d.rank), bW = wta.find(x => x.d.rank);
   $("#stats").innerHTML = `
@@ -837,6 +851,29 @@ function renderRankings(){
     <div class="stat"><div class="k">Top WTA</div><div class="v">#${bW?.d.rank ?? "–"}<small>${esc(bW?.p.last || "")}</small></div></div>
     <div class="stat"><div class="k">In top 50</div><div class="v">${ranked.filter(x => x.d.rank <= 50).length}<small>players</small></div></div>
     <div class="stat"><div class="k">In top 100</div><div class="v">${ranked.filter(x => x.d.rank <= 100).length}<small>players</small></div></div>`;
+  // discreet roster facts under the leaderboard tiles
+  const year = new Date().getFullYear();
+  const kindOf = p => { const x = profById[p.id]; const jr = x?.kind === "junior"; return p.tour === "ATP" ? (jr ? "boys" : "men") : (jr ? "girls" : "women"); };
+  const cnt = k => ROSTER.filter(p => kindOf(p) === k).length;
+  const tt = k => PROFILES.reduce((s, x) => s + x.titles.filter(t => t.k === k).reduce((a, t) => a + t.n, 0), 0);
+  // ITF World Tennis Tour (M/W15 to M/W100) singles titles this year: profile results plus finals won in the match feed
+  const fut = {};
+  const add = (id, loc, src, n = 1) => { const k = id + "|" + loc; fut[k] = fut[k] || { id, res: 0, live: 0 }; fut[k][src] += n; };
+  for (const x of JUNIOR_PROFILES) for (const e of (x.res?.[year] || [])) if (/\bITF [MW]\d{2,3}\b/.test(e) && !/\(/.test(e)) add(x.id, e.split(",")[0].trim().toLowerCase(), "res");
+  for (const m of STATE?.matches || []) {
+    const id = m.winner === 1 ? m.p1Id : m.winner === 2 ? m.p2Id : null;
+    if (m.status === "finished" && byId[id] && /^(final|f)$/i.test((m.round || "").trim()) && (m.date || "").startsWith(String(year))
+        && /\bITF\b.*\b([MW]\d{2,3}|Men|Women)\b/.test(m.category || "") && !/junior/i.test(m.category || ""))
+      add(id, (m.tournament || "").replace(/^[MW]\d{2,3}\s+/, "").split(",")[0].trim().toLowerCase(), "live");
+  }
+  const byP = {}; let futN = 0;
+  for (const v of Object.values(fut)) { const n = Math.max(v.res, v.live); futN += n; byP[v.id] = (byP[v.id] || 0) + n; }
+  const futWho = Object.entries(byP).sort((a, b) => b[1] - a[1]).map(([id, n]) => `${esc(byId[id].last)} ${n}`).join(" · ");
+  $("#rkFacts").innerHTML = `
+    <div class="fact"><span class="k">Players we represent</span><b>${ROSTER.length}</b><span class="s">across the ATP, WTA and junior tours</span></div>
+    <div class="fact"><span class="k">Roster breakdown</span><b class="sm">${cnt("men")} men · ${cnt("women")} women</b><span class="s">${cnt("boys")} boys · ${cnt("girls")} girls</span></div>
+    <div class="fact"><span class="k">Career singles titles</span><b class="sm">${tt("ATP titles")} ATP · ${tt("WTA titles")} WTA</b><span class="s">won by players on the current roster</span></div>
+    <div class="fact"><span class="k">ITF World Tennis Tour titles ${year}</span><b>${futN}</b><span class="s">${futWho || "None yet this year"}</span></div>`;
   const asOf = r.asOf ? new Date(r.asOf + "T12:00:00Z").toLocaleDateString("en-GB", { day:"numeric", month:"long", year:"numeric", timeZone:"UTC" }) : "";
   $("#rankSub").textContent = rankTab === "itf" ? "ITF World Tennis Junior Rankings for the 72 juniors." : `Official ATP and WTA singles rankings for the 72 roster${asOf ? ", as of " + asOf : ""}.`;
   $("#rankSrc").textContent = `Source: ${r.source || "ATP & WTA"}. Updated every Monday.`;
