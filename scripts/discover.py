@@ -18,8 +18,20 @@ def show(label, res, n=1500):
     print(f"\n===== {label} -> HTTP {status}")
     print((json.dumps(body, indent=1) if not isinstance(body, str) else body)[:n])
 
-for p in ("q", "search", "name"):
-    show(f"/players?{p}=de Minaur", get("/players", **{p: "de Minaur", "limit": 3}), 1200)
-show("/matches status=live limit=1", get("/matches", status="live", limit=1), 2500)
-show("/matches status=upcoming limit=1", get("/matches", status="upcoming", limit=1), 2500)
-show("/matches status=completed limit=1", get("/matches", status="completed", limit=1), 1500)
+# Why has Joel Schwaerzler no ranking? List every matching player record and its detail.
+seen = set()
+for term in ("Schwaerzler", "Schwarzler", "Joel Josef", "Schw\u00e4rzler"):
+    st, body = get("/players", search=term, limit=20)
+    rows = body.get("data", []) if isinstance(body, dict) else []
+    print(f"\n===== search '{term}' -> HTTP {st}, {len(rows)} results")
+    for p in rows:
+        print(" ", p.get("id"), "|", p.get("name"), "| tour", p.get("tour"), "| rank", p.get("ranking"), "| pts", p.get("ranking_points"), "| born", p.get("birthday"), "| doubles", p.get("is_doubles_team"))
+        if "schw" in (p.get("name") or "").lower() and p.get("id") not in seen:
+            seen.add(p.get("id"))
+for pid in seen:
+    show(f"/players/{pid}", get(f"/players/{pid}"), 1500)
+st, body = get("/matches", status="upcoming", player=list(seen), limit=10)
+print("\n===== upcoming for those ids ->", st)
+for m in (body.get("data", []) if isinstance(body, dict) else []):
+    pl = m.get("players", {})
+    print(" ", m.get("id"), m.get("tournament"), m.get("scheduled_time"), "|", (pl.get("p1") or {}).get("id"), (pl.get("p1") or {}).get("name"), "vs", (pl.get("p2") or {}).get("id"), (pl.get("p2") or {}).get("name"))
