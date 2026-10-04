@@ -14,7 +14,7 @@ from zoneinfo import ZoneInfo
 from bs4 import BeautifulSoup
 
 SITE = "https://te.tournamentsoftware.com"
-UA = "72SportsGroup-Central/1.0 (internal use, with Tennis Europe's permission; once a day; +https://github.com/tlock72/72-central)"
+UA = ""
 PAUSE = 5
 UK = ZoneInfo("Europe/London")
 NOW = datetime.now(timezone.utc)
