@@ -726,10 +726,10 @@ function renderScores(){
   const key = m => `${m.date} ${m.time || "99"}`;
   // today's matches always show as scheduled; their results only appear here the next day
   const asToday = m => m.status === "scheduled" ? m : { ...m, status: "scheduled", score: "", winner: null, note: "" };
-  // a match already played is hidden from today's list once that player's next round in the same event is confirmed
+  // a match already played is hidden from today's list once that player's next round in the same event is confirmed for later the same day
   const ours = m => [m.p1Id, m.p2Id].filter(id => byId[id]);
   const superseded = m => m.status === "finished" && ms.some(x => x !== m && x.status !== "finished" && x.tournament === m.tournament
-    && x.date >= m.date && ours(x).some(id => ours(m).includes(id)));
+    && x.date === m.date && ours(x).some(id => ours(m).includes(id)));
   const tday = ms.filter(m => (m.date === today || (m.status === "live" && m.date < today)) && !superseded(m)).sort((a,b) => key(a).localeCompare(key(b)));
   const next = ms.filter(m => m.date > today && m.status === "scheduled").sort((a,b) => key(a).localeCompare(key(b)));
   // results from the previous two days (UK dates) - never today's
@@ -1153,7 +1153,7 @@ function addItfMatches(st, im, src = "itf"){
 /* ---------- Scouting HQ (scouting.json, rebuilt weekly by scripts/scouting.py) ---------- */
 let SCOUT = null;
 const SQ = { t: "atp", age: 21, q: "", c: "", sort: "rank", asc: true, all: false };
-const sqKey = s => String(s || "").normalize("NFD").toLowerCase().replace(/[^a-z]/g, "");
+const sqKey = s => String(s || "").normalize("NFD").toLowerCase().replace(/[^a-z]/g, "").replace(/ae/g, "a").replace(/oe/g, "o").replace(/ue/g, "u");  // Schwärzler = Schwaerzler
 const SQ72 = new Set(ROSTER.map(p => p.tour.toLowerCase() + ":" + sqKey(p.first + p.last)));
 const sqFmt = iso => iso ? new Date(iso + "T12:00:00Z").toLocaleDateString("en-GB", { day:"numeric", month:"short", year:"numeric", timeZone:"UTC" }) : "—";
 function sqMove(rank, prev){ return prev == null ? null : prev - rank; }
@@ -1171,6 +1171,7 @@ function sqRows(){
   const q = sqKey(SQ.q);
   return T.players.map(p => ({ rank:p[0], name:p[1], cty:p[2], born:p[3], w:p[4], m3:p[5], m12:p[6], url:p[7],
       is72: SQ72.has(SQ.t + ":" + sqKey(p[1])) }))
+    .map(p => { if (p.is72) { const r = ROSTER.find(x => x.tour.toLowerCase() === SQ.t && sqKey(x.first + x.last) === sqKey(p.name)); if (r) p.name = `${r.first} ${r.last}`; } return p; })
     .filter(p => p.born >= year - SQ.age && (!q || sqKey(p.name).includes(q)) && (!SQ.c || p.cty === SQ.c));
 }
 function sqSort(rows){
@@ -1264,6 +1265,27 @@ function renderHome(){
     $("#hpS4").innerHTML = climb ? `Top 3-month climber inside the top 500: ${esc(climb[1])} ▲${climb[5] - climb[0]}` : "";
   } else if (SCOUT) { $("#hpT4").textContent = "—"; $("#hpS4").textContent = "Scouting list not available yet"; }
 }
+/* ---------- one spelling per 72 player, and no duplicate fixtures ----------
+   The feeds spell some names differently (e.g. "Schwaerzler Joel" v "Schwärzler"), so every 72 player is shown
+   with the roster spelling (J. Schwärzler). If two feeds list the same upcoming match, only one is kept. */
+function normalizeMatches(st){
+  const short = id => `${byId[id].first[0]}. ${byId[id].last}`;
+  const surname = n => String(n || "").normalize("NFD").toLowerCase().replace(/[^a-z ]/g, "").trim().split(/\s+/).filter(w => w.length > 1)[0] || "";
+  for (const m of st.matches || []) {
+    if (byId[m.p1Id]) m.p1 = short(m.p1Id);
+    if (byId[m.p2Id]) m.p2 = short(m.p2Id);
+  }
+  const seen = new Map(), out = [];
+  for (const m of st.matches || []) {
+    const id = byId[m.p1Id] ? m.p1Id : byId[m.p2Id] ? m.p2Id : null;
+    if (!id || m.status === "finished") { out.push(m); continue; }
+    const k = `${id}|${m.tournament}|${surname(m.p1Id === id ? m.p2 : m.p1)}`;
+    const prev = seen.get(k);
+    if (!prev) { seen.set(k, m); out.push(m); }
+    else if (m.apiId && !prev.apiId) { out[out.indexOf(prev)] = m; seen.set(k, m); }  // keep the live-score feed's copy
+  }
+  st.matches = out;
+}
 /* ---------- boot ---------- */
 route();
 render();
@@ -1275,6 +1297,7 @@ async function load(){
     try { const rm = await fetch("itfm.json?t=" + Date.now(), { cache: "no-store" }); if (rm.ok) addItfMatches(STATE, await rm.json()); } catch (e) {}
     try { const rt = await fetch("te.json?t=" + Date.now(), { cache: "no-store" }); if (rt.ok) addItfMatches(STATE, await rt.json(), "te"); } catch (e) {}
     try { const ri = await fetch("itf.json?t=" + Date.now(), { cache: "no-store" }); if (ri.ok) ITF = await ri.json(); } catch (e) {}
+    normalizeMatches(STATE);
     render();
   } catch (e) {
     if (!STATE) { STATE = { matches: [] }; render(); $("#checked").textContent = "Couldn't load the schedule. Reload the page."; }
