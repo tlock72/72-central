@@ -1,7 +1,7 @@
 name: Update scores
 on:
   schedule:
-    - cron: "*/30 6-22 * * *"   # every 30 min, 07:00-23:30 UK summer time
+    - cron: "13,43 6-22 * * *"   # every 30 min (at :13 and :43, off GitHub's busy on-the-hour slots), 07:00-23:45 UK summer time
   workflow_dispatch: {}
 concurrency:
   group: update-scores
@@ -22,4 +22,4 @@ jobs:
           git config user.name "72 Hub updater"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
           git add data.json players.json
-          git diff --cached --quiet && echo "No changes" || (git commit -q -m "Update scores" && git push)
+          git diff --cached --quiet && echo "No changes" || (git commit -q -m "Update scores" && git pull -q --rebase && git push)
