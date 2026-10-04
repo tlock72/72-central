@@ -17,7 +17,7 @@ PAUSE = 6  # seconds between requests
 
 # id -> (name as the ITF spells it, ITF player id or None to look it up, "B" boys / "G" girls)
 JUNIORS = {
-    "ivanov": ("Ivan Ivanov", None, "B"), "bonding": ("Oliver Bonding", 800544649, "B"),
+    "ivanov": ("Ivan Ivanov", 800586822, "B"), "bonding": ("Oliver Bonding", 800544649, "B"),
     "mackenzie": ("Jamie Mackenzie", 800570117, "B"), "chavez": ("Tito Chavez", 800590474, "B"),
     "qi": ("Hongjin Qi|Hongjing Qi", None, "B"), "fazekas": ("Vencel Fazekas", 800703915, "B"),
     "choi": ("Fu Wang Choi", 800740257, "B"), "drijver": ("Laurens Drijver", 800695508, "B"),
