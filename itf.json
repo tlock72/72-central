@@ -1,10 +1,248 @@
 {
  "players": {
-  "mackenzie": {"gender": "B", "itfId": 800570117, "rank": 2, "rankDate": "28 September 2026", "high": 2, "highDate": "08 June 2026", "updated": "2026-10-04"},
-  "mmakarova": {"gender": "G", "itfId": 800644962, "rank": 7, "rankDate": "28 September 2026", "move": 1, "updated": "2026-10-04"},
-  "dotsenko": {"gender": "G", "itfId": 800677532, "rank": 21, "rankDate": "28 September 2026", "high": 19, "highDate": "14 September 2026", "updated": "2026-10-04"}
+  "mackenzie": {
+   "gender": "B",
+   "itfId": 800570117,
+   "rank": 2,
+   "rankDate": "28 September 2026",
+   "high": 2,
+   "highDate": "08 June 2026",
+   "updated": "2026-10-04"
+  },
+  "mmakarova": {
+   "gender": "G",
+   "itfId": 800644962,
+   "rank": 7,
+   "rankDate": "28 September 2026",
+   "move": 1,
+   "updated": "2026-10-04",
+   "high": 7,
+   "highDate": "13 July 2026"
+  },
+  "dotsenko": {
+   "gender": "G",
+   "itfId": 800677532,
+   "rank": 21,
+   "rankDate": "28 September 2026",
+   "high": 19,
+   "highDate": "14 September 2026",
+   "updated": "2026-10-04"
+  },
+  "ivanov": {
+   "gender": "B",
+   "noItf": true,
+   "rank": null,
+   "updated": "2026-10-04"
+  },
+  "bonding": {
+   "gender": "B",
+   "itfId": 800544649,
+   "rank": null,
+   "rankDate": null,
+   "high": 8,
+   "highDate": "06 January 2025",
+   "updated": "2026-10-04"
+  },
+  "chavez": {
+   "gender": "B",
+   "itfId": 800590474,
+   "move": null,
+   "rank": 50,
+   "rankDate": "28 September 2026",
+   "high": 19,
+   "highDate": "25 May 2026",
+   "updated": "2026-10-04"
+  },
+  "qi": {
+   "gender": "B",
+   "itfId": 800738751,
+   "move": null,
+   "rank": 433,
+   "rankDate": "28 September 2026",
+   "high": 334,
+   "highDate": "05 January 2026",
+   "updated": "2026-10-04"
+  },
+  "fazekas": {
+   "gender": "B",
+   "itfId": 800703915,
+   "move": null,
+   "rank": 814,
+   "rankDate": "28 September 2026",
+   "high": 797,
+   "highDate": "14 September 2026",
+   "updated": "2026-10-04"
+  },
+  "choi": {
+   "gender": "B",
+   "itfId": 800740257,
+   "move": null,
+   "rank": 296,
+   "rankDate": "28 September 2026",
+   "high": 285,
+   "highDate": "07 September 2026",
+   "updated": "2026-10-04"
+  },
+  "drijver": {
+   "gender": "B",
+   "itfId": 800695508,
+   "move": null,
+   "rank": 733,
+   "rankDate": "28 September 2026",
+   "high": 657,
+   "highDate": "20 July 2026",
+   "updated": "2026-10-04"
+  },
+  "daraban": {
+   "gender": "B",
+   "itfId": 800678733,
+   "move": null,
+   "rank": 1175,
+   "rankDate": "28 September 2026",
+   "high": 1107,
+   "highDate": "27 July 2026",
+   "updated": "2026-10-04"
+  },
+  "tarlazzi": {
+   "gender": "B",
+   "itfId": 800708323,
+   "move": null,
+   "rank": 596,
+   "rankDate": "28 September 2026",
+   "high": 582,
+   "highDate": "14 September 2026",
+   "updated": "2026-10-04"
+  },
+  "farkxodov": {
+   "gender": "B",
+   "itfId": 800748198,
+   "move": null,
+   "rank": 2044,
+   "rankDate": "28 September 2026",
+   "high": 2023,
+   "highDate": "14 September 2026",
+   "updated": "2026-10-04"
+  },
+  "mateo": {
+   "gender": "B",
+   "itfId": 800740453,
+   "rank": null,
+   "rankDate": null,
+   "high": null,
+   "highDate": null,
+   "updated": "2026-10-04"
+  },
+  "davies": {
+   "gender": "B",
+   "noItf": true,
+   "rank": null,
+   "updated": "2026-10-04"
+  },
+  "momot": {
+   "gender": "B",
+   "noItf": true,
+   "rank": null,
+   "updated": "2026-10-04"
+  },
+  "liu": {
+   "gender": "B",
+   "noItf": true,
+   "rank": null,
+   "updated": "2026-10-04"
+  },
+  "rajeshwaran": {
+   "gender": "G",
+   "itfId": 800632131,
+   "move": null,
+   "rank": 16,
+   "rankDate": "28 September 2026",
+   "high": 16,
+   "highDate": "28 September 2026",
+   "updated": "2026-10-04"
+  },
+  "pinera": {
+   "gender": "G",
+   "itfId": 800656554,
+   "move": null,
+   "rank": 14,
+   "rankDate": "28 September 2026",
+   "high": 11,
+   "highDate": "07 September 2026",
+   "updated": "2026-10-04"
+  },
+  "skryp": {
+   "gender": "G",
+   "itfId": 800733549,
+   "move": null,
+   "rank": 3250,
+   "rankDate": "28 September 2026",
+   "high": 2465,
+   "highDate": "06 January 2025",
+   "updated": "2026-10-04"
+  },
+  "vmakarova": {
+   "gender": "G",
+   "itfId": 800822494,
+   "move": null,
+   "rank": 1119,
+   "rankDate": "28 September 2026",
+   "high": 1112,
+   "highDate": "21 September 2026",
+   "updated": "2026-10-04"
+  },
+  "lin": {
+   "gender": "G",
+   "itfId": 800739107,
+   "move": null,
+   "rank": 24,
+   "rankDate": "28 September 2026",
+   "high": 23,
+   "highDate": "07 September 2026",
+   "updated": "2026-10-04"
+  },
+  "newman": {
+   "gender": "G",
+   "itfId": 800705703,
+   "move": null,
+   "rank": 34,
+   "rankDate": "28 September 2026",
+   "high": 20,
+   "highDate": "13 July 2026",
+   "updated": "2026-10-04"
+  },
+  "kanabar": {
+   "gender": "G",
+   "itfId": 800741292,
+   "move": null,
+   "rank": 46,
+   "rankDate": "28 September 2026",
+   "high": 46,
+   "highDate": "28 September 2026",
+   "updated": "2026-10-04"
+  },
+  "kurylova": {
+   "gender": "G",
+   "itfId": 800743118,
+   "move": null,
+   "rank": 3494,
+   "rankDate": "28 September 2026",
+   "high": 3494,
+   "highDate": "28 September 2026",
+   "updated": "2026-10-04"
+  },
+  "iwasa": {
+   "gender": "G",
+   "itfId": 800722468,
+   "move": null,
+   "rank": 865,
+   "rankDate": "28 September 2026",
+   "high": 811,
+   "highDate": "27 July 2026",
+   "updated": "2026-10-04"
+  }
  },
  "rankDate": "28 September 2026",
  "source": "ITF World Tennis Junior Rankings",
- "pending": []
+ "pending": [],
+ "checked": "2026-10-04"
 }
