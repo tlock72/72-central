@@ -428,6 +428,7 @@ html.locked #gate{display:grid}
       </div>
       <div class="chips" role="group" aria-label="Choose tour"><button class="chip sqt on" data-t="atp">ATP</button><button class="chip sqt" data-t="wta">WTA</button></div>
     </div>
+    <div class="stale" id="staleScout" hidden></div>
     <div class="stats" id="sqStats"></div>
     <div class="sq-bar">
       <div class="chips" role="group" aria-label="Age group" id="sqAges"></div>
@@ -1090,6 +1091,8 @@ function renderScouting(){
   if (!T) { $("#sqTbl").innerHTML = `<div class="sq-empty">${SCOUT ? "No ranking data for this tour yet." : "Loading the scouting list…"}</div>`; $("#sqStats").innerHTML = ""; return; }
   const year = (SCOUT.minYear || new Date().getFullYear() - 21) + 21;
   $("#sqAges").innerHTML = [21, 20, 19, 18, 17, 16].map(a => `<button class="chip sqa${SQ.age === a ? " on" : ""}" data-a="${a}" title="Born ${year - a} or later">U${a}</button>`).join("");
+  const wk = T.week ? new Date(T.week + "T12:00:00Z") : null;
+  setStale("#staleScout", !wk || Date.now() - wk > 16 * 864e5 ? `<b>Heads up:</b> this ${SQ.t.toUpperCase()} list is still on the ranking week of ${sqFmt(T.week)}, so it may be out of date. The weekly update hasn't picked up a newer week.` : "");
   const ctys = [...new Set(T.players.map(p => p[2]).filter(Boolean))].sort();
   if (SQ.c && !ctys.includes(SQ.c)) SQ.c = "";
   $("#sqC").innerHTML = `<option value="">All countries</option>` + ctys.map(c => `<option${c === SQ.c ? " selected" : ""}>${esc(c)}</option>`).join("");
