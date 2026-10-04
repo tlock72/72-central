@@ -159,23 +159,36 @@ def main():
     data.setdefault("rankings", {})
     data.setdefault("status", {})
 
-    # 1) Find API ids for roster players (first run; unfound players retried weekly)
+    # 1) Find API ids for roster players (first run; unfound players retried weekly).
+    #    The feed sometimes holds the same player twice (e.g. "Josef Schwaerzler Joel" with the ranking and
+    #    matches, plus an unverified "Joel Schwaerzler"), so names match in any word order and a ranked
+    #    record always wins over an unverified duplicate.
+    MATCH_V = 2
     for rid, (full, tour) in ROSTER.items():
         rec = players.get(rid)
         stale = rec and rec.get("apiId") is None and (NOW - datetime.fromisoformat(rec["checked"])) > timedelta(days=7)
         if rid in BORN and rec and not rec.get("bornChecked"):
             stale = True
+        if rec and rec.get("v") != MATCH_V:
+            stale = True
         if rec and not stale:
             continue
+        if CALLS >= MAX_CALLS - 12:
+            break  # finish the rest next run
         try:
-            res = api("/players", search=full, limit=50 if rid in BORN else 10).get("data", [])
+            res = api("/players", search=full, limit=50 if rid in BORN else 20).get("data", [])
         except Exception as e:
             print("player search failed", rid, e); break
         want = norm(full).split()
-        hit = next((p for p in res if not p.get("is_doubles_team") and (p.get("tour") or tour) in (tour, "itf", "challenger", "juniors")
-                    and all(w in norm(p.get("name")).split() for w in want[-1:]) and norm(p.get("name"))[0] == want[0][0]
-                    and (rid not in BORN or (p.get("birthday") or "").startswith(BORN[rid]))), None)
-        players[rid] = {"apiId": hit["id"] if hit else None, "apiName": hit["name"] if hit else None, "checked": NOW.isoformat(), **({"bornChecked": True} if rid in BORN else {})}
+        def same_person(p):
+            have = norm(p.get("name")).split()
+            return want[-1] in have and any(h[:1] == want[0][:1] for h in have if h != want[-1])
+        cands = [p for p in res if not p.get("is_doubles_team") and (p.get("tour") or tour) in (tour, "itf", "challenger", "juniors")
+                 and same_person(p) and (rid not in BORN or (p.get("birthday") or "").startswith(BORN[rid]))]
+        cands.sort(key=lambda p: (p.get("ranking_status") != "ranked", p.get("ranking") is None, not p.get("birthday")))
+        hit = cands[0] if cands else None
+        players[rid] = {"apiId": hit["id"] if hit else None, "apiName": hit["name"] if hit else None, "checked": NOW.isoformat(),
+                        "v": MATCH_V, **({"bornChecked": True} if rid in BORN else {})}
         if rid in BORN:  # drop any ranking that belonged to a namesake
             data["rankings"].pop(rid, None)
         if hit and hit.get("ranking"):  # the search result already carries the ranking
@@ -297,7 +310,7 @@ def main():
     if not data.get("rankingsFromApi") and all(r in players for r in ROSTER):
         data["rankingsFromApi"] = True
         data["rankingsAsOf"] = today
-    elif data.get("rankingsWeek") != week:
+    else:  # also picks up any player whose record was re-matched mid-week
         todo = [rid for rid, rec in players.items() if rec.get("apiId") and (data["rankings"].get(rid) or {}).get("week") != week]
         for rid in todo:
             if CALLS >= MAX_CALLS - 2:
