@@ -179,8 +179,8 @@ def main():
             stale = True
         if rec and not stale:
             continue
-        if CALLS >= MAX_CALLS - 12:
-            break  # finish the rest next run
+        if CALLS >= MAX_CALLS - 12 or os.environ.get("RANKINGS") == "1":
+            break  # finish the rest next run (the Monday rankings run keeps its calls for the rankings)
         try:
             res = api("/players", search=full, limit=50 if rid in BORN else 20).get("data", [])
         except Exception as e:
@@ -255,6 +255,7 @@ def main():
     #    upcoming list, is looked up once with the free match-detail endpoint (never guessed from a live score).
     today_s = uk_now.strftime("%Y-%m-%d")
     settled = 0
+    cap = 4 if os.environ.get("RANKINGS") == "1" else 18  # the Monday rankings run saves its calls for the rankings
     for aid, m in old.items():
         if aid in new or m["status"] in ("cancelled",):
             continue
@@ -262,7 +263,7 @@ def main():
         left_upcoming = m["status"] == "scheduled" and fetched_upcoming and m["date"] <= today_s
         if m["status"] == "scheduled" and fetched_upcoming and m["date"] > today_s:
             continue  # no longer in the upcoming list: cancelled or moved (a moved match comes back under the same id)
-        if (gone_live or left_upcoming) and settled < 10:
+        if (gone_live or left_upcoming) and settled < min(10, cap):
             settled += 1
             try:
                 done = settle(aid, m)
@@ -275,7 +276,7 @@ def main():
     # 4b) Daily results check: every match of ours from a previous day that still has no result is
     #     looked up once a day (this is what makes results reliable without anyone checking by hand)
     for aid, m in list(new.items()):
-        if settled >= 18:
+        if settled >= cap:
             break
         if m["status"] not in ("scheduled", "live") or not m.get("date") or m["date"] >= today_s or m.get("checked") == today_s:
             continue
@@ -310,30 +311,52 @@ def main():
         if rid in busy:
             del data["status"][rid]
 
-    # 6) Rankings once a week. Starts each Monday and carries on in later runs until every player
-    #    has been refreshed, so one failed run never leaves the week's rankings half done.
+    # 6) Rankings once a week, all at once. The Monday 07:00 UK run (RANKINGS=1, started by the timer together
+    #    with the ITF junior rankings) fetches every player's ranking into a holding area and only puts them on
+    #    the site when every player is done, so the whole table changes in one go. If that run is missed or cut
+    #    short, later runs finish it from 09:00 - and the switch still happens all at once.
     week = (uk_now - timedelta(days=uk_now.weekday())).strftime("%Y-%m-%d")  # this week's Monday
-    if not data.get("rankingsFromApi") and all(r in players for r in ROSTER):
-        data["rankingsFromApi"] = True
-        data["rankingsAsOf"] = today
-    else:  # also picks up any player whose record was re-matched mid-week
-        todo = [rid for rid, rec in players.items() if rec.get("apiId") and (data["rankings"].get(rid) or {}).get("week") != week]
-        for rid in todo:
-            if CALLS >= MAX_CALLS - 2:
-                break
-            try:
-                p = api(f"/players/{players[rid]['apiId']}")
-                p = p.get("data", p)
-            except Exception as e:
-                print("ranking failed", rid, e); break
-            prev = (data["rankings"].get(rid) or {}).get("rank")
-            rank = p.get("ranking")
-            move = (prev - rank) if (prev and rank) else None
-            data["rankings"][rid] = {"rank": rank, "points": p.get("ranking_points"), "move": move, "week": week,
-                                     **({} if rank else {"note": "Not currently ranked"})}
-        if all((data["rankings"].get(rid) or {}).get("week") == week for rid, rec in players.items() if rec.get("apiId")):
-            data["rankingsWeek"] = week
-            data["rankingsAsOf"] = today
+    nxt = data.get("rankingsNext") or {}
+    if nxt.get("_week") != week:
+        nxt = {"_week": week}
+    with_id = [rid for rid, rec in players.items() if rec.get("apiId")]
+
+    def fetch_rank(rid):
+        p = api(f"/players/{players[rid]['apiId']}")
+        p = p.get("data", p)
+        prev = (data["rankings"].get(rid) or {}).get("rank")
+        rank = p.get("ranking")
+        return {"rank": rank, "points": p.get("ranking_points"), "move": (prev - rank) if (prev and rank) else None,
+                "week": week, **({} if rank else {"note": "Not currently ranked"})}
+
+    if data.get("rankingsWeek") != week:
+        if os.environ.get("RANKINGS") == "1" or len(nxt) > 1 or uk_now.weekday() > 0 or uk_now.hour >= 9:
+            for rid in with_id:
+                if rid in nxt:
+                    continue
+                if CALLS >= MAX_CALLS - 2:
+                    break
+                try:
+                    nxt[rid] = fetch_rank(rid)
+                except Exception as e:
+                    print("ranking failed", rid, e); break
+            if all(rid in nxt for rid in with_id):
+                nxt.pop("_week")
+                data["rankings"].update(nxt)
+                data["rankingsWeek"] = week
+                data["rankingsAsOf"] = today
+                data.pop("rankingsNext", None)
+                print("rankings published for week of", week)
+            else:
+                data["rankingsNext"] = nxt
+                print(f"rankings: {len(nxt) - 1}/{len(with_id)} fetched, publishing when all are done")
+    else:  # a player whose feed record was re-matched mid-week: refresh just them
+        for rid in with_id:
+            if (data["rankings"].get(rid) or {}).get("week") != week and CALLS < MAX_CALLS - 2:
+                try:
+                    data["rankings"][rid] = fetch_rank(rid)
+                except Exception as e:
+                    print("ranking failed", rid, e); break
 
     data["lastChecked"] = NOW.strftime("%Y-%m-%dT%H:%M:%SZ")
     with open("data.json", "w") as f:
