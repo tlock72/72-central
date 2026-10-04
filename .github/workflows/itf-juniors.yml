@@ -4,7 +4,12 @@ on:
     # Mondays at about 08:20, 11:20 and 14:20 UK time. The later runs only do anything
     # if an earlier run could not refresh every player.
     - cron: "20 7,10,13 * * 1"
-  workflow_dispatch: {}
+  workflow_dispatch:
+    inputs:
+      source:
+        description: "Who started this run (the backup timer sends 'timer')"
+        required: false
+        default: manual
 concurrency:
   group: itf-juniors
   cancel-in-progress: false
@@ -21,7 +26,7 @@ jobs:
         id: fetch
         run: python3 scripts/itf_juniors.py
         env:
-          FORCE: ${{ github.event_name == 'workflow_dispatch' && '1' || '0' }}
+          FORCE: ${{ github.event_name == 'workflow_dispatch' && inputs.source != 'timer' && '1' || '0' }}
       - name: Fill any players the ITF site would not serve (Claude, only if needed)
         if: steps.fetch.outputs.pending == 'true'
         continue-on-error: true   # if Claude is unavailable, still save what the script fetched
