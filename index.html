@@ -1194,8 +1194,8 @@ function renderScouting(){
   if (SQ.c && !ctys.includes(SQ.c)) SQ.c = "";
   $("#sqC").innerHTML = `<option value="">All countries</option>` + ctys.map(c => `<option${c === SQ.c ? " selected" : ""}>${esc(c)}</option>`).join("");
   const rows = sqSort(sqRows());
-  // U21 to U18: climbers are picked from players now inside the top 500 only (younger groups use everyone)
-  const cap = SQ.age >= 18 ? 500 : Infinity, capTxt = cap < Infinity ? " · top 500 only" : "";
+  // climbers are picked from players now inside the top 300 (U21, U20) or top 500 (U19, U18); younger groups use everyone
+  const cap = SQ.age >= 20 ? 300 : SQ.age >= 18 ? 500 : Infinity, capTxt = cap < Infinity ? ` · top ${cap} only` : "";
   const best = k => rows.filter(p => p[k] != null && p.rank <= cap).sort((a, b) => (b[k] - b.rank) - (a[k] - a.rank) || a.rank - b.rank)[0];
   const top = rows.reduce((m, p) => !m || p.rank < m.rank ? p : m, null), b3 = best("m3"), b12 = best("m12");
   $("#sqStats").innerHTML = `
