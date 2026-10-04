@@ -2,7 +2,12 @@ name: Update scores
 on:
   schedule:
     - cron: "13,43 6-22 * * *"   # every 30 min (at :13 and :43, off GitHub's busy on-the-hour slots), 07:00-23:45 UK summer time
-  workflow_dispatch: {}
+  workflow_dispatch:
+    inputs:
+      source:
+        description: "Who started this run (the backup timer sends 'timer')"
+        required: false
+        default: manual
 concurrency:
   group: update-scores
   cancel-in-progress: false
@@ -17,6 +22,7 @@ jobs:
       - run: python3 scripts/update.py
         env:
           LIVETENNIS_API_KEY: ${{ secrets.LIVETENNIS_API_KEY }}
+          SOURCE: ${{ github.event_name == 'schedule' && 'timer' || inputs.source || 'manual' }}
       - name: Save changes
         run: |
           git config user.name "72 Hub updater"
