@@ -20,6 +20,7 @@ BASE = "https://api.livetennisapi.com/api/public/v1"
 UK = ZoneInfo("Europe/London")
 NOW = datetime.now(timezone.utc)
 CALLS = 0
+QUOTA_HIT = False  # set when the feed says the free daily allowance is used up
 MAX_CALLS = 45  # hard stop per run, protects the daily allowance
 
 # Roster: id -> (full name used for the API search, tour)
@@ -46,7 +47,9 @@ BORN = {"ivanov": "2008", "liu": "2015"}
 
 
 def api(path, **params):
-    global CALLS
+    global CALLS, QUOTA_HIT
+    if QUOTA_HIT:
+        raise RuntimeError("daily allowance used up")
     if CALLS >= MAX_CALLS:
         raise RuntimeError("per-run call limit reached")
     CALLS += 1
@@ -54,8 +57,13 @@ def api(path, **params):
     q = urllib.parse.urlencode(params, doseq=True)
     req = urllib.request.Request(f"{BASE}{path}" + (f"?{q}" if q else ""),
                                  headers={"X-API-Key": KEY, "Accept": "application/json"})
-    with urllib.request.urlopen(req, timeout=30) as r:
-        return json.loads(r.read().decode())
+    try:
+        with urllib.request.urlopen(req, timeout=30) as r:
+            return json.loads(r.read().decode())
+    except urllib.error.HTTPError as e:
+        if e.code == 429:
+            QUOTA_HIT = True
+        raise
 
 
 def norm(s):
@@ -180,6 +188,7 @@ def main():
     #    matches, plus an unverified "Joel Schwaerzler"), so names match in any word order and a ranked
     #    record always wins over an unverified duplicate.
     MATCH_V = 2
+    searched = 0
     for rid, (full, tour) in ROSTER.items():
         rec = players.get(rid)
         stale = rec and rec.get("apiId") is None and (NOW - datetime.fromisoformat(rec["checked"])) > timedelta(days=7)
@@ -189,8 +198,9 @@ def main():
             stale = True
         if rec and not stale:
             continue
-        if CALLS >= MAX_CALLS - 12 or os.environ.get("RANKINGS") == "1":
+        if searched >= 3 or CALLS >= MAX_CALLS - 12 or os.environ.get("RANKINGS") == "1":
             break  # finish the rest next run (the Monday rankings run keeps its calls for the rankings)
+        searched += 1
         try:
             res = api("/players", search=full, limit=50 if rid in BORN else 20).get("data", [])
         except Exception as e:
@@ -245,7 +255,7 @@ def main():
     if live_run:
         try:
             for m in api("/matches", status="live", player=ids, limit=200).get("data", []):
-                new[m["id"]] = to_match(m, "live")
+                new[m["id"]] = dict(to_match(m, "live"), seenLive=NOW.strftime("%Y-%m-%dT%H:%M:%SZ"))
                 fresh_live.add(m["id"])
         except Exception as e:
             print("live fetch failed", e); live_run = False
@@ -319,6 +329,8 @@ def main():
                 got = poll(aid, m)
             except Exception as e:
                 print("today's match lookup failed", aid, e); got = None
+            if got and got["status"] == "live":
+                got = dict(got, seenLive=NOW.strftime("%Y-%m-%dT%H:%M:%SZ"))
             new[aid] = dict(got or m, polled=uk_now.strftime("%H")) if not got or got["status"] == "live" else got
 
     # 5) Merge: keep hand-entered matches (no apiId) unless the API now has the same match
@@ -392,6 +404,8 @@ def main():
                 except Exception as e:
                     print("ranking failed", rid, e); break
 
+    if QUOTA_HIT:
+        data["quotaHit"] = NOW.strftime("%Y-%m-%dT%H:%M:%SZ")
     data["lastChecked"] = NOW.strftime("%Y-%m-%dT%H:%M:%SZ")
     with open("data.json", "w") as f:
         json.dump(data, f, ensure_ascii=False, separators=(",", ":"))
