@@ -55,6 +55,9 @@ h1 .n{color:var(--gold)}
 .sec-h h2 .dt{color:var(--gold);margin-left:10px;font-size:13px;letter-spacing:.12em}
 .sec-h .count{font-family:var(--display);font-size:12px;color:var(--navy);background:var(--gold);border-radius:999px;padding:2px 9px;font-weight:600}
 .sec-h .rule{flex:1;height:1px;background:var(--line)}
+.sec-d{margin:-4px 0 16px;font-size:12px;color:var(--muted);line-height:1.5;max-width:720px}
+.r-group{grid-column:1/-1;font-family:var(--display);letter-spacing:.16em;text-transform:uppercase;font-size:12px;color:var(--gold);margin-top:8px}
+.pl .rk-n{color:var(--gold);font-family:var(--display);font-weight:500;margin-right:4px}
 section.block{margin-bottom:38px}
 .grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(330px,1fr));gap:14px}
 .empty{border:1px solid var(--line-2);border-radius:var(--radius);padding:20px 22px;color:var(--muted);font-size:13px;background:rgba(255,255,255,.02);line-height:1.6}
@@ -179,18 +182,22 @@ footer .wrap{display:flex;justify-content:space-between;gap:12px;flex-wrap:wrap}
 
     <section class="block">
       <div class="sec-h"><h2>Today's matches<span id="todayLbl" class="dt"></span></h2><span class="count" id="cToday">0</span><span class="rule"></span></div>
+      <p class="sec-d">Every 72 match scheduled for today (UK date), plus any match being played right now.</p>
       <div class="grid" id="gToday"></div>
     </section>
     <section class="block">
       <div class="sec-h"><h2>Coming up</h2><span class="count" id="cNext">0</span><span class="rule"></span></div>
+      <p class="sec-d">Scheduled matches for the next 7 days, soonest first. Orders of play are usually published the evening before.</p>
       <div class="grid" id="gNext"></div>
     </section>
     <section class="block">
       <div class="sec-h"><h2>Recent results</h2><span class="count" id="cDone">0</span><span class="rule"></span></div>
+      <p class="sec-d">Results from the last 7 days, newest first. A match still waiting for its score shows as result pending for up to 2 days.</p>
       <div class="grid" id="gDone"></div>
     </section>
     <section class="block">
       <div class="sec-h"><h2>The roster</h2><span class="rule"></span></div>
+      <p class="sec-d">Players with a match today or coming up are listed first, then everyone else. Both groups are in ranking order.</p>
       <div class="roster" id="roster"></div>
     </section>
   </div>
@@ -356,7 +363,8 @@ function renderScores(){
   $("#cToday").textContent = tday.length; $("#cNext").textContent = next.length; $("#cDone").textContent = done.length;
 
   // roster status
-  $("#roster").innerHTML = ROSTER.map(p => {
+  const rks = (STATE?.rankings && Object.keys(STATE.rankings).length) ? STATE.rankings : RANK_FALLBACK.players;
+  const items = ROSTER.map(p => {
     const mine = ms.filter(m => m.p1Id === p.id || m.p2Id === p.id);
     const up = mine.filter(m => m.status !== "finished" && m.date >= today).sort((a,b) => key(a).localeCompare(key(b)))[0];
     const last = mine.filter(m => m.status === "finished").sort((a,b) => key(b).localeCompare(key(a)))[0];
@@ -365,8 +373,14 @@ function renderScores(){
     else if (last) { const w = (last.winner === 1 && last.p1Id === p.id) || (last.winner === 2 && last.p2Id === p.id); st = `${w ? "Won" : "Lost"} ${last.round || ""} · ${last.tournament} · ${dayLabel(last.date)}`; }
     if (STATE?.status?.[p.id]) st = STATE.status[p.id];
     const link = safeUrl(p.sofa);
-    return `<div class="pl ${on ? "on" : ""}"><div class="who"><div class="nm">${esc(p.first)} ${esc(p.last)}</div><div class="st" title="${esc(st)}">${esc(st)}</div></div>${link ? `<a href="${esc(link)}" target="_blank" rel="noopener">SofaScore</a>` : ""}</div>`;
-  }).join("");
+    const rank = rks[p.id]?.rank ?? null;
+    const html = `<div class="pl ${on ? "on" : ""}"><div class="who"><div class="nm">${rank ? `<span class="rk-n">#${rank}</span>` : ""}${esc(p.first)} ${esc(p.last)}</div><div class="st" title="${esc(st)}">${esc(st)}</div></div>${link ? `<a href="${esc(link)}" target="_blank" rel="noopener">SofaScore</a>` : ""}</div>`;
+    return { p, rank, busy: !!up, html };
+  });
+  const byRank = (a, b) => (a.rank ?? 1e9) - (b.rank ?? 1e9) || a.p.last.localeCompare(b.p.last);
+  const busy = items.filter(x => x.busy).sort(byRank), rest = items.filter(x => !x.busy).sort(byRank);
+  $("#roster").innerHTML = (busy.length ? `<div class="r-group">Match today or coming up · ${busy.length}</div>` + busy.map(x => x.html).join("") : "")
+    + `<div class="r-group">Everyone else · ${rest.length}</div>` + rest.map(x => x.html).join("");
 
   if (STATE?.lastChecked) {
     const d = new Date(STATE.lastChecked);
