@@ -771,7 +771,7 @@ function renderPlayers(){
   $("#pgrid").innerHTML = list.map(({ x, p, rank }) => {
     const g = groupOf(x, p);
     return `<button class="pc" data-id="${x.id}" aria-label="Open ${esc(p.first)} ${esc(p.last)} profile">
-      <span class="bg" aria-hidden="true" style="background-image:url('img/${x.id}.webp')"></span><span class="shade" aria-hidden="true"></span>
+      <span class="bg" aria-hidden="true" style="background-image:url('${x.id}.webp')"></span><span class="shade" aria-hidden="true"></span>
       <span class="mono" aria-hidden="true">${initials(p)}</span>
       <div class="top"><span class="tr">${g === "NEXT" ? "NEXT GEN" : p.tour}</span><span class="cc">${esc(x.kind === "junior" ? x.grp + " · " + p.country : p.country)}</span></div>
       <div class="fn">${esc(p.first)}</div>
@@ -836,8 +836,8 @@ function openProfile(id){
     : [["Age", x.age], ["Nationality", x.nat], ["Plays", x.plays], ["Tour", p.tour]];
   $("#prof").innerHTML = `
     <div class="ph">
-      <span class="pblur" aria-hidden="true" style="background-image:url('img/${x.id}.webp')"></span>
-      <img class="pimg" src="img/${x.id}.webp" alt="" onerror="this.remove()">
+      <span class="pblur" aria-hidden="true" style="background-image:url('${x.id}.webp')"></span>
+      <img class="pimg" src="${x.id}.webp" alt="" onerror="this.remove()">
       <span class="mono" aria-hidden="true">${initials(p)}</span>
       <button class="x" data-close aria-label="Close">✕</button>
       <div class="fn">${esc(p.first)}</div>
