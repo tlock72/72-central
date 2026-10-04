@@ -730,7 +730,8 @@ function renderScores(){
   const ours = m => [m.p1Id, m.p2Id].filter(id => byId[id]);
   const superseded = m => m.status === "finished" && ms.some(x => x !== m && x.status !== "finished" && x.tournament === m.tournament
     && x.date === m.date && ours(x).some(id => ours(m).includes(id)));
-  const tday = ms.filter(m => (m.date === today || (m.status === "live" && m.date < today)) && !superseded(m)).sort((a,b) => key(a).localeCompare(key(b)));
+  // every match dated today stays in today's list all day, even once the player's next round is confirmed
+  const tday = ms.filter(m => m.date === today || (m.status === "live" && m.date < today)).sort((a,b) => key(a).localeCompare(key(b)));
   const next = ms.filter(m => m.date > today && m.status === "scheduled").sort((a,b) => key(a).localeCompare(key(b)));
   // results from the previous two days (UK dates) - never today's
   // latest results this week (Monday up to yesterday, UK dates; on a Monday, last week): each player's most recent match only,
