@@ -270,6 +270,48 @@ blockquote.q cite{display:block;margin-top:12px;font-style:normal;font-family:va
   .rk .no{font-size:24px}
   .stat .v{font-size:28px}
 }
+/* Scouting HQ */
+.sq-bar{display:flex;flex-wrap:wrap;gap:10px 14px;align-items:center;margin:0 0 16px}
+.sq-bar .chips{gap:6px}
+.sq-bar .chip{padding:7px 13px;font-size:11px}
+.sq-in{flex:1 1 200px;min-width:0;height:38px;border-radius:999px;border:1px solid var(--line);background:rgba(255,255,255,.03);color:var(--white);font:14px var(--body);padding:0 16px;outline:none}
+.sq-in:focus{border-color:var(--gold)}
+select.sq-in{flex:0 1 170px;appearance:none;-webkit-appearance:none;cursor:pointer;background-image:linear-gradient(45deg,transparent 50%,var(--gold) 50%),linear-gradient(135deg,var(--gold) 50%,transparent 50%);background-position:calc(100% - 18px) 16px,calc(100% - 13px) 16px;background-size:5px 5px;background-repeat:no-repeat;padding-right:34px}
+select.sq-in option{background:var(--navy-2);color:var(--white)}
+.sq-tbl{border:1px solid var(--line-2);border-radius:18px;overflow:hidden;background:linear-gradient(180deg,var(--navy-2),rgba(17,27,63,.55))}
+.sq-row{display:grid;grid-template-columns:64px minmax(0,1fr) 64px repeat(3,74px);align-items:center;gap:8px;padding:11px 20px;border-bottom:1px solid var(--line-2)}
+.sq-row:last-child{border-bottom:0}
+.sq-row.h{position:sticky;top:0;z-index:1;background:#101A40;padding-block:12px}
+.sq-row.h button{font-family:var(--display);text-transform:uppercase;letter-spacing:.14em;font-size:11px;color:var(--muted);text-align:right;padding:0;white-space:nowrap}
+.sq-row.h button:first-child,.sq-row.h button:nth-child(2){text-align:left}
+.sq-row.h button:hover,.sq-row.h button.on{color:var(--gold)}
+.sq-row.h button.on::after{content:" \2193"}
+.sq-row.h button.on.asc::after{content:" \2191"}
+.sq-row .no{font-family:var(--display);font-weight:600;font-size:22px;color:var(--gold);line-height:1;font-variant-numeric:tabular-nums}
+.sq-row .nm{color:var(--white);font-weight:600;font-size:14px;text-decoration:none;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;display:block}
+.sq-row a.nm:hover{color:var(--gold)}
+.sq-row .ct{font-size:11px;color:var(--muted);letter-spacing:.12em;margin-top:2px}
+.sq-row .by{text-align:right;font-family:var(--display);font-size:16px;color:var(--text);font-variant-numeric:tabular-nums}
+.sq-row .by small{display:block;font-family:var(--body);font-size:10px;color:var(--muted-2);letter-spacing:.1em}
+.sq-row .ch{text-align:right;font-family:var(--display);font-size:15px;font-variant-numeric:tabular-nums;white-space:nowrap}
+.sq-row .ch small{display:block;font-family:var(--body);font-size:10px;color:var(--muted-2);letter-spacing:.04em}
+.sq-row .ch.up{color:var(--up)} .sq-row .ch.down{color:var(--down)} .sq-row .ch.same,.sq-row .ch.na{color:var(--muted-2)}
+.sq-row .ch.new{color:var(--gold);font-size:12px;letter-spacing:.12em}
+.sq-72{display:inline-block;font-family:var(--display);font-size:10px;font-weight:600;color:var(--navy);background:var(--gold);border-radius:4px;padding:1px 5px;margin-left:6px;vertical-align:2px}
+.sq-more{display:block;margin:16px auto 0;font-family:var(--display);text-transform:uppercase;letter-spacing:.14em;font-size:12px;color:var(--gold);border:1px solid var(--line);border-radius:999px;padding:10px 22px}
+.sq-more:hover{background:var(--gold-dim)}
+.sq-empty{padding:30px 20px;text-align:center;color:var(--muted);font-size:14px}
+.stat .v.nm{font-size:22px;line-height:1.15}
+@media (max-width:640px){
+  .sq-row{grid-template-columns:40px minmax(0,1fr) 42px repeat(3,46px);gap:6px;padding:10px 12px}
+  .sq-row .no{font-size:17px}.sq-row .nm{font-size:13px}.sq-row .by{font-size:14px}.sq-row .ch{font-size:13px}
+  .sq-row .ch small,.sq-row .by small{display:none}
+  .sq-row.h button{font-size:10px;letter-spacing:.06em}
+  select.sq-in{flex:1 1 140px}
+  .stat .v.nm{font-size:17px}
+  nav{display:grid;grid-template-columns:1fr 1fr;border-radius:22px}
+  nav a{padding:9px 6px}
+}
 @media (prefers-reduced-motion:reduce){*{transition:none!important;animation:none!important}}
 /* passcode screen */
 html.locked body > *:not(#gate){display:none !important}
@@ -300,6 +342,7 @@ html.locked #gate{display:grid}
       <a href="#scores" data-tab="scores"><span class="n72">72 </span>Competition Zone</a>
       <a href="#rankings" data-tab="rankings"><span class="n72">72 </span>Rankings</a>
       <a href="#players" data-tab="players"><span class="n72">72 </span>Players</a>
+      <a href="#scouting" data-tab="scouting">Scouting HQ</a>
     </nav>
   </div>
 </header>
@@ -376,6 +419,25 @@ html.locked #gate{display:grid}
     </div>
     <div class="pgrid" id="pgrid"></div>
   </div>
+  <div id="page-scouting" hidden>
+    <div class="hero">
+      <div>
+        <div class="eyebrow">SeventyTwo Sports Group</div>
+        <h1>Scouting HQ</h1>
+        <p class="sub" id="sqSub">Every ranked ATP and WTA singles player aged 21 or under, with their birth year and how far they have moved in the official rankings over the last week, 3 months and 12 months.</p>
+      </div>
+      <div class="chips" role="group" aria-label="Choose tour"><button class="chip sqt on" data-t="atp">ATP</button><button class="chip sqt" data-t="wta">WTA</button></div>
+    </div>
+    <div class="stats" id="sqStats"></div>
+    <div class="sq-bar">
+      <div class="chips" role="group" aria-label="Age group" id="sqAges"></div>
+      <input class="sq-in" id="sqQ" type="search" placeholder="Search player" aria-label="Search player">
+      <select class="sq-in" id="sqC" aria-label="Country"></select>
+    </div>
+    <div class="sq-tbl" id="sqTbl"></div>
+    <button class="sq-more" id="sqMore" hidden>Show all</button>
+    <p class="src" id="sqSrc"></p>
+  </div>
   <dialog class="prof" id="prof" aria-label="Player profile"></dialog>
 </main>
 
@@ -451,10 +513,11 @@ function dayLabel(iso){
 /* ---------- tabs ---------- */
 function route(){
   const hash = location.hash;
-  const tab = hash === "#rankings" ? "rankings" : hash.startsWith("#players") ? "players" : "scores";
+  const tab = hash === "#rankings" ? "rankings" : hash === "#scouting" ? "scouting" : hash.startsWith("#players") ? "players" : "scores";
   $("#page-scores").hidden = tab !== "scores";
   $("#page-rankings").hidden = tab !== "rankings";
   $("#page-players").hidden = tab !== "players";
+  $("#page-scouting").hidden = tab !== "scouting";
   const pid = hash.startsWith("#players/") ? hash.slice(9) : null;
   if (pid && profById[pid]) openProfile(pid);
   else if ($("#prof").open) $("#prof").close();
@@ -885,7 +948,7 @@ function renderPlayers(){
       <span class="go">View profile <i>→</i></span>
     </button>`;
   }).join("") || `<p class="sec-d">No players in this group right now.</p>`;
-  document.querySelectorAll(".chip:not(.rt)").forEach(c => c.classList.toggle("on", c.dataset.f === pFilter));
+  document.querySelectorAll(".chip[data-f]").forEach(c => c.classList.toggle("on", c.dataset.f === pFilter));
 }
 function proBody(x, p, rank){
   const best = bestOf(x.high, rank);
@@ -972,7 +1035,7 @@ function openProfile(id){
 }
 document.addEventListener("click", e => {
   const card = e.target.closest(".pc"); if (card) return openProfile(card.dataset.id);
-  const chip = e.target.closest(".chip:not(.rt)"); if (chip) { pFilter = chip.dataset.f; return renderPlayers(); }
+  const chip = e.target.closest(".chip[data-f]"); if (chip) { pFilter = chip.dataset.f; return renderPlayers(); }
   const rt = e.target.closest("[data-rt]"); if (rt) { rankTab = rt.dataset.rt; return renderRankings(); }
   const go = e.target.closest("[data-go]"); if (go) return openProfile(go.dataset.go);
   if (e.target.closest("[data-close]") || e.target.id === "prof") $("#prof").close();
@@ -993,6 +1056,80 @@ function addItfMatches(st, im, src = "itf"){
     st.matches.push({ ...m, p1: m.p1 || nm(m.p1Id), p2: m.p2 || nm(m.p2Id) });
   }
 }
+/* ---------- Scouting HQ (scouting.json, rebuilt weekly by scripts/scouting.py) ---------- */
+let SCOUT = null;
+const SQ = { t: "atp", age: 21, q: "", c: "", sort: "rank", asc: true, all: false };
+const sqKey = s => String(s || "").normalize("NFD").toLowerCase().replace(/[^a-z]/g, "");
+const SQ72 = new Set(ROSTER.map(p => p.tour.toLowerCase() + ":" + sqKey(p.first + p.last)));
+const sqFmt = iso => iso ? new Date(iso + "T12:00:00Z").toLocaleDateString("en-GB", { day:"numeric", month:"short", year:"numeric", timeZone:"UTC" }) : "—";
+function sqMove(rank, prev){ return prev == null ? null : prev - rank; }
+function sqCell(rank, prev){
+  if (prev == null) return `<div class="ch new" title="Not ranked then">NEW</div>`;
+  const d = prev - rank;
+  const cls = d > 0 ? "up" : d < 0 ? "down" : "same";
+  const txt = d > 0 ? `▲${d}` : d < 0 ? `▼${-d}` : "–";
+  return `<div class="ch ${cls}">${txt}<small>was ${prev}</small></div>`;
+}
+function sqRows(){
+  const T = SCOUT && SCOUT[SQ.t];
+  if (!T) return [];
+  const year = (SCOUT.minYear || new Date().getFullYear() - 21) + 21;
+  const q = sqKey(SQ.q);
+  return T.players.map(p => ({ rank:p[0], name:p[1], cty:p[2], born:p[3], w:p[4], m3:p[5], m12:p[6], url:p[7],
+      is72: SQ72.has(SQ.t + ":" + sqKey(p[1])) }))
+    .filter(p => p.born >= year - SQ.age && (!q || sqKey(p.name).includes(q)) && (!SQ.c || p.cty === SQ.c));
+}
+function sqSort(rows){
+  const mv = (p, k) => { const d = sqMove(p.rank, p[k]); return d == null ? 0.5 : d; }; // a new entry sits just after the climbers
+  const f = { rank: p => p.rank, name: p => p.name, born: p => -p.born, w: p => -mv(p, "w"), m3: p => -mv(p, "m3"), m12: p => -mv(p, "m12") }[SQ.sort];
+  return rows.sort((a, b) => { const x = f(a), y = f(b); const r = x < y ? -1 : x > y ? 1 : a.rank - b.rank; return SQ.asc ? r : -r; });
+}
+function renderScouting(){
+  if (!$("#page-scouting")) return;
+  const T = SCOUT && SCOUT[SQ.t];
+  if (!T) { $("#sqTbl").innerHTML = `<div class="sq-empty">${SCOUT ? "No ranking data for this tour yet." : "Loading the scouting list…"}</div>`; $("#sqStats").innerHTML = ""; return; }
+  const year = (SCOUT.minYear || new Date().getFullYear() - 21) + 21;
+  $("#sqAges").innerHTML = [21, 20, 19, 18, 17, 16].map(a => `<button class="chip sqa${SQ.age === a ? " on" : ""}" data-a="${a}" title="Born ${year - a} or later">U${a}</button>`).join("");
+  const ctys = [...new Set(T.players.map(p => p[2]).filter(Boolean))].sort();
+  if (SQ.c && !ctys.includes(SQ.c)) SQ.c = "";
+  $("#sqC").innerHTML = `<option value="">All countries</option>` + ctys.map(c => `<option${c === SQ.c ? " selected" : ""}>${esc(c)}</option>`).join("");
+  const rows = sqSort(sqRows());
+  const best = k => rows.filter(p => p[k] != null).sort((a, b) => (b[k] - b.rank) - (a[k] - a.rank) || a.rank - b.rank)[0];
+  const top = rows.reduce((m, p) => !m || p.rank < m.rank ? p : m, null), b3 = best("m3"), b12 = best("m12");
+  $("#sqStats").innerHTML = `
+    <div class="stat"><div class="k">Players</div><div class="v">${rows.length}<small>U${SQ.age} · ${SQ.t.toUpperCase()}</small></div></div>
+    <div class="stat"><div class="k">Highest ranked</div><div class="v nm">${top ? `${esc(top.name)}<small>#${top.rank}</small>` : "—"}</div></div>
+    <div class="stat"><div class="k">Biggest climb · 3 months</div><div class="v nm">${b3 && b3.m3 > b3.rank ? `${esc(b3.name)}<small>▲${b3.m3 - b3.rank}</small>` : "—"}</div></div>
+    <div class="stat"><div class="k">Biggest climb · 12 months</div><div class="v nm">${b12 && b12.m12 > b12.rank ? `${esc(b12.name)}<small>▲${b12.m12 - b12.rank}</small>` : "—"}</div></div>`;
+  const cols = [["rank","Rank"],["name","Player"],["born","Born"],["w","1 wk"],["m3","3 mo"],["m12","12 mo"]];
+  const head = `<div class="sq-row h">${cols.map(([k, l]) => `<button data-s="${k}" class="${SQ.sort === k ? "on" + (SQ.asc ? "" : " asc") : ""}">${l}</button>`).join("")}</div>`;
+  const shown = SQ.all ? rows : rows.slice(0, 100);
+  $("#sqTbl").innerHTML = head + (shown.length ? shown.map(p => `<div class="sq-row">
+      <div class="no">${p.rank}</div>
+      <div style="min-width:0">${p.url ? `<a class="nm" href="${esc(p.url)}" target="_blank" rel="noopener">` : `<span class="nm">`}${esc(p.name)}${p.is72 ? `<span class="sq-72">72</span>` : ""}${p.url ? "</a>" : "</span>"}<div class="ct">${esc(p.cty)}</div></div>
+      <div class="by">${p.born}<small>U${year - p.born}</small></div>
+      ${sqCell(p.rank, p.w)}${sqCell(p.rank, p.m3)}${sqCell(p.rank, p.m12)}
+    </div>`).join("") : `<div class="sq-empty">No players match these filters.</div>`);
+  $("#sqMore").hidden = SQ.all || rows.length <= 100;
+  $("#sqMore").textContent = `Show all ${rows.length}`;
+  const c = T.cmp || {};
+  $("#sqSrc").innerHTML = `Official ${SQ.t.toUpperCase()} singles ranking of ${sqFmt(T.week)}, compared with the rankings of ${sqFmt(c.w)} (1 wk), ${sqFmt(c.m3)} (3 mo) and ${sqFmt(c.m12)} (12 mo). <b>NEW</b> means the player was not ranked then. Source: ${SQ.t === "atp" ? "ATP via Tennis Abstract" : "WTA"}. Updates itself every week.`;
+}
+document.addEventListener("click", e => {
+  const t = e.target.closest(".sqt, .sqa, .sq-row.h button, #sqMore");
+  if (!t) return;
+  if (t.classList.contains("sqt")) { SQ.t = t.dataset.t; SQ.all = false; document.querySelectorAll(".sqt").forEach(b => b.classList.toggle("on", b === t)); }
+  else if (t.classList.contains("sqa")) { SQ.age = +t.dataset.a; SQ.all = false; }
+  else if (t.id === "sqMore") SQ.all = true;
+  else { const s = t.dataset.s; if (SQ.sort === s) SQ.asc = !SQ.asc; else { SQ.sort = s; SQ.asc = true; } }
+  renderScouting();
+});
+$("#sqQ").addEventListener("input", e => { SQ.q = e.target.value; renderScouting(); });
+$("#sqC").addEventListener("change", e => { SQ.c = e.target.value; renderScouting(); });
+async function loadScouting(){
+  try { const r = await fetch("scouting.json?t=" + Date.now(), { cache: "no-store" }); if (r.ok) SCOUT = await r.json(); else if (!SCOUT) SCOUT = {}; } catch (e) { if (!SCOUT) SCOUT = {}; }
+  renderScouting();
+}
 /* ---------- boot ---------- */
 route();
 render();
@@ -1010,6 +1147,8 @@ async function load(){
   }
 }
 load();
+loadScouting();
+setInterval(() => { if (!document.hidden) loadScouting(); }, 30 * 60 * 1000);
 setInterval(() => { if (!document.hidden) load(); }, 60 * 1000);
 document.addEventListener("visibilitychange", () => { if (!document.hidden) load(); });
 // keep "Today / Tomorrow" labels correct if the page stays open past midnight
