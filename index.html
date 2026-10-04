@@ -536,7 +536,7 @@ const mergeRanks = s => { const out = { ...RANK_FALLBACK.players }; for (const [
 const mv = m => m == null ? `<span class="mv same"></span>` : m > 0 ? `<span class="mv up">▲ ${m}</span>` : m < 0 ? `<span class="mv down">▼ ${Math.abs(m)}</span>` : `<span class="mv same">–</span>`;
 let rankTab = "tour", ITF = null;
 function renderItf(){
-  const rows = tour => JUNIOR_PROFILES.map(x => ({ x, p: byId[x.id], d: itfOf(x.id) || {} })).filter(o => o.p && o.p.tour === tour)
+  const rows = tour => JUNIOR_PROFILES.map(x => ({ x, p: byId[x.id], d: itfOf(x.id) || {} })).filter(o => o.p && o.p.tour === tour && o.d.rank)
     .sort((a, b) => (a.d.rank ?? 1e9) - (b.d.rank ?? 1e9) || a.x.born - b.x.born || a.p.last.localeCompare(b.p.last));
   const html = list => list.map(({ x, p, d }) => `<div class="rk">
       <div class="no ${d.rank ? "" : "na"}">${d.rank ? `<span class="hash">#</span>${d.rank}` : "—"}</div>
@@ -553,7 +553,7 @@ function renderItf(){
     <div class="stat"><div class="k">ITF top 10</div><div class="v">${ranked.filter(o => o.d.rank <= 10).length}<small>players</small></div></div>
     <div class="stat"><div class="k">ITF top 100</div><div class="v">${ranked.filter(o => o.d.rank <= 100).length}<small>players</small></div></div>`;
   const wk = ITF?.rankDate ? `, week of ${ITF.rankDate}` : "";
-  $("#itfSrc").textContent = ITF ? `Source: ITF World Tennis Junior Rankings${wk}. Updated every Monday. Players without an ITF junior ranking show the ranking from their profile.` : "Loading ITF junior rankings…";
+  $("#itfSrc").textContent = ITF ? `Source: ITF World Tennis Junior Rankings${wk}. Updated every Monday. Only players with a current ITF junior ranking are listed.` : "Loading ITF junior rankings…";
 }
 function renderRankings(){
   $("#rk-tour").hidden = rankTab !== "tour"; $("#rk-itf").hidden = rankTab !== "itf";
