@@ -1336,10 +1336,19 @@ function renderHome(){
   if (!$("#hpFaces").children.length) $("#hpFaces").innerHTML = ranked.slice(0, 6).map(o => `<img src="${o.p.id}.webp" alt="" loading="lazy" onerror="this.remove()">`).join("");
   // 04 Scouting HQ
   if (SCOUT?.atp || SCOUT?.wta) {
-    const all = [...(SCOUT.atp?.players || []), ...(SCOUT.wta?.players || [])];
-    const climb = all.filter(p => p[5] != null && p[0] <= 500).sort((a, b) => (b[5] - b[0]) - (a[5] - a[0]))[0];
-    $("#hpT4").innerHTML = `${all.length.toLocaleString("en-GB")}<small>U21 players</small>`;
-    $("#hpS4").innerHTML = climb ? `Top 3-month climber inside the top 500: ${esc(climb[1])} ▲${climb[5] - climb[0]}` : "";
+    // how 72 players rank against everyone born in the same year, on their tour
+    const mine = [];
+    for (const t of ["atp", "wta"]) {
+      const list = SCOUT[t]?.players || [], byYear = {};
+      for (const p of list) (byYear[p[3]] = byYear[p[3]] || []).push(p);
+      for (const yr in byYear) byYear[yr].sort((a, b) => a[0] - b[0]).forEach((p, i) => {
+        if (SQ72.has(t + ":" + sqKey(p[1]))) mine.push({ name: p[1], born: p[3], pos: i + 1, tour: t.toUpperCase() });
+      });
+    }
+    const top10 = mine.filter(m => m.pos <= 10).sort((a, b) => a.pos - b.pos || a.born - b.born);
+    const short = n => { const r = ROSTER.find(x => sqKey(x.first + x.last) === sqKey(n)); return r ? `${r.first[0]}. ${r.last}` : n; };
+    $("#hpT4").innerHTML = `${top10.length}<small>of our players are world top 10 for their age</small>`;
+    $("#hpS4").innerHTML = top10.length ? top10.slice(0, 3).map(m => `<strong>${esc(short(m.name))}</strong> No.${m.pos} born ${m.born} (${m.tour})`).join(" · ") : "";
   } else if (SCOUT) { $("#hpT4").textContent = "—"; $("#hpS4").textContent = "Scouting list not available yet"; }
 }
 /* ---------- one spelling per 72 player, and no duplicate fixtures ----------
