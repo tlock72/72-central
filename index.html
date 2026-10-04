@@ -486,10 +486,14 @@ function card(m){
     : pending ? `<span class="when fin">${esc(dayLabel(m.date))} · result pending</span>`
     : `<span class="when ${today ? "today" : ""}">${esc(dayLabel(m.date))}</span>`;
   const times = !fin && !live && !pending
-    ? `<div class="times"><span>Approx. start</span>${m.time ? `<b>${esc(m.time)} UK</b><b>${esc(esTime(m.date, m.time))} Spain</b>` : "<b>Time TBC</b>"}</div>` : "";
+    ? (m.source === "itf"
+      ? `<div class="times"><span>Order of play</span><b>${m.slot ? esc(m.slot) + " (local time)" : "Time TBC"}</b></div>`
+      : `<div class="times"><span>Approx. start</span>${m.time ? `<b>${esc(m.time)} UK</b><b>${esc(esTime(m.date, m.time))} Spain</b>` : "<b>Time TBC</b>"}</div>`) : "";
   const p = byId[m.p1Id] || byId[m.p2Id];
   const link = safeUrl(p?.sofa);
-  const btn = !fin && link ? `<a class="live-btn" href="${esc(link)}" target="_blank" rel="noopener"><span class="dot"></span>${pending ? "Check result" : "Check live score"}</a>` : "";
+  const itfLink = m.source === "itf" && /^https:\/\/www\.itftennis\.com\//.test(m.link || "") ? m.link : null;
+  const btn = itfLink ? `<a class="live-btn" href="${esc(itfLink)}" target="_blank" rel="noopener"><span class="dot"></span>ITF draw &amp; results</a>`
+    : !fin && link ? `<a class="live-btn" href="${esc(link)}" target="_blank" rel="noopener"><span class="dot"></span>${pending ? "Check result" : "Check live score"}</a>` : "";
   return `<article class="match ${(today && !fin) || live ? "today" : ""} ${live ? "is-live" : ""}">
     <div class="m-top"><span class="t">${esc(m.tournament)}<span class="r">${esc(m.round || "")}</span></span>${when}</div>
     ${times}
@@ -534,7 +538,9 @@ function renderScores(){
   renderChamps();
   const lc = STATE?.lastChecked ? new Date(STATE.lastChecked) : null;
   setStale("#staleScores", STATE && (!lc || Date.now() - lc > 26 * 36e5)
-    ? `<b>Heads up:</b> the match schedule hasn't updated since ${lc ? fmtWhen(lc) : "it was set up"}. Matches and results below may be out of date. Check SofaScore for anything important.` : "");
+    ? `<b>Heads up:</b> the match schedule hasn't updated since ${lc ? fmtWhen(lc) : "it was set up"}. Matches and results below may be out of date. Check SofaScore for anything important.`
+    : STATE?.itfChecked && Date.now() - new Date(STATE.itfChecked) > 36 * 36e5
+    ? `<b>Heads up:</b> ITF junior matches haven't updated since ${fmtWhen(new Date(STATE.itfChecked))}. Check the ITF website for the latest junior draws and results.` : "");
   const ms = (STATE?.matches || []).slice();
   const today = ukDate();
   const key = m => `${m.date} ${m.time || "99"}`;
@@ -927,6 +933,18 @@ $("#prof").addEventListener("close", () => { if (location.hash.startsWith("#play
 
 function render(){ renderScores(); renderRankings(); renderPlayers(); }
 
+/* ITF junior matches (itfm.json, refreshed about twice a day): added to the match list, skipping any the main feed already has */
+function addItfMatches(st, im){
+  st.itfChecked = im.checked || null;
+  const last = s => (s || "").split(" ").pop().toLowerCase();
+  const nm = id => byId[id] ? `${byId[id].first[0]}. ${byId[id].last}` : "";
+  const seen = new Set((st.matches || []).flatMap(m => [m.p1Id, m.p2Id].filter(Boolean).map(id => `${m.date}|${id}|${last(m.p1Id === id ? m.p2 : m.p1)}`)));
+  for (const m of im.matches || []) {
+    const id = m.p1Id || m.p2Id, opp = m.p1Id ? m.p2 : m.p1;
+    if (!byId[id] || seen.has(`${m.date}|${id}|${last(opp)}`)) continue;
+    st.matches.push({ ...m, p1: m.p1 || nm(m.p1Id), p2: m.p2 || nm(m.p2Id) });
+  }
+}
 /* ---------- boot ---------- */
 route();
 render();
@@ -935,6 +953,7 @@ async function load(){
     const r = await fetch("data.json?t=" + Date.now(), { cache: "no-store" });
     if (!r.ok) throw new Error(r.status);
     STATE = await r.json();
+    try { const rm = await fetch("itfm.json?t=" + Date.now(), { cache: "no-store" }); if (rm.ok) addItfMatches(STATE, await rm.json()); } catch (e) {}
     try { const ri = await fetch("itf.json?t=" + Date.now(), { cache: "no-store" }); if (ri.ok) ITF = await ri.json(); } catch (e) {}
     render();
   } catch (e) {
