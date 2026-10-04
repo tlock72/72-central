@@ -10,7 +10,7 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700&family=Oswald:wght@400;500;600;700&display=swap" rel="stylesheet">
 <style>
-/* Layout: sticky brand bar + two tabbed views (match centre / rankings), single dark brand look (72 navy + gold) */
+/* Layout: sticky brand bar + three tabbed views (match centre / rankings / player profiles), single dark brand look (72 navy + gold) */
 :root{
   color-scheme: dark;
   --navy:#0C1431; --navy-2:#111B3F; --navy-3:#18234E;
@@ -136,6 +136,88 @@ section.block{margin-bottom:38px}
 footer{border-top:1px solid var(--line);margin-top:30px;padding-block:24px 40px;color:var(--muted-2);font-size:12px}
 footer .wrap{display:flex;justify-content:space-between;gap:12px;flex-wrap:wrap}
 
+/* players */
+.chips{display:flex;gap:8px;flex-wrap:wrap}
+.chip{font-family:var(--display);text-transform:uppercase;letter-spacing:.14em;font-size:12px;padding:8px 16px;border-radius:999px;border:1px solid var(--line);color:var(--muted)}
+.chip:hover{color:var(--white)}
+.chip.on{background:var(--gold);border-color:var(--gold);color:var(--navy)}
+.pgrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(270px,1fr));gap:18px;margin-bottom:20px}
+.pc{position:relative;display:flex;flex-direction:column;text-align:left;min-height:330px;padding:22px;border-radius:20px;overflow:hidden;isolation:isolate;
+  border:1px solid var(--line-2);background:linear-gradient(160deg,var(--navy-3) 0%,var(--navy-2) 45%,#0A1029 100%);transition:transform .25s ease,border-color .25s ease,box-shadow .25s ease}
+.pc::before{content:"";position:absolute;inset:0;z-index:-1;background:radial-gradient(420px 220px at 110% -10%,rgba(208,165,121,.20),transparent 60%)}
+.pc:hover{transform:translateY(-4px);border-color:var(--line);box-shadow:0 18px 40px rgba(0,0,0,.35)}
+.pc .mono{position:absolute;right:-8px;bottom:-30px;z-index:-1;font-family:var(--display);font-weight:700;font-size:190px;line-height:1;letter-spacing:-.04em;
+  color:transparent;-webkit-text-stroke:1.5px rgba(208,165,121,.17);user-select:none;pointer-events:none}
+.pc .top{display:flex;justify-content:space-between;align-items:center}
+.pc .tr{font-family:var(--display);font-size:11px;letter-spacing:.2em;color:var(--navy);background:var(--gold);padding:3px 9px;border-radius:4px;font-weight:600}
+.pc .cc{font-family:var(--display);font-size:12px;letter-spacing:.2em;color:var(--muted)}
+.pc .fn{font-family:var(--display);text-transform:uppercase;letter-spacing:.24em;font-size:13px;color:var(--text);margin-top:34px}
+.pc .ln{font-family:var(--display);text-transform:uppercase;font-weight:600;font-size:34px;line-height:1.02;color:var(--gold);letter-spacing:.01em;margin-top:2px;overflow-wrap:anywhere}
+.pc .meta{font-size:12px;color:var(--muted);margin-top:10px}
+.pc .nums{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-top:auto;padding-top:22px;border-top:1px solid var(--line);}
+.pc .nums div{min-width:0}
+.pc .nums b{display:block;font-family:var(--display);font-size:28px;font-weight:600;color:var(--white);line-height:1;font-variant-numeric:tabular-nums}
+.pc .nums span{display:block;font-size:10px;letter-spacing:.14em;text-transform:uppercase;color:var(--muted-2);margin-top:6px}
+.pc .go{display:inline-flex;align-items:center;gap:6px;margin-top:16px;font-family:var(--display);font-size:11px;letter-spacing:.18em;text-transform:uppercase;color:var(--gold)}
+.pc .go i{font-style:normal;transition:transform .2s}
+.pc:hover .go i{transform:translateX(4px)}
+
+dialog.prof{width:min(940px,calc(100vw - 32px));max-height:calc(100vh - 40px);padding:0;border:1px solid var(--line);border-radius:24px;background:#0B1230;color:var(--text);box-shadow:0 30px 80px rgba(0,0,0,.6)}
+dialog.prof::backdrop{background:rgba(5,9,25,.72);backdrop-filter:blur(6px);-webkit-backdrop-filter:blur(6px)}
+dialog.prof[open]{animation:pop .28s ease}
+@keyframes pop{from{opacity:0;transform:translateY(12px) scale(.98)}to{opacity:1;transform:none}}
+.ph{position:relative;padding:38px 40px 30px;overflow:hidden;isolation:isolate;border-bottom:1px solid var(--line);
+  background:radial-gradient(700px 300px at 100% 0%,rgba(208,165,121,.22),transparent 60%),linear-gradient(160deg,var(--navy-3),#0B1230)}
+.ph .mono{position:absolute;right:20px;top:-40px;z-index:-1;font-family:var(--display);font-weight:700;font-size:300px;line-height:1;color:transparent;-webkit-text-stroke:2px rgba(208,165,121,.16);user-select:none}
+.ph .x{position:absolute;top:18px;right:18px;width:38px;height:38px;border-radius:50%;border:1px solid var(--line);color:var(--gold);font-size:18px;line-height:1;display:grid;place-items:center;background:rgba(12,20,49,.6)}
+.ph .x:hover{background:var(--gold-dim)}
+.ph .fn{font-family:var(--display);text-transform:uppercase;letter-spacing:.3em;font-size:15px;color:var(--text)}
+.ph .ln{font-family:var(--display);text-transform:uppercase;font-weight:600;font-size:clamp(44px,8vw,78px);line-height:.95;color:var(--gold);margin-top:4px;overflow-wrap:anywhere}
+.ph .facts{display:flex;flex-wrap:wrap;gap:8px 26px;margin-top:20px;font-size:13px;color:var(--muted)}
+.ph .facts b{color:var(--white);font-weight:600}
+.pb{padding:30px 40px 40px;display:grid;grid-template-columns:minmax(0,1fr);gap:30px}
+dialog.prof{overflow-x:hidden}
+.big{display:grid;grid-template-columns:repeat(4,1fr);gap:12px}
+.big div{border:1px solid var(--line-2);border-radius:16px;padding:18px;background:rgba(255,255,255,.025)}
+.big b{display:block;font-family:var(--display);font-size:40px;font-weight:600;color:var(--white);line-height:1;font-variant-numeric:tabular-nums}
+.big b small{font-size:18px;color:var(--gold);margin-right:2px;font-weight:500}
+.big span{display:block;font-size:10px;letter-spacing:.16em;text-transform:uppercase;color:var(--muted);margin-top:8px}
+.pk{font-family:var(--display);text-transform:uppercase;letter-spacing:.24em;font-size:12px;color:var(--gold);margin:0 0 14px;display:flex;align-items:center;gap:12px}
+.pk::after{content:"";flex:1;height:1px;background:var(--line)}
+.tg{display:grid;grid-template-columns:repeat(auto-fit,minmax(250px,1fr));gap:14px}
+.tb{border:1px solid var(--line-2);border-radius:16px;padding:18px;background:rgba(255,255,255,.02)}
+.tb .h{display:flex;justify-content:space-between;align-items:baseline}
+.tb .h span{font-size:11px;letter-spacing:.16em;text-transform:uppercase;color:var(--muted)}
+.tb .h b{font-family:var(--display);font-size:32px;color:var(--white);font-weight:600;line-height:1}
+.bar2{display:flex;height:8px;border-radius:99px;overflow:hidden;margin:14px 0 12px;background:rgba(255,255,255,.05);gap:2px}
+.bar2 i{display:block;height:100%}
+.leg{display:flex;flex-wrap:wrap;gap:6px 14px;font-size:12px;color:var(--muted)}
+.leg span{display:inline-flex;align-items:center;gap:6px}
+.leg em{width:8px;height:8px;border-radius:2px;display:inline-block}
+.leg b{color:var(--white);font-weight:600}
+.partners{display:flex;flex-wrap:wrap;gap:8px}
+.partners span{font-family:var(--display);text-transform:uppercase;letter-spacing:.12em;font-size:13px;color:var(--text);border:1px solid var(--line);border-radius:999px;padding:8px 14px;background:rgba(208,165,121,.05)}
+.soc{display:grid;grid-template-columns:repeat(auto-fill,minmax(130px,1fr));gap:10px}
+.soc div{border:1px solid var(--line-2);border-radius:14px;padding:14px 16px}
+.soc b{display:block;font-family:var(--display);font-size:24px;color:var(--white);font-weight:600;line-height:1}
+.soc span{display:block;font-size:10px;letter-spacing:.14em;text-transform:uppercase;color:var(--muted);margin-top:6px}
+.soc .tot{background:var(--gold);border-color:var(--gold)}
+.soc .tot b{color:var(--navy)} .soc .tot span{color:rgba(12,20,49,.7)}
+blockquote.q{margin:0;padding:26px 28px 24px 64px;position:relative;border-radius:18px;background:linear-gradient(135deg,rgba(208,165,121,.12),rgba(208,165,121,.03));border:1px solid var(--line)}
+blockquote.q::before{content:"\201C";position:absolute;left:18px;top:4px;font-family:Georgia,serif;font-size:72px;color:var(--gold);line-height:1}
+blockquote.q p{margin:0;font-size:16px;line-height:1.65;color:var(--white);font-style:italic}
+blockquote.q cite{display:block;margin-top:12px;font-style:normal;font-family:var(--display);letter-spacing:.2em;text-transform:uppercase;font-size:12px;color:var(--gold)}
+.pnav{display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:10px;border-top:1px solid var(--line);padding-top:20px}
+.pnav button{font-family:var(--display);text-transform:uppercase;letter-spacing:.14em;font-size:12px;color:var(--muted);padding:8px 0}
+.pnav button:hover{color:var(--gold)}
+@media (max-width:640px){
+  .ph{padding:30px 22px 24px}.pb{padding:24px 22px 30px}
+  .big{grid-template-columns:repeat(2,1fr)}.big b{font-size:32px}
+  .pc{min-height:290px}.pc .fn{margin-top:22px}
+  .pc .ln{font-size:30px}
+  .pnav .live-btn{order:-1;width:100%;justify-content:center}
+}
+
 @media (max-width:860px){.tours{grid-template-columns:1fr}.stats{grid-template-columns:repeat(2,1fr)}}
 @media (max-width:640px){
   .wrap{padding-inline:16px}
@@ -165,6 +247,7 @@ footer .wrap{display:flex;justify-content:space-between;gap:12px;flex-wrap:wrap}
     <nav>
       <a href="#scores" data-tab="scores">72 Live Scores</a>
       <a href="#rankings" data-tab="rankings">72 Rankings</a>
+      <a href="#players" data-tab="players">72 Players</a>
     </nav>
   </div>
 </header>
@@ -215,6 +298,18 @@ footer .wrap{display:flex;justify-content:space-between;gap:12px;flex-wrap:wrap}
     </div>
     <p class="src" id="rankSrc"></p>
   </div>
+  <div id="page-players" hidden>
+    <div class="hero">
+      <div>
+        <div class="eyebrow">SeventyTwo Sports Group</div>
+        <h1><span class="n">72</span> Players</h1>
+        <p class="sub">The 2026 tennis roster. Tap a player for their full profile: titles, partners, social reach and more.</p>
+      </div>
+      <div class="chips" role="group" aria-label="Filter by tour"><button class="chip on" data-f="ALL">All</button><button class="chip" data-f="ATP">ATP</button><button class="chip" data-f="WTA">WTA</button></div>
+    </div>
+    <div class="pgrid" id="pgrid"></div>
+  </div>
+  <dialog class="prof" id="prof" aria-label="Player profile"></dialog>
 </main>
 
 <footer><div class="wrap"><span>© SeventyTwo Sports Group · Internal use only</span><span>Times shown in UK and Spain time</span></div></footer>
@@ -286,9 +381,14 @@ function dayLabel(iso){
 
 /* ---------- tabs ---------- */
 function route(){
-  const tab = location.hash === "#rankings" ? "rankings" : "scores";
+  const hash = location.hash;
+  const tab = hash === "#rankings" ? "rankings" : hash.startsWith("#players") ? "players" : "scores";
   $("#page-scores").hidden = tab !== "scores";
   $("#page-rankings").hidden = tab !== "rankings";
+  $("#page-players").hidden = tab !== "players";
+  const pid = hash.startsWith("#players/") ? hash.slice(9) : null;
+  if (pid && profById[pid]) openProfile(pid);
+  else if ($("#prof").open) $("#prof").close();
   document.querySelectorAll("nav a").forEach(a => a.classList.toggle("active", a.dataset.tab === tab));
 }
 window.addEventListener("hashchange", route);
@@ -425,7 +525,169 @@ function renderRankings(){
   $("#rankSrc").textContent = `Source: ${r.source || "ATP & WTA"}. Updated every Monday.`;
 }
 
-function render(){ renderScores(); renderRankings(); }
+/* ---------- 72 players (profiles from the 2026 roster deck) ---------- */
+const K = 1e3, M = 1e6;
+const PROFILES = [
+  { id:"deminaur", age:27, nat:"Australian", plays:"Right-handed · two-handed backhand", high:5,
+    titles:[{ k:"ATP titles", n:11, p:[["500",4],["250",7]] }, { k:"Team titles", team:1, n:2, p:[["Laver Cup",2]] }],
+    partners:["Wilson","SAJ","SAP","Gerald Charles","Pepperstone","La Roche-Posay","Weet-Bix"],
+    social:{ Instagram:551*K, TikTok:54*K, X:74*K },
+    quote:["I've been watching Alex for a while, and his work ethic and dedication to the game are impressive. He has a great attitude and the kind of tenacity that can take him far.","Pat Rafter"] },
+  { id:"rublev", age:28, nat:"Russian", plays:"Right-handed · two-handed backhand", high:5,
+    titles:[{ k:"ATP titles", n:18, p:[["Masters 1000",2],["500",6],["250",10]] }, { k:"Team titles", team:1, n:4, p:[["Davis Cup",1],["Laver Cup",1],["ATP Cup",1],["Tokyo 2020",1]] }],
+    partners:["waterdrop","K-Swiss","HEAD","Vanguart","PRYPCO Blocks"],
+    social:{ Instagram:626*K, TikTok:42*K, X:130*K, Xiaohongshu:27*K },
+    quote:["He is an avid supporter of peace and unity, and proved so the day after Russia invaded Ukraine.","NBC Sports"] },
+  { id:"svitolina", age:31, nat:"Ukrainian", plays:"Right-handed · two-handed backhand", high:3,
+    titles:[{ k:"WTA titles", n:20, p:[["WTA Finals",1],["1000",5],["Tour",14]] }, { k:"Team titles", team:1, n:4, note:"Including Tokyo 2020" }],
+    partners:["waterdrop","MacPaw","adidas","Mercedes-Benz","VISA","Diadem","United24","EA7","WhiteBIT"],
+    social:{ Instagram:1.8*M, TikTok:82*K, X:350*K },
+    quote:["I will not stand aside. I will do my best to help Ukraine win its most important fight.","Elina Svitolina"] },
+  { id:"kasatkina", age:29, nat:"Australian", plays:"Right-handed · two-handed backhand", high:8,
+    titles:[{ k:"WTA titles", n:9, p:[["500",3],["250",5],["125",1]] }],
+    partners:["adidas","Artengo","Royaltiz","Decathlon"],
+    social:{ Instagram:347*K, TikTok:19*K, X:44*K, YouTube:70*K },
+    quote:["It's really incredible that she's coming out and she's standing for what she believes in.","Naomi Osaka"] },
+  { id:"buse", age:22, nat:"Peruvian", plays:"Right-handed · two-handed backhand",
+    titles:[{ k:"ATP titles", n:3, p:[["500",1],["Challenger 125",1],["Challenger 100",1]] }, { k:"ITF titles", n:3, p:[["M25",3]] }],
+    partners:["Banco Falabella","Herbalife","TEC","Carles Ferrer Salat","ISDIN","Peugeot","ETNA","Wilson","Lotto"],
+    social:{ Instagram:184*K, TikTok:52*K } },
+  { id:"altmaier", age:27, nat:"German", plays:"Right-handed · two-handed backhand",
+    titles:[{ k:"ATP Challenger titles", n:7, p:[["Challenger",7]] }],
+    partners:["Yonex"], social:{ Instagram:47*K } },
+  { id:"jabeur", age:31, nat:"Tunisian", plays:"Right-handed · two-handed backhand", high:2,
+    titles:[{ k:"WTA titles", n:5, p:[["1000",1],["500",2],["250",2]] }],
+    partners:["Kayanee"], social:{ Instagram:1.3*M, TikTok:102*K, X:575*K, Facebook:1.3*M } },
+  { id:"monfils", age:39, nat:"French", plays:"Right-handed · two-handed backhand", high:6,
+    titles:[{ k:"ATP titles", n:13, p:[["500",3],["250",10]] }],
+    partners:["Artengo","MacPaw","Bitpanda"],
+    social:{ Instagram:1.4*M, TikTok:280*K, Facebook:449*K, X:802*K, YouTube:88*K, Twitch:138*K },
+    quote:["Monfils is a special player, a different player, a spectacular player.","Rafael Nadal"] },
+  { id:"bejlek", age:20, nat:"Czech", plays:"Right-handed · two-handed backhand",
+    titles:[{ k:"WTA titles", n:5, p:[["500",1],["125",4]] }, { k:"ITF titles", n:7, p:[["W75",1],["W60",3],["W25",3]] }],
+    partners:["AGEL","Babolat","THAYA"], social:{ Instagram:29*K } },
+  { id:"starodubtseva", age:26, nat:"Ukrainian", plays:"Right-handed · two-handed backhand",
+    titles:[{ k:"ITF titles", n:4, p:[["W60",3],["W25",1]] }],
+    partners:["adidas"], social:{ Instagram:16*K },
+    quote:["Starodubtseva has become only the seventh player since 2009 to make the last eight in her first WTA 1000 main draw. Yuliia is the first woman in the Open Era to qualify for all four majors in a single season.","WTA"] },
+  { id:"coric", age:29, nat:"Croatian", plays:"Right-handed · two-handed backhand", high:12,
+    titles:[{ k:"ATP titles", n:3, p:[["Masters 1000",1],["500",1],["250",1]] }],
+    partners:["ASICS","HEAD"], social:{ Instagram:233*K, Facebook:145*K, X:63*K },
+    quote:["No one is surprised to see Borna win Cincinnati. He was the leader of the next gen, he has so much game and deserves to be at the top.","Serena Williams"] },
+  { id:"kym", age:23, nat:"Swiss", plays:"Right-handed · two-handed backhand",
+    titles:[{ k:"Titles", n:5, p:[["Challenger",2],["ITF Futures",3]] }],
+    partners:["HEAD"], social:{ Instagram:10*K } },
+  { id:"schwaerzler", age:20, nat:"Austrian", plays:"Left-handed · two-handed backhand", junior:1,
+    titles:[{ k:"Titles", n:5, p:[["Challenger",1],["ITF Futures",4]] }],
+    partners:["AlphaTauri","BMW","Haemo Pharma","HEAD","Red Bull"], social:{ Instagram:15*K } },
+  { id:"romero", age:24, nat:"Spanish", plays:"Right-handed · two-handed backhand", high:123,
+    titles:[{ k:"WTA titles", n:1, p:[["125",1]] }, { k:"ITF titles", n:5, p:[["W50",2],["W35",1],["W25",2]] }],
+    partners:["Joma","Yonex","ElPozo"], social:{ Instagram:6.4*K } },
+  { id:"kuzuhara", age:22, nat:"American", plays:"Right-handed · two-handed backhand", high:394,
+    titles:[{ k:"Titles", n:2, p:[["ITF Futures",2]] }],
+    partners:["Dunlop"], social:{ Instagram:4.6*K } },
+  { id:"sawangkaew", age:23, nat:"Thai", plays:"Right-handed · two-handed backhand",
+    titles:[{ k:"WTA titles", n:1, p:[["125",1]] }, { k:"ITF titles", n:8, p:[["W50",1],["W40",2],["W25",3],["W15",2]] }],
+    partners:["ASICS","Wilson","PTT"], social:{ Instagram:6.7*K } },
+  { id:"jones", age:25, nat:"British", plays:"Right-handed · two-handed backhand",
+    titles:[{ k:"WTA titles", n:4, p:[["125",4]] }, { k:"ITF titles", n:6, p:[["W75",3],["W60",1],["W25",2]] }],
+    partners:["adidas","Wilson"], social:{ Instagram:10.3*K } },
+  { id:"ristic", age:20, nat:"Serbian", plays:"Right-handed · two-handed backhand",
+    titles:[{ k:"ITF titles", n:3, p:[["W75",1],["W60",1],["W25",1]] }],
+    partners:["adidas","Dunlop"], social:{ Instagram:8.6*K } },
+];
+const profById = Object.fromEntries(PROFILES.map(p => [p.id, p]));
+const TONES = ["#E6C9A5","#D0A579","#A97F55","#7E5E3F","#F3E3CF","#5C4630"];
+const fmtN = n => n >= M ? (Math.round(n / M * 10) / 10) + "M" : n >= K ? (Math.round(n / K * 10) / 10) + "K" : String(n);
+const pad2 = n => n == null ? "—" : String(n).padStart(2, "0");
+const initials = p => (p.first[0] + p.last.replace(/^de /i, "")[0]).toUpperCase();
+let pFilter = "ALL";
+const bestOf = (...a) => { a = a.filter(Boolean); return a.length ? Math.min(...a) : null; };
+
+function playerRank(id){
+  const r = mergeRanks(STATE?.rankings)[id];
+  return r?.rank ?? null;
+}
+function playerList(){
+  return PROFILES.map(x => ({ x, p: byId[x.id], rank: playerRank(x.id) }))
+    .filter(o => o.p && (pFilter === "ALL" || o.p.tour === pFilter))
+    .sort((a, b) => (a.rank ?? 1e9) - (b.rank ?? 1e9) || a.p.last.localeCompare(b.p.last));
+}
+function renderPlayers(){
+  const list = playerList();
+  $("#pgrid").innerHTML = list.map(({ x, p, rank }) => {
+    const titles = x.titles.reduce((s, t) => s + (t.team ? 0 : t.n), 0);
+    const best = bestOf(x.high, rank);
+    return `<button class="pc" data-id="${x.id}" aria-label="Open ${esc(p.first)} ${esc(p.last)} profile">
+      <span class="mono" aria-hidden="true">${initials(p)}</span>
+      <div class="top"><span class="tr">${p.tour}</span><span class="cc">${esc(p.country)}</span></div>
+      <div class="fn">${esc(p.first)}</div>
+      <div class="ln">${esc(p.last)}</div>
+      <div class="meta">${x.age} · ${esc(x.nat)}</div>
+      <div class="nums">
+        <div><b>${rank ? pad2(rank) : "—"}</b><span>Ranking</span></div>
+        <div><b>${best ? pad2(best) : "—"}</b><span>Career high</span></div>
+        <div><b>${pad2(titles)}</b><span>Titles</span></div>
+      </div>
+      <span class="go">View profile <i>→</i></span>
+    </button>`;
+  }).join("");
+  document.querySelectorAll(".chip").forEach(c => c.classList.toggle("on", c.dataset.f === pFilter));
+}
+function openProfile(id){
+  const x = profById[id], p = byId[id];
+  if (!x || !p) return;
+  const rank = playerRank(id);
+  const best = bestOf(x.high, rank);
+  const titles = x.titles.reduce((s, t) => s + (t.team ? 0 : t.n), 0);
+  const reach = Object.values(x.social).reduce((s, v) => s + v, 0);
+  const tblock = t => {
+    const parts = t.p || [];
+    const bar = parts.length ? `<div class="bar2">${parts.map(([, n], i) => `<i style="flex:${n};background:${TONES[i % TONES.length]}"></i>`).join("")}</div>
+      <div class="leg">${parts.map(([k, n], i) => `<span><em style="background:${TONES[i % TONES.length]}"></em>${esc(k)} <b>×${n}</b></span>`).join("")}</div>`
+      : `<div class="leg" style="margin-top:12px">${esc(t.note || "")}</div>`;
+    return `<div class="tb"><div class="h"><span>${esc(t.k)}</span><b>${pad2(t.n)}</b></div>${bar}</div>`;
+  };
+  const list = playerList(), i = list.findIndex(o => o.x.id === id);
+  const prev = list[(i - 1 + list.length) % list.length], next = list[(i + 1) % list.length];
+  $("#prof").innerHTML = `
+    <div class="ph">
+      <span class="mono" aria-hidden="true">${initials(p)}</span>
+      <button class="x" data-close aria-label="Close">✕</button>
+      <div class="fn">${esc(p.first)}</div>
+      <div class="ln">${esc(p.last)}</div>
+      <div class="facts"><span>Age <b>${x.age}</b></span><span>Nationality <b>${esc(x.nat)}</b></span><span>Plays <b>${esc(x.plays)}</b></span><span>Tour <b>${p.tour}</b></span></div>
+    </div>
+    <div class="pb">
+      <div class="big">
+        <div><b>${rank ? `<small>#</small>${rank}` : "—"}</b><span>Current ${p.tour} ranking</span></div>
+        <div><b>${x.junior ? `<small>#</small>${x.junior}` : best ? `<small>#</small>${best}` : "—"}</b><span>${x.junior ? "Highest ITF junior ranking" : "Career-high ranking"}</span></div>
+        <div><b>${pad2(titles)}</b><span>Career titles${x.titles.some(t => t.team) ? " (excl. team)" : ""}</span></div>
+        <div><b>${fmtN(reach)}</b><span>Social following</span></div>
+      </div>
+      <section><h3 class="pk">Titles</h3><div class="tg">${x.titles.map(tblock).join("")}</div></section>
+      <section><h3 class="pk">Partner line-up</h3><div class="partners">${x.partners.map(n => `<span>${esc(n)}</span>`).join("")}</div></section>
+      <section><h3 class="pk">Social media</h3><div class="soc">
+        <div class="tot"><b>${fmtN(reach)}</b><span>Combined following</span></div>
+        ${Object.entries(x.social).map(([k, v]) => `<div><b>${fmtN(v)}</b><span>${esc(k)}</span></div>`).join("")}
+      </div></section>
+      ${x.quote ? `<blockquote class="q"><p>${esc(x.quote[0])}</p><cite>${esc(x.quote[1])}</cite></blockquote>` : ""}
+      <div class="pnav"><button data-go="${prev.x.id}">← ${esc(prev.p.last)}</button>${p.sofa ? `<a class="live-btn" href="${esc(safeUrl(p.sofa) || "#")}" target="_blank" rel="noopener"><span class="dot"></span>SofaScore profile</a>` : ""}<button data-go="${next.x.id}">${esc(next.p.last)} →</button></div>
+    </div>`;
+  const d = $("#prof");
+  if (!d.open) d.showModal();
+  d.scrollTop = 0;
+  if (location.hash !== "#players/" + id) history.replaceState(null, "", "#players/" + id);
+}
+document.addEventListener("click", e => {
+  const card = e.target.closest(".pc"); if (card) return openProfile(card.dataset.id);
+  const chip = e.target.closest(".chip"); if (chip) { pFilter = chip.dataset.f; return renderPlayers(); }
+  const go = e.target.closest("[data-go]"); if (go) return openProfile(go.dataset.go);
+  if (e.target.closest("[data-close]") || e.target.id === "prof") $("#prof").close();
+});
+$("#prof").addEventListener("close", () => { if (location.hash.startsWith("#players/")) history.replaceState(null, "", "#players"); });
+
+function render(){ renderScores(); renderRankings(); renderPlayers(); }
 
 /* ---------- boot ---------- */
 route();
