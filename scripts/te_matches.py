@@ -1,10 +1,4 @@
 """
-72 Central - Tennis Europe matches (runs once a day from 07:30 UK inside the 'Update scores' workflow, no Claude).
-
-Used with Tennis Europe's permission, for internal use only. Reads each 72 player's Tennis Europe
-profile page (one page per player, a few seconds apart) on Tennis Europe's official results
-system and writes te.json: singles matches from the last week and anything scheduled, which the
-website shows alongside the other matches.
 """
 import html, json, os, re, time, unicodedata, urllib.parse, urllib.request
 from http.cookiejar import CookieJar
