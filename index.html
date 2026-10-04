@@ -1034,7 +1034,7 @@ setInterval(() => { if (!document.hidden) renderScores(); }, 5 * 60 * 1000);
     } else {
       const b = document.querySelector(".gate-box"); b.classList.remove("shake"); void b.offsetWidth; b.classList.add("shake");
       document.getElementById("gateErr").textContent = "Incorrect passcode";
-      ins.forEach(i => i.value = ""); ins[0].focus();
+      ins.forEach(i => { i.value = ""; i.type = "password"; }); ins[0].focus();
     }
   }
   ins.forEach((inp, k) => {
@@ -1042,11 +1042,14 @@ setInterval(() => { if (!document.hidden) renderScores(); }, 5 * 60 * 1000);
       const v = inp.value.replace(/\D/g, "").split("");
       inp.value = v[0] || "";
       v.slice(1).forEach((c, j) => { if (ins[k + 1 + j]) ins[k + 1 + j].value = c; });
+      // show only the most recently typed digit; the rest stay as dots
+      ins.forEach(i => i.type = "password");
+      if (v.length) ins[Math.min(k + v.length - 1, ins.length - 1)].type = "text";
       document.getElementById("gateErr").textContent = "";
       const next = ins.find(i => !i.value);
       if (next) next.focus(); else check();
     });
-    inp.addEventListener("keydown", e => { if (e.key === "Backspace" && !inp.value && k > 0) { ins[k - 1].value = ""; ins[k - 1].focus(); } });
+    inp.addEventListener("keydown", e => { if (e.key === "Backspace") ins.forEach(i => i.type = "password"); if (e.key === "Backspace" && !inp.value && k > 0) { ins[k - 1].value = ""; ins[k - 1].focus(); } });
   });
   document.getElementById("gateLogo").src = document.querySelector(".brand img")?.src || "";
   if (document.documentElement.classList.contains("locked")) ins[0].focus();
