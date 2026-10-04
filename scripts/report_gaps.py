@@ -65,6 +65,9 @@ def gaps():
         out.append(f"ITF junior rankings haven't been updated since {it['checked']}.")
     # 5) ATP/WTA rankings
     d = load("data.json")
+    if d.get("quotaHit") and ukday(d["quotaHit"]) == TODAY:
+        out.append(f"The live-score feed's free daily allowance ran out on {TODAY} (at {when(d['quotaHit']).astimezone(UK):%H:%M} UK). "
+                   "Today's results and 'In progress' updates will be late until it resets overnight.")
     if d.get("rankingsAsOf") and d["rankingsAsOf"] < ago(9):
         out.append(f"ATP/WTA rankings haven't been fully updated since {d['rankingsAsOf']}.")
     return out
