@@ -242,7 +242,8 @@ blockquote.q cite{display:block;margin-top:12px;font-style:normal;font-family:va
   .bar{flex-direction:column;align-items:stretch;gap:12px;padding-block:14px}
   .brand{justify-content:center}
   .brand .tag{display:none}
-  nav a{flex:1;text-align:center;padding:10px 8px;font-size:12px}
+  nav a{flex:auto;text-align:center;padding:10px 8px;font-size:11px;letter-spacing:.06em}
+  nav .n72{display:none}
   .hero{padding-block:26px 16px}
   .checked{align-items:flex-start;text-align:left}
   .grid{grid-template-columns:1fr}
@@ -263,9 +264,9 @@ blockquote.q cite{display:block;margin-top:12px;font-style:normal;font-family:va
       <span class="tag">Tennis Hub</span>
     </a>
     <nav>
-      <a href="#scores" data-tab="scores">72 Live Scores</a>
-      <a href="#rankings" data-tab="rankings">72 Rankings</a>
-      <a href="#players" data-tab="players">72 Players</a>
+      <a href="#scores" data-tab="scores"><span class="n72">72 </span>Competition Zone</a>
+      <a href="#rankings" data-tab="rankings"><span class="n72">72 </span>Rankings</a>
+      <a href="#players" data-tab="players"><span class="n72">72 </span>Players</a>
     </nav>
   </div>
 </header>
@@ -275,7 +276,7 @@ blockquote.q cite{display:block;margin-top:12px;font-style:normal;font-family:va
     <div class="hero">
       <div>
         <div class="eyebrow">SeventyTwo Sports Group</div>
-        <h1><span class="n">72</span> Live Scores</h1>
+        <h1><span class="n">72</span> Competition Zone</h1>
         <p class="sub">Every match on the 72 roster's schedule. Start times are approximate and shown in UK and Spain time. Tap <b>Check live score</b> to follow any match on SofaScore.</p>
       </div>
       <div class="checked"><span>Schedule last checked</span><b id="checked">Loading…</b></div>
@@ -283,7 +284,7 @@ blockquote.q cite{display:block;margin-top:12px;font-style:normal;font-family:va
 
     <section class="block">
       <div class="sec-h"><h2>Today's matches<span id="todayLbl" class="dt"></span></h2><span class="count" id="cToday">0</span><span class="rule"></span></div>
-      <p class="sec-d">Every 72 match scheduled for today (UK date), plus any match being played right now.</p>
+      <p class="sec-d">Every 72 match scheduled for today (UK date).</p>
       <div class="grid" id="gToday"></div>
     </section>
     <section class="block">
@@ -332,7 +333,7 @@ blockquote.q cite{display:block;margin-top:12px;font-style:normal;font-family:va
       <div>
         <div class="eyebrow">SeventyTwo Sports Group</div>
         <h1><span class="n">72</span> Players</h1>
-        <p class="sub">The 2026 tennis roster. Juniors with an ATP or WTA ranking sit with the tour players; the rest are Next Gen. Tap a player for their full profile.</p>
+        <p class="sub">The 2026 tennis roster. Under-18s appear under ATP or WTA and in Next Gen. Tap a player for their full profile.</p>
       </div>
       <div class="chips" role="group" aria-label="Filter by tour"><button class="chip on" data-f="ALL">All</button><button class="chip" data-f="ATP">ATP</button><button class="chip" data-f="WTA">WTA</button><button class="chip" data-f="NEXT">Next Gen</button></div>
     </div>
@@ -447,7 +448,7 @@ function esTime(date, time){
 function card(m){
   const today = m.date === ukDate();
   const fin = m.status === "finished";
-  const live = m.status === "live";
+  const live = false; // a match being played shows the same as any other match today
   const ours = id => !!byId[id];
   const row = (side) => {
     const id = side === 1 ? m.p1Id : m.p2Id, name = side === 1 ? m.p1 : m.p2;
@@ -479,7 +480,7 @@ function renderScores(){
   const ms = (STATE?.matches || []).slice();
   const today = ukDate();
   const key = m => `${m.date} ${m.time || "99"}`;
-  const tday = ms.filter(m => m.status === "live" || (m.date === today && m.status !== "finished")).sort((a,b) => (b.status === "live") - (a.status === "live") || key(a).localeCompare(key(b)));
+  const tday = ms.filter(m => m.status === "live" || (m.date === today && m.status !== "finished")).sort((a,b) => key(a).localeCompare(key(b)));
   const next = ms.filter(m => m.date > today && m.status === "scheduled").sort((a,b) => key(a).localeCompare(key(b)));
   // last 24 hours, by start time (a result with no start time counts as late that day)
   const cutoff = Date.now() - 864e5;
@@ -504,7 +505,7 @@ function renderScores(){
     const up = mine.filter(m => m.status !== "finished" && m.date >= today).sort((a,b) => key(a).localeCompare(key(b)))[0];
     const last = mine.filter(m => m.status === "finished").sort((a,b) => key(b).localeCompare(key(a)))[0];
     let st = "No match scheduled", on = false;
-    if (up) { const opp = up.p1Id === p.id ? up.p2 : up.p1; st = up.status === "live" ? `Playing now · vs ${opp} · ${up.tournament}` : `${dayLabel(up.date)}${up.time ? " ~" + up.time + " UK" : ""} · vs ${opp} · ${up.tournament}`; on = up.date === today; }
+    if (up) { const opp = up.p1Id === p.id ? up.p2 : up.p1; st = `${dayLabel(up.date)}${up.time ? " ~" + up.time + " UK" : ""} · vs ${opp} · ${up.tournament}`; on = up.date === today; }
     else if (last) { const w = (last.winner === 1 && last.p1Id === p.id) || (last.winner === 2 && last.p2Id === p.id); st = `${w ? "Won" : "Lost"} ${last.round || ""} · ${last.tournament} · ${dayLabel(last.date)}`; }
     if (STATE?.status?.[p.id]) st = STATE.status[p.id];
     const link = safeUrl(p.sofa);
@@ -751,11 +752,13 @@ function playerRank(id){
 }
 const itfOf = id => ITF?.players?.[id] || null;
 // Pros sit under their tour. Juniors join ATP/WTA once they hold an ATP/WTA ranking, otherwise they are Next Gen.
-const groupOf = (x, p) => x.kind === "junior" && !playerRank(x.id) ? "NEXT" : p.tour;
+// Under-18s show under their tour AND Next Gen. Older juniors join their tour once ranked, otherwise Next Gen.
+const under18 = x => x.kind === "junior" && new Date().getFullYear() - x.born <= 18;
+const groupsOf = (x, p) => x.kind !== "junior" ? [p.tour] : under18(x) ? [p.tour, "NEXT"] : playerRank(x.id) ? [p.tour] : ["NEXT"];
 function playerList(){
   const key = o => o.x.kind === "junior" ? (o.rank ? 2e4 + o.rank : 4e4 + (o.itf ?? 9e3)) : (o.rank ?? 1e4);
   return ALL_PROFILES.map(x => ({ x, p: byId[x.id], rank: playerRank(x.id), itf: itfOf(x.id)?.rank ?? null }))
-    .filter(o => o.p && (pFilter === "ALL" || groupOf(o.x, o.p) === pFilter))
+    .filter(o => o.p && (pFilter === "ALL" || groupsOf(o.x, o.p).includes(pFilter)))
     .sort((a, b) => key(a) - key(b) || a.p.last.localeCompare(b.p.last));
 }
 function cardNums(x, rank){
@@ -769,11 +772,11 @@ function cardNums(x, rank){
 function renderPlayers(){
   const list = playerList();
   $("#pgrid").innerHTML = list.map(({ x, p, rank }) => {
-    const g = groupOf(x, p);
+    const gs = groupsOf(x, p), ng = gs.includes("NEXT") && (pFilter === "NEXT" || pFilter === "ALL" || !gs.includes(pFilter));
     return `<button class="pc" data-id="${x.id}" aria-label="Open ${esc(p.first)} ${esc(p.last)} profile">
       <span class="bg" aria-hidden="true" style="background-image:url('${x.id}.webp')"></span><span class="shade" aria-hidden="true"></span>
       <span class="mono" aria-hidden="true">${initials(p)}</span>
-      <div class="top"><span class="tr">${g === "NEXT" ? "NEXT GEN" : p.tour}</span><span class="cc">${esc(x.kind === "junior" ? x.grp + " · " + p.country : p.country)}</span></div>
+      <div class="top"><span class="tr">${ng ? "NEXT GEN" : p.tour}</span><span class="cc">${esc(x.kind === "junior" ? x.grp + " · " + p.country : p.country)}</span></div>
       <div class="fn">${esc(p.first)}</div>
       <div class="ln">${esc(p.last)}</div>
       <div class="meta">${x.kind === "junior" ? `Born ${x.born}` : x.age} · ${esc(x.nat)}</div>
