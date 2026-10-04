@@ -298,7 +298,7 @@ blockquote.q cite{display:block;margin-top:12px;font-style:normal;font-family:va
 
     <section class="block">
       <div class="sec-h"><h2>Today's matches<span id="todayLbl" class="dt"></span></h2><span class="count" id="cToday">0</span><span class="rule"></span></div>
-      <p class="sec-d">Every 72 match scheduled for today (UK date).</p>
+      <p class="sec-d">Every 72 match scheduled for today (UK date). Results are updated once a day: today's scores appear in <b>Results in the last 48 hours</b> tomorrow. To follow a match or see a result sooner, check SofaScore.</p>
       <div class="grid" id="gToday"></div>
     </section>
     <section class="block">
@@ -306,7 +306,7 @@ blockquote.q cite{display:block;margin-top:12px;font-style:normal;font-family:va
       <div class="grid" id="gNext"></div>
     </section>
     <section class="block">
-      <div class="sec-h"><h2>Yesterday's results</h2><span class="count" id="cDone">0</span><span class="rule"></span></div>
+      <div class="sec-h"><h2>Results in the last 48 hours</h2><span class="count" id="cDone">0</span><span class="rule"></span></div>
       <div class="grid" id="gDone"></div>
     </section>
     <section class="block">
@@ -525,12 +525,13 @@ function renderScores(){
   const ms = (STATE?.matches || []).slice();
   const today = ukDate();
   const key = m => `${m.date} ${m.time || "99"}`;
-  const tday = ms.filter(m => m.status === "live" || (m.date === today && m.status !== "finished")).sort((a,b) => key(a).localeCompare(key(b)));
+  // today's matches always show as scheduled; their results only appear here the next day
+  const asToday = m => m.status === "scheduled" ? m : { ...m, status: "scheduled", score: "", winner: null, note: "" };
+  const tday = ms.filter(m => m.date === today || (m.status === "live" && m.date < today)).map(asToday).sort((a,b) => key(a).localeCompare(key(b)));
   const next = ms.filter(m => m.date > today && m.status === "scheduled").sort((a,b) => key(a).localeCompare(key(b)));
-  // last 24 hours, by start time (a result with no start time counts as late that day)
-  const cutoff = Date.now() - 864e5;
-  const startMs = m => new Date(`${m.date}T${m.time || "23:59"}:00Z`).getTime() - 3600e3;
-  const done = ms.filter(m => (m.status === "finished" || (m.status === "scheduled" && m.date < today)) && startMs(m) >= cutoff).sort((a,b) => key(b).localeCompare(key(a)));
+  // results from the previous two days (UK dates) - never today's
+  const twoAgo = new Date(new Date(today + "T12:00:00Z").getTime() - 2 * 864e5).toISOString().slice(0, 10);
+  const done = ms.filter(m => m.date < today && m.date >= twoAgo && (m.status === "finished" || m.status === "scheduled")).sort((a,b) => key(b).localeCompare(key(a)));
   const fill = (el, arr, empty) => { $(el).innerHTML = arr.length ? arr.map(card).join("") : `<div class="empty">${empty}</div>`; };
   if (!STATE) {
     $("#gToday").innerHTML = `<div class="empty">Loading the match schedule…</div>`;
@@ -538,7 +539,7 @@ function renderScores(){
   } else {
     fill("#gToday", tday, "No 72 players are scheduled to play today.");
     fill("#gNext", next, "Nothing scheduled yet. Orders of play are usually published the evening before.");
-    fill("#gDone", done, "No results in the last 24 hours.");
+    fill("#gDone", done, "No results in the last 48 hours.");
   }
   $("#todayLbl").textContent = new Date().toLocaleDateString("en-GB", { weekday:"long", day:"numeric", month:"long", timeZone:"Europe/London" });
   $("#cToday").textContent = tday.length; $("#cNext").textContent = next.length; $("#cDone").textContent = done.length;
@@ -547,8 +548,8 @@ function renderScores(){
   const rks = mergeRanks(STATE?.rankings);
   const items = ROSTER.map(p => {
     const mine = ms.filter(m => m.p1Id === p.id || m.p2Id === p.id);
-    const up = mine.filter(m => m.status !== "finished" && m.date >= today).sort((a,b) => key(a).localeCompare(key(b)))[0];
-    const last = mine.filter(m => m.status === "finished").sort((a,b) => key(b).localeCompare(key(a)))[0];
+    const up = mine.filter(m => (m.status !== "finished" || m.date === today) && m.date >= today).sort((a,b) => key(a).localeCompare(key(b)))[0];
+    const last = mine.filter(m => m.status === "finished" && m.date < today).sort((a,b) => key(b).localeCompare(key(a)))[0];
     let st = "No match scheduled", on = false;
     if (up) { const opp = up.p1Id === p.id ? up.p2 : up.p1; st = `${dayLabel(up.date)}${up.time ? " ~" + up.time + " UK" : ""} · vs ${opp} · ${up.tournament}`; on = up.date === today; }
     else if (last) { const w = (last.winner === 1 && last.p1Id === p.id) || (last.winner === 2 && last.p2Id === p.id); st = `${w ? "Won" : "Lost"} ${last.round || ""} · ${last.tournament} · ${dayLabel(last.date)}`; }
