@@ -4,7 +4,8 @@
 Reads data.json, pulls live + upcoming matches for the 72 roster from the
 Live Tennis API (free plan, key in the LIVETENNIS_API_KEY secret), and writes
 data.json back. Free plan = 100 requests/day, so calls are kept small:
-  - every run:            1 call  (live matches for all roster players)
+  - hourly:               1 call  (live matches for all roster players)
+  - once a day per match: 1 call  (final result of any earlier match still without one)
   - every 2 hours:        1 call  (upcoming matches, next 7 days)
   - when a match ends:    1 call  (its final score)
   - once a week (Mon):    1 call per player (rankings)
@@ -117,6 +118,37 @@ def winner_from(score):
     return None
 
 
+def flip(m):
+    """The page shows the winner first: swap sides when player 2 won."""
+    if m.get("winner") != 2:
+        return m
+    sc = m.get("score") or ""
+    ret = sc.endswith(" ret.")
+    core = sc[:-5] if ret else sc
+    core = ", ".join("-".join(reversed(x.split("-"))) for x in core.split(", ")) if core else ""
+    return dict(m, p1=m["p2"], p2=m["p1"], p1Id=m["p2Id"], p2Id=m["p1Id"], winner=1, score=core + (" ret." if ret else ""))
+
+
+def settle(aid, m):
+    """Look the match up once (free endpoint) and return it finished/cancelled, or None if not settled yet."""
+    d = api(f"/matches/{aid}")
+    d = d.get("data", d) if isinstance(d, dict) else {}
+    status, outcome, w = d.get("status"), d.get("outcome"), d.get("winner")
+    if status == "completed" and w in (1, 2):
+        score = score_str(d.get("score"))
+        rnd = m.get("round") or ""
+        if outcome == "walkover":
+            score, rnd = "", (rnd + " (walkover)").strip()
+        elif outcome in ("retired", "default") and score:
+            score += " ret."
+        done = dict(m, status="finished", score=score, winner=w, round=rnd, points=None, server=None)
+        done.pop("checked", None)
+        return flip(done)
+    if status == "cancelled" or outcome == "abandoned":
+        return dict(m, status="cancelled", points=None, server=None)
+    return None
+
+
 # ---------------------------------------------------------------- main
 def main():
     if not KEY:
@@ -177,12 +209,15 @@ def main():
     old = {m["apiId"]: m for m in data["matches"] if m.get("apiId")}
     new = {}
 
-    # 2) Live matches (every run)
-    try:
-        for m in api("/matches", status="live", player=ids, limit=200).get("data", []):
-            new[m["id"]] = to_match(m, "live")
-    except Exception as e:
-        print("live fetch failed", e)
+    # 2) Live matches (hourly - the :13 run; the :43 run only does the cheap checks below, to stay well inside
+    #    the free plan's 100 calls a day). Live matches aren't shown on the site; this just spots finished ones.
+    live_run = NOW.minute < 30
+    if live_run:
+        try:
+            for m in api("/matches", status="live", player=ids, limit=200).get("data", []):
+                new[m["id"]] = to_match(m, "live")
+        except Exception as e:
+            print("live fetch failed", e); live_run = False
 
     # 3) Upcoming matches (every 2 hours, or if we have none)
     uk_now = NOW.astimezone(UK)
@@ -197,40 +232,40 @@ def main():
     else:
         fetched_upcoming = False
 
-    # 4) Matches that were live last run but aren't now -> fetch final score
+    # 4) Carry over matches not in this run's feed. A match that was live and has gone, or that left the
+    #    upcoming list, is looked up once with the free match-detail endpoint (never guessed from a live score).
+    today_s = uk_now.strftime("%Y-%m-%d")
+    settled = 0
     for aid, m in old.items():
-        if aid in new:
+        if aid in new or m["status"] in ("cancelled",):
             continue
-        if m["status"] == "live":
+        gone_live = m["status"] == "live" and live_run
+        left_upcoming = m["status"] == "scheduled" and fetched_upcoming and m["date"] <= today_s
+        if m["status"] == "scheduled" and fetched_upcoming and m["date"] > today_s:
+            continue  # no longer in the upcoming list: cancelled or moved (a moved match comes back under the same id)
+        if (gone_live or left_upcoming) and settled < 10:
+            settled += 1
             try:
-                sc = api(f"/matches/{aid}/score")
-                m = dict(m, status="finished", score=score_str(sc) or m["score"], winner=winner_from(sc) or m.get("winner"),
-                         points=None, server=None)
+                done = settle(aid, m)
             except Exception as e:
-                print("final score failed", aid, e)
-                m = dict(m, status="finished", points=None, server=None, winner=m.get("winner"))
-            if m.get("winner") == 2:  # page shows the winner first
-                m = dict(m, p1=m["p2"], p2=m["p1"], p1Id=m["p2Id"], p2Id=m["p1Id"], winner=1,
-                         score=", ".join("-".join(reversed(s.split("-"))) for s in m["score"].split(", ")) if m["score"] else "")
+                print("result lookup failed", aid, e); done = None
+            new[aid] = done or m
+        else:
             new[aid] = m
-        elif m["status"] == "scheduled" and not fetched_upcoming:
-            new[aid] = m  # keep until the next upcoming refresh
-        elif m["status"] == "scheduled" and m["date"] <= uk_now.strftime("%Y-%m-%d"):
-            # left the upcoming list without being seen live: look up its final score
-            try:
-                sc = api(f"/matches/{aid}/score")
-            except Exception as e:
-                sc = None
-                print("score lookup failed", aid, e)
-            w = winner_from(sc)
-            if w:
-                m = dict(m, status="finished", score=score_str(sc), winner=w)
-                if w == 2:  # page shows the winner first
-                    m = dict(m, p1=m["p2"], p2=m["p1"], p1Id=m["p2Id"], p2Id=m["p1Id"], winner=1,
-                             score=", ".join("-".join(reversed(s.split("-"))) for s in m["score"].split(", ")) if m["score"] else "")
-            new[aid] = m
-        elif m["status"] == "finished":
-            new[aid] = m
+
+    # 4b) Daily results check: every match of ours from a previous day that still has no result is
+    #     looked up once a day (this is what makes results reliable without anyone checking by hand)
+    for aid, m in list(new.items()):
+        if settled >= 18:
+            break
+        if m["status"] not in ("scheduled", "live") or not m.get("date") or m["date"] >= today_s or m.get("checked") == today_s:
+            continue
+        settled += 1
+        try:
+            done = settle(aid, m)
+        except Exception as e:
+            print("result check failed", aid, e); done = None
+        new[aid] = done or dict(m, checked=today_s)
 
     # 5) Merge: keep hand-entered matches (no apiId) unless the API now has the same match
     def key(m):
@@ -243,6 +278,8 @@ def main():
     for m in manual + list(new.values()):
         if m["status"] == "finished" and m["date"] < cutoff:
             continue
+        if m["status"] == "cancelled":
+            continue
         if m["status"] == "scheduled" and m["date"] and m["date"] < (uk_now - timedelta(days=2)).strftime("%Y-%m-%d"):
             continue  # result never arrived; shown as 'result pending' for 2 days, then dropped
         merged.append(m)
@@ -254,25 +291,29 @@ def main():
         if rid in busy:
             del data["status"][rid]
 
-    # 6) Rankings once a week (Monday, first run of the day) or if never done via the API
+    # 6) Rankings once a week. Starts each Monday and carries on in later runs until every player
+    #    has been refreshed, so one failed run never leaves the week's rankings half done.
+    week = (uk_now - timedelta(days=uk_now.weekday())).strftime("%Y-%m-%d")  # this week's Monday
     if not data.get("rankingsFromApi") and all(r in players for r in ROSTER):
         data["rankingsFromApi"] = True
         data["rankingsAsOf"] = today
-    elif uk_now.weekday() == 0 and uk_now.hour < 9 and data.get("rankingsAsOf") != today:
-        for rid, rec in players.items():
-            if not rec.get("apiId"):
-                continue
+    elif data.get("rankingsWeek") != week:
+        todo = [rid for rid, rec in players.items() if rec.get("apiId") and (data["rankings"].get(rid) or {}).get("week") != week]
+        for rid in todo:
+            if CALLS >= MAX_CALLS - 2:
+                break
             try:
-                p = api(f"/players/{rec['apiId']}")
+                p = api(f"/players/{players[rid]['apiId']}")
                 p = p.get("data", p)
             except Exception as e:
                 print("ranking failed", rid, e); break
             prev = (data["rankings"].get(rid) or {}).get("rank")
             rank = p.get("ranking")
             move = (prev - rank) if (prev and rank) else None
-            data["rankings"][rid] = {"rank": rank, "points": p.get("ranking_points"), "move": move,
+            data["rankings"][rid] = {"rank": rank, "points": p.get("ranking_points"), "move": move, "week": week,
                                      **({} if rank else {"note": "Not currently ranked"})}
-        else:
+        if all((data["rankings"].get(rid) or {}).get("week") == week for rid, rec in players.items() if rec.get("apiId")):
+            data["rankingsWeek"] = week
             data["rankingsAsOf"] = today
 
     data["lastChecked"] = NOW.strftime("%Y-%m-%dT%H:%M:%SZ")
