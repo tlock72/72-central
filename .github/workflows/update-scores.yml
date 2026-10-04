@@ -20,12 +20,14 @@ jobs:
     timeout-minutes: 25
     steps:
       - uses: actions/checkout@v6
-      - run: python3 scripts/update.py
+      - id: scores
+        run: python3 scripts/update.py
         env:
           LIVETENNIS_API_KEY: ${{ secrets.LIVETENNIS_API_KEY }}
           SOURCE: ${{ github.event_name == 'schedule' && 'timer' || inputs.source || 'manual' }}
           RANKINGS: ${{ inputs.source == 'rankings' && '1' || '0' }}
-      - name: ITF junior rankings (Mondays 07:00 UK together with ATP/WTA, no Claude)
+      - id: itfrank
+        name: ITF junior rankings (Mondays 07:00 UK together with ATP/WTA, no Claude)
         continue-on-error: true
         timeout-minutes: 10
         run: |
@@ -41,23 +43,27 @@ jobs:
         env:
           RANKINGS: ${{ inputs.source == 'rankings' && '1' || '0' }}
           FORCE: ${{ inputs.source == 'rankings' && '1' || '0' }}
-      - name: Scouting HQ rankings (checks every 3 hours, rebuilds when a new ranking week is out, no Claude)
+      - id: scouting
+        name: Scouting HQ rankings (checks every 3 hours, rebuilds when a new ranking week is out, no Claude)
         run: python3 scripts/scouting.py
         continue-on-error: true
         timeout-minutes: 10
         env:
           RANKINGS: ${{ inputs.source == 'rankings' && '1' || '0' }}
-      - name: ITF junior matches (about twice a day, no Claude)
+      - id: itfm
+        name: ITF junior matches (about twice a day, no Claude)
         run: python3 scripts/itf_matches.py
         continue-on-error: true
         timeout-minutes: 8
         env:
           SOURCE: ${{ github.event_name == 'schedule' && 'timer' || inputs.source || 'manual' }}
-      - name: Tennis Europe matches (once a day from 07:30 UK, no Claude)
+      - id: te
+        name: Tennis Europe matches (once a day from 07:30 UK, no Claude)
         run: pip install -q beautifulsoup4 && python3 scripts/te_matches.py
         continue-on-error: true
         timeout-minutes: 6
-      - name: Save changes
+      - id: save
+        name: Save changes
         run: |
           git config user.name "72 Hub updater"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
@@ -69,3 +75,4 @@ jobs:
         run: python3 scripts/report_gaps.py
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          STEPS_JSON: ${{ toJSON(steps) }}

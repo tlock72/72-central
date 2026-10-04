@@ -1,0 +1,23 @@
+name: Watchdog (tells Tobey if anything stops updating)
+on:
+  schedule:
+    # GitHub's own timer, separate from cron-job.org, so this still runs if that timer stops.
+    # Every 3 hours (UTC), at minute 37 to avoid GitHub's busy on-the-hour slots.
+    - cron: "37 */3 * * *"
+  workflow_dispatch: {}
+permissions:
+  contents: read
+  issues: write
+  actions: read
+  pages: read
+jobs:
+  watch:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v6
+      - name: Check every part of 72 Central and report problems (GitHub issue + email)
+        run: python3 scripts/report_gaps.py
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          WATCHDOG: "1"
