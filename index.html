@@ -209,6 +209,9 @@ dialog.prof{overflow-x:hidden}
 .leg b{color:var(--white);font-weight:600}
 .partners{display:flex;flex-wrap:wrap;gap:8px}
 .partners span{font-family:var(--display);text-transform:uppercase;letter-spacing:.12em;font-size:13px;color:var(--text);border:1px solid var(--line);border-radius:999px;padding:8px 14px;background:rgba(208,165,121,.05)}
+.partners .kitrow{display:flex;flex-wrap:wrap;gap:10px;width:100%;margin-bottom:4px}
+.partners span.kit{font-size:18px;font-weight:600;color:var(--white);border:1.5px solid var(--gold);border-radius:14px;padding:10px 18px 11px;background:linear-gradient(135deg,rgba(208,165,121,.24),rgba(208,165,121,.08))}
+.partners span.kit em{display:block;font-style:normal;font-family:var(--body);font-weight:600;font-size:9px;letter-spacing:.2em;color:var(--gold);margin-bottom:3px}
 .soc{display:grid;grid-template-columns:repeat(auto-fill,minmax(130px,1fr));gap:10px}
 .soc div{border:1px solid var(--line-2);border-radius:14px;padding:14px 16px}
 .soc b{display:block;font-family:var(--display);font-size:24px;color:var(--white);font-weight:600;line-height:1}
@@ -408,7 +411,7 @@ html.locked #gate{display:grid}
       <a href="#scores" data-tab="scores"><span class="n72">72 </span>Competition Zone</a>
       <a href="#rankings" data-tab="rankings"><span class="n72">72 </span>Rankings</a>
       <a href="#players" data-tab="players"><span class="n72">72 </span>Players</a>
-      <a href="#scouting" data-tab="scouting"><span class="n72">72 </span>Age Filtered World Rankings</a>
+      <a href="#scouting" data-tab="scouting">Age Filtered World Rankings</a>
     </nav>
   </div>
 </header>
@@ -1037,6 +1040,30 @@ const JUNIOR_PROFILES = [
 JUNIOR_PROFILES.forEach(j => j.kind = "junior");
 const ALL_PROFILES = [...PROFILES, ...JUNIOR_PROFILES];
 const profById = Object.fromEntries(ALL_PROFILES.map(p => [p.id, p]));
+/* exact dates of birth (official ATP/WTA records via Tennis Abstract and the WTA): ages work themselves out from these */
+const DOB = {
+  deminaur:"1999-02-17", rublev:"1997-10-20", buse:"2004-03-25", altmaier:"1998-09-12", monfils:"1986-09-01", coric:"1996-11-14",
+  schwaerzler:"2006-01-27", kym:"2003-02-12", kuzuhara:"2004-04-01", ivanov:"2008-10-30", bonding:"2007-06-18", chavez:"2008-02-01",
+  qi:"2010-05-04", svitolina:"1994-09-12", bejlek:"2006-01-31", starodubtseva:"2000-02-17", kasatkina:"1997-05-07", sawangkaew:"2002-07-10",
+  jones:"2000-09-19", romero:"2002-04-06", ristic:"2006-05-17", rajeshwaran:"2009-06-12", dotsenko:"2011-10-07", newman:"2010-02-11",
+  lin:"2010-06-10", dudeney:"2003-05-28", jabeur:"1994-08-28", pinera:"2010-09-28", kanabar:"2011-11-30", mmakarova:"2010-01-14",
+};
+const ageOn = iso => { const d = new Date(iso + "T12:00:00Z"), n = new Date(ukDate() + "T12:00:00Z");
+  let a = n.getUTCFullYear() - d.getUTCFullYear();
+  if (n.getUTCMonth() < d.getUTCMonth() || (n.getUTCMonth() === d.getUTCMonth() && n.getUTCDate() < d.getUTCDate())) a--;
+  return a; };
+const fmtDob = iso => new Date(iso + "T12:00:00Z").toLocaleDateString("en-GB", { day:"numeric", month:"short", year:"numeric", timeZone:"UTC" });
+ALL_PROFILES.forEach(x => { const d = DOB[x.id]; if (!d) return; x.dob = d; x.age = ageOn(d); if (x.kind === "junior") x.born = +d.slice(0, 4); });
+/* racket and clothing partners are picked out in the partner line-up */
+const RACKET = ["wilson","yonex","head","babolat","dunlop","tecnifibre","prince","artengo","solinco","prokennex","volkl"];
+const APPAREL = ["nike","adidas","asics","lotto","k-swiss","joma","ea7","castore","lacoste","fila","on","diadora","ellesse","hydrogen","le coq sportif","uniqlo","new balance","mizuno","sergio tacchini","australian","bidi badu"];
+function partnersHtml(list){
+  const lc = n => String(n).toLowerCase().trim();
+  const r = list.find(n => RACKET.includes(lc(n))), a = list.find(n => n !== r && APPAREL.includes(lc(n)));
+  const kit = [[r, "Racket"], [a, "Apparel"]].filter(([n]) => n).map(([n, k]) => `<span class="kit"><em>${k}</em>${esc(n)}</span>`).join("");
+  const rest = list.filter(n => n !== r && n !== a).map(n => `<span>${esc(n)}</span>`).join("");
+  return `<div class="partners">${kit ? `<div class="kitrow">${kit}</div>` : ""}${rest}</div>`;
+}
 const TONES = ["#E6C9A5","#D0A579","#A97F55","#7E5E3F","#F3E3CF","#5C4630"];
 const fmtN = n => n >= M ? (Math.round(n / M * 10) / 10) + "M" : n >= K ? (Math.round(n / K * 10) / 10) + "K" : String(n);
 const pad2 = n => n == null ? "—" : String(n).padStart(2, "0");
@@ -1077,7 +1104,7 @@ function renderPlayers(){
       <div class="top"><span class="tr">${ng ? "NEXT GEN" : p.tour}</span><span class="cc">${esc(x.kind === "junior" ? x.grp + " · " + p.country : p.country)}</span></div>
       <div class="fn">${esc(p.first)}</div>
       <div class="ln">${esc(p.last)}</div>
-      <div class="meta">${x.kind === "junior" ? `Born ${x.born}` : x.age} · ${esc(x.nat)}</div>
+      <div class="meta">${x.kind === "junior" ? `Born ${x.dob ? fmtDob(x.dob) : x.born}` : x.dob ? `${x.age} · Born ${fmtDob(x.dob)}` : x.age} · ${esc(x.nat)}</div>
       <div class="nums">${cardNums(x, rank).map(([v, k]) => `<div><b>${esc(v)}</b><span>${esc(k)}</span></div>`).join("")}</div>
       <span class="go">View profile <i>→</i></span>
     </button>`;
@@ -1102,7 +1129,7 @@ function proBody(x, p, rank){
         <div><b>${fmtN(reach)}</b><span>Social following</span></div>
       </div>
       <section><h3 class="pk">Titles</h3><div class="tg">${x.titles.map(tblock).join("")}</div></section>
-      <section><h3 class="pk">Partner line-up</h3><div class="partners">${x.partners.map(n => `<span>${esc(n)}</span>`).join("")}</div></section>
+      <section><h3 class="pk">Partner line-up</h3>${partnersHtml(x.partners)}</section>
       <section><h3 class="pk">Social media</h3><div class="soc">
         <div class="tot"><b>${fmtN(reach)}</b><span>Combined following</span></div>
         ${Object.entries(x.social).map(([k, v]) => `<div><b>${fmtN(v)}</b><span>${esc(k)}</span></div>`).join("")}
@@ -1121,7 +1148,7 @@ function juniorBody(x, p, rank){
   const years = Object.keys(x.res || {}).sort((a, b) => b - a);
   return `<div class="big">${tiles.map(([v, k]) => `<div><b>${v}</b><span>${esc(k)}</span></div>`).join("")}</div>
       ${hl.length ? `<section><h3 class="pk">Highlights</h3><div class="hls">${hl.map(h => `<span>★ ${esc(h)}</span>`).join("")}</div></section>` : ""}
-      ${x.partners.length ? `<section><h3 class="pk">Partner line-up</h3><div class="partners">${x.partners.map(n => `<span>${esc(n)}</span>`).join("")}</div></section>` : ""}
+      ${x.partners.length ? `<section><h3 class="pk">Partner line-up</h3>${partnersHtml(x.partners)}</section>` : ""}
       <section><h3 class="pk">Results</h3><div class="yrs">${years.map(y => `<div class="yr"><b>${y}</b><ul>${x.res[y].map(r => `<li>${esc(r)}</li>`).join("")}</ul></div>`).join("")}</div></section>`;
 }
 /* how far into an event a round is, so the furthest match can be picked (qualifying < early rounds < QF < SF < final) */
@@ -1145,8 +1172,8 @@ function openProfile(id){
   if (i < 0) i = nav.findIndex(o => o.x.id === id);
   const prev = nav[(i - 1 + nav.length) % nav.length], next = nav[(i + 1) % nav.length];
   const facts = x.kind === "junior"
-    ? [["Born", x.born], ["Nationality", x.nat], ["Age group", x.grp], ...(x.ig ? [["Instagram", "@" + x.ig]] : [])]
-    : [["Age", x.age], ["Nationality", x.nat], ["Plays", x.plays], ["Tour", p.tour]];
+    ? [["Born", x.dob ? fmtDob(x.dob) : x.born], ...(x.dob ? [["Age", x.age]] : []), ["Nationality", x.nat], ["Age group", x.grp], ...(x.ig ? [["Instagram", "@" + x.ig]] : [])]
+    : [["Age", x.age], ...(x.dob ? [["Born", fmtDob(x.dob)]] : []), ["Nationality", x.nat], ["Plays", x.plays], ["Tour", p.tour]];
   $("#prof").innerHTML = `
     <div class="ph">
       <span class="pblur" aria-hidden="true" style="background-image:url('${x.id}.webp')"></span>
@@ -1297,7 +1324,9 @@ function renderHome(){
   // 03 Players
   const tours = t => ROSTER.filter(p => p.tour === t).length;
   $("#hpT3").innerHTML = `${ROSTER.length}<small>players</small>`;
-  $("#hpS3").textContent = `${tours("ATP")} ATP · ${tours("WTA")} WTA, including Next Gen juniors`;
+  // under-18s count as Next Gen only (exact age when the date of birth is known)
+  const ng = p => { const x = profById[p.id]; return x?.dob ? x.age < 18 : !!x && under18(x); };
+  $("#hpS3").textContent = `${ROSTER.filter(p => p.tour === "ATP" && !ng(p)).length} ATP · ${ROSTER.filter(p => p.tour === "WTA" && !ng(p)).length} WTA · ${ROSTER.filter(ng).length} Next Gen (under 18)`;
   if (!$("#hpFaces").children.length) $("#hpFaces").innerHTML = ranked.slice(0, 6).map(o => `<img src="${o.p.id}.webp" alt="" loading="lazy" onerror="this.remove()">`).join("");
   // 04 Scouting HQ
   if (SCOUT?.atp || SCOUT?.wta) {
