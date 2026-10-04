@@ -1,0 +1,60 @@
+name: Fill missing results (Claude)
+on:
+  schedule:
+    # 07:00, 12:00 and 16:00 UK time. GitHub uses UTC, so both summer and winter hours are listed
+    # and the first step only lets the run continue when it is one of those UK hours.
+    - cron: "0 6,7,11,12,15,16 * * *"
+  workflow_dispatch: {}
+concurrency:
+  group: update-scores
+  cancel-in-progress: false
+permissions:
+  contents: write
+  id-token: write
+jobs:
+  fill:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v6
+      - name: Check the time and whether anything is missing
+        id: gate
+        run: |
+          python3 - <<'PY' >> "$GITHUB_OUTPUT"
+          import json, os
+          from datetime import datetime, timedelta, timezone
+          from zoneinfo import ZoneInfo
+          uk = datetime.now(timezone.utc).astimezone(ZoneInfo("Europe/London"))
+          manual = os.environ.get("GITHUB_EVENT_NAME") == "workflow_dispatch"
+          if not manual and uk.hour not in (7, 12, 16):
+              print("run=false"); raise SystemExit
+          d = json.load(open("data.json"))
+          today = uk.strftime("%Y-%m-%d")
+          def started_long_ago(m):
+              if m.get("status") != "scheduled": return False
+              if m["date"] < today: return True
+              if m["date"] == today and m.get("time"):
+                  h, mi = map(int, m["time"].split(":"))
+                  return uk.replace(hour=h, minute=mi) + timedelta(hours=3) < uk
+              return False
+          gaps = [m for m in d.get("matches", []) if started_long_ago(m)]
+          gaps += [m for m in d.get("matches", []) if m.get("status") == "finished" and not m.get("score") and not m.get("note")]
+          print(f"run={'true' if gaps or manual else 'false'}")
+          PY
+      - uses: anthropics/claude-code-action@v1
+        if: steps.gate.outputs.run == 'true'
+        with:
+          claude_code_oauth_token: ${{ secrets.CLAUDE_CODE_OAUTH_TOKEN }}
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          prompt: "Follow FILL_GAPS.md. Only edit data.json."
+          claude_args: |
+            --max-turns 25
+            --allowedTools "WebSearch,WebFetch,Read,Edit,Bash(python3:*),Bash(date:*)"
+      - name: Save changes
+        if: steps.gate.outputs.run == 'true'
+        run: |
+          python3 -c "import json; json.load(open('data.json'))"
+          git config user.name "72 Hub updater"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add data.json
+          git diff --cached --quiet && echo "No changes" || (git commit -q -m "Fill missing results" && git pull -q --rebase && git push)
