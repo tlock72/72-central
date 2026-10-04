@@ -1032,7 +1032,7 @@ const JUNIOR_PROFILES = [
     hl:["Welsh national champion 2025"], partners:["Nike","Wilson"],
     res:{2026:["U12 Lexus Junior International Aldershot","U12 Lexus Junior International Wrexham"],2025:["Welsh National Champion","U12 British National Championships (RU)","U12 Tennis Europe (RU)"]} },
   { id:"momot", grp:"U14", born:2015, nat:"British", ig:"henry_momot2015",
-    partners:["Castore","Wilson"],
+    partners:["Dunlop"],
     res:{2026:["U11 Lexus Grass Court Championships","Lexus Junior International Bradfield","Lexus Junior National Championships (Singles)","Lexus Junior National Championships (Doubles)"]} },
   { id:"liu", grp:"U14", born:2015, nat:"Chinese", ig:"lxc20150730",
     partners:["Yonex"],
@@ -1059,7 +1059,7 @@ ALL_PROFILES.forEach(x => { const d = DOB[x.id]; if (!d) return; x.dob = d; x.ag
 const RACKET = ["wilson","yonex","head","babolat","dunlop","tecnifibre","prince","artengo","solinco","prokennex","volkl"];
 const APPAREL = ["nike","adidas","asics","lotto","k-swiss","joma","ea7","castore","lacoste","fila","on","diadora","ellesse","hydrogen","le coq sportif","uniqlo","new balance","mizuno","sergio tacchini","australian","bidi badu"];
 // players whose racket brand also dresses them (one brand for both)
-const SAME_KIT = new Set(["deminaur", "altmaier", "dotsenko"]);
+const SAME_KIT = new Set(["deminaur", "altmaier", "dotsenko", "iwasa"]);
 function partnersHtml(list, id){
   const lc = n => String(n).toLowerCase().trim();
   const r = list.find(n => RACKET.includes(lc(n))), a = list.find(n => n !== r && APPAREL.includes(lc(n)));
@@ -1108,7 +1108,7 @@ function renderPlayers(){
       <div class="top"><span class="tr">${ng ? "NEXT GEN" : p.tour}</span><span class="cc">${esc(x.kind === "junior" ? x.grp + " · " + p.country : p.country)}</span></div>
       <div class="fn">${esc(p.first)}</div>
       <div class="ln">${esc(p.last)}</div>
-      <div class="meta">${x.kind === "junior" ? `Born ${x.dob ? fmtDob(x.dob) : x.born}` : x.dob ? `${x.age} · Born ${fmtDob(x.dob)}` : x.age} · ${esc(x.nat)}</div>
+      <div class="meta">${x.kind === "junior" ? `Born ${x.born}` : x.age} · ${esc(x.nat)}</div>
       <div class="nums">${cardNums(x, rank).map(([v, k]) => `<div><b>${esc(v)}</b><span>${esc(k)}</span></div>`).join("")}</div>
       <span class="go">View profile <i>→</i></span>
     </button>`;
