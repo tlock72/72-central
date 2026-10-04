@@ -312,6 +312,53 @@ select.sq-in option{background:var(--navy-2);color:var(--white)}
   nav{display:grid;grid-template-columns:1fr 1fr;border-radius:22px}
   nav a{padding:9px 6px}
 }
+/* Home portal */
+#page-home{padding-bottom:30px}
+.hp-hero{position:relative;overflow:hidden;isolation:isolate;margin:28px 0 26px;padding:54px 48px 46px;border-radius:28px;border:1px solid var(--line);
+  background:radial-gradient(900px 420px at 100% 0%,rgba(208,165,121,.22),transparent 60%),radial-gradient(600px 300px at 0% 100%,rgba(208,165,121,.08),transparent 60%),linear-gradient(160deg,var(--navy-3),#0B1230)}
+.hp-hero .mono{position:absolute;right:-10px;bottom:-90px;z-index:-1;font-family:var(--display);font-weight:700;font-size:420px;line-height:1;color:transparent;-webkit-text-stroke:2px rgba(208,165,121,.14);user-select:none;pointer-events:none}
+.hp-hero h1{font-size:clamp(52px,9vw,104px);letter-spacing:.01em}
+.hp-greet{margin:18px 0 0;font-size:17px;color:var(--text)}
+.hp-greet b{color:var(--white);font-weight:600}
+.hp-meta{display:flex;flex-wrap:wrap;gap:10px;margin-top:26px}
+.hp-pill{display:inline-flex;align-items:center;gap:8px;font-family:var(--display);text-transform:uppercase;letter-spacing:.14em;font-size:11px;color:var(--muted);border:1px solid var(--line);border-radius:999px;padding:7px 14px;background:rgba(12,20,49,.5)}
+.hp-pill i{width:7px;height:7px;border-radius:50%;background:var(--up);box-shadow:0 0 0 0 rgba(127,211,160,.6);animation:hpPulse 2s infinite}
+.hp-pill.warn i{background:var(--down);animation:none}
+@keyframes hpPulse{70%{box-shadow:0 0 0 8px rgba(127,211,160,0)}100%{box-shadow:0 0 0 0 rgba(127,211,160,0)}}
+.hp-live{display:flex;align-items:center;gap:14px;flex-wrap:wrap;margin:0 0 22px;padding:14px 20px;border-radius:16px;border:1px solid rgba(232,144,143,.45);background:linear-gradient(90deg,rgba(232,144,143,.14),rgba(232,144,143,.03));text-decoration:none;color:var(--white)}
+.hp-live .k{font-family:var(--display);letter-spacing:.2em;font-size:12px;color:#F3C1C0;display:inline-flex;align-items:center;gap:8px}
+.hp-live .k i{width:8px;height:8px;border-radius:50%;background:#E8908F;animation:hpBlink 1.2s infinite}
+@keyframes hpBlink{50%{opacity:.25}}
+.hp-live span{font-size:14px}
+.hp-live span em{font-style:normal;color:var(--muted);margin-left:6px}
+.hp-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:18px}
+.hp-tile{position:relative;display:flex;flex-direction:column;min-height:250px;padding:28px 28px 24px;border-radius:22px;overflow:hidden;isolation:isolate;text-decoration:none;color:inherit;
+  border:1px solid var(--line-2);background:linear-gradient(170deg,var(--navy-2),rgba(17,27,63,.6));transition:transform .25s ease,border-color .25s ease,box-shadow .25s ease}
+.hp-tile::before{content:"";position:absolute;inset:0;z-index:-1;background:radial-gradient(460px 240px at 110% -20%,rgba(208,165,121,.18),transparent 60%);transition:opacity .3s}
+.hp-tile:hover{transform:translateY(-4px);border-color:var(--gold);box-shadow:0 20px 44px rgba(0,0,0,.38)}
+.hp-tile .no{font-family:var(--display);font-size:13px;letter-spacing:.24em;color:var(--gold)}
+.hp-tile h2{font-family:var(--display);font-weight:600;text-transform:uppercase;letter-spacing:.06em;font-size:30px;color:var(--white);margin:8px 0 6px;line-height:1.05}
+.hp-tile p{margin:0;font-size:13px;color:var(--muted);line-height:1.55;max-width:420px}
+.hp-stat{margin-top:auto;padding-top:24px;display:flex;align-items:flex-end;justify-content:space-between;gap:14px}
+.hp-stat b{display:block;font-family:var(--display);font-weight:600;font-size:44px;line-height:1;color:var(--white);font-variant-numeric:tabular-nums}
+.hp-stat b small{font-size:16px;color:var(--gold);font-weight:500;margin-left:6px;letter-spacing:.04em}
+.hp-stat > div > span{display:block;font-size:12px;color:var(--muted);margin-top:8px;line-height:1.4}
+.hp-go{flex:none;width:44px;height:44px;border-radius:50%;display:grid;place-items:center;border:1px solid var(--line);color:var(--gold);font-size:18px;transition:background .25s,color .25s}
+.hp-tile:hover .hp-go{background:var(--gold);color:var(--navy)}
+.hp-faces{display:flex;margin-top:16px}
+.hp-faces img{width:38px;height:38px;border-radius:50%;object-fit:cover;object-position:center 20%;border:2px solid var(--navy-2);margin-left:-10px;background:var(--navy-3)}
+.hp-faces img:first-child{margin-left:0}
+.hp-foot{margin:26px 0 0;font-size:12px;color:var(--muted-2);text-align:center}
+@media (max-width:760px){.hp-grid{grid-template-columns:1fr}}
+@media (max-width:640px){
+  .hp-hero{padding:34px 22px 30px;margin-top:18px;border-radius:22px}
+  .hp-hero .mono{font-size:260px;bottom:-50px}
+  .hp-greet{font-size:15px}
+  .hp-hero h1{font-size:46px}
+  .hp-tile{min-height:0;padding:22px 20px 20px}
+  .hp-tile h2{font-size:24px}
+  .hp-stat b{font-size:36px}
+}
 @media (prefers-reduced-motion:reduce){*{transition:none!important;animation:none!important}}
 /* passcode screen */
 html.locked body > *:not(#gate){display:none !important}
@@ -335,7 +382,7 @@ html.locked #gate{display:grid}
 
 <header>
   <div class="wrap bar">
-    <a class="brand" href="#scores" aria-label="72 Central home">
+    <a class="brand" href="#home" aria-label="72 Central home">
       <img src="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHhtbG5zOnhsaW5rPSJodHRwOi8vd3d3LnczLm9yZy8xOTk5L3hsaW5rIiBpZD0iQ2FwYV8xIiB4PSIwcHgiIHk9IjBweCIgd2lkdGg9IjI4NnB4IiBoZWlnaHQ9IjQ5cHgiIHZpZXdCb3g9IjAgMCAyODYgNDkiIHN0eWxlPSJlbmFibGUtYmFja2dyb3VuZDpuZXcgMCAwIDI4NiA0OTsiIHhtbDpzcGFjZT0icHJlc2VydmUiPjxzdHlsZSB0eXBlPSJ0ZXh0L2NzcyI+CS5zdDB7ZmlsbDojRDBBNTc5O308L3N0eWxlPjxnPjxwYXRoIGNsYXNzPSJzdDAiIGQ9Ik03LjYsMjAuMWMtMS4zLDAtMi42LTAuMi0zLjctMC43Yy0xLjEtMC41LTItMS4yLTIuNy0yLjFjLTAuNy0xLTEuMS0yLjItMS4xLTMuNmgzLjVjMCwwLjcsMC4yLDEuNCwwLjYsMS44IGMwLjQsMC41LDAuOSwwLjgsMS41LDEuMWMwLjYsMC4yLDEuMywwLjQsMi4xLDAuNGMwLjcsMCwxLjQtMC4xLDEuOS0wLjNjMC42LTAuMiwxLTAuNSwxLjMtMC44YzAuMy0wLjQsMC41LTAuOCwwLjUtMS4zIGMwLTAuNi0wLjItMS4xLTAuNi0xLjVjLTAuNC0wLjQtMS0wLjctMS45LTFMNSwxMC41Yy0xLjUtMC42LTIuNi0xLjMtMy40LTJDMC44LDcuNywwLjQsNi42LDAuNCw1LjNjMC0xLjYsMC42LTIuOCwxLjktMy44IGMxLjItMSwzLTEuNSw1LjItMS41czMuOCwwLjUsNSwxLjVjMS4yLDEsMS45LDIuNCwyLDQuMkgxMWMtMC4xLTAuOC0wLjUtMS40LTEtMS44QzkuNCwzLjQsOC41LDMuMiw3LjQsMy4yYy0xLDAtMS44LDAuMi0yLjQsMC42IEM0LjUsNC4yLDQuMiw0LjcsNC4yLDUuM2MwLDAuNSwwLjIsMSwwLjUsMS4zYzAuNCwwLjMsMC45LDAuNiwxLjcsMC45bDQuMiwxLjZjMS40LDAuNiwyLjUsMS4zLDMuMywyLjFjMC44LDAuOCwxLjEsMS45LDEuMSwzLjIgYzAsMS4yLTAuMywyLjItMC45LDNjLTAuNiwwLjgtMS40LDEuNS0yLjYsMkMxMC41LDE5LjgsOS4yLDIwLjEsNy42LDIwLjFMNy42LDIwLjFMNy42LDIwLjF6Ij48L3BhdGg+PHBhdGggY2xhc3M9InN0MCIgZD0iTTY1LjIsMTUuOGw0LjktMTUuNGgzLjdsLTYuNywxOS4zaC0zLjdMNTYuOSwwLjRoMy43bDQuOSwxNS40SDY1LjJ6Ij48L3BhdGg+PHBhdGggY2xhc3M9InN0MCIgZD0iTTExNi40LDAuNGgzLjhsOC44LDEzLjdoLTAuM1YwLjRoMy41djE5LjNoLTMuNmwtOS40LTE0LjZoMC42djE0LjZoLTMuNVYwLjR6Ij48L3BhdGg+PHBhdGggY2xhc3M9InN0MCIgZD0iTTE0Ni4xLDMuNHYtM2gxNS41djNoLTYuOGwwLjgtMC44djE3aC0zLjV2LTE3bDAuOCwwLjhIMTQ2LjFMMTQ2LjEsMy40eiI+PC9wYXRoPjxwYXRoIGNsYXNzPSJzdDAiIGQ9Ik0xNzIuOSwwLjRoNC4ybDQuNiw4LjNoLTAuN2w0LjgtOC4zaDQuMWwtNi45LDExLjN2OGgtMy41di04TDE3Mi45LDAuNEwxNzIuOSwwLjR6Ij48L3BhdGg+PHBhdGggY2xhc3M9InN0MCIgZD0iTTIwMS4zLDMuNHYtM2gxNS41djNIMjEwbDAuOC0wLjh2MTdoLTMuNXYtMTdsMC44LDAuOEgyMDEuM0wyMDEuMywzLjR6Ij48L3BhdGg+PHBhdGggY2xhc3M9InN0MCIgZD0iTTIyOC4yLDAuNGgzLjlsNC43LDE2LjJoLTAuOWw0LjYtMTQuOWgyLjRsNC44LDE0LjdoLTAuOGw0LjktMTUuOWg0bC02LjYsMTkuM2gtMy43bC0zLjgtMTEuNGgwLjNsLTMuOCwxMS40IGgtMy43TDIyOC4yLDAuNEwyMjguMiwwLjR6Ij48L3BhdGg+PHBhdGggY2xhc3M9InN0MCIgZD0iTTI3Ny4yLDIwLjFjLTEuNywwLTMuMi0wLjQtNC42LTEuMWMtMS4zLTAuOC0yLjMtMS45LTMuMS0zLjRjLTAuNy0xLjUtMS4xLTMuMy0xLjEtNS42YzAtMi4yLDAuNC00LjEsMS4xLTUuNiBjMC43LTEuNSwxLjgtMi42LDMuMS0zLjNjMS4zLTAuNywyLjgtMS4xLDQuNi0xLjFzMy4zLDAuNCw0LjYsMS4xYzEuMywwLjcsMi40LDEuOSwzLjEsMy4zUzI4Niw3LjgsMjg2LDEwYzAsMi4yLTAuNCw0LjEtMS4xLDUuNiBjLTAuNywxLjUtMS44LDIuNi0zLjEsMy4zQzI4MC41LDE5LjcsMjc4LjksMjAuMSwyNzcuMiwyMC4xTDI3Ny4yLDIwLjF6IE0yNzcuMiwxNi45YzEuNiwwLDIuOC0wLjYsMy44LTEuOCBjMC45LTEuMiwxLjQtMi45LDEuNC01LjFjMC0yLjItMC41LTMuOC0xLjQtNWMtMC45LTEuMi0yLjItMS44LTMuOC0xLjhjLTEuNiwwLTIuOCwwLjYtMy43LDEuOGMtMC45LDEuMi0xLjQsMi45LTEuNCw1LjEgYzAsMi4yLDAuNSwzLjksMS40LDUuMUMyNzQuNCwxNi4zLDI3NS43LDE2LjksMjc3LjIsMTYuOUwyNzcuMiwxNi45eiI+PC9wYXRoPjxwYXRoIGNsYXNzPSJzdDAiIGQ9Ik0zMC43LDE2LjZ2My4xaDEyLjR2LTMuMWgtNkgzMC43eiI+PC9wYXRoPjxwYXRoIGNsYXNzPSJzdDAiIGQ9Ik0zMC43LDguNXYzaDMuN2g4Ljh2LTNoLTUuN2gtMy4xSDMwLjd6Ij48L3BhdGg+PHBhdGggY2xhc3M9InN0MCIgZD0iTTM3LjIsMy40aDZ2LTNIMzAuN3YzaDMuNUgzNy4yeiI+PC9wYXRoPjxwYXRoIGNsYXNzPSJzdDAiIGQ9Ik04OCwxNi42djMuMWgxMi40di0zLjFoLTZIODh6Ij48L3BhdGg+PHBhdGggY2xhc3M9InN0MCIgZD0iTTg4LDguNXYzaDMuN2g4Ljh2LTNoLTUuN2gtMy4xSDg4eiI+PC9wYXRoPjxwYXRoIGNsYXNzPSJzdDAiIGQ9Ik05NC41LDMuNGg2di0zSDg4djNoMy41SDk0LjV6Ij48L3BhdGg+PHBhdGggY2xhc3M9InN0MCIgZD0iTTQ3LjcsNDljLTAuOCwwLTEuNi0wLjEtMi4yLTAuNGMtMC43LTAuMy0xLjItMC43LTEuNi0xLjNjLTAuNC0wLjYtMC42LTEuMy0wLjctMi4xaDEuNyBjMCwwLjUsMC4xLDAuOSwwLjQsMS4zYzAuMywwLjMsMC42LDAuNiwxLDAuN2MwLjQsMC4yLDAuOSwwLjIsMS40LDAuMmMwLjUsMCwxLTAuMSwxLjQtMC4yYzAuNC0wLjIsMC43LTAuNCwwLjktMC42IHMwLjMtMC42LDAuMy0wLjljMC0wLjUtMC4xLTAuOC0wLjQtMS4xYy0wLjMtMC4zLTAuNy0wLjUtMS4zLTAuN0w0Ni40LDQzYy0xLTAuNC0xLjctMC44LTIuMi0xLjJjLTAuNS0wLjUtMC43LTEuMS0wLjctMS45IGMwLTAuOSwwLjQtMS43LDEuMS0yLjNjMC43LTAuNiwxLjgtMC45LDMuMS0wLjlzMi4zLDAuMywzLDAuOWMwLjcsMC42LDEuMSwxLjQsMS4yLDIuNGgtMS44Yy0wLjEtMC41LTAuMy0wLjktMC43LTEuMiBjLTAuNC0wLjMtMS0wLjQtMS43LTAuNHMtMS4zLDAuMi0xLjcsMC41Yy0wLjQsMC4zLTAuNiwwLjctMC42LDEuMmMwLDAuNCwwLjEsMC43LDAuNCwwLjljMC4zLDAuMiwwLjcsMC40LDEuMiwwLjZsMi41LDAuOSBjMC45LDAuMywxLjUsMC43LDIsMS4yYzAuNSwwLjUsMC43LDEuMiwwLjcsMmMwLDAuNy0wLjIsMS4zLTAuNSwxLjhjLTAuMywwLjUtMC45LDAuOS0xLjUsMS4yQzQ5LjUsNDguOSw0OC43LDQ5LDQ3LjcsNDlMNDcuNyw0OSBMNDcuNyw0OXoiPjwvcGF0aD48cGF0aCBjbGFzcz0ic3QwIiBkPSJNNjEuNyw0OC44VjM2LjloNGMxLjMsMCwyLjQsMC4zLDMuMSwxYzAuNywwLjcsMS4xLDEuNiwxLjEsMi43YzAsMS4yLTAuNCwyLjEtMS4xLDIuN2MtMC43LDAuNy0xLjcsMS0zLjEsMSBoLTIuMnY0LjVINjEuN3ogTTYzLjUsNDIuN2gyLjJjMC44LDAsMS4zLTAuMiwxLjctMC42YzAuNC0wLjQsMC42LTAuOSwwLjYtMS42YzAtMC42LTAuMi0xLjItMC42LTEuNmMtMC40LTAuNC0xLTAuNi0xLjctMC42aC0yLjIgVjQyLjd6Ij48L3BhdGg+PHBhdGggY2xhc3M9InN0MCIgZD0iTTgzLjEsNDljLTEsMC0xLjktMC4yLTIuNy0wLjdjLTAuOC0wLjUtMS40LTEuMS0xLjktMi4xYy0wLjUtMC45LTAuNy0yLjEtMC43LTMuNGMwLTEuNCwwLjItMi41LDAuNy0zLjUgYzAuNS0wLjksMS4xLTEuNiwxLjktMmMwLjgtMC40LDEuNy0wLjcsMi43LTAuN2MxLDAsMS45LDAuMiwyLjcsMC43YzAuOCwwLjUsMS40LDEuMSwxLjksMi4xYzAuNSwwLjksMC43LDIuMSwwLjcsMy40IHMtMC4yLDIuNS0wLjcsMy40Yy0wLjUsMC45LTEuMSwxLjYtMS45LDIuMUM4NS4xLDQ4LjgsODQuMSw0OSw4My4xLDQ5TDgzLjEsNDl6IE04My4xLDQ3LjRjMS4xLDAsMS45LTAuNCwyLjUtMS4yIGMwLjYtMC44LDAuOS0xLjksMC45LTMuNHMtMC4zLTIuNi0wLjktMy40Yy0wLjYtMC44LTEuNS0xLjItMi41LTEuMnMtMS45LDAuNC0yLjUsMS4yYy0wLjYsMC44LTAuOSwxLjktMC45LDMuNCBjMCwxLjUsMC4zLDIuNiwwLjksMy40QzgxLjIsNDcsODIuMSw0Ny40LDgzLjEsNDcuNHoiPjwvcGF0aD48cGF0aCBjbGFzcz0ic3QwIiBkPSJNOTcuOCw0OC44VjM2LjloNC4zYzEuNCwwLDIuNSwwLjMsMy4yLDFjMC43LDAuNywxLjEsMS41LDEuMSwyLjZjMCwxLjEtMC40LDEuOS0xLjEsMi42Yy0wLjcsMC43LTEuOCwxLTMuMiwxIGgtMi41djQuOEw5Ny44LDQ4LjhMOTcuOCw0OC44eiBNOTkuNSw0Mi44aDIuM2MwLjksMCwxLjUtMC4yLDEuOS0wLjZjMC40LTAuNCwwLjctMC45LDAuNy0xLjZjMC0wLjYtMC4yLTEuMi0wLjYtMS42IGMtMC40LTAuNC0xLTAuNi0xLjgtMC42aC0yLjVWNDIuOHogTTEwNC4zLDQ4LjhsLTMuMy01LjVoMS45bDMuNyw1LjVIMTA0LjN6Ij48L3BhdGg+PHBhdGggY2xhc3M9InN0MCIgZD0iTTExNCwzOC40di0xLjVoOS40djEuNWgtNC4ybDAuNC0wLjR2MTAuOGgtMS44VjM4bDAuNCwwLjRIMTE0TDExNCwzOC40eiI+PC9wYXRoPjxwYXRoIGNsYXNzPSJzdDAiIGQ9Ik0xMzUuNyw0OWMtMC44LDAtMS42LTAuMS0yLjItMC40Yy0wLjctMC4zLTEuMi0wLjctMS42LTEuM2MtMC40LTAuNi0wLjYtMS4zLTAuNy0yLjFoMS43IGMwLDAuNSwwLjEsMC45LDAuNCwxLjNjMC4zLDAuMywwLjYsMC42LDEsMC43YzAuNCwwLjIsMC45LDAuMiwxLjQsMC4yczEtMC4xLDEuNC0wLjJjMC40LTAuMiwwLjctMC40LDAuOS0wLjYgYzAuMi0wLjMsMC4zLTAuNiwwLjMtMC45YzAtMC41LTAuMS0wLjgtMC40LTEuMWMtMC4zLTAuMy0wLjctMC41LTEuMy0wLjdsLTIuMi0wLjhjLTEtMC40LTEuNy0wLjgtMi4yLTEuMiBjLTAuNS0wLjUtMC43LTEuMS0wLjctMS45YzAtMC45LDAuNC0xLjcsMS4xLTIuM2MwLjctMC42LDEuOC0wLjksMy4xLTAuOWMxLjMsMCwyLjMsMC4zLDMsMC45YzAuNywwLjYsMS4xLDEuNCwxLjIsMi40aC0xLjggYy0wLjEtMC41LTAuMy0wLjktMC43LTEuMmMtMC40LTAuMy0xLTAuNC0xLjctMC40Yy0wLjcsMC0xLjMsMC4yLTEuNywwLjVjLTAuNCwwLjMtMC42LDAuNy0wLjYsMS4yYzAsMC40LDAuMSwwLjcsMC40LDAuOSBjMC4zLDAuMiwwLjYsMC40LDEuMiwwLjZsMi41LDAuOWMwLjksMC4zLDEuNSwwLjcsMiwxLjJjMC41LDAuNSwwLjcsMS4yLDAuNywyYzAsMC43LTAuMiwxLjMtMC41LDEuOGMtMC40LDAuNS0wLjksMC45LTEuNSwxLjIgQzEzNy41LDQ4LjksMTM2LjcsNDksMTM1LjcsNDlMMTM1LjcsNDlMMTM1LjcsNDl6Ij48L3BhdGg+PHBhdGggY2xhc3M9InN0MCIgZD0iTTE2MC4yLDQ5Yy0xLDAtMS44LTAuMi0yLjYtMC44Yy0wLjgtMC41LTEuNC0xLjItMS45LTIuMWMtMC41LTAuOS0wLjctMi0wLjctMy4yYzAtMSwwLjEtMS45LDAuNC0yLjcgczAuNy0xLjQsMS4yLTJjMC41LTAuNSwxLjEtMC45LDEuOC0xLjJjMC43LTAuMywxLjQtMC40LDIuMi0wLjRjMSwwLDEuOSwwLjIsMi42LDAuNmMwLjcsMC40LDEuMywxLjEsMS44LDJsLTEuOCwwLjUgYy0wLjQtMC41LTAuOC0wLjktMS4yLTEuMmMtMC40LTAuMy0wLjktMC40LTEuNS0wLjRjLTAuNywwLTEuMywwLjItMS44LDAuNmMtMC42LDAuNC0xLDAuOS0xLjMsMS42Yy0wLjMsMC43LTAuNSwxLjUtMC41LDIuNSBjMCwwLjksMC4xLDEuNywwLjQsMi4zYzAuMywwLjcsMC43LDEuMiwxLjIsMS42YzAuNSwwLjQsMS4xLDAuNiwxLjgsMC42YzAuNiwwLDEtMC4xLDEuNS0wLjRjMC40LTAuMiwwLjgtMC42LDEtMS4xIGMwLjMtMC41LDAuNC0xLjEsMC40LTEuOGgwLjVjMCwxLTAuMSwxLjktMC40LDIuNmMtMC4yLDAuNy0wLjYsMS4zLTEuMSwxLjdDMTYxLjcsNDguOCwxNjEsNDksMTYwLjIsNDlMMTYwLjIsNDl6IE0xNjMuNSw0OC44IGwtMC4zLTIuN3YtMmwtMi45LTAuMXYtMS4yaDQuNnY2SDE2My41eiI+PC9wYXRoPjxwYXRoIGNsYXNzPSJzdDAiIGQ9Ik0xNzQuOCw0OC44VjM2LjloNC4zYzEuNCwwLDIuNSwwLjMsMy4yLDFjMC43LDAuNywxLjEsMS41LDEuMSwyLjZjMCwxLjEtMC40LDEuOS0xLjEsMi42IGMtMC43LDAuNy0xLjgsMS0zLjIsMWgtMi41djQuOEwxNzQuOCw0OC44TDE3NC44LDQ4Ljh6IE0xNzYuNiw0Mi44aDIuM2MwLjksMCwxLjUtMC4yLDEuOS0wLjZjMC40LTAuNCwwLjctMC45LDAuNy0xLjYgYzAtMC42LTAuMi0xLjItMC42LTEuNmMtMC40LTAuNC0xLTAuNi0xLjgtMC42aC0yLjVWNDIuOHogTTE4MS40LDQ4LjhsLTMuMy01LjVoMS45bDMuNyw1LjVIMTgxLjR6Ij48L3BhdGg+PHBhdGggY2xhc3M9InN0MCIgZD0iTTE5Ny4zLDQ5Yy0xLDAtMS45LTAuMi0yLjctMC43Yy0wLjgtMC41LTEuNC0xLjEtMS45LTIuMWMtMC41LTAuOS0wLjctMi4xLTAuNy0zLjRjMC0xLjQsMC4yLTIuNSwwLjctMy41IGMwLjUtMC45LDEuMS0xLjYsMS45LTJjMC44LTAuNCwxLjctMC43LDIuNy0wLjdjMSwwLDEuOSwwLjIsMi43LDAuN2MwLjgsMC41LDEuNCwxLjEsMS45LDIuMWMwLjUsMC45LDAuNywyLjEsMC43LDMuNCBzLTAuMiwyLjUtMC43LDMuNGMtMC41LDAuOS0xLjEsMS42LTEuOSwyLjFDMTk5LjIsNDguOCwxOTguMyw0OSwxOTcuMyw0OUwxOTcuMyw0OXogTTE5Ny4zLDQ3LjRjMS4xLDAsMS45LTAuNCwyLjUtMS4yIGMwLjYtMC44LDAuOS0xLjksMC45LTMuNHMtMC4zLTIuNi0wLjktMy40Yy0wLjYtMC44LTEuNS0xLjItMi41LTEuMmMtMS4xLDAtMS45LDAuNC0yLjUsMS4yYy0wLjYsMC44LTAuOSwxLjktMC45LDMuNCBjMCwxLjUsMC4zLDIuNiwwLjksMy40QzE5NS40LDQ3LDE5Ni4yLDQ3LjQsMTk3LjMsNDcuNHoiPjwvcGF0aD48cGF0aCBjbGFzcz0ic3QwIiBkPSJNMjExLjQsMzYuOWgxLjh2Ny41YzAsMS4xLDAuMywxLjgsMC44LDIuM2MwLjUsMC41LDEuMiwwLjcsMi4xLDAuN2MwLjksMCwxLjUtMC4yLDIuMS0wLjcgYzAuNS0wLjUsMC44LTEuMiwwLjgtMi4zdi03LjVoMS44djcuNWMwLDEtMC4yLDEuOC0wLjYsMi41Yy0wLjQsMC43LTAuOSwxLjItMS42LDEuNmMtMC43LDAuNC0xLjUsMC41LTIuNSwwLjUgYy0xLDAtMS44LTAuMi0yLjUtMC41Yy0wLjctMC40LTEuMi0wLjktMS42LTEuNmMtMC40LTAuNy0wLjYtMS41LTAuNi0yLjVMMjExLjQsMzYuOUwyMTEuNCwzNi45eiI+PC9wYXRoPjxwYXRoIGNsYXNzPSJzdDAiIGQ9Ik0yMzAuNSw0OC44VjM2LjloNGMxLjMsMCwyLjQsMC4zLDMuMSwxYzAuNywwLjcsMS4xLDEuNiwxLjEsMi43YzAsMS4yLTAuNCwyLjEtMS4xLDIuN2MtMC43LDAuNy0xLjcsMS0zLjEsMSBoLTIuMnY0LjVIMjMwLjV6IE0yMzIuMyw0Mi43aDIuMmMwLjgsMCwxLjMtMC4yLDEuNy0wLjZjMC40LTAuNCwwLjYtMC45LDAuNi0xLjZjMC0wLjYtMC4yLTEuMi0wLjYtMS42Yy0wLjQtMC40LTEtMC42LTEuNy0wLjYgaC0yLjJWNDIuN3oiPjwvcGF0aD48L2c+PC9zdmc+" alt="SeventyTwo Sports Group">
     </a>
     <nav>
@@ -348,7 +395,41 @@ html.locked #gate{display:grid}
 </header>
 
 <main class="wrap">
-  <div id="page-scores">
+  <div id="page-home" hidden>
+    <section class="hp-hero">
+      <div class="mono" aria-hidden="true">72</div>
+      <div class="eyebrow">SeventyTwo Sports Group · Internal portal</div>
+      <h1><span class="n">72</span> Central</h1>
+      <p class="hp-greet" id="hpGreet">Welcome to 72 Central.</p>
+      <div class="hp-meta" id="hpMeta"></div>
+    </section>
+    <a class="hp-live" id="hpLive" href="#scores" hidden></a>
+    <div class="hp-grid">
+      <a class="hp-tile" href="#scores">
+        <div class="no">01</div><h2>Competition Zone</h2>
+        <p>Today's matches, what's coming up and this week's results for every 72 player.</p>
+        <div class="hp-stat"><div><b id="hpT1">—</b><span id="hpS1">Loading the schedule…</span></div><span class="hp-go" aria-hidden="true">→</span></div>
+      </a>
+      <a class="hp-tile" href="#rankings">
+        <div class="no">02</div><h2>Rankings</h2>
+        <p>Official ATP, WTA and ITF junior rankings for the roster, updated every week.</p>
+        <div class="hp-stat"><div><b id="hpT2">—</b><span id="hpS2">Loading rankings…</span></div><span class="hp-go" aria-hidden="true">→</span></div>
+      </a>
+      <a class="hp-tile" href="#players">
+        <div class="no">03</div><h2>Players</h2>
+        <p>Profiles for the whole roster: titles, partners, social following and results.</p>
+        <div class="hp-faces" id="hpFaces"></div>
+        <div class="hp-stat"><div><b id="hpT3">—</b><span id="hpS3"></span></div><span class="hp-go" aria-hidden="true">→</span></div>
+      </a>
+      <a class="hp-tile" href="#scouting">
+        <div class="no">04</div><h2>Scouting HQ</h2>
+        <p>Every ranked player aged 21 or under, with their ranking moves over 1 week, 3 months and 12 months.</p>
+        <div class="hp-stat"><div><b id="hpT4">—</b><span id="hpS4">Loading the scouting list…</span></div><span class="hp-go" aria-hidden="true">→</span></div>
+      </a>
+    </div>
+    <p class="hp-foot">For SeventyTwo Sports Group staff only.</p>
+  </div>
+  <div id="page-scores" hidden>
     <div id="champs" hidden></div>
     <div class="stale" id="staleScores" hidden></div>
     <div class="hero">
@@ -514,7 +595,8 @@ function dayLabel(iso){
 /* ---------- tabs ---------- */
 function route(){
   const hash = location.hash;
-  const tab = hash === "#rankings" ? "rankings" : hash === "#scouting" ? "scouting" : hash.startsWith("#players") ? "players" : "scores";
+  const tab = hash === "#rankings" ? "rankings" : hash === "#scouting" ? "scouting" : hash === "#scores" ? "scores" : hash.startsWith("#players") ? "players" : "home";
+  $("#page-home").hidden = tab !== "home";
   $("#page-scores").hidden = tab !== "scores";
   $("#page-rankings").hidden = tab !== "rankings";
   $("#page-players").hidden = tab !== "players";
@@ -524,6 +606,9 @@ function route(){
   else if ($("#prof").open) $("#prof").close();
   document.querySelectorAll("nav a").forEach(a => a.classList.toggle("active", a.dataset.tab === tab));
   if (tab === "scores") fitChamps();
+  if (tab === "home") renderHome();
+  if (window._tab && window._tab !== tab) window.scrollTo(0, 0);
+  window._tab = tab;
 }
 window.addEventListener("hashchange", route);
 
@@ -1043,7 +1128,7 @@ document.addEventListener("click", e => {
 });
 $("#prof").addEventListener("close", () => { if (location.hash.startsWith("#players/")) history.replaceState(null, "", "#players"); });
 
-function render(){ renderScores(); renderRankings(); renderPlayers(); }
+function render(){ renderScores(); renderRankings(); renderPlayers(); renderHome(); }
 
 /* ITF junior matches (itfm.json, refreshed about twice a day): added to the match list, skipping any the main feed already has */
 function addItfMatches(st, im, src = "itf"){
@@ -1131,7 +1216,50 @@ $("#sqQ").addEventListener("input", e => { SQ.q = e.target.value; renderScouting
 $("#sqC").addEventListener("change", e => { SQ.c = e.target.value; renderScouting(); });
 async function loadScouting(){
   try { const r = await fetch("scouting.json?t=" + Date.now(), { cache: "no-store" }); if (r.ok) SCOUT = await r.json(); else if (!SCOUT) SCOUT = {}; } catch (e) { if (!SCOUT) SCOUT = {}; }
-  renderScouting();
+  renderScouting(); renderHome();
+}
+/* ---------- Home portal ---------- */
+function renderHome(){
+  if (!$("#page-home")) return;
+  const now = new Date();
+  const h = +new Intl.DateTimeFormat("en-GB", { timeZone:"Europe/London", hour:"numeric", hourCycle:"h23" }).format(now);
+  const part = h < 12 ? "Good morning" : h < 18 ? "Good afternoon" : "Good evening";
+  $("#hpGreet").innerHTML = `${part}. It's <b>${now.toLocaleDateString("en-GB", { weekday:"long", day:"numeric", month:"long", timeZone:"Europe/London" })}</b>. Pick a section to get started.`;
+  const lc = STATE?.lastChecked ? new Date(STATE.lastChecked) : null;
+  const fresh = lc && Date.now() - lc < 3 * 36e5;
+  $("#hpMeta").innerHTML = STATE ? `<span class="hp-pill${fresh ? "" : " warn"}"><i></i>${lc ? `Scores updated ${lc.toLocaleTimeString("en-GB", { hour:"2-digit", minute:"2-digit", timeZone:"Europe/London" })} UK${fresh ? "" : ", " + lc.toLocaleDateString("en-GB", { day:"numeric", month:"short", timeZone:"Europe/London" })}` : "Scores not updated yet"}</span>`
+    + (STATE.rankingsWeek || STATE.rankingsAsOf ? `<span class="hp-pill">Rankings: week of ${new Date((STATE.rankingsWeek || STATE.rankingsAsOf) + "T12:00:00Z").toLocaleDateString("en-GB", { day:"numeric", month:"short", timeZone:"UTC" })}</span>` : "") : "";
+  // 01 Competition Zone
+  const ms = STATE?.matches || [], today = ukDate();
+  const nm = m => [m.p1, m.p2].filter(Boolean).map(esc).join(" v ");
+  const live = ms.filter(m => m.status === "live");
+  $("#hpLive").hidden = !live.length;
+  if (live.length) $("#hpLive").innerHTML = `<span class="k"><i></i>LIVE NOW</span>` + live.slice(0, 3).map(m => `<span>${nm(m)}<em>${esc(m.tournament || "")}</em></span>`).join("");
+  if (STATE) {
+    const tday = ms.filter(m => m.date === today);
+    const nxt = ms.filter(m => m.status === "scheduled" && (m.date > today || (m.date === today && m.time)))
+      .sort((a, b) => `${a.date} ${a.time || "99"}`.localeCompare(`${b.date} ${b.time || "99"}`))[0];
+    $("#hpT1").innerHTML = `${tday.length}<small>${tday.length === 1 ? "match" : "matches"} today</small>`;
+    $("#hpS1").innerHTML = live.length ? `${live.length} in progress right now` : nxt ? `Next: ${nm(nxt)} · ${dayLabel(nxt.date)}${nxt.time ? " " + esc(nxt.time) + " UK" : ""}` : "Nothing else scheduled yet";
+  }
+  // 02 Rankings: the roster's highest-ranked player
+  const ranked = ROSTER.map(p => ({ p, r: playerRank(p.id) })).filter(o => o.r).sort((a, b) => a.r - b.r);
+  if (ranked.length) {
+    $("#hpT2").innerHTML = `#${ranked[0].r}<small>${ranked[0].p.tour}</small>`;
+    $("#hpS2").textContent = `${ranked[0].p.first} ${ranked[0].p.last} leads the roster · ${ranked.filter(o => o.r <= 100).length} players in the top 100`;
+  }
+  // 03 Players
+  const tours = t => ROSTER.filter(p => p.tour === t).length;
+  $("#hpT3").innerHTML = `${ROSTER.length}<small>players</small>`;
+  $("#hpS3").textContent = `${tours("ATP")} ATP · ${tours("WTA")} WTA, including Next Gen juniors`;
+  if (!$("#hpFaces").children.length) $("#hpFaces").innerHTML = ranked.slice(0, 6).map(o => `<img src="${o.p.id}.webp" alt="" loading="lazy" onerror="this.remove()">`).join("");
+  // 04 Scouting HQ
+  if (SCOUT?.atp || SCOUT?.wta) {
+    const all = [...(SCOUT.atp?.players || []), ...(SCOUT.wta?.players || [])];
+    const climb = all.filter(p => p[5] != null && p[0] <= 500).sort((a, b) => (b[5] - b[0]) - (a[5] - a[0]))[0];
+    $("#hpT4").innerHTML = `${all.length.toLocaleString("en-GB")}<small>U21 players</small>`;
+    $("#hpS4").innerHTML = climb ? `Top 3-month climber inside the top 500: ${esc(climb[1])} ▲${climb[5] - climb[0]}` : "";
+  } else if (SCOUT) { $("#hpT4").textContent = "—"; $("#hpS4").textContent = "Scouting list not available yet"; }
 }
 /* ---------- boot ---------- */
 route();
