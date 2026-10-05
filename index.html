@@ -1096,19 +1096,21 @@ function playerRank(id){
 }
 const itfOf = id => ITF?.players?.[id] || null;
 /* ITF singles titles come from titles.json (read from the ITF's own results by itf_titles.py), never typed in.
-   Anyone who is or has been in the ATP/WTA top 100 gets no ITF box; everyone else gets their whole ITF career. */
+   Every pro gets an ITF box with their whole ITF career. For anyone who is or has been in the ATP/WTA top 100
+   it is left out of their "Career titles" total (ex), so that number still matches their official tour titles. */
 const itfCareer = id => TITLES?.full?.includes(id) && TITLES.best?.[id] ? Object.values(TITLES.titles || {}).flat().filter(t => t.id === id) : null;
 const everTop100 = x => [x.high, playerRank(x.id), TITLES?.best?.[x.id]?.rank].some(r => r && r <= 100);
 const tierNum = k => k === "Futures" ? 0 : +(k.match(/\d+/) || [0])[0];  // W100 > W75 > … ; old $25K events sort by prize money
 function titlesOf(x){
-  if (x.kind === "junior" || everTop100(x)) return x.titles;
-  const c = itfCareer(x.id);
-  if (!c) return TITLES ? [...x.titles, { k:"ITF titles", n:null, note:"Checking with the ITF" }] : x.titles;
-  if (!c.length) return x.titles;
+  if (x.kind === "junior" || !TITLES) return x.titles;
+  const c = itfCareer(x.id), ex = everTop100(x) ? 1 : 0;
+  if (!c) return [...x.titles, { k:"ITF titles", n:null, ex, note:"Checking with the ITF" }];
   const by = {};
   for (const t of c) by[t.tier] = (by[t.tier] || 0) + 1;
-  return [...x.titles, { k:"ITF titles", n:c.length, p:Object.entries(by).sort((a, b) => tierNum(b[0]) - tierNum(a[0])) }];
+  return [...x.titles, { k:"ITF titles", n:c.length, ex, note:"No ITF singles titles", p:Object.entries(by).sort((a, b) => tierNum(b[0]) - tierNum(a[0])) }];
 }
+const titleSum = tl => tl.reduce((s, t) => s + (t.team || t.ex ? 0 : t.n), 0);
+const titleExcl = tl => { const e = [tl.some(t => t.team) && "team", tl.some(t => t.ex) && "ITF"].filter(Boolean); return e.length ? ` (excl. ${e.join(" & ")})` : ""; };
 // junior results: ITF pro titles come from the ITF and replace the typed-in title lines (runner-up, doubles and junior lines stay)
 const itfLine = t => /^[MW]\d/.test(t.tournament) ? `${t.tournament.replace(/^[MW]\d{2,3}\s+/, "")} ITF ${t.tier}` : `${t.tournament} (ITF)`;
 function resOf(x){
@@ -1132,7 +1134,7 @@ function playerList(){
 }
 function cardNums(x, rank){
   if (x.kind !== "junior") {
-    const titles = titlesOf(x).reduce((s, t) => s + (t.team ? 0 : t.n), 0);
+    const titles = titleSum(titlesOf(x));
     return [[rank ? pad2(rank) : "—", "Ranking"], [pad2(bestOf(x.high, rank)), "Career high"], [pad2(titles), "Titles"]];
   }
   const it = itfOf(x.id);
@@ -1157,7 +1159,7 @@ function renderPlayers(){
 }
 function proBody(x, p, rank){
   const best = bestOf(x.high, rank);
-  const tl = titlesOf(x), titles = tl.reduce((s, t) => s + (t.team ? 0 : t.n), 0);
+  const tl = titlesOf(x), titles = titleSum(tl);
   const reach = Object.values(x.social).reduce((s, v) => s + v, 0);
   const tblock = t => {
     const parts = t.p || [];
@@ -1169,7 +1171,7 @@ function proBody(x, p, rank){
   return `<div class="big">
         <div><b>${rank ? `<small>#</small>${rank}` : "—"}</b><span>Current ${p.tour} ranking</span></div>
         <div><b>${x.junior ? `<small>#</small>${x.junior}` : best ? `<small>#</small>${best}` : "—"}</b><span>${x.junior ? "Highest ITF junior ranking" : "Career-high ranking"}</span></div>
-        <div><b>${pad2(titles)}</b><span>Career titles${tl.some(t => t.team) ? " (excl. team)" : ""}</span></div>
+        <div><b>${pad2(titles)}</b><span>Career titles${titleExcl(tl)}</span></div>
         <div><b>${fmtN(reach)}</b><span>Social following</span></div>
       </div>
       <section><h3 class="pk">Titles</h3><div class="tg">${tl.map(tblock).join("") || `<div class="leg">No titles yet</div>`}</div></section>
