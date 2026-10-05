@@ -115,7 +115,8 @@ def gaps():
     parts = {"atp": "the ATP Tour calendar (Wikipedia)", "challenger": "the Challenger calendar (Wikipedia)", "wta": "the WTA calendar",
              "itf-men": "the ITF men's calendar", "itf-women": "the ITF women's calendar", "itf-juniors": "the ITF junior calendar",
              "te": "the Tennis Europe calendar", "itf-entries": "the ITF acceptance lists (72 entries)", "te-entries": "the Tennis Europe entries",
-             "atp-entries": "the ATP and Challenger entries (live-tennis.eu and Tick Tock Tennis)"}
+             "atp-entries": "the ATP and Challenger entries (live-tennis.eu)", "atp-entries-ticktock": "Tick Tock Tennis (an ATP entries check; Spazio Tennis still confirms)",
+             "atp-entries-spazio": "Spazio Tennis (an ATP entries check; Tick Tock Tennis still confirms)"}
     for k, e in (sc.get("errors") or {}).items():
         if ukday(e.get("at")) == TODAY:
             out.append(f"Tour schedule: {parts.get(k, k)} couldn't be refreshed on {TODAY} ({e.get('msg')}). The page still shows the previous list.")
