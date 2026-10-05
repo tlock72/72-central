@@ -243,6 +243,7 @@ def main():
             "points": (sc or {}).get("points") if status == "live" else None,
             "server": (sc or {}).get("server") if status == "live" else None,
             "winner": winner_from(sc) if status == "finished" else None,
+            "doubles": bool(p1.get("is_doubles_team") or p2.get("is_doubles_team") or "/" in (p1.get("name") or "") + (p2.get("name") or "")),
         }
 
     old = {m["apiId"]: m for m in data["matches"] if m.get("apiId")}
@@ -351,7 +352,7 @@ def main():
         merged.append(m)
     data["matches"] = merged
 
-    # 5b) ITF World Tennis Tour titles (M/W15 to M/W100). The match list only keeps a week, so every final
+    # 5b) ITF World Tennis Tour singles titles (M/W15 to M/W100). The match list only keeps a week, so every final
     #     a roster player wins is also saved for good in titles.json, with its date. Each title is its own
     #     line, so two titles at the same venue in different weeks both count. A title the feed misses can
     #     be added there by hand.
@@ -359,6 +360,8 @@ def main():
     added = False
     for m in merged:
         w = m.get("p1Id") if m.get("winner") == 1 else m.get("p2Id") if m.get("winner") == 2 else None
+        if m.get("doubles") or "/" in m.get("p1", "") + m.get("p2", ""):
+            continue  # singles titles only
         if not (w and m["status"] == "finished" and m.get("round") == "Final" and m.get("date")
                 and re.fullmatch(r"ITF ([MW]\d{2,3}|Men|Women)", m.get("category") or "")):
             continue

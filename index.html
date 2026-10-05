@@ -869,7 +869,7 @@ function renderRankings(){
     <div class="fact"><span class="k">Players we represent</span><b>${ROSTER.length}</b><span class="s">across the ATP, WTA and junior tours</span></div>
     <div class="fact"><span class="k">Roster breakdown</span><b class="sm">${cnt("men")} men · ${cnt("women")} women</b><span class="s">${cnt("boys")} boys · ${cnt("girls")} girls</span></div>
     <div class="fact"><span class="k">Career singles titles</span><b class="sm">${tt("ATP titles")} ATP · ${tt("WTA titles")} WTA</b><span class="s">won by players on the current roster</span></div>
-    <div class="fact"><span class="k">ITF World Tennis Tour titles ${year}</span><b>${TITLES ? futN : "–"}</b><span class="s">${TITLES ? (futWho || "None yet this year") : "Not loaded yet"}</span></div>`;
+    <div class="fact"><span class="k">ITF World Tennis Tour singles titles ${year}</span><b>${TITLES ? futN : "–"}</b><span class="s">${TITLES ? (futWho || "None yet this year") : "Not loaded yet"}</span></div>`;
   const asOf = r.asOf ? new Date(r.asOf + "T12:00:00Z").toLocaleDateString("en-GB", { day:"numeric", month:"long", year:"numeric", timeZone:"UTC" }) : "";
   $("#rankSub").textContent = rankTab === "itf" ? "ITF World Tennis Junior Rankings for the 72 juniors." : `Official ATP and WTA singles rankings for the 72 roster${asOf ? ", as of " + asOf : ""}.`;
   $("#rankSrc").textContent = `Source: ${r.source || "ATP & WTA"}. Updated every Monday.`;
