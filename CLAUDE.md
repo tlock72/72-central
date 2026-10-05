@@ -22,7 +22,7 @@ It is hosted on GitHub Pages at tlock72.github.io/72-central and protected by a 
 | `itfm.json` | ITF junior matches. |
 | `te.json` | Tennis Europe U14/U16 matches. |
 | `scouting.json`, `scouting_history.json` | Age Filtered World Rankings: every ranked ATP/WTA player with birth year and 1-week, 3-month and 12-month moves (the page filters by age group, birth year, ranking and "72 only"; 72 Rankings links to the 72-only view). A move of `-1` means "not tracked then". ATP history only kept young players before 5 Oct 2026; `scouting.py` fills those weeks in for everyone from Tennis Explorer (5 weeks a run, stored as `_tok` weeks keyed by name in any word order, after checking it agrees with Tennis Abstract). The 1 wk / 3 mo / 12 mo moves for 72 players also show on 72 Rankings. |
-| `schedule.json` | Tour Schedule tab, written daily by `schedule.py`: `events[]` from this week to 31 Dec (`tour`: atp, wta, ch, itfm, itfw (incl. WTA 125), jun, te; `cat`; `tier` 1 = Grand Slams/Finals … 8 = M/W15, J30–J100, TE Cat 3; `e72` = 72 players entered), `entriesTo` (entries only shown up to 4 weeks ahead), `errors{part}`. |
+| `schedule.json` | Tour Schedule tab, written daily by `schedule.py`: `events[]` from this week to 31 Dec (`tour`: atp, wta, ch, itfm, itfw (incl. WTA 125), jun, te; `cat`; `tier` 1 = Grand Slams/Finals … 8 = M/W15, J30–J100, TE Cat 3 (the page colours by its own groups in `schGrp`: Slams, 1000, 500, 250, 125, then Challenger/ITF by number, then all ITF Juniors, then all Tennis Europe); `e72` = 72 players entered), `entriesTo` (entries only shown up to 4 weeks ahead), `errors{part}`. |
 | `*.webp` | Player photos, named by roster id. |
 | `FILL_GAPS.md`, `ITF_JUNIORS.md` | Manual fallback instructions for Claude, used only when asked. |
 
