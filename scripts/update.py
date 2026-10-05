@@ -138,12 +138,19 @@ def flip(m):
 
 
 def poll(aid, m):
-    """Look up one of today's matches: finished/cancelled, 'live' if under way, or None if not started yet."""
+    """Look up one of today's matches: finished/cancelled, 'live' only if the feed says it is under way,
+    the match with its new start time if the feed has moved it, or None if nothing has changed."""
     d = api(f"/matches/{aid}")
     d = d.get("data", d) if isinstance(d, dict) else {}
     if (d.get("status") or "").lower() in ("live", "in_progress", "inprogress", "started", "playing"):
         return dict(m, status="live")
-    return settle(aid, m, d)
+    done = settle(aid, m, d)
+    if done is None and d.get("scheduled_time"):
+        date, t = uk(d["scheduled_time"])
+        if date and (date, t) != (m.get("date"), m.get("time")):
+            print(f"start time moved: {m.get('p1')} v {m.get('p2')} now {date} {t}")
+            return dict(m, date=date, time=t)
+    return done
 
 
 def settle(aid, m, d=None):
@@ -340,7 +347,7 @@ def main():
                 print("today's match lookup failed", aid, e); got = None
             if got and got["status"] == "live":
                 got = dict(got, seenLive=NOW.strftime("%Y-%m-%dT%H:%M:%SZ"))
-            new[aid] = dict(got or m, polled=uk_now.strftime("%H")) if not got or got["status"] == "live" else got
+            new[aid] = dict(got or m, polled=uk_now.strftime("%H")) if not got or got["status"] in ("live", "scheduled") else got
 
     # 5) Merge: keep hand-entered matches (no apiId) unless the API now has the same match
     def key(m):
