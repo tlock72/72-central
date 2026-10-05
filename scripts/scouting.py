@@ -108,6 +108,18 @@ def tok(name):
     return " ".join(sorted(re.sub(r"(ae|oe|ue)", lambda m: m.group(0)[0], w) for w in re.findall(r"[a-z]+", s)))
 
 
+def tok_find(t, keys):
+    """Exact name match, else the only name sharing at least two words with all words of the shorter one in the other
+    (e.g. "Tomas Barrios Vera" = "Barrios Tomas"). None when there is no match or more than one."""
+    if t in keys:
+        return t
+    a = set(t.split())
+    if len(a) < 2:
+        return None
+    hits = [k for k in keys if len(a & set(k.split())) >= 2 and (a <= set(k.split()) or set(k.split()) <= a)]
+    return hits[0] if len(hits) == 1 else None
+
+
 def te_week(d):
     """Every player in Tennis Explorer's ATP ranking of week d, as {tok(name): rank}. None if it has no list for that week."""
     seen = {}
@@ -251,7 +263,8 @@ def main():
             def prev_rank(snap, r, y):
                 if "_tok" in snap:  # filled in from Tennis Explorer: absent = not ranked then, unless the name never matched
                     t = tok(r["name"])
-                    return snap[t] if t in snap else (None if t in seen else -1)
+                    k = tok_find(t, snap)
+                    return snap[k] if k else (None if tok_find(t, seen) else -1)
                 if "_all" in snap or (y and y >= min_year - 2):
                     return snapshot_rank(snap, key(r["name"]))
                 return -1
