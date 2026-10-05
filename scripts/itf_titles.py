@@ -19,7 +19,8 @@ from update import ROSTER  # roster id -> (name, tour)
 BASE = "https://www.itftennis.com/tennis/api"
 UA = "72HubRankings/1.0 (+https://github.com/tlock72/72-central; once a day, one request every few seconds)"
 PAUSE = 4
-TAKE = 10
+TAKE = 50
+VERSION = 2  # bump to make every player be re-checked on the next run
 BUDGET = timedelta(minutes=7)  # players not reached in time are picked up by the next run
 UK = ZoneInfo("Europe/London")
 NOW = datetime.now(timezone.utc)
@@ -67,13 +68,16 @@ def end_of(s):
 
 
 def titles_of(rid, pid, year):
+    # the ITF files men under "MT" and women under "WT"; WT/MT activity also lists Grand Slam and
+    # WTA/ATP events, so only "ITF World Tennis Tour" tournaments count
+    circuit = "MT" if ROSTER[rid][1] == "atp" else "WT"
     out, skip = [], 0
     while True:
-        act = get("/PlayerApi/GetPlayerActivity", circuitCode="WT", matchTypeCode="S", playerId=pid, skip=skip, take=TAKE)
+        act = get("/PlayerApi/GetPlayerActivity", circuitCode=circuit, matchTypeCode="S", playerId=pid, skip=skip, take=TAKE)
         items = act.get("items") or []
         for t in items:
             end = end_of(t.get("dates"))
-            if not end or end.year != year:
+            if not end or end.year != year or t.get("tournamentType") != "ITF World Tennis Tour":
                 continue
             for ev in t.get("events") or []:
                 if (ev.get("matchType") or "").lower() != "singles" or "main" not in (ev.get("drawType") or "").lower():
@@ -103,7 +107,9 @@ def main():
     today = uk.strftime("%Y-%m-%d")
     tried = data.get("tried")
     recent = tried and NOW - datetime.fromisoformat(tried.replace("Z", "+00:00")) < timedelta(hours=2)
-    if data.get("todo"):
+    if data.get("v") != VERSION:
+        data = {"v": VERSION, "ids": data.get("ids", {}), "notFound": data.get("notFound", {})}  # re-check everyone
+    elif data.get("todo"):
         pass  # finish the players the last run didn't reach
     elif data.get("checked") == today and (not data.get("pending") or recent):
         print("ITF titles already checked today"); return
