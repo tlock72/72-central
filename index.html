@@ -1241,7 +1241,7 @@ let SCOUT = null;
 // by: "age" (age groups) or "year" (one birth year); ag: "all", "21"…"16" or "custom"; age: under-age limit, 0 = all ages;
 // yr: birth year, 0 = all; rk: "all", "100"…"1000" or "custom"; top: ranking limit, 0 = no limit
 const SQ = { t: "atp", by: "age", ag: "21", age: 21, yr: 0, rk: "all", top: 0, q: "", c: "", sort: "rank", asc: true, all: false };
-const SQ_AGES = [["all", "All"], ["21", "U21"], ["20", "U20"], ["19", "U19"], ["18", "U18"], ["17", "U17"], ["16", "U16"], ["custom", "Custom"]];
+const SQ_AGES = [["all", "All"], ["22", "U22"], ["21", "U21"], ["20", "U20"], ["19", "U19"], ["18", "U18"], ["17", "U17"], ["16", "U16"], ["custom", "Custom"]];
 const SQ_RANKS = [["all", "All"], ["100", "Top 100"], ["300", "Top 300"], ["500", "Top 500"], ["1000", "Top 1000"], ["custom", "Custom"]];
 const sqNum = el => Math.max(0, parseInt(el.value, 10) || 0);
 const sqAgeTxt = () => SQ.by === "year" ? (SQ.yr ? `Born ${SQ.yr}` : "All ages") : (SQ.age ? `U${SQ.age}` : "All ages");
