@@ -84,7 +84,9 @@ def in_window(start, end):
 def tier(tour, cat):
     c = (cat or "").lower()
     n = int(re.sub(r"\D", "", c) or 0)
-    if "grand slam" in c or c.endswith("finals") and "next gen" not in c:
+    if tour == "jun":  # junior finals and team finals rank with the J500s
+        return 5 if n >= 500 or "finals" in c else 6 if n >= 300 else 7 if n >= 200 else 8
+    if "grand slam" in c or c.endswith("finals") and "next gen" not in c and "cup" not in c:
         return 1
     if tour in ("atp", "wta"):
         return 2 if n == 1000 else 3 if n == 500 or "cup" in c or "next gen" in c else 4
@@ -94,8 +96,6 @@ def tier(tour, cat):
         if "125" in c:
             return 5
         return 6 if n >= 75 else 7 if n >= 35 or n == 25 else 8
-    if tour == "jun":
-        return 5 if n >= 500 or c in ("ja", "grade a") else 6 if n >= 300 else 7 if n >= 200 else 8
     if tour == "te":
         return 5 if any(w in c for w in ("super", "masters", "european championship")) else 6 if c.endswith("1") else 7 if c.endswith("2") else 8
     return 8
@@ -129,7 +129,7 @@ def unlink(s):
 def atp_wiki(page, tour):
     w = get(WIKI + "?" + urllib.parse.urlencode({"action": "parse", "page": page, "prop": "wikitext", "format": "json", "formatversion": 2}))
     text = json.loads(w)["parse"]["wikitext"]
-    out, week = [], None
+    out, week, weeks = [], None, 1
     for line in text.split("\n"):
         if not line.startswith("|") or line.startswith(("|-", "|+", "|}")):
             continue
@@ -138,6 +138,8 @@ def atp_wiki(page, tour):
         wk = wiki_week(re.sub(r"<br\s*/?>.*", "", first))
         if wk:
             week = wk
+            last = wiki_week(re.split(r"<br\s*/?>", first)[-1].strip())  # two-week events list both Mondays
+            weeks = max(1, ((last - wk).days // 7 + 1) if last and last > wk else 1)
             cells = cells[1:]
         if not week or not cells:
             continue
@@ -156,11 +158,13 @@ def atp_wiki(page, tour):
                 surface = p.split(" – ")[0].strip()
         if tour == "atp" and not cat and "Grand Slam" in line:
             cat = "Grand Slam"
+        if not cat and re.search(r"Davis Cup|Laver Cup|United Cup", name):
+            cat = re.search(r"Davis Cup|Laver Cup|United Cup", name).group(0) + (" Finals" if "Finals" in name else "")
         if not cat or not name:
             continue
         link = re.match(r"\s*\[\[([^\]|]+)", parts[0])
         out.append({"tour": tour, "cat": cat, "name": name, "place": place, "start": week.isoformat(),
-                    "end": (week + timedelta(days=6)).isoformat(), "surface": surface, "weekOnly": True,
+                    "end": (week + timedelta(days=7 * weeks - 1)).isoformat(), "surface": surface, "weekOnly": True,
                     "link": "https://en.wikipedia.org/wiki/" + urllib.parse.quote(link.group(1).replace(" ", "_")) if link else ""})
     return out
 
@@ -175,6 +179,7 @@ def wta_events():
         for t in rows:
             g = t.get("tournamentGroup") or {}
             lvl = t.get("level") or g.get("level") or ""
+            lvl = "WTA Finals" if lvl.lower() == "finals" else lvl
             slug = re.sub(r"[^a-z0-9]+", "-", (g.get("name") or "").lower()).strip("-")
             out.append({"tour": "itfw" if "125" in lvl else "wta", "cat": lvl, "name": (t.get("title") or "").split(" - ")[0],
                         "place": ", ".join(x for x in ((t.get("city") or "").title(), t.get("country") or "") if x),
@@ -213,7 +218,8 @@ def itf_events(circuit, tour):
         for t in items:
             if (t.get("tourStatusCode") or "").upper() in ("C", "X"):  # cancelled
                 continue
-            out.append({"tour": tour, "cat": t.get("category") or "", "name": t.get("tournamentName") or t.get("name") or "",
+            cat = {"JM": "Junior Finals", "GC": "Junior team finals"}.get(t.get("category") or "", t.get("category") or "")
+            out.append({"tour": tour, "cat": cat, "name": t.get("tournamentName") or t.get("name") or "",
                         "place": ", ".join(x for x in (t.get("location") or t.get("venue"), t.get("hostNation")) if x),
                         "start": (t.get("startDate") or "")[:10], "end": (t.get("endDate") or "")[:10], "surface": t.get("surfaceDesc") or "",
                         "link": "https://www.itftennis.com" + (t.get("tournamentLink") or ""), "itfKey": t.get("tournamentKey"), "circuit": circuit})
@@ -232,7 +238,12 @@ def itf_entries(ev, itf72):
     found = {}
     for group in lists or []:
         for cl in group.get("entryClassifications") or []:
-            how = (cl.get("entryClassification") or "").strip().capitalize() or ITF_HOW.get(cl.get("entryClassificationCode") or "", "Entered")
+            raw = (cl.get("entryClassification") or "").strip().lower()
+            if "withdraw" in raw:
+                continue  # pulled out: not entered any more
+            how = next((v for k, v in (("main draw", "Main draw"), ("qualif", "Qualifying"), ("alternate", "Alternate"), ("junior exempt", "Junior exempt"),
+                                       ("wild", "Wildcard"), ("special exempt", "Special exempt"), ("lucky", "Lucky loser")) if k in raw), None) \
+                or raw.capitalize() or ITF_HOW.get(cl.get("entryClassificationCode") or "", "Entered")
             for e in cl.get("entries") or []:
                 for p in e.get("players") or []:
                     rid = itf72.get(p.get("playerId"))

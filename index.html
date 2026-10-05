@@ -43,6 +43,7 @@ nav{display:flex;gap:6px;background:rgba(255,255,255,.04);border:1px solid var(-
 nav a{font-family:var(--display);text-transform:uppercase;letter-spacing:.12em;font-size:13px;font-weight:500;text-decoration:none;padding:10px 18px;border-radius:999px;color:var(--muted);transition:color .2s,background .2s;white-space:nowrap}
 nav a:hover{color:var(--white)}
 nav a.active{background:var(--gold);color:var(--navy)}
+@media (max-width:1440px) and (min-width:641px){nav a{padding:10px 12px;letter-spacing:.06em;font-size:12px}}
 
 .hero{padding-block:40px 20px;display:flex;align-items:flex-end;justify-content:space-between;gap:20px;flex-wrap:wrap}
 .eyebrow{font-family:var(--display);letter-spacing:.3em;font-size:12px;color:var(--gold);text-transform:uppercase;margin-bottom:10px}
@@ -458,6 +459,7 @@ body.on-home header nav{display:none}
 }
 /* Phone layout: compact header, home on one screen, 3 match cards per row, compact roster */
 nav .sh,.nm-s{display:none}
+@media (max-width:1180px) and (min-width:641px){nav .lg{display:none} nav .sh{display:inline}}
 .p-find{display:block;width:100%;max-width:360px;margin:0 0 18px;padding:10px 16px;border-radius:999px;border:1px solid var(--line);background:var(--navy-2);color:var(--white);font:inherit;font-size:14px;outline:none}
 .p-find:focus{border-color:var(--gold)}
 @media (max-width:640px){
@@ -470,8 +472,7 @@ nav .sh,.nm-s{display:none}
   /* five tabs don't fit beside the logo on a phone: the menu gets its own full-width row under it */
   header .bar{flex-wrap:wrap;justify-content:center;row-gap:8px}
   nav{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:2px;padding:3px;border-radius:999px;width:100%}
-  nav a{text-align:center;overflow:hidden;text-overflow:ellipsis}
-  nav a{padding:7px 7px;font-size:10px;letter-spacing:.03em;white-space:nowrap}
+  nav a{text-align:center;overflow:hidden;text-overflow:ellipsis;padding:7px 2px;font-size:10px;letter-spacing:0;white-space:nowrap}
   nav .n72{display:none}
   #champs{margin-top:8px}
   nav .lg{display:none} nav .sh{display:inline}
