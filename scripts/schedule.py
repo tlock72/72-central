@@ -20,7 +20,8 @@ Sources (all free, no key):
   - ATP / Challenger: the ATP's own site blocks GitHub, so three free sites are read. live-tennis.eu (each
     top ~1,000 player's events for the next 3 weeks, the most up to date) must list the player, and Tick Tock
     Tennis (each event's main draw, qualifying and alternate lists) or Spazio Tennis (each event's official
-    acceptance list) must agree on the same event. Once the draw is out, the matches in data.json show the
+    acceptance list) must agree on the same event. This week's events aren't on live-tennis.eu, so for those
+    Tick Tock and Spazio must both list the player. Once the draw is out, the matches in data.json show the
     player as "In the draw".
 A part that fails keeps what it had last time and is listed under "errors" (report_gaps.py alerts).
 """
@@ -361,7 +362,8 @@ def best_weeks(cols, events, offsets, need):
 
 
 def lt_entries(events, men, need):
-    """live-tennis.eu: {(roster id, event key): qualifying?} for 72 men, and {event key: every player listed}."""
+    """live-tennis.eu: {(roster id, event key): qualifying?} for 72 men, {event key: every player listed}, and the
+    week (from this Monday) of its first column: events starting before that aren't covered."""
     body = get(LT_URL)
     rows = re.findall(r"(?s)<tr[^>]*>\s*<td class=\"?rk\"?>.*?</tr>", body)
     if len(rows) < 800:
@@ -390,10 +392,10 @@ def lt_entries(events, men, need):
                     everyone.setdefault(ev_key(ev), set()).add(pkey(name))
                     if rid:
                         out[(rid, ev_key(ev))] = n.startswith("Qual.")
-    return out, everyone
+    return out, everyone, off
 
 
-def tt_entries(events, men, need):
+def tt_entries(events, men, need, everyone):
     """Tick Tock Tennis: {(roster id, event key): list it is on} for 72 men. The page holds one block of lists per week."""
     body = get(TT_URL)
     upd = re.search(r"Data updated (\w{3} \d{1,2}, \d{4})", body)
@@ -428,6 +430,8 @@ def tt_entries(events, men, need):
         for tname, lists in tours:
             ev = find_event(tname, FROM + timedelta(weeks=i + off), events)
             for k, part in lists.items() if ev else ():
+                if part != "withdrawn":
+                    everyone.setdefault(ev_key(ev), set()).add(k)  # helps recognise Spazio's lists
                 if k in men:
                     out[(men[k], ev_key(ev))] = part
     return out
@@ -478,15 +482,16 @@ def ev_key(e):
 
 def atp_entries(events, errors):
     """72 men entered in ATP / Challenger events. live-tennis.eu (the freshest) must list the player, and Tick Tock
-    Tennis or Spazio Tennis must agree on the same event. Either of those two can fail without losing entries."""
+    Tennis or Spazio Tennis must agree on the same event. Either of those two can fail without losing entries.
+    This week's events aren't on live-tennis.eu, so until the draw is out they need both Tick Tock and Spazio."""
     soon = sum(1 for e in events if e["tour"] in ("atp", "ch") and FROM.isoformat() <= e["start"] <= (FROM + timedelta(weeks=4)).isoformat())
     if not soon:
         return {}  # off-season: no ATP or Challenger events in the next few weeks
     need = min(15, soon)  # names that must match the calendar before the week columns are trusted
     men = {pkey(n): rid for rid, (n, t) in ROSTER.items() if t == "atp"}
-    lt, everyone = lt_entries(events, men, need)
+    lt, everyone, first = lt_entries(events, men, need)
     checks = {}
-    for name, fn in (("tick tock", lambda: tt_entries(events, men, need)), ("spazio", lambda: sp_entries(events, men, everyone))):
+    for name, fn in (("tick tock", lambda: tt_entries(events, men, need, everyone)), ("spazio", lambda: sp_entries(events, men, everyone))):
         try:
             checks[name] = fn()
         except Exception as x:
@@ -505,6 +510,17 @@ def atp_entries(events, errors):
         if qual != how.startswith("Qualifying"):
             how = "Entered"  # the sites disagree on main draw or qualifying
         found.setdefault(k, []).append({"id": rid, "how": how})
+    # events live-tennis.eu has no column for (this week, before its first column): Tick Tock and Spazio must both agree
+    uncovered = {ev_key(e) for e in events if e["tour"] in ("atp", "ch") and FROM.isoformat() <= e["start"] < (FROM + timedelta(weeks=first)).isoformat()}
+    for (rid, k) in (tt.keys() | sp.keys()):
+        if k not in uncovered:
+            continue
+        t, p = tt.get((rid, k)), sp.get((rid, k))
+        if t is None or p is None or t == "withdrawn":
+            print("ATP entry this week not confirmed by both Tick Tock and Spazio, left out:", rid, k[1])
+            continue
+        same = (t in ("main", "wc") and p == "main") or (t in ("alt", "next") and p == "alt")
+        found.setdefault(k, []).append({"id": rid, "how": TT_HOW[t] if same else "Entered"})
     return found
 
 
