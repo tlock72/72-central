@@ -125,7 +125,8 @@ def main():
     hist = load(HIST, {})
     last = data.get("checked")
     if not FORCE and data.get("atp") and data.get("wta") and last:
-        if NOW - datetime.fromisoformat(last) < timedelta(hours=3):
+        # hourly on Mondays and Tuesdays (when the tours publish), every 3 hours otherwise
+        if NOW - datetime.fromisoformat(last) < timedelta(hours=1 if NOW.weekday() in (0, 1) else 3):
             print("Scouting HQ: checked recently, nothing to do")
             return
     data["checked"] = NOW.isoformat(timespec="seconds")
