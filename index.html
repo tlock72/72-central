@@ -523,7 +523,7 @@ html.name-only .gate-box h2,html.name-only .gate-digits{display:none}
 </style>
 </head>
 <body>
-<script>/* passcode: stays unlocked on this device for 30 days */try{const u=JSON.parse(localStorage.getItem("72c-unlock")||"null");if(!(u&&u.h==="89e1a9fa4a91850fd074bb35fc4770ed59a4906addbd786b09c8556e89d1459a"&&u.until>Date.now()))document.documentElement.classList.add("locked");else if(!localStorage.getItem("72c-name"))document.documentElement.classList.add("locked","name-only")}catch(e){document.documentElement.classList.add("locked")}</script>
+<script>/* passcode: stays unlocked on this device for 30 days. v:2 = unlocked after names were added (5 Oct 2026); older unlocks must enter the passcode and their name again */try{const u=JSON.parse(localStorage.getItem("72c-unlock")||"null");if(!(u&&u.h==="89e1a9fa4a91850fd074bb35fc4770ed59a4906addbd786b09c8556e89d1459a"&&u.v===2&&u.until>Date.now())){if(u&&u.v!==2)localStorage.removeItem("72c-name");document.documentElement.classList.add("locked")}else if(!localStorage.getItem("72c-name"))document.documentElement.classList.add("locked","name-only")}catch(e){document.documentElement.classList.add("locked")}</script>
 
 
 <header>
@@ -1687,7 +1687,7 @@ setInterval(() => { if (!document.hidden) renderScores(); }, 5 * 60 * 1000);
     if (code.length < 6) return;
     if (await hash(code) === H) {
       if (!saveName(true)) return;
-      try { localStorage.setItem("72c-unlock", JSON.stringify({ h: H, until: Date.now() + 30 * 864e5 })); } catch (e) {}
+      try { localStorage.setItem("72c-unlock", JSON.stringify({ h: H, v: 2, until: Date.now() + 30 * 864e5 })); } catch (e) {}
       unlocked(); return;
     } else {
       const b = document.querySelector(".gate-box"); b.classList.remove("shake"); void b.offsetWidth; b.classList.add("shake");
