@@ -12,7 +12,7 @@ data.json back. Free plan = 100 requests/day, so calls are kept small:
   - first run only:       1 call per player (find their API ids -> players.json)
 """
 import json, os, sys, time, urllib.parse, urllib.request, urllib.error
-from datetime import datetime, timedelta, timezone
+from datetime import date, datetime, timedelta, timezone
 from zoneinfo import ZoneInfo
 
 KEY = os.environ.get("LIVETENNIS_API_KEY", "")
@@ -357,17 +357,23 @@ def main():
         if rid in busy:
             del data["status"][rid]
 
-    # 6) Rankings once a week, all at once. The Monday 07:00 UK run (RANKINGS=1, started by the timer together
-    #    with the ITF junior rankings) fetches every player's ranking into a holding area and only puts them on
-    #    the site when every player is done, so the whole table changes in one go. If that run is missed or cut
-    #    short, later runs finish it from 09:00 - and the switch still happens all at once.
-    week = (uk_now - timedelta(days=uk_now.weekday())).strftime("%Y-%m-%d")  # this week's Monday
-    nxt = data.get("rankingsNext") or {}
-    if nxt.get("_week") != week:
-        nxt = {"_week": week}
-    with_id = [rid for rid, rec in players.items() if rec.get("apiId")]
+    # 6) Rankings, once per official ranking week, each tour on its own.
+    #    No guessing from the day of the week: Scouting HQ (scouting.py, free sources, no feed calls) already
+    #    reads the official ranking week - ATP from Tennis Abstract, WTA from the WTA's own feed. Only when a
+    #    tour's official week is newer than the one on the site are any feed calls spent. The feed itself can
+    #    lag the official release by hours, so it is probed first (3 calls): if none of the top roster
+    #    players' points have changed yet, the feed is still on last week - try again in 2 hours. Weeks with
+    #    no new ranking (the middle Monday of two-week events) therefore cost nothing.
+    #    All of a tour's players are fetched into a holding area and put on the site in one go.
+    sq = load("scouting.json", {})
+    official = {t: (sq.get(t) or {}).get("week") for t in ("atp", "wta")}
+    # one-off start-up: on 5 Oct 2026 the old Monday logic saved the 28 Sep numbers as "week of 5 Oct"
+    tw = data.setdefault("rankingsTourWeek", {"atp": "2026-09-28", "wta": "2026-09-28"})
+    tries = data.setdefault("rankingsTry", {})
+    nxt_all = data.get("rankingsNext") if isinstance(data.get("rankingsNext"), dict) else {}
+    nxt_all = {t: v for t, v in nxt_all.items() if t in ("atp", "wta") and isinstance(v, dict)}
 
-    def fetch_rank(rid):
+    def fetch_rank(rid, week):
         p = api(f"/players/{players[rid]['apiId']}")
         p = p.get("data", p)
         prev = (data["rankings"].get(rid) or {}).get("rank")
@@ -375,34 +381,60 @@ def main():
         return {"rank": rank, "points": p.get("ranking_points"), "move": (prev - rank) if (prev and rank) else None,
                 "week": week, **({} if rank else {"note": "Not currently ranked"})}
 
-    if data.get("rankingsWeek") != week:
-        if os.environ.get("RANKINGS") == "1" or len(nxt) > 1 or uk_now.weekday() > 0 or uk_now.hour >= 9:
-            for rid in with_id:
-                if rid in nxt:
-                    continue
+    for tour in ("atp", "wta"):
+        week = official.get(tour)
+        if not week or week <= (tw.get(tour) or ""):
+            nxt_all.pop(tour, None)
+            continue  # no new official week for this tour - nothing to spend
+        ids_t = [rid for rid, rec in players.items() if rec.get("apiId") and ROSTER.get(rid, ("", ""))[1] == tour]
+        nxt = nxt_all.get(tour) if (nxt_all.get(tour) or {}).get("_week") == week else {"_week": week}
+        last_try = tries.get(tour)
+        if len(nxt) == 1 and last_try and NOW - datetime.fromisoformat(last_try) < timedelta(hours=2):
+            continue  # probed recently and the feed was still on last week
+        out_since = (uk_now.date() - date.fromisoformat(week)).days  # days since the official Monday
+        if len(nxt) == 1:  # probe: the three best-ranked roster players of this tour
+            tries[tour] = NOW.isoformat()
+            probe = sorted(ids_t, key=lambda r: (data["rankings"].get(r) or {}).get("rank") or 99999)[:3]
+            moved = False
+            for rid in probe:
                 if CALLS >= MAX_CALLS - 2:
                     break
                 try:
-                    nxt[rid] = fetch_rank(rid)
+                    rec = fetch_rank(rid, week)
                 except Exception as e:
-                    print("ranking failed", rid, e); break
-            if all(rid in nxt for rid in with_id):
-                nxt.pop("_week")
-                data["rankings"].update(nxt)
-                data["rankingsWeek"] = week
-                data["rankingsAsOf"] = today
-                data.pop("rankingsNext", None)
-                print("rankings published for week of", week)
-            else:
-                data["rankingsNext"] = nxt
-                print(f"rankings: {len(nxt) - 1}/{len(with_id)} fetched, publishing when all are done")
-    else:  # a player whose feed record was re-matched mid-week: refresh just them
-        for rid in with_id:
-            if (data["rankings"].get(rid) or {}).get("week") != week and CALLS < MAX_CALLS - 2:
-                try:
-                    data["rankings"][rid] = fetch_rank(rid)
-                except Exception as e:
-                    print("ranking failed", rid, e); break
+                    print("ranking probe failed", rid, e); break
+                nxt[rid] = rec
+                if rec.get("points") != (data["rankings"].get(rid) or {}).get("points"):
+                    moved = True
+            if not moved and out_since < 2:  # from Wednesday on, accept it anyway (points can genuinely stand still)
+                print(f"{tour.upper()} week {week} is out officially, but the feed hasn't caught up yet - retry in 2 hours")
+                nxt_all.pop(tour, None)
+                continue
+        for rid in ids_t:
+            if rid in nxt:
+                continue
+            if CALLS >= MAX_CALLS - 2:
+                break
+            try:
+                nxt[rid] = fetch_rank(rid, week)
+            except Exception as e:
+                print("ranking failed", rid, e); break
+        if all(rid in nxt for rid in ids_t):
+            nxt.pop("_week")
+            data["rankings"].update(nxt)
+            tw[tour] = week
+            tries.pop(tour, None)
+            nxt_all.pop(tour, None)
+            data["rankingsAsOf"] = today
+            print(f"{tour.upper()} rankings published for week of {week}")
+        else:
+            nxt_all[tour] = nxt
+            print(f"{tour.upper()} rankings: {len(nxt) - 1}/{len(ids_t)} fetched, publishing when all are done")
+    if nxt_all:
+        data["rankingsNext"] = nxt_all
+    else:
+        data.pop("rankingsNext", None)
+    data["rankingsWeek"] = max(w for w in tw.values() if w)
 
     if QUOTA_HIT:
         data["quotaHit"] = NOW.strftime("%Y-%m-%dT%H:%M:%SZ")
