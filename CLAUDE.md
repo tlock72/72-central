@@ -17,7 +17,7 @@ It is hosted on GitHub Pages at tlock72.github.io/72-central and protected by a 
 | `index.html` | The whole site in one file (home portal, Live Scores, 72 Rankings, Age Filtered World Rankings, players). It has its own `ROSTER` list (around line 551), and the passcode gate is near the end. |
 | `data.json` | Matches and ATP/WTA rankings, written by `update.py`. Key fields: `matches[]`, `rankings{rid}`, `rankingsTourWeek{atp,wta}`, `rankingsWeek`, `rankingsNext` (holding area), `rankingsTry`, `quotaHit`, `lastChecked`. |
 | `players.json` | Roster id → Live Tennis API id, written by `update.py`. |
-| `titles.json` | ITF World Tennis Tour singles titles by year (`titles{year}`), read from the ITF's own results by `itf_titles.py`. The home "ITF singles titles" count reads only this. |
+| `titles.json` | ITF singles titles from the ITF's own results, written by `itf_titles.py`: `titles{year}` (each with tier and type), `full` (players whose whole career is loaded), `best{rid}` (career-high ATP/WTA rank, weekly). The home "ITF singles titles" count uses this year's ITF World Tennis Tour titles; player pages show career ITF titles, except for anyone who is or has been in the top 100. Never type ITF titles into `index.html`. |
 | `itf.json` | ITF junior rankings, with players that couldn't be read listed under `pending`. |
 | `itfm.json` | ITF junior matches. |
 | `te.json` | Tennis Europe U14/U16 matches. |
@@ -35,7 +35,7 @@ Roster ids are short surnames (`deminaur`, `svitolina`, `mmakarova`…). **Addin
 - `scouting.py`: free sources, no key. ATP comes from Tennis Abstract (`reports/atpRankings.html`, "Last update" date) and WTA from `api.wtatennis.com` (`rankedAt`). It checks hourly on Mondays and Tuesdays and every 3 hours otherwise. **It is also the "is a new ranking week out?" signal.**
 - `itf_juniors.py`: ITF junior rankings, weekly. It stops immediately at the ITF bot check and never bypasses it.
 - `itf_matches.py`: ITF junior draws and results, about twice a day.
-- `itf_titles.py`: ITF World Tennis Tour singles titles for the whole roster, once a day from 07:00 UK, from the ITF site (circuit `WT`, singles, main-draw finals won). Stops at the ITF bot check and never guesses an unreadable final.
+- `itf_titles.py`: ITF singles titles for the whole roster from the ITF site (circuit `MT` men / `WT` women, singles, main-draw finals won; ITF World Tennis Tour plus pre-2019 Futures and ITF Women's Circuit). Loads each player's whole career once, then the current year daily from 07:00 UK, and career highs weekly. Stops at the ITF bot check and never guesses an unreadable final.
 - `te_matches.py`: Tennis Europe matches, once a day from 07:30 UK.
 - `report_gaps.py`: alerting. It comments on the GitHub issue "72 Central: missing info" (GitHub emails Tobey) and reports each message once, so **never put times in alert text**. It also runs as the watchdog.
 

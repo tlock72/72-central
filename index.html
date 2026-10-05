@@ -884,7 +884,7 @@ function renderRankings(){
   // ITF World Tennis Tour (M/W15 to M/W100) singles titles this year, read from the ITF's own results
   // by itf_titles.py into titles.json (one line per title, so repeat wins at the same venue all count)
   const byP = {}; let futN = 0; const titlesOk = !!TITLES?.checked;
-  for (const t of TITLES?.titles?.[year] || []) if (byId[t.id]) { futN++; byP[t.id] = (byP[t.id] || 0) + 1; }
+  for (const t of TITLES?.titles?.[year] || []) if (byId[t.id] && (!t.type || t.type === "ITF World Tennis Tour")) { futN++; byP[t.id] = (byP[t.id] || 0) + 1; }
   const futWho = Object.entries(byP).sort((a, b) => b[1] - a[1]).map(([id, n]) => `${esc(byId[id].last)} ${n}`).join(" · ");
   $("#rkFacts").innerHTML = `
     <div class="fact"><span class="k">Players we represent</span><b>${ROSTER.length}</b><span class="s">across the ATP, WTA and junior tours</span></div>
@@ -921,7 +921,7 @@ const PROFILES = [
     social:{ Instagram:345*K, TikTok:19*K, X:44*K, YouTube:70*K },
     quote:["It's really incredible that she's coming out and she's standing for what she believes in.","Naomi Osaka"] },
   { id:"buse", age:22, nat:"Peruvian", plays:BH,
-    titles:[{ k:"ATP titles", n:3, p:[["500",1],["Challenger 125",1],["Challenger 100",1]] }, { k:"ITF titles", n:3, p:[["M25",3]] }],
+    titles:[{ k:"ATP titles", n:3, p:[["500",1],["Challenger 125",1],["Challenger 100",1]] }],
     partners:["Banco Falabella","Herbalife","TEC","Carles Ferrer Salat","ISDIN","Peugeot","ETNA","Wilson","Lotto"],
     social:{ Instagram:199*K, TikTok:55*K } },
   { id:"altmaier", age:28, nat:"German", plays:BH,
@@ -936,10 +936,10 @@ const PROFILES = [
     social:{ Instagram:1.3*M, TikTok:279*K, Facebook:449*K, X:880*K, YouTube:90*K, Twitch:138*K },
     quote:["Monfils is a special player, a different player, a spectacular player.","Rafael Nadal"] },
   { id:"bejlek", age:20, nat:"Czech", plays:BH,
-    titles:[{ k:"WTA titles", n:5, p:[["500",1],["125",4]] }, { k:"ITF titles", n:7, p:[["W75",1],["W60",3],["W25",3]] }],
+    titles:[{ k:"WTA titles", n:5, p:[["500",1],["125",4]] }],
     partners:["AGEL","Babolat","THAYA"], social:{ Instagram:45*K } },
   { id:"starodubtseva", age:26, nat:"Ukrainian", plays:BH,
-    titles:[{ k:"ITF titles", n:4, p:[["W60",3],["W25",1]] }],
+    titles:[],
     partners:["adidas"], social:{ Instagram:17*K },
     quote:["Starodubtseva has become only the seventh player since 2009 to make the last eight in her first WTA 1000 main draw. Yuliia is the first woman in the Open Era to qualify for all four majors in a single season.","WTA"] },
   { id:"coric", age:29, nat:"Croatian", plays:BH, high:12,
@@ -947,25 +947,25 @@ const PROFILES = [
     partners:["ASICS","HEAD"], social:{ Instagram:232*K, Facebook:145*K, X:63*K },
     quote:["No one is surprised to see Borna win Cincinnati. He was the leader of the next gen, he has so much game and deserves to be at the top.","Serena Williams"] },
   { id:"kym", age:23, nat:"Swiss", plays:BH,
-    titles:[{ k:"Titles", n:5, p:[["Challenger",2],["ITF Futures",3]] }],
+    titles:[{ k:"ATP Challenger titles", n:2, p:[["Challenger",2]] }],
     partners:["HEAD"], social:{ Instagram:11*K } },
   { id:"schwaerzler", age:20, nat:"Austrian", plays:"Left-handed · two-handed backhand", junior:1,
-    titles:[{ k:"Titles", n:7, p:[["Challenger",3],["ITF Futures",4]] }],
+    titles:[{ k:"ATP Challenger titles", n:3, p:[["Challenger",3]] }],
     partners:["AlphaTauri","BMW","Haemo Pharma","HEAD","Red Bull"], social:{ Instagram:16*K } },
   { id:"romero", age:24, nat:"Spanish", plays:BH, high:123,
-    titles:[{ k:"WTA titles", n:1, p:[["125",1]] }, { k:"ITF titles", n:5, p:[["W50",2],["W35",1],["W25",2]] }],
+    titles:[{ k:"WTA titles", n:1, p:[["125",1]] }],
     partners:["Joma","Yonex","ElPozo"], social:{ Instagram:6.4*K } },
   { id:"kuzuhara", age:22, nat:"American", plays:BH, high:394,
-    titles:[{ k:"Titles", n:2, p:[["ITF Futures",2]] }],
+    titles:[],
     partners:["Dunlop"], social:{ Instagram:4.5*K } },
   { id:"sawangkaew", age:23, nat:"Thai", plays:BH,
-    titles:[{ k:"WTA titles", n:1, p:[["125",1]] }, { k:"ITF titles", n:8, p:[["W50",1],["W40",2],["W25",3],["W15",2]] }],
+    titles:[{ k:"WTA titles", n:1, p:[["125",1]] }],
     partners:["ASICS","Wilson","PTT"], social:{ Instagram:6.9*K } },
   { id:"jones", age:25, nat:"British", plays:BH,
-    titles:[{ k:"WTA titles", n:4, p:[["125",4]] }, { k:"ITF titles", n:6, p:[["W75",3],["W60",1],["W25",2]] }],
+    titles:[{ k:"WTA titles", n:4, p:[["125",4]] }],
     partners:["adidas","Wilson"], social:{ Instagram:10.6*K } },
   { id:"ristic", age:20, nat:"Serbian", plays:BH,
-    titles:[{ k:"ITF titles", n:4, p:[["W75",2],["W60",1],["W25",1]] }],
+    titles:[],
     partners:["adidas","Dunlop"], social:{ Instagram:10*K } },
 ];
 /* Juniors: group, born, nationality, Instagram, the ranking the deck headlines, highlights, partners, results by year */
@@ -1095,6 +1095,31 @@ function playerRank(id){
   return r?.rank ?? null;
 }
 const itfOf = id => ITF?.players?.[id] || null;
+/* ITF singles titles come from titles.json (read from the ITF's own results by itf_titles.py), never typed in.
+   Anyone who is or has been in the ATP/WTA top 100 gets no ITF box; everyone else gets their whole ITF career. */
+const itfCareer = id => TITLES?.full?.includes(id) && TITLES.best?.[id] ? Object.values(TITLES.titles || {}).flat().filter(t => t.id === id) : null;
+const everTop100 = x => [x.high, playerRank(x.id), TITLES?.best?.[x.id]?.rank].some(r => r && r <= 100);
+const tierNum = k => k === "Futures" ? 0 : +(k.match(/\d+/) || [0])[0];  // W100 > W75 > … ; old $25K events sort by prize money
+function titlesOf(x){
+  if (x.kind === "junior" || everTop100(x)) return x.titles;
+  const c = itfCareer(x.id);
+  if (!c) return TITLES ? [...x.titles, { k:"ITF titles", n:null, note:"Checking with the ITF" }] : x.titles;
+  if (!c.length) return x.titles;
+  const by = {};
+  for (const t of c) by[t.tier] = (by[t.tier] || 0) + 1;
+  return [...x.titles, { k:"ITF titles", n:c.length, p:Object.entries(by).sort((a, b) => tierNum(b[0]) - tierNum(a[0])) }];
+}
+// junior results: ITF pro titles come from the ITF and replace the typed-in title lines (runner-up, doubles and junior lines stay)
+const itfLine = t => /^[MW]\d/.test(t.tournament) ? `${t.tournament.replace(/^[MW]\d{2,3}\s+/, "")} ITF ${t.tier}` : `${t.tournament} (ITF)`;
+function resOf(x){
+  const c = itfCareer(x.id);
+  if (!c) return x.res || {};
+  const out = {};
+  for (const [y, list] of Object.entries(x.res || {})) out[y] = list.filter(r => !(/\bITF [MW]\d{2,3}\b/.test(r) && !/\(/.test(r)));
+  for (const t of c) out[t.end.slice(0, 4)] = out[t.end.slice(0, 4)] || [];
+  for (const y in out) out[y] = [...c.filter(t => t.end.startsWith(y)).sort((a, b) => b.end.localeCompare(a.end)).map(itfLine), ...out[y]];
+  return out;
+}
 // Pros sit under their tour. Juniors join ATP/WTA once they hold an ATP/WTA ranking, otherwise they are Next Gen.
 // Under-18s show under their tour AND Next Gen. Older juniors join their tour once ranked, otherwise Next Gen.
 const under18 = x => x.kind === "junior" && new Date().getFullYear() - x.born <= 18;
@@ -1107,7 +1132,7 @@ function playerList(){
 }
 function cardNums(x, rank){
   if (x.kind !== "junior") {
-    const titles = x.titles.reduce((s, t) => s + (t.team ? 0 : t.n), 0);
+    const titles = titlesOf(x).reduce((s, t) => s + (t.team ? 0 : t.n), 0);
     return [[rank ? pad2(rank) : "—", "Ranking"], [pad2(bestOf(x.high, rank)), "Career high"], [pad2(titles), "Titles"]];
   }
   const it = itfOf(x.id);
@@ -1132,7 +1157,7 @@ function renderPlayers(){
 }
 function proBody(x, p, rank){
   const best = bestOf(x.high, rank);
-  const titles = x.titles.reduce((s, t) => s + (t.team ? 0 : t.n), 0);
+  const tl = titlesOf(x), titles = tl.reduce((s, t) => s + (t.team ? 0 : t.n), 0);
   const reach = Object.values(x.social).reduce((s, v) => s + v, 0);
   const tblock = t => {
     const parts = t.p || [];
@@ -1144,10 +1169,10 @@ function proBody(x, p, rank){
   return `<div class="big">
         <div><b>${rank ? `<small>#</small>${rank}` : "—"}</b><span>Current ${p.tour} ranking</span></div>
         <div><b>${x.junior ? `<small>#</small>${x.junior}` : best ? `<small>#</small>${best}` : "—"}</b><span>${x.junior ? "Highest ITF junior ranking" : "Career-high ranking"}</span></div>
-        <div><b>${pad2(titles)}</b><span>Career titles${x.titles.some(t => t.team) ? " (excl. team)" : ""}</span></div>
+        <div><b>${pad2(titles)}</b><span>Career titles${tl.some(t => t.team) ? " (excl. team)" : ""}</span></div>
         <div><b>${fmtN(reach)}</b><span>Social following</span></div>
       </div>
-      <section><h3 class="pk">Titles</h3><div class="tg">${x.titles.map(tblock).join("")}</div></section>
+      <section><h3 class="pk">Titles</h3><div class="tg">${tl.map(tblock).join("") || `<div class="leg">No titles yet</div>`}</div></section>
       <section><h3 class="pk">Partner line-up</h3>${partnersHtml(x.partners, x.id)}</section>
       <section><h3 class="pk">Social media</h3><div class="soc">
         <div class="tot"><b>${fmtN(reach)}</b><span>Combined following</span></div>
@@ -1164,11 +1189,11 @@ function juniorBody(x, p, rank){
     [String(x.born), "Born"],
   ];
   const hl = [...(x.hl || []), ...[x.head, x.head2].filter(Boolean).map(([k, v]) => `${k} #${v}`)];
-  const years = Object.keys(x.res || {}).sort((a, b) => b - a);
+  const res = resOf(x), years = Object.keys(res).sort((a, b) => b - a);
   return `<div class="big">${tiles.map(([v, k]) => `<div><b>${v}</b><span>${esc(k)}</span></div>`).join("")}</div>
       ${hl.length ? `<section><h3 class="pk">Highlights</h3><div class="hls">${hl.map(h => `<span>★ ${esc(h)}</span>`).join("")}</div></section>` : ""}
       ${x.partners.length ? `<section><h3 class="pk">Partner line-up</h3>${partnersHtml(x.partners, x.id)}</section>` : ""}
-      <section><h3 class="pk">Results</h3><div class="yrs">${years.map(y => `<div class="yr"><b>${y}</b><ul>${x.res[y].map(r => `<li>${esc(r)}</li>`).join("")}</ul></div>`).join("")}</div></section>`;
+      <section><h3 class="pk">Results</h3><div class="yrs">${years.map(y => `<div class="yr"><b>${y}</b><ul>${res[y].map(r => `<li>${esc(r)}</li>`).join("")}</ul></div>`).join("")}</div></section>`;
 }
 /* how far into an event a round is, so the furthest match can be picked (qualifying < early rounds < QF < SF < final) */
 function roundStage(r){ r = (r || "").replace(/\(.*\)/, "").trim().toLowerCase(); let n;
