@@ -503,46 +503,45 @@ def ev_key(e):
 
 
 def atp_entries(events, errors):
-    """72 men entered in ATP / Challenger events. live-tennis.eu (the freshest) must list the player, and Tick Tock
-    Tennis or Spazio Tennis must agree on the same event. Either of those two can fail without losing entries.
-    This week's events aren't on live-tennis.eu, so until the draw is out they need both Tick Tock and Spazio."""
+    """72 men entered in ATP / Challenger events. A player is shown if any one of live-tennis.eu, Tick Tock Tennis or
+    Spazio Tennis lists him for the event, unless any of them marks him as withdrawn. Each site can fail on its own;
+    only if all three fail are yesterday's entries kept."""
     soon = sum(1 for e in events if e["tour"] in ("atp", "ch") and FROM.isoformat() <= e["start"] <= (FROM + timedelta(weeks=4)).isoformat())
     if not soon:
         return {}  # off-season: no ATP or Challenger events in the next few weeks
     need = min(15, soon)  # names that must match the calendar before the week columns are trusted
     men = {pkey(n): rid for rid, (n, t) in ROSTER.items() if t == "atp"}
-    lt, everyone, first = lt_entries(events, men, need)
-    checks = {}
-    for name, fn in (("tick tock", lambda: tt_entries(events, men, need, everyone)), ("spazio", lambda: sp_entries(events, men, everyone))):
+    everyone, got = {}, {}
+
+    def lt():
+        out, ev, _ = lt_entries(events, men, need)
+        for k, v in ev.items():
+            everyone.setdefault(k, set()).update(v)
+        return out
+    for name, fn in (("live-tennis", lt), ("tick tock", lambda: tt_entries(events, men, need, everyone)),
+                     ("spazio", lambda: sp_entries(events, men, everyone))):
         try:
-            checks[name] = fn()
+            got[name] = fn()
         except Exception as x:
-            print(f"ATP entries: {name} failed, carrying on with the other check:", x)
-            errors[f"atp-entries-{name.replace(' ', '')}"] = {"at": NOW.isoformat(timespec="seconds"), "msg": str(x)[:200]}
-    if not checks:
-        raise RuntimeError("neither Tick Tock Tennis nor Spazio Tennis could be read to confirm entries")
-    tt, sp = checks.get("tick tock", {}), checks.get("spazio", {})
+            print(f"ATP entries: {name} failed, carrying on with the others:", x)
+            errors[f"atp-entries-{name.replace(' ', '').replace('-', '')}"] = {"at": NOW.isoformat(timespec="seconds"), "msg": str(x)[:200]}
+    if not got:
+        raise RuntimeError("none of live-tennis.eu, Tick Tock Tennis or Spazio Tennis could be read")
+    lv, tt, sp = got.get("live-tennis", {}), got.get("tick tock", {}), got.get("spazio", {})
     found = {}
-    for (rid, k), qual in lt.items():
-        t, p = tt.get((rid, k)), sp.get((rid, k))
-        if "withdrawn" in (t, p) or (t is None and p is None):
-            print("ATP entry not confirmed, left out:", rid, k[1], "(withdrawn)" if "withdrawn" in (t, p) else "")
+    for (rid, k) in sorted(lv.keys() | tt.keys() | sp.keys()):
+        q, t, p = lv.get((rid, k)), tt.get((rid, k)), sp.get((rid, k))
+        if "withdrawn" in (t, p):
+            print("ATP entry left out (withdrawn):", rid, k[1])
             continue
-        how = TT_HOW.get(t) if t else {"main": "Main draw", "alt": "Alternate"}[p]
-        if qual != how.startswith("Qualifying"):
-            how = "Entered"  # the sites disagree on main draw or qualifying
+        hows = {TT_HOW[t]} if t else set()
+        if p:
+            hows.add({"main": "Main draw", "alt": "Alternate"}[p])
+        if q is not None and (q or not hows):
+            hows.add("Qualifying" if q else "Entered")
+        # the sites agree, or only one lists him: use its wording; if they disagree, just "Entered"
+        how = hows.pop() if len(hows) == 1 else "Wildcard" if hows == {"Main draw", "Wildcard"} else "Entered"
         found.setdefault(k, []).append({"id": rid, "how": how})
-    # events live-tennis.eu has no column for (this week, before its first column): Tick Tock and Spazio must both agree
-    uncovered = {ev_key(e) for e in events if e["tour"] in ("atp", "ch") and FROM.isoformat() <= e["start"] < (FROM + timedelta(weeks=first)).isoformat()}
-    for (rid, k) in (tt.keys() | sp.keys()):
-        if k not in uncovered:
-            continue
-        t, p = tt.get((rid, k)), sp.get((rid, k))
-        if t is None or p is None or "withdrawn" in (t, p):
-            print("ATP entry this week not confirmed by both Tick Tock and Spazio, left out:", rid, k[1])
-            continue
-        same = (t in ("main", "wc") and p == "main") or (t in ("alt", "next") and p == "alt")
-        found.setdefault(k, []).append({"id": rid, "how": TT_HOW[t] if same else "Entered"})
     return found
 
 
