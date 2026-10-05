@@ -1,4 +1,4 @@
-"""Temporary probe of free tournament-calendar and entry-list sources (deleted after use)."""
+"""Temporary probe 2 (deleted after use)."""
 import json, re, sys, time, urllib.parse, urllib.request
 sys.path.insert(0, "scripts")
 UA = {"User-Agent": "72HubRankings/1.0 (+https://github.com/tlock72/72-central; calendar check)", "Accept": "application/json,text/html"}
@@ -8,40 +8,35 @@ def get(u, h=UA):
             return r.status, r.read().decode("utf-8", "replace")
     except Exception as e:
         return getattr(e, "code", "ERR"), str(e)[:150]
-def show(lbl, u, n=900):
-    st, b = get(u); print(f"\n===== {lbl} -> {st} {len(b)}\n{u}\n{b[:n]}"); time.sleep(2); return st, b
-I = "https://www.itftennis.com/tennis/api"
-keys = {}
-for c in ("JT", "MT", "WT"):
-    q = dict(circuitCode=c, searchString="", skip=0, take=3, nationCodes="", zoneCodes="", dateFrom="2026-10-05", dateTo="2026-12-31",
-             indoorOutdoor="", categories="", isOrderAscending="true", orderField="startDate", surfaceCodes="")
-    st, b = show("ITF calendar " + c, f"{I}/TournamentApi/GetCalendar?" + urllib.parse.urlencode(q), 2500)
-    try:
-        j = json.loads(b); keys[c] = j["items"][0]["tournamentKey"]; print("TOTAL", j.get("totalItems"))
-    except Exception as e: print("parse", e)
-for c, k in keys.items():
-    for ep in ("GetAcceptanceList", "GetEntryList", "GetPlayerList", "GetTournamentAcceptanceList", "GetEventFilters"):
-        show(f"ITF {ep} {c}", f"{I}/TournamentApi/{ep}?tournamentKey={k}&circuitCode={c}", 600)
-W = "https://api.wtatennis.com/tennis"
-show("WTA tournaments A", f"{W}/tournaments/?page=0&pageSize=5&excludeLevels=ITF&from=2026-10-05&to=2026-12-31", 2500)
-show("WTA tournaments B", f"{W}/tournaments/calendar?from=2026-10-05&to=2026-12-31", 1500)
-show("TE ATP calendar", "https://www.tennisexplorer.com/calendar/atp-men/2026/", 300)
+def show(lbl, u, n=700):
+    st, b = get(u); print(f"\n===== {lbl} -> {st} {len(b)}\n{u}\n{b[:n]}"); time.sleep(1); return st, b
 st, b = get("https://www.tennisexplorer.com/calendar/atp-men/2026/")
-if st == 200:
-    rows = [re.sub(r"\s+", " ", re.sub(r"<[^>]+>", " | ", r)) for r in re.findall(r"<tr[^>]*>(.*?)</tr>", b, re.S)]
-    rows = [r for r in rows if "2026" in r or "." in r][:5] + [r for r in rows if "Oct" in r or "10." in r][:15]
-    for r in rows: print("  ROW", r[:300])
-    print("  links", re.findall(r'href="(/[a-z-]+/2026/atp-men/)"', b)[:5])
-show("ATP calendar json", "https://www.atptour.com/en/-/tournaments/calendar/tour", 300)
-show("Tennis Europe calendar", "https://www.tenniseurope.org/calendar", 600)
+trs = re.findall(r"<tr[^>]*>.*?</tr>", b, re.S)
+print("TE rows", len(trs))
+for r in [r for r in trs if "Shanghai" in r or "Villena" in r or "Vienna" in r or "Basel" in r or "Brest" in r or "Davis" in r][:6]:
+    print("RAW", re.sub(r"\s+", " ", r)[:1500])
+print("CLASSES", sorted(set(re.findall(r'class="([^"]+)"', b)))[:120])
+st, b = get("https://www.tennisexplorer.com/calendar/wta-women/2026/")
+print("TE WTA", st, len(b))
+st, b = get("https://www.tennisexplorer.com/calendar/itf-men/2026/"); print("TE ITF men", st, len(b))
+W = "https://api.wtatennis.com/tennis"
+for ep in ("players", "entries", "entrylist", "playerlist", "player-list", "acceptance"):
+    show("WTA " + ep, f"{W}/tournaments/1075/2026/{ep}", 400)
+show("WTA tournament", f"{W}/tournaments/1075/2026", 1500)
+for u in ("https://www.protennislive.com/posting/2026/5014/mds.pdf", "https://www.atptour.com/en/scores/current/shanghai/5014/draws",
+          "https://www.tennisexplorer.com/shanghai/2026/atp-men/"):
+    st, b = get(u); print("\n=====", u, st, len(b)); 
+    if "tennisexplorer" in u and st == 200: print(re.sub(r"\s+", " ", re.sub(r"<[^>]+>", " | ", b[b.find("<h1"):b.find("<h1")+1500])))
 import te_matches as T
-try:
-    T.consent()
-    h = T.fetch(f"/player-profile/{T.KNOWN['momot']}/tournaments")
-    print("\n===== TE player tournaments", len(h))
-    for m in re.findall(r'<h4[^>]*>(.*?)</h4>', h, re.S)[:12]: print("  H4", re.sub(r"\s+", " ", re.sub(r"<[^>]+>", " ", m))[:200])
-    i = h.find("Upcoming"); print("  UPCOMING idx", i, re.sub(r"\s+", " ", re.sub(r"<[^>]+>", " ", h[i:i+1500])) if i >= 0 else "")
-    st, f = 0, T.fetch("/find/tournament?StartDate=2026-10-05&EndDate=2026-12-31&page=1")
-    print("\n===== TE find tournaments", len(f)); print(re.sub(r"\s+", " ", re.sub(r"<[^>]+>", " ", f))[:2500])
-except Exception as e:
-    print("TE error", e)
+T.consent()
+h = T.fetch("/find/tournament?StartDate=2026-10-05&EndDate=2026-12-31")
+for f in re.findall(r"<form[^>]*>", h): print("FORM", f[:300])
+print("NAMES", sorted(set(re.findall(r'name="([^"]+)"', h)))[:80])
+print("DATAURL", sorted(set(re.findall(r'data-(?:url|href|action)="([^"]+)"', h)))[:40])
+i = h.find("Load more"); print("LOADMORE", re.sub(r"\s+", " ", h[i-1500:i+200]))
+for m in re.findall(r'<li[^>]*class="[^"]*list__item[^"]*"[^>]*>(.*?)</li>', h, re.S)[:5]:
+    print("ITEM", re.sub(r"\s+", " ", m)[:1200])
+print("HREFS", sorted(set(re.findall(r'href="(/(?:sport/)?tournament[^"]*)"', h)))[:15])
+h = T.fetch(f"/player-profile/{T.KNOWN['momot']}/tournaments")
+for m in re.findall(r'<li[^>]*class="[^"]*list__item[^"]*"[^>]*>(.*?)</li>', h, re.S)[:3]:
+    print("PITEM", re.sub(r"\s+", " ", m)[:1500])
