@@ -28,6 +28,7 @@ STEP_NAMES = {
     "titles": "ITF World Tennis Tour titles",
     "te": "Tennis Europe matches",
     "save": "saving the new data (this usually sorts itself out on the next run)",
+    "schedule": "the tour schedule",
 }
 
 
@@ -109,6 +110,16 @@ def gaps():
             out.append(f"Scouting HQ: the {name} list is still on the ranking week of {wk} - no newer week has been picked up.")
     if not sq:
         out.append("Scouting HQ has no data file (scouting.json is missing or unreadable).")
+    # 6b) Tour schedule (schedule.json, once a day): a source that failed today, or no update for 3 days
+    sc = load("schedule.json")
+    parts = {"atp": "the ATP Tour calendar (Wikipedia)", "challenger": "the Challenger calendar (Wikipedia)", "wta": "the WTA calendar",
+             "itf-men": "the ITF men's calendar", "itf-women": "the ITF women's calendar", "itf-juniors": "the ITF junior calendar",
+             "te": "the Tennis Europe calendar", "itf-entries": "the ITF acceptance lists (72 entries)", "te-entries": "the Tennis Europe entries"}
+    for k, e in (sc.get("errors") or {}).items():
+        if ukday(e.get("at")) == TODAY:
+            out.append(f"Tour schedule: {parts.get(k, k)} couldn't be refreshed on {TODAY} ({e.get('msg')}). The page still shows the previous list.")
+    if sc.get("updated") and ukday(sc["updated"]) < TODAY - timedelta(days=3):
+        out.append(f"Tour schedule: not updated since {ukday(sc['updated'])}. Check the 'Tour schedule' job: {ACTIONS_URL}")
     # 7) updates have stopped: live scores normally refresh every 30 minutes from 07:13 to 23:43 UK
     lc = when(d.get("lastChecked"))
     if UK_NOW.hour >= 9 and lc and NOW - lc > timedelta(hours=2):

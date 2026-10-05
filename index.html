@@ -43,6 +43,7 @@ nav{display:flex;gap:6px;background:rgba(255,255,255,.04);border:1px solid var(-
 nav a{font-family:var(--display);text-transform:uppercase;letter-spacing:.12em;font-size:13px;font-weight:500;text-decoration:none;padding:10px 18px;border-radius:999px;color:var(--muted);transition:color .2s,background .2s;white-space:nowrap}
 nav a:hover{color:var(--white)}
 nav a.active{background:var(--gold);color:var(--navy)}
+@media (max-width:1440px) and (min-width:641px){nav a{padding:10px 12px;letter-spacing:.06em;font-size:12px}}
 
 .hero{padding-block:40px 20px;display:flex;align-items:flex-end;justify-content:space-between;gap:20px;flex-wrap:wrap}
 .eyebrow{font-family:var(--display);letter-spacing:.3em;font-size:12px;color:var(--gold);text-transform:uppercase;margin-bottom:10px}
@@ -334,6 +335,38 @@ select.sq-in option{background:var(--navy-2);color:var(--white)}
   nav{display:grid;grid-template-columns:1fr 1fr;border-radius:22px}
   nav a{padding:9px 6px}
 }
+/* Tour Schedule: events by week, coloured and sized by importance (tier 1 = Grand Slams and Finals ... 8 = smallest) */
+.sch-key{display:flex;flex-wrap:wrap;gap:6px 14px;margin:4px 0 22px;font-size:11px;color:var(--muted)}
+.sch-key span{display:inline-flex;align-items:center;gap:6px}
+.sch-key i{width:10px;height:10px;border-radius:3px;background:var(--t)}
+.sch-wk{margin:0 0 22px}
+.sch-wk h3{display:flex;align-items:baseline;gap:10px;font-family:var(--display);font-weight:500;letter-spacing:.14em;text-transform:uppercase;font-size:13px;color:var(--white);margin:0 0 8px;padding-bottom:6px;border-bottom:1px solid var(--line)}
+.sch-wk h3 small{color:var(--muted-2);font-size:11px;letter-spacing:.08em}
+.ev{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:4px 14px;align-items:center;padding:var(--pad) 14px var(--pad) 16px;margin:0 0 6px;border:1px solid var(--line-2);border-left:4px solid var(--t);border-radius:12px;background:linear-gradient(90deg,var(--tb),rgba(255,255,255,.015) 60%);text-decoration:none;color:inherit}
+.ev:hover{border-color:var(--t)}
+.ev .nm{font-family:var(--display);font-weight:600;font-size:var(--fs);color:var(--white);line-height:1.2;min-width:0;overflow-wrap:anywhere}
+.ev .mt{grid-column:1;font-size:12px;color:var(--muted)}
+.ev .cat{grid-row:1;grid-column:2;justify-self:end;font-family:var(--display);font-size:11px;font-weight:600;letter-spacing:.08em;text-transform:uppercase;padding:3px 9px;border-radius:999px;color:var(--navy);background:var(--t);white-space:nowrap}
+.ev .e72{grid-column:1/-1;display:flex;flex-wrap:wrap;gap:5px;margin-top:3px}
+.ev .e72 b{font-size:11px;font-weight:600;color:var(--navy);background:var(--gold);border-radius:999px;padding:2px 9px}
+.ev .e72 b em{font-style:normal;font-weight:400;opacity:.75;margin-left:4px}
+.tier1{--t:#F3CF8E;--tb:rgba(243,207,142,.16);--fs:21px;--pad:15px}
+.tier2{--t:#D0A579;--tb:rgba(208,165,121,.12);--fs:18px;--pad:13px}
+.tier3{--t:#C49BE0;--tb:rgba(196,155,224,.09);--fs:16px;--pad:11px}
+.tier4{--t:#86AEEB;--tb:rgba(134,174,235,.07);--fs:15px;--pad:10px}
+.tier5{--t:#73C8B6;--tb:rgba(115,200,182,.05);--fs:14px;--pad:8px}
+.tier6{--t:#9FB0C4;--tb:transparent;--fs:13px;--pad:7px}
+.tier7{--t:#7A8AA6;--tb:transparent;--fs:13px;--pad:6px}
+.tier8{--t:#56637F;--tb:transparent;--fs:12.5px;--pad:5px}
+.tier6 .cat,.tier7 .cat,.tier8 .cat{color:var(--white);background:transparent;border:1px solid var(--t);font-weight:500}
+.ev.pp{opacity:.55}
+@media (max-width:640px){
+  .ev{padding:var(--pad) 10px var(--pad) 12px;gap:3px 8px}
+  .ev .cat{font-size:9.5px;padding:2px 7px}
+  .ev .mt{font-size:11px}
+  .tier1{--fs:18px}.tier2{--fs:16px}.tier3{--fs:15px}.tier4{--fs:14px}
+  .sch-key{font-size:10px;gap:4px 10px;margin-bottom:14px}
+}
 /* Rankings: roster facts */
 .rk-facts{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:10px;margin:-14px 0 28px}
 .rk-facts .fact{border:1px solid var(--line-2);border-radius:14px;padding:12px 16px;background:transparent}
@@ -396,6 +429,7 @@ body.on-home header nav{display:none}
 .hp-live span{font-size:14px}
 .hp-live span em{font-style:normal;color:var(--muted);margin-left:6px}
 .hp-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:18px}
+.hp-wide{grid-column:1/-1}
 .hp-tile{position:relative;display:flex;flex-direction:column;min-height:250px;padding:28px 28px 24px;border-radius:22px;overflow:hidden;isolation:isolate;text-decoration:none;color:inherit;
   border:1px solid var(--line-2);background:linear-gradient(170deg,var(--navy-2),rgba(17,27,63,.6));transition:transform .25s ease,border-color .25s ease,box-shadow .25s ease}
 .hp-tile::before{content:"";position:absolute;inset:0;z-index:-1;background:radial-gradient(460px 240px at 110% -20%,rgba(208,165,121,.18),transparent 60%);transition:opacity .3s}
@@ -425,6 +459,7 @@ body.on-home header nav{display:none}
 }
 /* Phone layout: compact header, home on one screen, 3 match cards per row, compact roster */
 nav .sh,.nm-s{display:none}
+@media (max-width:1180px) and (min-width:641px){nav .lg{display:none} nav .sh{display:inline}}
 .p-find{display:block;width:100%;max-width:360px;margin:0 0 18px;padding:10px 16px;border-radius:999px;border:1px solid var(--line);background:var(--navy-2);color:var(--white);font:inherit;font-size:14px;outline:none}
 .p-find:focus{border-color:var(--gold)}
 @media (max-width:640px){
@@ -434,8 +469,10 @@ nav .sh,.nm-s{display:none}
   .p-find{margin-bottom:10px;padding:8px 14px;font-size:16px}
   .badge72{display:none!important}
   .champ{font-size:11px;padding:7px 12px;margin:8px 0 0}
-  nav{display:grid;grid-template-columns:repeat(4,auto);gap:2px;padding:3px;border-radius:999px;margin-left:auto}
-  nav a{padding:7px 7px;font-size:10px;letter-spacing:.03em;white-space:nowrap}
+  /* five tabs don't fit beside the logo on a phone: the menu gets its own full-width row under it */
+  header .bar{flex-wrap:wrap;justify-content:center;row-gap:8px}
+  nav{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:2px;padding:3px;border-radius:999px;width:100%}
+  nav a{text-align:center;overflow:hidden;text-overflow:ellipsis;padding:7px 2px;font-size:10px;letter-spacing:0;white-space:nowrap}
   nav .n72{display:none}
   #champs{margin-top:8px}
   nav .lg{display:none} nav .sh{display:inline}
@@ -522,6 +559,16 @@ nav .sh,.nm-s{display:none}
   .hp-stat b small{display:block;font-size:11.5px;margin:3px 0 0;line-height:1.25}
   .hp-stat > div > span{font-size:11px;margin-top:5px;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
   .hp-tile .hp-stat > div{min-width:0;width:100%}
+  /* Tour Schedule tile: a slim full-width strip under the four tiles, so home still fits on one screen */
+  #page-home > .hp-grid{grid-template-rows:1fr 1fr auto;grid-auto-rows:auto}
+  .hp-wide{display:grid;grid-template-columns:auto minmax(0,1fr);align-items:center;column-gap:10px;padding:10px 54px 10px 14px}
+  .hp-wide h2{margin:0;padding-right:0}
+  .hp-wide .no{display:none}
+  .hp-wide .hp-stat{padding-top:0;grid-column:2;grid-row:1}
+  .hp-wide .hp-stat b{font-size:20px;display:inline}
+  .hp-wide .hp-stat b small{display:inline;font-size:11px;margin-left:5px}
+  .hp-wide .hp-stat > div > span{display:none}
+  .hp-wide .hp-go{top:50%;transform:translateY(-50%)}
   #hpT2{font-size:24px;display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}
   .hp-sep{display:none}
   .hp-ld{min-width:0}
@@ -576,6 +623,7 @@ html.name-only .gate-box h2,html.name-only .gate-digits{display:none}
       <a href="#rankings" data-tab="rankings"><span class="n72">72 </span>Rankings</a>
       <a href="#players" data-tab="players"><span class="n72">72 </span>Players</a>
       <a href="#scouting" data-tab="scouting"><span class="lg">Age Filtered World Rankings</span><span class="sh">By Age</span></a>
+      <a href="#schedule" data-tab="schedule"><span class="lg">Tour Schedule</span><span class="sh">Events</span></a>
     </nav>
   </div>
 </header>
@@ -610,6 +658,11 @@ html.name-only .gate-box h2,html.name-only .gate-digits{display:none}
         <div class="no">04</div><h2>Age Filtered World Rankings</h2>
         <p>72's scouting radar: every ranked ATP and WTA player aged 21 or under, with their ranking moves over 1 week, 3 months and 12 months, to spot the next 72 signing early.</p>
         <div class="hp-stat"><div><b id="hpT4">—</b><span id="hpS4">Loading the scouting list…</span></div><span class="hp-go" aria-hidden="true">→</span></div>
+      </a>
+      <a class="hp-tile hp-wide" href="#schedule">
+        <div class="no">05</div><h2>Tour Schedule</h2>
+        <p>Every ATP, WTA, Challenger, ITF, ITF junior and Tennis Europe event to the end of the year, and where 72 players are entered.</p>
+        <div class="hp-stat"><div><b id="hpT5">—</b><span id="hpS5">Loading the schedule…</span></div><span class="hp-go" aria-hidden="true">→</span></div>
       </a>
     </div>
     <p class="hp-foot">For SeventyTwo Sports Group staff only.</p>
@@ -688,6 +741,25 @@ html.name-only .gate-box h2,html.name-only .gate-digits{display:none}
     </div>
     <input class="p-find" id="pFind" type="search" placeholder="Find a player…" aria-label="Find a player" autocomplete="off">
     <div class="pgrid" id="pgrid"></div>
+  </div>
+  <div id="page-schedule" hidden>
+    <div class="hero">
+      <div>
+        <div class="eyebrow">SeventyTwo Sports Group</div>
+        <h1>Tour Schedule</h1>
+        <p class="sub">Every tournament to the end of the year, biggest first in each week. Colour and size show how big an event is. 72 players show on the events they are entered in, as far ahead as entry lists are published.</p>
+      </div>
+    </div>
+    <div class="stale" id="staleSch" hidden></div>
+    <div class="sq-filters">
+      <div class="sq-line"><span class="sq-lbl">Tour</span><div class="chips" id="schTours" role="group" aria-label="Tour"></div></div>
+      <div class="sq-line" id="schLvlLine" hidden><span class="sq-lbl">Level</span><div class="chips" id="schLvls" role="group" aria-label="Level"></div></div>
+      <div class="sq-line"><span class="sq-lbl">Players</span><div class="chips" role="group" aria-label="Players"><button class="chip sch72 on" data-e="all">All events</button><button class="chip sch72" data-e="72">72 entered</button></div></div>
+      <div class="sq-line sq-search"><input class="sq-in" id="schQ" type="search" placeholder="Search tournament or place" aria-label="Search tournament or place"></div>
+    </div>
+    <div class="sch-key" id="schKey"></div>
+    <div id="schList"><div class="sq-empty">Loading the schedule…</div></div>
+    <p class="src" id="schSrc"></p>
   </div>
   <div id="page-scouting" hidden>
     <div class="hero">
@@ -800,13 +872,14 @@ function dayLabel(iso){
 /* ---------- tabs ---------- */
 function route(){
   const hash = location.hash;
-  const tab = hash === "#rankings" ? "rankings" : hash === "#scouting" ? "scouting" : hash === "#scores" ? "scores" : hash.startsWith("#players") ? "players" : "home";
+  const tab = hash === "#rankings" ? "rankings" : hash === "#scouting" ? "scouting" : hash === "#schedule" ? "schedule" : hash === "#scores" ? "scores" : hash.startsWith("#players") ? "players" : "home";
   $("#page-home").hidden = tab !== "home";
   document.body.classList.toggle("on-home", tab === "home");
   $("#page-scores").hidden = tab !== "scores";
   $("#page-rankings").hidden = tab !== "rankings";
   $("#page-players").hidden = tab !== "players";
   $("#page-scouting").hidden = tab !== "scouting";
+  $("#page-schedule").hidden = tab !== "schedule";
   const pid = hash.startsWith("#players/") ? hash.slice(9) : null;
   if (pid && profById[pid]) openProfile(pid);
   else if ($("#prof").open) $("#prof").close();
@@ -1568,6 +1641,61 @@ $("#sqTop").addEventListener("input", e => { SQ.top = sqNum(e.target); SQ.all = 
 // custom age: "Under" + any age typed in (born in or after this year minus that age); empty shows all ages
 $("#sqAgeIn").addEventListener("input", e => { SQ.age = sqNum(e.target); SQ.all = false; renderScouting(); });
 $("#sqC").addEventListener("change", e => { SQ.c = e.target.value; renderScouting(); });
+/* ---------- Tour Schedule (schedule.json, rebuilt daily by scripts/schedule.py) ---------- */
+let SCHED = null;
+const SCH = { tour: "all", lvl: "all", e72: false, q: "" };
+const SCH_TOURS = [["all", "All"], ["atp", "ATP Tour"], ["wta", "WTA Tour"], ["ch", "Challenger"], ["itfm", "Men's ITF"], ["itfw", "Women's ITF & WTA 125"], ["jun", "ITF Juniors"], ["te", "Tennis Europe"]];
+const SCH_TIERS = ["Grand Slams & Finals", "1000", "500 & team finals", "250", "Challenger 125+, WTA 125, J500, TE Super Cat & Masters", "Challenger 75–100, W75–100, J300, TE Cat 1", "Challenger 50, M/W25–50, J200, TE Cat 2", "M/W15, J30–J100, TE Cat 3"];
+const schDay = iso => new Date(iso + "T12:00:00Z");
+const schFmt = (iso, o) => schDay(iso).toLocaleDateString("en-GB", { day:"numeric", month:"short", timeZone:"UTC", ...o });
+function schMonday(iso){ const d = schDay(iso); d.setUTCDate(d.getUTCDate() - (d.getUTCDay() + 6) % 7); return d.toISOString().slice(0, 10); }
+// level label: "Category 2 · 14&U" for Tennis Europe, otherwise the category itself (J300, Challenger 75, WTA 125…)
+const schLvl = e => e.cat.replace(/^Category /, "Cat ");
+function renderSchedule(){
+  if (!$("#page-schedule")) return;
+  $("#schTours").innerHTML = SCH_TOURS.map(([k, l]) => `<button class="chip scht${SCH.tour === k ? " on" : ""}" data-t="${k}">${l}</button>`).join("");
+  document.querySelectorAll(".sch72").forEach(b => b.classList.toggle("on", (b.dataset.e === "72") === SCH.e72));
+  if (!SCHED) return;
+  const evs = SCHED.events || [];
+  // level chips for the chosen tour, biggest first
+  const lv = SCH.tour === "all" ? [] : [...new Map(evs.filter(e => e.tour === SCH.tour).sort((a, b) => a.tier - b.tier || schLvl(a).localeCompare(schLvl(b), "en", { numeric: true })).map(e => [schLvl(e), 1])).keys()];
+  if (SCH.lvl !== "all" && !lv.includes(SCH.lvl)) SCH.lvl = "all";
+  $("#schLvlLine").hidden = lv.length < 2;
+  $("#schLvls").innerHTML = [["all", "All"], ...lv.map(l => [l, l])].map(([k, l]) => `<button class="chip schl${SCH.lvl === k ? " on" : ""}" data-l="${esc(k)}">${esc(l)}</button>`).join("");
+  $("#schKey").innerHTML = SCH_TIERS.map((t, i) => `<span class="tier${i + 1}"><i></i>${t}</span>`).join("");
+  const q = sqKey(SCH.q);
+  const rows = evs.filter(e => (SCH.tour === "all" || e.tour === SCH.tour) && (SCH.lvl === "all" || schLvl(e) === SCH.lvl)
+    && (!SCH.e72 || (e.e72 || []).length) && (!q || sqKey(e.name + e.place).includes(q)));
+  const from = SCHED.from || ukDate();
+  const weeks = new Map();
+  for (const e of rows) { const w = schMonday(e.start < from ? from : e.start); if (!weeks.has(w)) weeks.set(w, []); weeks.get(w).push(e); }
+  const nm = id => byId[id] ? `${byId[id].first[0]}. ${byId[id].last}` : id;
+  $("#schList").innerHTML = rows.length ? [...weeks.entries()].sort().map(([w, list]) => `<section class="sch-wk">
+      <h3>Week of ${schFmt(w, { weekday:"short" })}<small>${list.length} event${list.length === 1 ? "" : "s"}</small></h3>
+      ${list.sort((a, b) => a.tier - b.tier || a.start.localeCompare(b.start) || a.name.localeCompare(b.name)).map(e => `<a class="ev tier${e.tier}${e.status ? " pp" : ""}" href="${esc(e.link || "#")}" target="_blank" rel="noopener">
+        <div class="nm">${esc(e.name)}</div>
+        <span class="cat">${esc(e.tour === "te" ? schLvl(e) : e.cat)}</span>
+        <div class="mt">${esc([e.place, e.surface, e.weekOnly ? "" : `${schFmt(e.start)} – ${schFmt(e.end)}`, (e.ages || []).length ? e.ages.map(a => "U" + a).join("/") : "", e.status].filter(Boolean).join(" · "))}</div>
+        ${(e.e72 || []).length ? `<div class="e72">${e.e72.map(x => `<b title="${esc(x.how)}">${esc(nm(x.id))}<em>${esc(x.how)}</em></b>`).join("")}</div>` : ""}
+      </a>`).join("")}
+    </section>`).join("") : `<div class="sq-empty">${SCH.e72 ? "No 72 players are entered in these events yet. Entry lists come out about 3 to 4 weeks before each event." : "No events match these filters."}</div>`;
+  const up = SCHED.updated ? new Date(SCHED.updated) : null;
+  setStale("#staleSch", up && Date.now() - up > 3 * 864e5 ? `<b>Heads up:</b> the schedule was last updated ${up.toLocaleDateString("en-GB", { day:"numeric", month:"long", timeZone:"Europe/London" })}, so it may be out of date.` : "");
+  $("#schSrc").innerHTML = `Updated every morning. 72 entries are shown for events up to ${schFmt(SCHED.entriesTo || from, { year:"numeric" })}, about as far ahead as entry lists are published: ITF from the official acceptance lists, WTA and WTA 125 from the WTA player lists, Tennis Europe from each player's Tennis Europe entries, and ATP and Challenger once the draw is out (the ATP publishes no free acceptance list). Sources: ATP Tour and Challenger calendars from Wikipedia's 2026 season pages (ATP events show the week only), WTA, ITF and Tennis Europe.`;
+}
+document.addEventListener("click", e => {
+  const t = e.target.closest(".scht, .schl, .sch72");
+  if (!t) return;
+  if (t.classList.contains("scht")) { SCH.tour = t.dataset.t; SCH.lvl = "all"; }
+  else if (t.classList.contains("schl")) SCH.lvl = t.dataset.l;
+  else SCH.e72 = t.dataset.e === "72";
+  renderSchedule();
+});
+$("#schQ").addEventListener("input", e => { SCH.q = e.target.value; renderSchedule(); });
+async function loadSchedule(){
+  try { const r = await fetch("schedule.json?t=" + Date.now(), { cache: "no-store" }); if (r.ok) SCHED = await r.json(); else if (!SCHED) SCHED = { events: [] }; } catch (e) { if (!SCHED) SCHED = { events: [] }; }
+  renderSchedule(); renderHome();
+}
 async function loadScouting(){
   try { const r = await fetch("scouting.json?t=" + Date.now(), { cache: "no-store" }); if (r.ok) SCOUT = await r.json(); else if (!SCOUT) SCOUT = {}; } catch (e) { if (!SCOUT) SCOUT = {}; }
   renderScouting(); renderRankings(); renderHome();
@@ -1639,6 +1767,11 @@ function renderHome(){
     $("#hpT4").innerHTML = `${top10.length}<small>of our players are world top 10 for their age</small>`;
     $("#hpS4").innerHTML = top10.length ? top10.slice(0, 3).map(m => `<strong>${esc(short(m.name))}</strong> No.${m.pos} born ${m.born} (${m.tour})`).join(" · ") : "";
   } else if (SCOUT) { $("#hpT4").textContent = "—"; $("#hpS4").textContent = "Scouting list not available yet"; }
+  if (SCHED?.events?.length) {
+    const ent = SCHED.events.filter(e => (e.e72 || []).length), ppl = new Set(ent.flatMap(e => e.e72.map(x => x.id)));
+    $("#hpT5").innerHTML = `${ent.length}<small>events with 72 players entered</small>`;
+    $("#hpS5").textContent = `${ppl.size} players entered · ${SCHED.events.length} events to the end of the year`;
+  } else if (SCHED) { $("#hpT5").textContent = "—"; $("#hpS5").textContent = "Schedule not available yet"; }
 }
 /* ---------- one spelling per 72 player, and no duplicate fixtures ----------
    The feeds spell some names differently (e.g. "Schwaerzler Joel" v "Schwärzler"), so every 72 player is shown
@@ -1708,6 +1841,8 @@ async function load(){
 load();
 loadScouting();
 setInterval(() => { if (!document.hidden) loadScouting(); }, 30 * 60 * 1000);
+loadSchedule();
+setInterval(() => { if (!document.hidden) loadSchedule(); }, 60 * 60 * 1000);
 setInterval(() => { if (!document.hidden) load(); }, 60 * 1000);
 document.addEventListener("visibilitychange", () => { if (!document.hidden) load(); });
 // keep "Today / Tomorrow" labels correct if the page stays open past midnight

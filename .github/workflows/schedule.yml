@@ -1,0 +1,39 @@
+name: Tour schedule
+on:
+  schedule:
+    - cron: "37 5 * * *"   # once a day, 06:37 UK summer time (05:37 UTC)
+  workflow_dispatch:
+concurrency:
+  group: tour-schedule   # its own queue: it takes 20-30 minutes and must not hold up the live score updates
+  cancel-in-progress: false
+permissions:
+  contents: write
+  issues: write
+jobs:
+  schedule:
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+    steps:
+      - uses: actions/checkout@v6
+        with:
+          ref: main
+      - id: schedule
+        name: Tour schedule to the end of the year, and 72 entries (free sources, no Claude)
+        run: pip install -q beautifulsoup4 && python3 scripts/schedule.py
+        timeout-minutes: 40
+      - name: Save changes
+        run: |
+          git config user.name "72 Hub updater"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add schedule.json
+          if git diff --cached --quiet; then echo "No changes"; exit 0; fi
+          git commit -q -m "Update tour schedule"
+          if git pull -q --rebase -X theirs; then git push
+          else git rebase --abort; echo "Another update saved first - skipping, tomorrow's run will catch up"; fi
+      - name: Tell Tobey about anything missed (GitHub issue + email)
+        if: always()
+        continue-on-error: true
+        run: python3 scripts/report_gaps.py
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          STEPS_JSON: ${{ toJSON(steps) }}
