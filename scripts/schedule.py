@@ -457,7 +457,7 @@ def sp_entries(events, men, everyone):
         body = (post.get("content") or {}).get("rendered") or ""
         for sec in re.split(r"<h3[^>]*>", body)[1:]:
             head = html.unescape(re.sub(r"<[^>]+>", " ", sec.split("</h3>", 1)[0]))
-            if not re.search(r"ENTRY LIST ATP", head, re.I) or re.search(r"QUALI", head, re.I):
+            if not re.search(r"ENTRY LIST", head, re.I) or re.search(r"QUALI|WTA", head, re.I):
                 continue
             main, alt, part = set(), set(), "main"
             for line in re.split(r"<br\s*/?>|</p>", sec.split("</h3>", 1)[-1]):
