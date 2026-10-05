@@ -456,19 +456,28 @@ def sp_entries(events, men, everyone):
     out, lists = {}, 0
     for post in posts:
         body = (post.get("content") or {}).get("rendered") or ""
-        for sec in re.split(r"<h3[^>]*>", body)[1:]:
-            head = html.unescape(re.sub(r"<[^>]+>", " ", sec.split("</h3>", 1)[0]))
+        for sec in re.split(r"<h[23][^>]*>", body)[1:]:
+            end = re.search(r"</h[23]>", sec)
+            head, rest = (sec[:end.start()], sec[end.end():]) if end else (sec, "")
+            head = html.unescape(re.sub(r"<[^>]+>", " ", head))
             if not re.search(r"ENTRY LIST", head, re.I) or re.search(r"QUALI|WTA", head, re.I):
                 continue
-            main, alt, part = set(), set(), "main"
-            for line in re.split(r"<br\s*/?>|</p>", sec.split("</h3>", 1)[-1]):
-                line = html.unescape(re.sub(r"<[^>]+>", "", line)).strip()
+            main, alt, out_, part = set(), set(), set(), "main"
+            for raw in re.split(r"<br\s*/?>|</p>", rest):
+                line = html.unescape(re.sub(r"<[^>]+>", "", raw)).strip()
                 if re.match(r"ALTERNATE", line, re.I):
                     part = "alt"
                     continue
-                m = re.match(r"^(?:\+|PR|\d+|\s)*([^,\d()]+),([^\d()]+?)\s*(?:\(\d+\))?\s*(?:[A-Z]{3}\b)?[A-Z ]*\d+$", line)
-                if m:
-                    (main if part == "main" else alt).add(pkey(m.group(2) + " " + m.group(1)))
+                m = re.match(r"^(?:\+|PR\b|OUT\b|IN\b|\d+|\s)*([^,\d()]+),([^\d()]+?)\s*(?:\(\d+\))?\s*(?:[A-Z]{3}\b)?[A-Z ]*\d+$", line)
+                if not m:
+                    continue
+                k = pkey(m.group(2) + " " + m.group(1))
+                if "<del" in raw or line.startswith("OUT"):  # Spazio strikes through withdrawals
+                    out_.add(k)
+                elif part == "main" or line.startswith("IN"):  # "IN": an alternate who has got into the main draw
+                    main.add(k)
+                else:
+                    alt.add(k)
             if len(main) < 8:
                 continue
             city = unicodedata.normalize("NFKD", head).encode("ascii", "ignore").decode().lower()
@@ -481,9 +490,9 @@ def sp_entries(events, men, everyone):
             if not score or score[0][0] < max(4, len(main) * 0.4) or (len(score) > 1 and score[1][0] * 2 > score[0][0]):
                 continue  # not a coming event in that city, or an old edition's list (too few of the same players)
             lists += 1
-            for k in main | alt:
+            for k in main | alt | out_:
                 if k in men:
-                    out[(men[k], score[0][1])] = "main" if k in main else "alt"
+                    out[(men[k], score[0][1])] = "withdrawn" if k in out_ else "main" if k in main else "alt"
     if not lists:
         raise RuntimeError("no entry list could be matched to a coming event")
     return out
@@ -516,8 +525,8 @@ def atp_entries(events, errors):
     found = {}
     for (rid, k), qual in lt.items():
         t, p = tt.get((rid, k)), sp.get((rid, k))
-        if t == "withdrawn" or (t is None and p is None):
-            print("ATP entry not confirmed, left out:", rid, k[1], "(Tick Tock: withdrawn)" if t else "")
+        if "withdrawn" in (t, p) or (t is None and p is None):
+            print("ATP entry not confirmed, left out:", rid, k[1], "(withdrawn)" if "withdrawn" in (t, p) else "")
             continue
         how = TT_HOW.get(t) if t else {"main": "Main draw", "alt": "Alternate"}[p]
         if qual != how.startswith("Qualifying"):
@@ -529,7 +538,7 @@ def atp_entries(events, errors):
         if k not in uncovered:
             continue
         t, p = tt.get((rid, k)), sp.get((rid, k))
-        if t is None or p is None or t == "withdrawn":
+        if t is None or p is None or "withdrawn" in (t, p):
             print("ATP entry this week not confirmed by both Tick Tock and Spazio, left out:", rid, k[1])
             continue
         same = (t in ("main", "wc") and p == "main") or (t in ("alt", "next") and p == "alt")

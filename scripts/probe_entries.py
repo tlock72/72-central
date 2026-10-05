@@ -1,12 +1,14 @@
-"""One-off: Spazio's Shanghai entry-list post, raw."""
-import sys, json, re
+"""One-off: run the ATP / Challenger entries step against the real sites (reads only, saves nothing)."""
+import sys, json
 sys.path.insert(0, "scripts")
 import schedule as S
+events = json.load(open("schedule.json"))["events"]
 S.PAUSE["other"] = 0
-c = json.loads(S.get(S.SP_API + "/posts/142467?_fields=content"))["content"]["rendered"]
-i = c.find("ENTRY LIST ATP MASTERS")
-print(len(c)); print(c[i - 200: i + 2500]); j = c.find("ALTERNATE"); print("ALT:", c[j - 300: j + 600] if j > 0 else "none")
-cat = json.loads(S.get(S.SP_API + "/categories?slug=ent&_fields=id"))
-after = "2026-08-24T00:00:00"
-posts = json.loads(S.get(f"{S.SP_API}/posts?categories={cat[0]['id']}&per_page=100&after={after}&_fields=id,date"))
-print("posts:", len(posts), "has 142467:", any(p["id"] == 142467 for p in posts), posts[-1])
+men = {S.pkey(n): rid for rid, (n, t) in S.ROSTER.items() if t == "atp"}
+lt, everyone, first = S.lt_entries(events, men, 15)
+S.tt_entries(events, men, 15, everyone)
+print("SPAZIO:", sorted((k[0], k[1][1], v) for k, v in S.sp_entries(events, men, everyone).items()))
+errs = {}
+for k, v in sorted(S.atp_entries(events, errs).items(), key=lambda kv: kv[0][2]):
+    print("SHOWN:", k[2], k[1], v)
+print("ERRORS:", errs)
