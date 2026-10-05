@@ -248,25 +248,34 @@ def main():
     old = {m["apiId"]: m for m in data["matches"] if m.get("apiId")}
     new = {}
 
-    # 2) Live matches (hourly - the :13 run; the :43 run only does the cheap checks below, to stay well inside
+    # How long since a check last ran. The hourly and 2-hourly checks go by this, not by the clock minute:
+    # GitHub often starts its scheduled runs 20-45 minutes late, and the backup timer's run then skips
+    # (site updated under 20 minutes ago), so a "first half of the hour only" rule could miss them all day.
+    def due(key, minutes):
+        last = data.get(key)
+        return not last or NOW - datetime.fromisoformat(last.replace("Z", "+00:00")) >= timedelta(minutes=minutes)
+
+    # 2) Live matches (about hourly; the runs in between only do the cheap checks below, to stay well inside
     #    the free plan's 100 calls a day). Live matches aren't shown on the site; this just spots finished ones.
-    live_run = NOW.minute < 30
+    live_run = due("liveChecked", 50)
     fresh_live = set()
     if live_run:
         try:
             for m in api("/matches", status="live", player=ids, limit=200).get("data", []):
                 new[m["id"]] = dict(to_match(m, "live"), seenLive=NOW.strftime("%Y-%m-%dT%H:%M:%SZ"))
                 fresh_live.add(m["id"])
+            data["liveChecked"] = NOW.strftime("%Y-%m-%dT%H:%M:%SZ")
         except Exception as e:
             print("live fetch failed", e); live_run = False
 
-    # 3) Upcoming matches (every 2 hours, or if we have none)
+    # 3) Upcoming matches (about every 2 hours, or if we have none)
     uk_now = NOW.astimezone(UK)
-    if uk_now.hour % 2 == 1 and uk_now.minute < 30 or not any(m["status"] == "scheduled" for m in old.values()):
+    if due("upcomingChecked", 110) or not any(m["status"] == "scheduled" for m in old.values()):
         try:
             for m in api("/matches", status="upcoming", player=ids, limit=200,
                          **{"from": NOW.strftime("%Y-%m-%d"), "to": (NOW + timedelta(days=7)).strftime("%Y-%m-%d")}).get("data", []):
                 new.setdefault(m["id"], to_match(m, "scheduled"))
+            data["upcomingChecked"] = NOW.strftime("%Y-%m-%dT%H:%M:%SZ")
         except Exception as e:
             print("upcoming fetch failed", e)
         fetched_upcoming = True
