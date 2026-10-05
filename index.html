@@ -473,6 +473,7 @@ nav .sh,.nm-s{display:none}
   .hp-hero .mono{font-size:150px;bottom:-30px}
   .hp-hero .eyebrow{font-size:9px}
   .hp-hero h1{font-size:28px}
+  .hp-greet{margin-top:4px;font-size:13.5px}
   .hp-meta{margin-top:8px;gap:6px}
   .hp-pill{font-size:9px;padding:4px 9px;letter-spacing:.08em}
   .hp-grid{grid-template-columns:repeat(2,minmax(0,1fr));gap:8px}
@@ -505,6 +506,14 @@ html.locked #gate{display:grid}
 .gate-digits{display:flex;gap:10px;justify-content:center}
 .gate-digits input{width:46px;height:58px;border-radius:12px;border:1px solid var(--line);background:var(--navy-2);color:#fff;font:600 24px var(--display);text-align:center;outline:none;padding:0}
 .gate-digits input:focus{border-color:var(--gold)}
+.gate-lbl{display:block;font-family:var(--display);text-transform:uppercase;letter-spacing:.3em;font-size:12px;font-weight:500;color:var(--gold);margin:0 0 12px}
+.gate-name{display:block;width:100%;max-width:322px;margin:0 auto 26px;height:52px;border-radius:12px;border:1px solid var(--line);background:var(--navy-2);color:#fff;font:500 18px var(--body);text-align:center;outline:none;padding:0 14px}
+.gate-name:focus{border-color:var(--gold)}
+.gate-name::placeholder{color:var(--muted-2)}
+.gate-go{display:none;margin:-10px auto 0;font-family:var(--display);text-transform:uppercase;letter-spacing:.16em;font-size:13px;font-weight:600;color:var(--navy);background:var(--gold);border-radius:999px;padding:11px 30px}
+html.name-only .gate-go,html.need-name .gate-go{display:inline-block}
+html.need-name .gate-go{margin:-10px auto 24px}
+html.name-only .gate-box h2,html.name-only .gate-digits{display:none}
 .gate-err{min-height:18px;margin-top:16px;font-size:12px;color:#E8908F}
 .gate-box.shake{animation:gshake .4s}
 @keyframes gshake{20%,60%{transform:translateX(-8px)}40%,80%{transform:translateX(8px)}}
@@ -514,7 +523,7 @@ html.locked #gate{display:grid}
 </style>
 </head>
 <body>
-<script>/* passcode: stays unlocked on this device for 30 days */try{const u=JSON.parse(localStorage.getItem("72c-unlock")||"null");if(!(u&&u.h==="89e1a9fa4a91850fd074bb35fc4770ed59a4906addbd786b09c8556e89d1459a"&&u.until>Date.now()))document.documentElement.classList.add("locked")}catch(e){document.documentElement.classList.add("locked")}</script>
+<script>/* passcode: stays unlocked on this device for 30 days */try{const u=JSON.parse(localStorage.getItem("72c-unlock")||"null");if(!(u&&u.h==="89e1a9fa4a91850fd074bb35fc4770ed59a4906addbd786b09c8556e89d1459a"&&u.until>Date.now()))document.documentElement.classList.add("locked");else if(!localStorage.getItem("72c-name"))document.documentElement.classList.add("locked","name-only")}catch(e){document.documentElement.classList.add("locked")}</script>
 
 
 <header>
@@ -537,6 +546,7 @@ html.locked #gate{display:grid}
       <div class="mono" aria-hidden="true">72</div>
       <div class="eyebrow">SeventyTwo Sports Group · Internal portal</div>
       <h1><span class="n">72</span> Central</h1>
+      <p class="hp-greet" id="hpGreet" hidden></p>
       <div class="hp-meta" id="hpMeta"></div>
     </section>
     <div class="hp-grid">
@@ -1496,8 +1506,27 @@ async function loadScouting(){
   renderScouting(); renderHome();
 }
 /* ---------- Home portal ---------- */
+// home greeting: "Welcome to 72 Central" the first time, then a greeting that changes each visit
+let greetMsg = "";
+function greeting(){
+  let n = ""; try { n = localStorage.getItem("72c-name") || ""; } catch (e) {}
+  if (!n) return "";
+  if (window.greetFirst) return `Welcome to 72 Central, <b>${esc(n)}</b>.`;
+  if (greetMsg) return greetMsg;
+  const now = new Date(), h = now.getHours(), day = now.getDay(), b = `<b>${esc(n)}</b>`;
+  const part = h < 5 ? "night" : h < 12 ? "morning" : h < 17 ? "afternoon" : h < 22 ? "evening" : "night";
+  const opts = [`Welcome back, ${b}.`, `Good to see you, ${b}.`, `Hi ${b}, here's the latest.`, `Welcome back to 72 Central, ${b}.`];
+  if (part === "night") opts.push(`Working late, ${b}?`, `Hello ${b}, burning the midnight oil?`);
+  else opts.push(`Good ${part}, ${b}.`, `Good ${part}, ${b}.`, `Good ${part} ${b}, here's the latest.`);
+  if (day === 1) opts.push(`Happy Monday, ${b}. New ranking week.`);
+  if (day === 5) opts.push(`Happy Friday, ${b}.`);
+  if (day === 0 || day === 6) opts.push(`Hope you're having a good weekend, ${b}.`);
+  return greetMsg = opts[Math.floor(Math.random() * opts.length)];
+}
+window.renderHome = renderHome;
 function renderHome(){
   if (!$("#page-home")) return;
+  const g = greeting(); $("#hpGreet").hidden = !g; $("#hpGreet").innerHTML = g;
   const lc = STATE?.lastChecked ? new Date(STATE.lastChecked) : null;
   const fresh = lc && Date.now() - lc < 3 * 36e5;
   $("#hpMeta").innerHTML = STATE ? `<span class="hp-pill${fresh ? "" : " warn"}"><i></i>${lc ? `Scores updated ${lc.toLocaleTimeString("en-GB", { hour:"2-digit", minute:"2-digit", timeZone:"Europe/London" })} UK${fresh ? "" : ", " + lc.toLocaleDateString("en-GB", { day:"numeric", month:"short", timeZone:"Europe/London" })}` : "Scores not updated yet"}</span>`
@@ -1621,6 +1650,9 @@ setInterval(() => { if (!document.hidden) renderScores(); }, 5 * 60 * 1000);
 <div id="gate"><div class="gate-box">
   <img id="gateLogo" alt="SeventyTwo Sports Group">
   <div class="gate-beta">Beta</div>
+  <label class="gate-lbl" for="gateName">Your first name</label>
+  <input class="gate-name" id="gateName" type="text" maxlength="30" autocomplete="given-name" autocapitalize="words" spellcheck="false" placeholder="First name">
+  <button class="gate-go" id="gateGo" type="button">Continue</button>
   <h2>72 Central · Enter passcode</h2>
   <div class="gate-digits"><input type="password" inputmode="numeric" maxlength="6" autocomplete="one-time-code" aria-label="Digit 1"><input type="password" inputmode="numeric" maxlength="6" autocomplete="one-time-code" aria-label="Digit 2"><input type="password" inputmode="numeric" maxlength="6" autocomplete="one-time-code" aria-label="Digit 3"><input type="password" inputmode="numeric" maxlength="6" autocomplete="one-time-code" aria-label="Digit 4"><input type="password" inputmode="numeric" maxlength="6" autocomplete="one-time-code" aria-label="Digit 5"><input type="password" inputmode="numeric" maxlength="6" autocomplete="one-time-code" aria-label="Digit 6"></div>
   <div class="gate-err" id="gateErr"></div>
@@ -1629,13 +1661,34 @@ setInterval(() => { if (!document.hidden) renderScores(); }, 5 * 60 * 1000);
 <script>(() => {
   const H = "89e1a9fa4a91850fd074bb35fc4770ed59a4906addbd786b09c8556e89d1459a", ins = [...document.querySelectorAll(".gate-digits input")];
   const hash = async s => [...new Uint8Array(await crypto.subtle.digest("SHA-256", new TextEncoder().encode("72central:" + s)))].map(x => x.toString(16).padStart(2, "0")).join("");
+  // first name: asked once with the passcode, then remembered on this device for the home page greeting
+  const nameIn = document.getElementById("gateName"), root = document.documentElement;
+  try { nameIn.value = localStorage.getItem("72c-name") || ""; } catch (e) {}
+  const getName = () => { const n = nameIn.value.trim().replace(/\s+/g, " "); return n ? n[0].toUpperCase() + n.slice(1) : ""; };
+  function saveName(first){
+    const n = getName();
+    if (!n) { document.getElementById("gateErr").textContent = "Please enter your first name"; root.classList.add("need-name"); nameIn.focus(); return false; }
+    try { localStorage.setItem("72c-name", n); } catch (e) {}
+    window.greetFirst = first;  // brand-new visitor: "Welcome to 72 Central"
+    return true;
+  }
+  function unlocked(){
+    root.classList.remove("locked", "name-only", "need-name");
+    window.dispatchEvent(new Event("resize"));
+    window.renderHome?.();
+  }
+  // returning device that was unlocked before names were asked: name only, no passcode
+  // (also shown if the passcode was typed before the name)
+  document.getElementById("gateGo").addEventListener("click", () => { if (!root.classList.contains("name-only")) return check(); if (saveName(false)) unlocked(); });
+  nameIn.addEventListener("keydown", e => { if (e.key === "Enter") { if (root.classList.contains("name-only") || !ins.some(i => !i.value)) document.getElementById("gateGo").click(); else ins.find(i => !i.value)?.focus(); } });
+  nameIn.addEventListener("input", () => { document.getElementById("gateErr").textContent = ""; });
   async function check(){
     const code = ins.map(i => i.value).join("");
     if (code.length < 6) return;
     if (await hash(code) === H) {
+      if (!saveName(true)) return;
       try { localStorage.setItem("72c-unlock", JSON.stringify({ h: H, until: Date.now() + 30 * 864e5 })); } catch (e) {}
-      document.documentElement.classList.remove("locked");
-      window.dispatchEvent(new Event("resize"));
+      unlocked(); return;
     } else {
       const b = document.querySelector(".gate-box"); b.classList.remove("shake"); void b.offsetWidth; b.classList.add("shake");
       document.getElementById("gateErr").textContent = "Incorrect passcode";
@@ -1657,7 +1710,7 @@ setInterval(() => { if (!document.hidden) renderScores(); }, 5 * 60 * 1000);
     inp.addEventListener("keydown", e => { if (e.key === "Backspace") ins.forEach(i => i.type = "password"); if (e.key === "Backspace" && !inp.value && k > 0) { ins[k - 1].value = ""; ins[k - 1].focus(); } });
   });
   document.getElementById("gateLogo").src = document.querySelector(".brand img")?.src || "";
-  if (document.documentElement.classList.contains("locked")) ins[0].focus();
+  if (root.classList.contains("locked")) (getName() && !root.classList.contains("name-only") ? ins[0] : nameIn).focus();
 })();</script>
 </body>
 </html>
