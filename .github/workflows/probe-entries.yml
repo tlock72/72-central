@@ -1,0 +1,10 @@
+name: Probe ATP entry list sources (one-off)
+on:
+  push:
+    branches: [probe-entry-lists]
+jobs:
+  probe:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v6
+      - run: python3 scripts/probe_entries.py
