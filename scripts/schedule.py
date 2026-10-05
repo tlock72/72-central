@@ -320,6 +320,11 @@ def te_entries(TE, profiles):
 LT_URL = "https://live-tennis.eu/en/atp-schedule"   # top ~1,000 men, each with the tournaments entered in the next 3 weeks
 TT_URL = "https://www.ticktocktennis.com/atp"       # every ATP / Challenger entry list for the next few weeks
 SP_API = "https://www.spaziotennis.com/wp-json/wp/v2"  # Spazio Tennis (Italian): each event's official acceptance list, posted weeks ahead
+IT_CITY = {"pechino": "beijing", "basilea": "basel", "firenze": "florence", "lisbona": "lisbon", "siviglia": "seville", "ginevra": "geneva",
+           "parigi": "paris", "londra": "london", "bruxelles": "brussels", "anversa": "antwerp", "stoccolma": "stockholm", "marsiglia": "marseille",
+           "lione": "lyon", "amburgo": "hamburg", "monaco di baviera": "munich", "praga": "prague", "atene": "athens", "canton": "guangzhou",
+           "citta del messico": "mexico", "nuova delhi": "delhi", "san pietroburgo": "petersburg", "varsavia": "warsaw", "cracovia": "krakow",
+           "salonicco": "thessaloniki", "mosca": "moscow", "il cairo": "cairo", "colonia": "cologne", "tenerife": "tenerife"}
 TT_HOW = {"main": "Main draw", "wc": "Wildcard", "qual": "Qualifying", "alt": "Alternate", "next": "Alternate",
           "qnext": "Qualifying alternate", "qualAlt": "Qualifying alternate"}
 PLAIN = {"challenger", "open", "tennis", "cup", "international", "masters", "championships", "trophy", "tournament", "atp",
@@ -444,8 +449,9 @@ def sp_entries(events, men, everyone):
     if not cat:
         raise RuntimeError("the 'Entry List' category is missing")
     after = (FROM - timedelta(days=42)).isoformat() + "T00:00:00"
-    posts = json.loads(get(f"{SP_API}/posts?categories={cat[0]['id']}&per_page=50&after={after}&_fields=id,content"))
+    posts = json.loads(get(f"{SP_API}/posts?categories={cat[0]['id']}&per_page=100&after={after}&_fields=id,content"))
     window = [ev_key(e) for e in events if e["tour"] in ("atp", "ch") and FROM.isoformat() <= e["start"] <= (FROM + timedelta(weeks=5)).isoformat()]
+    byk = {ev_key(e): e for e in events}
     out, lists = {}, 0
     for post in posts:
         body = (post.get("content") or {}).get("rendered") or ""
@@ -467,6 +473,14 @@ def sp_entries(events, men, everyone):
             score = sorted(((len(main & everyone.get(k, set())), k) for k in window), reverse=True)
             if not score or score[0][0] < max(4, len(main) * 0.4) or (len(score) > 1 and score[1][0] * 2 > score[0][0]):
                 continue  # not clearly one of the coming events (or an old list)
+            city = unicodedata.normalize("NFKD", head).encode("ascii", "ignore").decode().lower()
+            city = re.sub(r"entry list|\batp\b|challenger|masters|\d+", " ", city)
+            for it, en in IT_CITY.items():
+                city = re.sub(rf"\b{it}\b", en, city)
+            ev = byk[score[0][1]]
+            if not place_words(city) or not place_words(city) <= place_words(ev["name"]) | place_words(ev["place"]):
+                print("Spazio list skipped, its name doesn't match the event its players point to:", head.strip(), "->", ev["name"])
+                continue
             lists += 1
             for k in main | alt:
                 if k in men:
