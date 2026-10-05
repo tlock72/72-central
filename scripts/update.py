@@ -196,6 +196,10 @@ def main():
     #    record always wins over an unverified duplicate.
     MATCH_V = 2
     searched = 0
+    # Calls already spent today (UK date), across all runs. Player searches only run while plenty of the day's
+    # 100 calls are left, so a batch of searches can never use up the calls that keep live scores going.
+    uk_today = NOW.astimezone(UK).strftime("%Y-%m-%d")
+    spent = data.get("callsDay", {}).get("n", 0) if data.get("callsDay", {}).get("date") == uk_today else 0
     for rid, (full, tour) in ROSTER.items():
         rec = players.get(rid)
         stale = rec and rec.get("apiId") is None and (NOW - datetime.fromisoformat(rec["checked"])) > timedelta(days=7)
@@ -205,7 +209,7 @@ def main():
             stale = True
         if rec and not stale:
             continue
-        if searched >= 3 or CALLS >= MAX_CALLS - 12 or os.environ.get("RANKINGS") == "1":
+        if searched >= 3 or CALLS >= MAX_CALLS - 12 or spent + CALLS >= 40 or os.environ.get("RANKINGS") == "1":
             break  # finish the rest next run (the Monday rankings run keeps its calls for the rankings)
         searched += 1
         try:
@@ -454,6 +458,7 @@ def main():
 
     if QUOTA_HIT:
         data["quotaHit"] = NOW.strftime("%Y-%m-%dT%H:%M:%SZ")
+    data["callsDay"] = {"date": uk_today, "n": spent + CALLS}
     data["lastChecked"] = NOW.strftime("%Y-%m-%dT%H:%M:%SZ")
     with open("data.json", "w") as f:
         json.dump(data, f, ensure_ascii=False, separators=(",", ":"))

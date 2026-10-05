@@ -986,11 +986,16 @@ window.addEventListener("resize", fitChamps);
 /* plain warnings when the automatic updates have fallen behind, so old data is never mistaken for current */
 const fmtWhen = d => d.toLocaleString("en-GB", { timeZone:"Europe/London", weekday:"short", day:"numeric", month:"short", hour:"2-digit", minute:"2-digit" });
 function setStale(sel, msg){ const el = $(sel); el.hidden = !msg; el.innerHTML = msg || ""; }
+// when the score feed last actually answered (lastChecked moves on every run, even when the feed's daily limit is used up)
+function schFed(){ const t = [STATE?.liveChecked, STATE?.upcomingChecked].filter(Boolean).map(x => new Date(x)); return t.length ? new Date(Math.max(...t)) : null; }
 function renderScores(){
   renderChamps();
   const lc = STATE?.lastChecked ? new Date(STATE.lastChecked) : null;
+  const fed = schFed();
   setStale("#staleScores", STATE && (!lc || Date.now() - lc > 26 * 36e5)
     ? `<b>Heads up:</b> the match schedule hasn't updated since ${lc ? fmtWhen(lc) : "it was set up"}. Matches and results below may be out of date. Check SofaScore for anything important.`
+    : fed && Date.now() - fed > 2 * 36e5 && STATE.quotaHit && new Date(STATE.quotaHit) > fed
+    ? `<b>Heads up:</b> live scores are paused. The free score feed's daily limit has run out, so the matches and scores below are from ${fmtWhen(fed)} and may be out of date. Updates restart automatically, usually by the next morning. Check SofaScore for live scores and results.`
     : STATE?.itfChecked && Date.now() - new Date(STATE.itfChecked) > 36 * 36e5
     ? `<b>Heads up:</b> ITF junior matches haven't updated since ${fmtWhen(new Date(STATE.itfChecked))}. Check the ITF website for the latest junior draws and results.`
     : STATE?.teChecked && Date.now() - new Date(STATE.teChecked) > 36 * 36e5
@@ -1051,7 +1056,7 @@ function renderScores(){
     + `<div class="r-group">Everyone else · ${rest.length}</div>` + rest.map(x => x.html).join("");
 
   if (STATE?.lastChecked) {
-    const d = new Date(STATE.lastChecked);
+    const d = schFed() || new Date(STATE.lastChecked);
     $("#checked").textContent = d.toLocaleString("en-GB", { timeZone:"Europe/London", weekday:"short", day:"numeric", month:"short", hour:"2-digit", minute:"2-digit" });
   } else $("#checked").textContent = STATE ? "Not yet" : "Loading…";
 }
