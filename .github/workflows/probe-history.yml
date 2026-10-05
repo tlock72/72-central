@@ -1,0 +1,42 @@
+name: Probe ranking history sources (temporary)
+on:
+  push:
+    branches: [claude/72-rankings-mobile-ui-g5ouo8]
+    paths: [.github/workflows/probe-history.yml]
+jobs:
+  probe:
+    runs-on: ubuntu-latest
+    timeout-minutes: 8
+    steps:
+      - run: |
+          python3 - <<'PY'
+          import urllib.request, re, json
+          UA = {"User-Agent": "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 Chrome/126 Safari/537.36", "Accept": "*/*"}
+          def get(u):
+              try:
+                  with urllib.request.urlopen(urllib.request.Request(u, headers=UA), timeout=40) as r:
+                      return r.status, r.read().decode("utf-8", "replace")
+              except Exception as e:
+                  return getattr(e, "code", "ERR"), str(e)[:200]
+          tests = [
+            "https://web.archive.org/cdx/search/cdx?url=tennisabstract.com/reports/atpRankings.html&from=2025&output=json&fl=timestamp,statuscode,length&collapse=timestamp:8",
+            "https://web.archive.org/cdx/search/cdx?url=www.tennisabstract.com/reports/atpRankings.html&from=2025&output=json&fl=timestamp,statuscode,length&collapse=timestamp:8",
+            "https://www.atptour.com/en/rankings/singles?rankRange=0-5000&dateWeek=2025-09-29",
+            "https://raw.githubusercontent.com/JeffSackmann/tennis_atp/master/atp_rankings_current.csv",
+            "https://www.tennisabstract.com/cgi-bin/player.cgi?p=AlexDeMinaur",
+            "https://www.tennisabstract.com/jsfrags/AlexDeMinaur.js",
+            "https://www.minorleaguesplits.com/tennisabstract/cgi-bin/jsmatches/AlexDeMinaur.js",
+          ]
+          for u in tests:
+              st, b = get(u)
+              print("=====", u, "->", st, len(b))
+              print(b[:600].replace("\n", " | "))
+              if "player.cgi" in u:
+                  for m in re.findall(r"(?:src|href)=['\"]([^'\"]+\.js[^'\"]*)", b): print("  script:", m)
+                  for m in re.findall(r"var\s+(\w+)\s*=", b)[:60]: print("  var:", m)
+              if "jsmatches" in u or "jsfrags" in u:
+                  print("TAIL:", b[-600:].replace("\n"," | "))
+                  for m in re.findall(r"var\s+(\w+)\s*=", b)[:60]: print("  var:", m)
+              if "atpRankings" in u and st == 200:
+                  print("ALL:", b[:6000])
+          PY
