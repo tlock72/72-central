@@ -26,6 +26,7 @@ from datetime import date, datetime, timedelta, timezone
 UA = "72CentralScouting/1.0 (+https://github.com/tlock72/72-central; weekly, a few requests)"
 TA_URL = "https://www.tennisabstract.com/reports/atpRankings.html"
 TE_URL = "https://www.tennisexplorer.com/ranking/atp-men/?date={d}&page={p}"
+ATP_V = 2  # raise to rebuild the ATP list once after a change to how moves are worked out
 TE_WEEKS = 5  # past ATP weeks filled in per run (about 45 pages each)
 WTA_URL = "https://api.wtatennis.com/tennis/players/ranked?page={p}&pageSize=100&type=rankSingles&sort=asc&metric=SINGLES"
 OUT, HIST = "scouting.json", "scouting_history.json"
@@ -245,7 +246,7 @@ def main():
                 changed = changed or bool(filled)
             except Exception as e:
                 print("Scouting HQ: ATP history fill failed (tries again next run):", e)
-        if force or not data.get("atp") or data["atp"].get("week") != week or filled & set(data["atp"].get("cmp", {}).values()):
+        if force or not data.get("atp") or data["atp"].get("week") != week or data["atp"].get("v") != ATP_V or filled & set(data["atp"].get("cmp", {}).values()):
             weeks = hist["atp"]
             # keep a compact copy of this week's ranking for future comparisons ("_all": every player is in it;
             # older weeks without it only hold players born in or after min_year - 2)
@@ -274,7 +275,7 @@ def main():
                 y = int(r["dob"][:4]) if r["dob"][:4].isdigit() else None  # None: birth date not published
                 prev = {c: prev_rank(weeks[w], r, y) if w else None for c, w in cmp.items()}
                 players.append([r["rank"], r["name"], r["cty"], y, prev["w"], prev["m3"], prev["m12"], r["url"]])
-            data["atp"] = {"week": week, "cmp": cmp, "players": players}
+            data["atp"] = {"week": week, "cmp": cmp, "players": players, "v": ATP_V}
             # trim history: last 60 weeks
             cutoff = (date.fromisoformat(week) - timedelta(weeks=60)).isoformat()
             for w in list(weeks):
