@@ -80,8 +80,14 @@ def gaps():
     if d.get("quotaHit") and ukday(d["quotaHit"]) == TODAY:
         out.append(f"The live-score feed's free daily allowance ran out on {TODAY}. "
                    "Today's results and 'In progress' updates will be late until it resets overnight.")
-    if d.get("rankingsAsOf") and d["rankingsAsOf"] < ago(9):
-        out.append(f"ATP/WTA rankings haven't been fully updated since {d['rankingsAsOf']}.")
+    # a tour has published a newer official week (seen by Scouting HQ) but the site still hasn't got it by Wednesday
+    tw = d.get("rankingsTourWeek") or {}
+    sqw = load("scouting.json")
+    for t, name in (("atp", "ATP"), ("wta", "WTA")):
+        ow = (sqw.get(t) or {}).get("week")
+        if ow and tw.get(t) and ow > tw[t] and (TODAY - datetime.fromisoformat(ow).date()).days >= 2:
+            out.append(f"72 Rankings: the {name} ranking of {ow} is out officially, but the site still shows {tw[t]} "
+                       "(the score feed hasn't caught up or ran out of calls).")
     # 6) Scouting HQ: a list could not be refreshed today, or is stuck on an old ranking week
     #    (16 days allows for the two-week events, when the tours publish no new ranking)
     sq = load("scouting.json")
