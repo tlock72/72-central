@@ -17,7 +17,7 @@ It is hosted on GitHub Pages at tlock72.github.io/72-central and protected by a 
 | `index.html` | The whole site in one file (home portal, Live Scores, 72 Rankings, Age Filtered World Rankings, players). It has its own `ROSTER` list (around line 551), and the passcode gate is near the end. |
 | `data.json` | Matches and ATP/WTA rankings, written by `update.py`. Key fields: `matches[]`, `rankings{rid}`, `rankingsTourWeek{atp,wta}`, `rankingsWeek`, `rankingsNext` (holding area), `rankingsTry`, `quotaHit`, `lastChecked`. |
 | `players.json` | Roster id → Live Tennis API id, written by `update.py`. |
-| `titles.json` | ITF singles titles from the ITF's own results, written by `itf_titles.py`: `titles{year}` (each with tier and type), `full` (players whose whole career is loaded), `best{rid}` (career-high ATP/WTA rank, weekly). The home "ITF singles titles" count uses this year's ITF World Tennis Tour titles; player pages show career ITF titles, except for anyone who is or has been in the top 100. Never type ITF titles into `index.html`. |
+| `titles.json` | ITF singles titles from the ITF's own results, written by `itf_titles.py`: `titles{year}` (each with tier and type), `full` (players whose whole career is loaded), `best{rid}` (career-high ATP/WTA rank, weekly). The home "ITF singles titles" count uses this year's ITF World Tennis Tour titles; player pages show every pro's career ITF titles (for anyone who is or has been in the top 100 they are left out of the "Career titles" total). Never type ITF titles into `index.html`. |
 | `itf.json` | ITF junior rankings, with players that couldn't be read listed under `pending`. |
 | `itfm.json` | ITF junior matches. |
 | `te.json` | Tennis Europe U14/U16 matches. |
