@@ -17,8 +17,10 @@ Sources (all free, no key):
   - ITF: the official acceptance list, matched by ITF player id.
   - WTA / WTA 125: the WTA player list, matched by name.
   - Tennis Europe: the player's own Tennis Europe profile.
-  - ATP / Challenger: there is no free acceptance list, so a 72 player shows once they are in the draw
-    (from the matches in data.json).
+  - ATP / Challenger: the ATP's own site blocks GitHub, so two free sites are read and an entry only shows
+    when both list the player for the same event: live-tennis.eu (each top ~1,000 player's events for the
+    next 3 weeks) and Tick Tock Tennis (each event's main draw, qualifying and alternate lists). Once the
+    draw is out, the matches in data.json show the player as "In the draw".
 A part that fails keeps what it had last time and is listed under "errors" (report_gaps.py alerts).
 """
 import html, json, os, re, sys, time, unicodedata, urllib.parse, urllib.request
@@ -312,6 +314,148 @@ def te_entries(TE, profiles):
     return found
 
 
+# ---------------- ATP / Challenger: 72 entries before the draw (two free sites that must agree) ----------------
+LT_URL = "https://live-tennis.eu/en/atp-schedule"   # top ~1,000 men, each with the tournaments entered in the next 3 weeks
+TT_URL = "https://www.ticktocktennis.com/atp"       # every ATP / Challenger entry list for the next few weeks
+TT_HOW = {"main": "Main draw", "wc": "Wildcard", "qual": "Qualifying", "alt": "Alternate", "next": "Alternate",
+          "qnext": "Qualifying alternate", "qualAlt": "Qualifying alternate"}
+PLAIN = {"challenger", "open", "tennis", "cup", "international", "masters", "championships", "trophy", "tournament", "atp",
+         "hardcourt", "clay", "grass", "carpet", "indoor", "outdoor", "qual"}
+
+
+def pkey(s):
+    """Player name key that copes with accents, umlauts written as 'ae', and any word order."""
+    s = (s or "").lower().replace("ß", "ss")
+    s = unicodedata.normalize("NFKD", s).encode("ascii", "ignore").decode()
+    s = re.sub(r"(?<=[a-z])(ae|oe|ue)", lambda m: m.group(1)[0], s)
+    return " ".join(sorted(re.findall(r"[a-z]+", s)))
+
+
+def place_words(s):
+    s = unicodedata.normalize("NFKD", s or "").encode("ascii", "ignore").decode().lower()
+    return {w for w in re.findall(r"[a-z]{3,}", s) if w not in PLAIN}
+
+
+def find_event(name, monday, events):
+    """The one ATP / Challenger event in the week of `monday` whose name or city matches `name` ('Olbia', 'Guangzhou 2')."""
+    want = place_words(re.sub(r"\(.*?\)|\s-\s.*$", "", name))
+    if not want:
+        return None
+    hits = [e for e in events if e["tour"] in ("atp", "ch") and e["start"] == monday.isoformat()
+            and want <= place_words(e["name"]) | place_words(e["place"])]
+    return hits[0] if len(hits) == 1 else None
+
+
+def best_weeks(cols, events, offsets, need):
+    """Which week each column is: the offset (in weeks from this Monday) under which most names match a real event.
+    The sites roll their weeks over at their own time, so this is checked every run instead of assumed."""
+    score = {}
+    for off in offsets:
+        score[off] = sum(1 for i, names in enumerate(cols) for n in names if find_event(n, FROM + timedelta(weeks=i + off), events))
+    best = max(score, key=score.get)
+    if score[best] < need or any(v * 2 > score[best] for k, v in score.items() if k != best):
+        raise RuntimeError(f"couldn't tell which week is which (matches per offset: {score})")
+    return best
+
+
+def lt_entries(events, men, need):
+    """live-tennis.eu: {(roster id, event key): qualifying?} for 72 men."""
+    body = get(LT_URL)
+    rows = re.findall(r"(?s)<tr[^>]*>\s*<td class=\"?rk\"?>.*?</tr>", body)
+    if len(rows) < 800:
+        raise RuntimeError(f"the player table has only {len(rows)} rows")
+    parsed = []
+    for r in rows:
+        name = re.search(r"<td class=\"?pn\"?>(.*?)</td>", r)
+        cells = re.split(r"<td", r.split("</td>", 5)[-1])[1:]  # the week columns after rank, flag, name, age and country
+        weeks = []
+        for c in cells:
+            attrs, _, inner = c.partition(">")
+            span = int((re.search(r"colspan=(\d+)", attrs) or [0, 1])[1])
+            parts = [p.strip() for p in re.split(r"[\n,]", html.unescape(re.sub(r"<[^>]+>", "\n", inner)))]
+            weeks += [[p for p in parts if p]] + [[] for _ in range(span - 1)]
+        parsed.append((html.unescape(re.sub(r"<[^>]+>", "", name.group(1))) if name else "", weeks))
+    unq = lambda n: n.replace("Qual.", "").strip()
+    cols = [[unq(n) for _, w in parsed if i < len(w) for n in w[i]] for i in range(max(len(w) for _, w in parsed))]
+    off = best_weeks(cols, events, (0, 1), need)
+    out = {}
+    for name, weeks in parsed:
+        rid = men.get(pkey(name))
+        for i, names in enumerate(weeks if rid else ()):
+            for n in names:
+                ev = find_event(unq(n), FROM + timedelta(weeks=i + off), events)
+                if ev:
+                    out[(rid, ev_key(ev))] = n.startswith("Qual.")
+    return out
+
+
+def tt_entries(events, men, need):
+    """Tick Tock Tennis: {(roster id, event key): list it is on} for 72 men. The page holds one block of lists per week."""
+    body = get(TT_URL)
+    upd = re.search(r"Data updated (\w{3} \d{1,2}, \d{4})", body)
+    if not upd:
+        raise RuntimeError("no 'Data updated' date on the page")
+    upd = datetime.strptime(upd.group(1), "%b %d, %Y").date()
+    if (T - upd).days > 6:
+        raise RuntimeError(f"the entry lists haven't been updated since {upd}")
+    blocks = re.split(r"atpData\.\w+\s*=\s*\{\s*\"gs\"", body)[1:]
+    if not blocks:
+        raise RuntimeError("no entry lists found on the page")
+    weeks = []
+    for b in blocks:
+        tours = []
+        for t in re.split(r"\{\s*name:\s*", b.split("};", 1)[0])[1:]:
+            tname = (re.match(r'"([^"]*)"', t) or [None, ""])[1]
+            lists = {}
+            for part, arr in re.findall(r"(\w+):\s*(\[\[.*?\]\]|\[\])", t):
+                for p in re.findall(r"\[([^\[\]]*)\]", arr):
+                    try:
+                        x = json.loads("[" + p + "]")  # [rank, name, country, tags...]
+                    except ValueError:
+                        print("Tick Tock Tennis: unreadable entry skipped:", p[:80])
+                        continue
+                    if len(x) >= 2 and "W" not in x[3:]:  # "W" marks a withdrawal
+                        lists[pkey(x[1])] = part
+            tours.append((tname, lists))
+        weeks.append(tours)
+    off = best_weeks([[n for n, _ in w] for w in weeks], events, (-1, 0, 1), need)
+    out = {}
+    for i, tours in enumerate(weeks):
+        for tname, lists in tours:
+            ev = find_event(tname, FROM + timedelta(weeks=i + off), events)
+            for k, part in lists.items() if ev else ():
+                if k in men:
+                    out[(men[k], ev_key(ev))] = part
+    return out
+
+
+def ev_key(e):
+    return (e.get("src"), e.get("name"), e.get("start"))
+
+
+def atp_entries(events):
+    """72 men entered in ATP / Challenger events, shown only when both sites list them for the same event."""
+    men = {pkey(n): rid for rid, (n, t) in ROSTER.items() if t == "atp"}
+    soon = sum(1 for e in events if e["tour"] in ("atp", "ch") and FROM.isoformat() <= e["start"] <= (FROM + timedelta(weeks=4)).isoformat())
+    if not soon:
+        return {}  # off-season: no ATP or Challenger events in the next few weeks
+    need = min(15, soon)  # names that must match the calendar before the week columns are trusted
+    lt, tt = lt_entries(events, men, need), tt_entries(events, men, need)
+    found = {}
+    for (rid, k), qual in lt.items():
+        part = tt.get((rid, k))
+        if part is None:
+            print("ATP entry only on one site, left out:", rid, k[1])
+            continue
+        how = TT_HOW.get(part, "Entered")
+        if qual != how.startswith("Qualifying"):
+            how = "Entered"  # the sites disagree on main draw or qualifying
+        found.setdefault(k, []).append({"id": rid, "how": how})
+    for (rid, k) in tt.keys() - lt.keys():
+        print("ATP entry only on one site, left out:", rid, k[1])
+    return found
+
+
 # ---------------- ATP / Challenger: 72 players in a draw (data.json) ----------------
 def draw_entries(events):
     d = load("data.json", {})
@@ -329,8 +473,7 @@ def draw_entries(events):
                 and tw & (words(e["name"]) | words(e["place"]))]
         if len(hits) == 1 and in_window(hits[0]["start"], hits[0]["end"]):
             e72 = hits[0].setdefault("e72", [])
-            if all(x["id"] != rid for x in e72):
-                e72.append({"id": rid, "how": "In the draw"})
+            e72[:] = [x for x in e72 if x["id"] != rid] + [{"id": rid, "how": "In the draw"}]
 
 
 def main():
@@ -419,6 +562,16 @@ def main():
         except Exception as x:
             print("Tennis Europe entries failed:", x)
             errors["te-entries"] = {"at": NOW.isoformat(timespec="seconds"), "msg": str(x)[:200]}
+    atp_window = [e for e in events if e["tour"] in ("atp", "ch") and in_window(e["start"], e["end"])]
+    try:
+        byev = atp_entries(events)
+        for e in atp_window:
+            e["e72"] = byev.get(ev_key(e), [])
+    except Exception as x:
+        print("ATP / Challenger entries failed, keeping the previous ones:", x)
+        errors["atp-entries"] = {"at": NOW.isoformat(timespec="seconds"), "msg": str(x)[:200]}
+        for e in atp_window:
+            e["e72"] = [p for p in prev_e72.get(ev_key(e)) or [] if p["how"] != "In the draw"]
     draw_entries(events)
 
     for e in events:
