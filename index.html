@@ -1100,6 +1100,9 @@ const itfOf = id => ITF?.players?.[id] || null;
    Every pro gets an ITF box with their whole ITF career. For anyone who is or has been in the ATP/WTA top 100
    it is left out of their "Career titles" total (ex), so that number still matches their official tour titles. */
 const itfCareer = id => TITLES?.full?.includes(id) && TITLES.best?.[id] ? Object.values(TITLES.titles || {}).flat().filter(t => t.id === id) : null;
+// career-high ATP/WTA ranking: the official one from the ITF (itf_titles.py, weekly) and this week's live ranking,
+// whichever is better, so a new high shows straight away; the typed-in profile value only until the ITF one has loaded
+const careerHigh = x => { const b = TITLES?.best?.[x.id]; return bestOf(b ? b.rank : x.high, playerRank(x.id)); };
 const everTop100 = x => [x.high, playerRank(x.id), TITLES?.best?.[x.id]?.rank].some(r => r && r <= 100);
 const tierNum = k => k === "Futures" ? 0 : +(k.match(/\d+/) || [0])[0];  // W100 > W75 > … ; old $25K events sort by prize money
 function titlesOf(x){
@@ -1139,7 +1142,7 @@ function cardNums(x, rank){
   if (x.kind !== "junior") {
     const tl = titlesOf(x), itf = tl.find(t => t.k === "ITF titles");
     const last = hasTourTitle(x) ? [pad2(titleSum(tl)), "Titles"] : [pad2(itf ? itf.n : null), "ITF titles"];
-    return [[rank ? pad2(rank) : "—", "Ranking"], [pad2(bestOf(x.high, rank)), "Career high"], last];
+    return [[rank ? pad2(rank) : "—", "Ranking"], [pad2(careerHigh(x)), "Career high"], last];
   }
   const it = itfOf(x.id);
   return [[it?.rank ? pad2(it.rank) : "—", "ITF junior"], [rank ? rank : "—", byId[x.id].tour === "WTA" ? "WTA rank" : "ATP rank"], [x.born, "Born"]];
@@ -1162,7 +1165,7 @@ function renderPlayers(){
   document.querySelectorAll(".chip[data-f]").forEach(c => c.classList.toggle("on", c.dataset.f === pFilter));
 }
 function proBody(x, p, rank){
-  const best = bestOf(x.high, rank);
+  const best = careerHigh(x);
   const tl = titlesOf(x), titles = titleSum(tl);
   const reach = Object.values(x.social).reduce((s, v) => s + v, 0);
   const tblock = t => {
