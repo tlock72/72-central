@@ -860,16 +860,16 @@ function renderRankings(){
   const kindOf = p => { const x = profById[p.id]; const jr = x?.kind === "junior"; return p.tour === "ATP" ? (jr ? "boys" : "men") : (jr ? "girls" : "women"); };
   const cnt = k => ROSTER.filter(p => kindOf(p) === k).length;
   const tt = k => PROFILES.reduce((s, x) => s + x.titles.filter(t => t.k === k).reduce((a, t) => a + t.n, 0), 0);
-  // ITF World Tennis Tour (M/W15 to M/W100) singles titles this year, one line per title in titles.json
-  // (update.py saves every final won, with its date, so repeat wins at the same venue all count)
-  const byP = {}; let futN = 0;
-  for (const t of TITLES?.[year] || []) if (byId[t.id]) { futN++; byP[t.id] = (byP[t.id] || 0) + 1; }
+  // ITF World Tennis Tour (M/W15 to M/W100) singles titles this year, read from the ITF's own results
+  // by itf_titles.py into titles.json (one line per title, so repeat wins at the same venue all count)
+  const byP = {}; let futN = 0; const titlesOk = !!TITLES?.checked;
+  for (const t of TITLES?.titles?.[year] || []) if (byId[t.id]) { futN++; byP[t.id] = (byP[t.id] || 0) + 1; }
   const futWho = Object.entries(byP).sort((a, b) => b[1] - a[1]).map(([id, n]) => `${esc(byId[id].last)} ${n}`).join(" · ");
   $("#rkFacts").innerHTML = `
     <div class="fact"><span class="k">Players we represent</span><b>${ROSTER.length}</b><span class="s">across the ATP, WTA and junior tours</span></div>
     <div class="fact"><span class="k">Roster breakdown</span><b class="sm">${cnt("men")} men · ${cnt("women")} women</b><span class="s">${cnt("boys")} boys · ${cnt("girls")} girls</span></div>
     <div class="fact"><span class="k">Career singles titles</span><b class="sm">${tt("ATP titles")} ATP · ${tt("WTA titles")} WTA</b><span class="s">won by players on the current roster</span></div>
-    <div class="fact"><span class="k">ITF World Tennis Tour singles titles ${year}</span><b>${TITLES ? futN : "–"}</b><span class="s">${TITLES ? (futWho || "None yet this year") : "Not loaded yet"}</span></div>`;
+    <div class="fact"><span class="k">ITF World Tennis Tour singles titles ${year}</span><b>${titlesOk ? futN : "–"}</b><span class="s">${titlesOk ? (futWho || "None yet this year") : "Checking with the ITF"}</span></div>`;
   const asOf = r.asOf ? new Date(r.asOf + "T12:00:00Z").toLocaleDateString("en-GB", { day:"numeric", month:"long", year:"numeric", timeZone:"UTC" }) : "";
   $("#rankSub").textContent = rankTab === "itf" ? "ITF World Tennis Junior Rankings for the 72 juniors." : `Official ATP and WTA singles rankings for the 72 roster${asOf ? ", as of " + asOf : ""}.`;
   $("#rankSrc").textContent = `Source: ${r.source || "ATP & WTA"}. Updated every Monday.`;

@@ -25,6 +25,7 @@ STEP_NAMES = {
     "itfrank": "ITF junior rankings",
     "scouting": "Scouting HQ",
     "itfm": "ITF junior matches",
+    "titles": "ITF World Tennis Tour titles",
     "te": "Tennis Europe matches",
     "save": "saving the new data (this usually sorts itself out on the next run)",
 }
@@ -75,6 +76,13 @@ def gaps():
                    "Their old ranking is still shown.")
     if it.get("checked") and it["checked"] < ago(8):
         out.append(f"ITF junior rankings haven't been updated since {it['checked']}.")
+    # 4b) ITF World Tennis Tour titles: players the daily check couldn't read, or the check hasn't run
+    ti = load("titles.json")
+    if ti.get("pending"):
+        out.append(f"ITF World Tennis Tour titles could not be checked on {ti.get('tried', '')[:10]} for: {', '.join(ti['pending'])} "
+                   "(the ITF site blocked or failed the check, or a final couldn't be read). Their saved titles are still counted.")
+    if ti.get("checked") and ti["checked"] < ago(3):
+        out.append(f"ITF World Tennis Tour titles haven't been checked since {ti['checked']}.")
     # 5) ATP/WTA rankings
     d = load("data.json")
     if d.get("quotaHit") and ukday(d["quotaHit"]) == TODAY:
