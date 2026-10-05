@@ -1,14 +1,18 @@
-name: Probe calendar sources (temporary)
+name: Test tour schedule on branch (temporary)
 on:
   push:
     branches: [claude/72-rankings-mobile-ui-g5ouo8]
-    paths: [scripts/probe_tmp.py]
+    paths: [scripts/schedule.py]
+permissions:
+  contents: write
 jobs:
-  probe:
+  test:
     runs-on: ubuntu-latest
-    timeout-minutes: 10
+    timeout-minutes: 45
     steps:
       - uses: actions/checkout@v6
-      - run: pip install -q beautifulsoup4 && python3 scripts/probe_tmp.py
-        env:
-          LIVETENNIS_API_KEY: ${{ secrets.LIVETENNIS_API_KEY }}
+      - run: pip install -q beautifulsoup4 && python3 scripts/schedule.py
+      - run: |
+          git config user.name "72 Hub updater"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add schedule.json && git commit -q -m "Test tour schedule output" && git push
