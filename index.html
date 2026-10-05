@@ -281,6 +281,9 @@ blockquote.q cite{display:block;margin-top:12px;font-style:normal;font-family:va
 .sq-lbl{flex:0 0 76px;font-size:11px;letter-spacing:.14em;text-transform:uppercase;color:var(--gold)}
 .sq-line .chips{gap:6px}
 .sq-line .chip{padding:7px 13px;font-size:11px}
+.rk-trend{display:flex;justify-content:space-between;align-items:center;gap:10px;padding:10px 22px;border-bottom:1px solid var(--line-2);font-size:12px;color:var(--gold);text-decoration:none;background:var(--gold-dim)}
+.rk-trend i{font-style:normal;transition:transform .2s}
+.rk-trend:hover i{transform:translateX(4px)}
 .sq-mode{display:flex;border:1px solid var(--line);border-radius:999px;padding:3px}
 .sq-mode button{font-size:11px;letter-spacing:.06em;padding:5px 12px;border-radius:999px;color:var(--muted)}
 .sq-mode button.on{background:rgba(255,255,255,.1);color:var(--white)}
@@ -628,8 +631,8 @@ html.name-only .gate-box h2,html.name-only .gate-digits{display:none}
     <div class="stats" id="stats"></div>
     <div class="rk-facts" id="rkFacts"></div>
     <div class="tours">
-      <div class="tour"><div class="tour-h"><h3><span>ATP</span> Singles</h3><span class="k" id="atpN"></span></div><div id="atpList"></div></div>
-      <div class="tour"><div class="tour-h"><h3><span>WTA</span> Singles</h3><span class="k" id="wtaN"></span></div><div id="wtaList"></div></div>
+      <div class="tour"><div class="tour-h"><h3><span>ATP</span> Singles</h3><span class="k" id="atpN"></span></div><a class="rk-trend" href="#scouting" data-trend="atp">1 wk · 3 mo · 12 mo trends for 72 ATP players <i>→</i></a><div id="atpList"></div></div>
+      <div class="tour"><div class="tour-h"><h3><span>WTA</span> Singles</h3><span class="k" id="wtaN"></span></div><a class="rk-trend" href="#scouting" data-trend="wta">1 wk · 3 mo · 12 mo trends for 72 WTA players <i>→</i></a><div id="wtaList"></div></div>
     </div>
     <p class="src" id="rankSrc"></p>
     </div>
@@ -667,6 +670,10 @@ html.name-only .gate-box h2,html.name-only .gate-digits{display:none}
     <div class="stale" id="staleScout" hidden></div>
     <div class="stats" id="sqStats"></div>
     <div class="sq-filters">
+      <div class="sq-line">
+        <span class="sq-lbl">Players</span>
+        <div class="chips" role="group" aria-label="Players"><button class="chip sqo" data-o="all">Everyone</button><button class="chip sqo" data-o="72">72 only</button></div>
+      </div>
       <div class="sq-line">
         <span class="sq-lbl">Age</span>
         <div class="sq-mode" role="group" aria-label="Filter age by"><button class="sqm" data-m="age">Age group</button><button class="sqm" data-m="year">Birth year</button></div>
@@ -1405,7 +1412,7 @@ function addItfMatches(st, im, src = "itf"){
 let SCOUT = null;
 // by: "age" (age groups) or "year" (one birth year); ag: "all", "21"…"16" or "custom"; age: under-age limit, 0 = all ages;
 // yr: birth year, 0 = all; rk: "all", "100"…"1000" or "custom"; top: ranking limit, 0 = no limit
-const SQ = { t: "atp", by: "age", ag: "21", age: 21, yr: 0, rk: "all", top: 0, q: "", c: "", sort: "rank", asc: true, all: false };
+const SQ = { t: "atp", by: "age", ag: "21", age: 21, yr: 0, rk: "all", top: 0, q: "", c: "", sort: "rank", asc: true, all: false, o72: false };
 const SQ_AGES = [["all", "All"], ["22", "U22"], ["21", "U21"], ["20", "U20"], ["19", "U19"], ["18", "U18"], ["17", "U17"], ["16", "U16"], ["custom", "Custom"]];
 const SQ_RANKS = [["all", "All"], ["100", "Top 100"], ["300", "Top 300"], ["500", "Top 500"], ["1000", "Top 1000"], ["custom", "Custom"]];
 const sqNum = el => Math.max(0, parseInt(el.value, 10) || 0);
@@ -1430,7 +1437,7 @@ function sqRows(){
   return T.players.map(p => ({ rank:p[0], name:p[1], cty:p[2], born:p[3], w:p[4], m3:p[5], m12:p[6], url:p[7],
       is72: SQ72.has(SQ.t + ":" + sqKey(p[1])) }))
     .map(p => { if (p.is72) { const r = ROSTER.find(x => x.tour.toLowerCase() === SQ.t && sqKey(x.first + x.last) === sqKey(p.name)); if (r) p.name = `${r.first} ${r.last}`; } return p; })
-    .filter(p => (SQ.by === "year" ? !SQ.yr || p.born === SQ.yr : !SQ.age || p.born >= year - SQ.age) && (!SQ.top || p.rank <= SQ.top) && (!q || sqKey(p.name).includes(q)) && (!SQ.c || p.cty === SQ.c));
+    .filter(p => (SQ.by === "year" ? !SQ.yr || p.born === SQ.yr : !SQ.age || p.born >= year - SQ.age) && (!SQ.top || p.rank <= SQ.top) && (!q || sqKey(p.name).includes(q)) && (!SQ.c || p.cty === SQ.c) && (!SQ.o72 || p.is72));
 }
 function sqSort(rows){
   const mv = (p, k) => { const d = sqMove(p.rank, p[k]); return d == null ? 0.5 : d; }; // a new entry sits just after the climbers
@@ -1443,6 +1450,7 @@ function renderScouting(){
   if (!T) { $("#sqTbl").innerHTML = `<div class="sq-empty">${SCOUT ? "No ranking data for this tour yet." : "Loading the scouting list…"}</div>`; $("#sqStats").innerHTML = ""; return; }
   const year = (SCOUT.minYear || new Date().getFullYear() - 21) + 21;
   document.querySelectorAll(".sqm").forEach(b => b.classList.toggle("on", b.dataset.m === SQ.by));
+  document.querySelectorAll(".sqo").forEach(b => b.classList.toggle("on", (b.dataset.o === "72") === SQ.o72));
   // age groups (born in or after a year), or birth years from the youngest ranked player to the oldest
   const years = [...new Set(T.players.map(p => p[3]).filter(Boolean))].sort((a, b) => b - a);
   if (SQ.yr && !years.includes(SQ.yr)) SQ.yr = 0;  // that birth year has nobody on this tour
@@ -1484,10 +1492,19 @@ function renderScouting(){
   $("#sqSrc").innerHTML = `Official ${SQ.t.toUpperCase()} singles ranking of ${sqFmt(T.week)}, compared with the rankings of ${sqFmt(c.w)} (1 wk), ${sqFmt(c.m3)} (3 mo) and ${sqFmt(c.m12)} (12 mo). <b>NEW</b> means the player was not ranked then${rows.some(p => p.w === -1 || p.m3 === -1 || p.m12 === -1) ? "; <b>—</b> means not tracked then (moves for older ATP players fill in as the weekly history builds up from 5 Oct 2026)" : ""}. Source: ${SQ.t === "atp" ? "ATP via Tennis Abstract" : "WTA"}. Updates itself every week.`;
 }
 document.addEventListener("click", e => {
-  const t = e.target.closest(".sqt, .sqm, .sqa, .sqy, .sqr, .sq-row.h button, #sqMore");
+  // "72 trends" links on 72 Rankings: open this page on that tour, 72 players only, all ages and rankings
+  const tr = e.target.closest("[data-trend]");
+  if (tr) { Object.assign(SQ, { t: tr.dataset.trend, o72: true, by: "age", ag: "all", age: 0, yr: 0, rk: "all", top: 0, q: "", c: "", all: true });
+    $("#sqQ").value = ""; document.querySelectorAll(".sqt").forEach(b => b.classList.toggle("on", b.dataset.t === SQ.t)); renderScouting(); return; }
+  const t = e.target.closest(".sqt, .sqm, .sqa, .sqy, .sqr, .sqo, .sq-row.h button, #sqMore");
   if (!t) return;
   if (t.classList.contains("sqt")) { SQ.t = t.dataset.t; SQ.all = false; document.querySelectorAll(".sqt").forEach(b => b.classList.toggle("on", b === t)); }
   else if (t.classList.contains("sqm")) { SQ.by = t.dataset.m; SQ.all = false; }
+  else if (t.classList.contains("sqo")) {
+    SQ.o72 = t.dataset.o === "72"; SQ.all = SQ.o72;
+    // 72 only starts from all ages and all rankings, so every 72 player shows; Everyone goes back to the usual U21 view
+    Object.assign(SQ, SQ.o72 ? { by: "age", ag: "all", age: 0, yr: 0, rk: "all", top: 0 } : { by: "age", ag: "21", age: 21, yr: 0 });
+  }
   else if (t.classList.contains("sqy")) { SQ.yr = t.dataset.y === "all" ? 0 : +t.dataset.y; SQ.all = false; }
   else if (t.classList.contains("sqa")) {
     SQ.ag = t.dataset.a; SQ.all = false;

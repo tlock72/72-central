@@ -21,7 +21,7 @@ It is hosted on GitHub Pages at tlock72.github.io/72-central and protected by a 
 | `itf.json` | ITF junior rankings, with players that couldn't be read listed under `pending`. |
 | `itfm.json` | ITF junior matches. |
 | `te.json` | Tennis Europe U14/U16 matches. |
-| `scouting.json`, `scouting_history.json` | Age Filtered World Rankings: every ranked ATP/WTA player with birth year and 1-week, 3-month and 12-month moves (the page filters by age group, birth year and ranking). A move of `-1` means "not tracked then": ATP history only kept young players before 5 Oct 2026, so older ATP players' moves fill in over the following year. |
+| `scouting.json`, `scouting_history.json` | Age Filtered World Rankings: every ranked ATP/WTA player with birth year and 1-week, 3-month and 12-month moves (the page filters by age group, birth year, ranking and "72 only"; 72 Rankings links to the 72-only view). A move of `-1` means "not tracked then": ATP history only kept young players before 5 Oct 2026, so older ATP players' moves fill in over the following year. |
 | `*.webp` | Player photos, named by roster id. |
 | `FILL_GAPS.md`, `ITF_JUNIORS.md` | Manual fallback instructions for Claude, used only when asked. |
 
