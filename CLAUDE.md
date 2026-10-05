@@ -17,6 +17,7 @@ It is hosted on GitHub Pages at tlock72.github.io/72-central and protected by a 
 | `index.html` | The whole site in one file (home portal, Live Scores, 72 Rankings, Age Filtered World Rankings, players). It has its own `ROSTER` list (around line 551), and the passcode gate is near the end. |
 | `data.json` | Matches and ATP/WTA rankings, written by `update.py`. Key fields: `matches[]`, `rankings{rid}`, `rankingsTourWeek{atp,wta}`, `rankingsWeek`, `rankingsNext` (holding area), `rankingsTry`, `quotaHit`, `lastChecked`. |
 | `players.json` | Roster id → Live Tennis API id, written by `update.py`. |
+| `titles.json` | ITF World Tennis Tour titles by year, one line per title with its date. `update.py` adds each final a roster player wins; titles the feed misses can be added by hand. The home "ITF titles" count reads this. |
 | `itf.json` | ITF junior rankings, with players that couldn't be read listed under `pending`. |
 | `itfm.json` | ITF junior matches. |
 | `te.json` | Tennis Europe U14/U16 matches. |
