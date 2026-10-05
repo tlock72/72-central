@@ -20,3 +20,4 @@ for pg in (1, 2):
     txt = re.sub(r"\s+", " ", re.sub(r"<(?!time)[^>]+>", " ", b))
     print(txt[:2500])
     print("HREFS", re.findall(r'href="(/sport/tournament\?id=[^"]+)"', b)[:5])
+# rerun
