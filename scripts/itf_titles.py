@@ -121,8 +121,10 @@ def titles_of(rid, pid, year=None):
 def best_of(rid, pid):
     """Career-high ATP/WTA singles ranking from the ITF player overview (None if never ranked)."""
     ov = get("/PlayerApi/GetPlayerOverview", circuitCode="MT" if ROSTER[rid][1] == "atp" else "WT", matchTypeCode="S", playerId=pid)
+    # only "ATP Singles Ranking" / "WTA Singles Ranking": the overview also lists the ITF's own
+    # "World Tennis Singles Ranking" (and junior rankings), which are a different scale
     ranks = [r.get("rank") for r in ov.get("careerHighRankings") or []
-             if "singles" in (r.get("name") or "").lower() and "junior" not in (r.get("name") or "").lower() and r.get("rank")]
+             if re.match(r"(ATP|WTA) Singles", r.get("name") or "") and r.get("rank")]
     return min(ranks) if ranks else None
 
 
@@ -140,9 +142,11 @@ def main():
         # load each player's career over the next runs
         data = {k: v for k, v in data.items() if k in ("ids", "notFound", "titles", "checked")}
         data.update(v=VERSION, full=[], best={})
+    if data.get("bestV") != 2:  # career highs read before the ATP/WTA-only fix: read them all again
+        data.update(best={}, bestV=2)
     full, best = data.setdefault("full", []), data.setdefault("best", {})
     daily = data.get("checked") != today or (data.get("pending") and not recent)
-    need_full = [r for r in ROSTER if r not in full]
+    need_full = [r for r in ROSTER if r not in full or r not in best]  # career or career high not loaded yet
     if data.get("todo"):
         order, mode = data["todo"], data.get("todoMode", "daily")  # finish the players the last run didn't reach
     elif daily and uk.hour >= 7:
