@@ -132,6 +132,14 @@ section.block{margin-bottom:38px}
 .rk .who .ct{font-size:11px;color:var(--muted);letter-spacing:.12em;margin-top:3px}
 .rk .pts{text-align:right;font-family:var(--display);font-size:16px;color:var(--text);font-variant-numeric:tabular-nums}
 .rk .pts small{display:block;font-family:var(--body);font-size:10px;color:var(--muted-2);letter-spacing:.12em}
+/* 72 Rankings rows: rank, player, points, then 1 wk / 3 mo / 12 mo moves (from scouting.json) */
+.rk.t6{grid-template-columns:64px minmax(0,1fr) auto repeat(3,54px)}
+.rk.h{padding-block:10px;background:rgba(255,255,255,.02)}
+.rk.h span{font-family:var(--display);text-transform:uppercase;letter-spacing:.14em;font-size:10px;color:var(--muted);text-align:right;white-space:nowrap}
+.rk.h span:nth-child(-n+2){text-align:left}
+.rk .tr{text-align:right;font-family:var(--display);font-size:14px;font-variant-numeric:tabular-nums;white-space:nowrap;color:var(--muted-2)}
+.rk .tr.up{color:var(--up)} .rk .tr.down{color:var(--down)} .rk .tr.new{color:var(--gold);font-size:11px;letter-spacing:.1em}
+.rk .ct .ptm{display:none}
 .mv{justify-self:end;font-family:var(--display);font-size:13px}
 .mv.up{color:var(--up)} .mv.down{color:var(--down)} .mv.same{color:var(--muted-2)}
 .src{margin:18px 0 0;font-size:12px;color:var(--muted-2)}
@@ -281,9 +289,6 @@ blockquote.q cite{display:block;margin-top:12px;font-style:normal;font-family:va
 .sq-lbl{flex:0 0 76px;font-size:11px;letter-spacing:.14em;text-transform:uppercase;color:var(--gold)}
 .sq-line .chips{gap:6px}
 .sq-line .chip{padding:7px 13px;font-size:11px}
-.rk-trend{display:flex;justify-content:space-between;align-items:center;gap:10px;padding:10px 22px;border-bottom:1px solid var(--line-2);font-size:12px;color:var(--gold);text-decoration:none;background:var(--gold-dim)}
-.rk-trend i{font-style:normal;transition:transform .2s}
-.rk-trend:hover i{transform:translateX(4px)}
 .sq-mode{display:flex;border:1px solid var(--line);border-radius:999px;padding:3px}
 .sq-mode button{font-size:11px;letter-spacing:.06em;padding:5px 12px;border-radius:999px;color:var(--muted)}
 .sq-mode button.on{background:rgba(255,255,255,.1);color:var(--white)}
@@ -338,6 +343,27 @@ select.sq-in option{background:var(--navy-2);color:var(--white)}
 .rk-facts .s{display:block;font-size:11px;color:var(--muted-2);margin-top:3px;line-height:1.4}
 .rk-sep{padding:10px 22px;font-size:10px;letter-spacing:.16em;text-transform:uppercase;color:var(--muted-2);border-bottom:1px solid var(--line-2);background:rgba(255,255,255,.02)}
 @media (max-width:860px){.rk-facts{grid-template-columns:repeat(2,minmax(0,1fr))}}
+@media (max-width:640px){
+  /* small tiles on phones (72 Rankings, ITF juniors, Age Filtered World Rankings) */
+  .stats{gap:6px;margin-bottom:14px}
+  .stat{padding:8px 10px;border-radius:10px}
+  .stat .k{font-size:9px;letter-spacing:.08em}
+  .stat .v{font-size:18px;margin-top:3px}
+  .stat .v small{font-size:10px;margin-left:4px}
+  .stat .v.nm{font-size:13px}
+  .rk-facts{gap:6px;margin:-6px 0 14px}
+  .rk-facts .fact{padding:7px 10px;border-radius:10px}
+  .rk-facts .k{font-size:8px;letter-spacing:.08em}
+  .rk-facts b{font-size:15px;margin-top:2px}
+  .rk-facts b.sm{font-size:12px}
+  .rk-facts .s{font-size:9px;margin-top:1px}
+  .rk.t6{grid-template-columns:38px minmax(0,1fr) repeat(3,38px);gap:6px;padding:10px 12px}
+  .rk.t6 .no{font-size:19px}.rk.t6 .no .hash{font-size:11px}.rk.t6 .who .nm{font-size:13px}
+  .rk.t6 .pts{display:none}
+  .rk.t6 .ct .ptm{display:inline}
+  .rk .tr{font-size:12px}
+  .rk.h span{font-size:9px;letter-spacing:.06em}
+}
 /* Home portal */
 body.on-home header nav{display:none}
 .hp-sep{display:inline-block;width:1px;height:78px;background:var(--line);margin:0 22px;vertical-align:top}
@@ -631,8 +657,8 @@ html.name-only .gate-box h2,html.name-only .gate-digits{display:none}
     <div class="stats" id="stats"></div>
     <div class="rk-facts" id="rkFacts"></div>
     <div class="tours">
-      <div class="tour"><div class="tour-h"><h3><span>ATP</span> Singles</h3><span class="k" id="atpN"></span></div><a class="rk-trend" href="#scouting" data-trend="atp">1 wk · 3 mo · 12 mo trends for 72 ATP players <i>→</i></a><div id="atpList"></div></div>
-      <div class="tour"><div class="tour-h"><h3><span>WTA</span> Singles</h3><span class="k" id="wtaN"></span></div><a class="rk-trend" href="#scouting" data-trend="wta">1 wk · 3 mo · 12 mo trends for 72 WTA players <i>→</i></a><div id="wtaList"></div></div>
+      <div class="tour"><div class="tour-h"><h3><span>ATP</span> Singles</h3><span class="k" id="atpN"></span></div><div id="atpList"></div></div>
+      <div class="tour"><div class="tour-h"><h3><span>WTA</span> Singles</h3><span class="k" id="wtaN"></span></div><div id="wtaList"></div></div>
     </div>
     <p class="src" id="rankSrc"></p>
     </div>
@@ -981,6 +1007,7 @@ function renderItf(){
   const wk = ITF?.rankDate ? `, week of ${ITF.rankDate}` : "";
   $("#itfSrc").textContent = ITF ? `Source: ITF World Tennis Junior Rankings${wk}. Updated every Monday. Only players with a current ITF junior ranking are listed.` : "Loading ITF junior rankings…";
 }
+function rkKey(s){ return String(s || "").normalize("NFD").toLowerCase().replace(/[^a-z]/g, "").replace(/ae/g, "a").replace(/oe/g, "o").replace(/ue/g, "u"); }
 function renderRankings(){
   $("#rk-tour").hidden = rankTab !== "tour"; $("#rk-itf").hidden = rankTab !== "itf";
   document.querySelectorAll(".chip.rt").forEach(c => c.classList.toggle("on", c.dataset.rt === rankTab));
@@ -992,15 +1019,26 @@ function renderRankings(){
   const rows = tour => ROSTER.filter(p => p.tour === tour).map(p => ({ p, d: r.players[p.id] || {} })).filter(x => x.d.rank).sort((a,b) => (a.d.rank ?? 1e9) - (b.d.rank ?? 1e9));
   // players who have held an ATP/WTA ranking (a career high is on file) but are not ranked now go at the bottom
   const former = tour => ROSTER.filter(p => p.tour === tour && !(r.players[p.id] || {}).rank && profById[p.id]?.high).map(p => ({ p, d: { note: `Not currently ranked · career high #${profById[p.id].high}` } }));
-  const html = list => list.map(({p,d}) => `<div class="rk">
+  // 1 wk / 3 mo / 12 mo moves from the official weekly rankings in scouting.json (same list as Age Filtered World Rankings)
+  const trendOf = p => { const T = SCOUT && SCOUT[p.tour.toLowerCase()]; if (!T?.players) return null;
+    const k = rkKey(p.first + p.last); let x = T.players.find(q => rkKey(q[1]) === k);
+    if (!x) { const h = T.players.filter(q => { const n = rkKey(q[1]); return n.startsWith(k) || k.startsWith(n); }); if (h.length === 1) x = h[0]; } // e.g. "Leyre Romero Gormaz"
+    return x ? { rank: x[0], w: x[4], m3: x[5], m12: x[6] } : null; };
+  const trCell = (t, k) => { if (!t) return `<div class="tr"></div>`; const prev = t[k];
+    if (prev === -1) return `<div class="tr" title="Not tracked then">—</div>`;
+    if (prev == null) return `<div class="tr new" title="Not ranked then">NEW</div>`;
+    const m = prev - t.rank; return `<div class="tr ${m > 0 ? "up" : m < 0 ? "down" : ""}" title="Was ${prev}">${m > 0 ? "▲" + m : m < 0 ? "▼" + -m : "–"}</div>`; };
+  const head = `<div class="rk t6 h"><span>Rank</span><span>Player</span><span class="pts">Points</span><span>1 wk</span><span>3 mo</span><span>12 mo</span></div>`;
+  const html = list => list.map(({p,d}) => { const t = d.rank ? trendOf(p) : null; const pts = d.points ? Number(d.points).toLocaleString("en-GB") : "";
+    return `<div class="rk t6">
       <div class="no ${d.rank ? "" : "na"}">${d.rank ? `<span class="hash">#</span>${d.rank}` : "—"}</div>
-      <div class="who"><div class="nm">${esc(p.first)} ${esc(p.last)}</div><div class="ct">${esc([p.country, d.rank ? "" : (d.note || "Not ranked")].filter(Boolean).join(" · "))}</div></div>
-      <div class="pts">${d.points ? Number(d.points).toLocaleString("en-GB") : ""}<small>${d.points ? "PTS" : ""}</small></div>
-      ${mv(d.move)}</div>`).join("");
+      <div class="who"><div class="nm">${esc(p.first)} ${esc(p.last)}</div><div class="ct">${esc([p.country, d.rank ? "" : (d.note || "Not ranked")].filter(Boolean).join(" · "))}${pts ? `<span class="ptm"> · ${pts} pts</span>` : ""}</div></div>
+      <div class="pts">${pts}<small>${pts ? "PTS" : ""}</small></div>
+      ${t ? trCell(t, "w") + trCell(t, "m3") + trCell(t, "m12") : d.rank ? `<div class="tr">${mv(d.move)}</div><div class="tr"></div><div class="tr"></div>` : `<div class="tr"></div><div class="tr"></div><div class="tr"></div>`}</div>`; }).join("");
   const atp = rows("ATP"), wta = rows("WTA");
   const fmr = list => list.length ? `<div class="rk-sep">Previously ranked</div>` + html(list) : "";
   const fA = former("ATP"), fW = former("WTA");
-  $("#atpList").innerHTML = html(atp) + fmr(fA); $("#wtaList").innerHTML = html(wta) + fmr(fW);
+  $("#atpList").innerHTML = head + html(atp) + fmr(fA); $("#wtaList").innerHTML = head + html(wta) + fmr(fW);
   $("#atpN").textContent = atp.length + " ranked" + (fA.length ? ` · ${fA.length} previously` : ""); $("#wtaN").textContent = wta.length + " ranked" + (fW.length ? ` · ${fW.length} previously` : "");
   const ranked = [...atp, ...wta].filter(x => x.d.rank);
   const bA = atp.find(x => x.d.rank), bW = wta.find(x => x.d.rank);
@@ -1026,7 +1064,8 @@ function renderRankings(){
     <div class="fact"><span class="k">ITF World Tennis Tour singles titles ${year}</span><b>${titlesOk ? futN : "–"}</b><span class="s">${titlesOk ? (futWho || "None yet this year") : "Checking with the ITF"}</span></div>`;
   const asOf = r.asOf ? new Date(r.asOf + "T12:00:00Z").toLocaleDateString("en-GB", { day:"numeric", month:"long", year:"numeric", timeZone:"UTC" }) : "";
   $("#rankSub").textContent = rankTab === "itf" ? "ITF World Tennis Junior Rankings for the 72 juniors." : `Official ATP and WTA singles rankings for the 72 roster${asOf ? ", as of " + asOf : ""}.`;
-  $("#rankSrc").textContent = `Source: ${r.source || "ATP & WTA"}. Updated every Monday.`;
+  const cmp = SCOUT?.atp?.cmp; // moves compare the official ranking with 1 week, 13 weeks and 52 weeks earlier
+  $("#rankSrc").textContent = `Source: ${r.source || "ATP & WTA"}. Updated every Monday.` + (cmp ? ` 1 wk, 3 mo and 12 mo show how far each player has moved in the official ranking since ${sqFmt(cmp.w)}, ${sqFmt(cmp.m3)} and ${sqFmt(cmp.m12)}.` : "");
 }
 
 /* ---------- 72 players (profiles from the 2026 roster deck) ---------- */
@@ -1193,7 +1232,7 @@ const DOB = {
   schwaerzler:"2006-01-27", kym:"2003-02-12", kuzuhara:"2004-04-01", ivanov:"2008-10-30", bonding:"2007-06-18", chavez:"2008-02-01",
   qi:"2010-05-04", svitolina:"1994-09-12", bejlek:"2006-01-31", starodubtseva:"2000-02-17", kasatkina:"1997-05-07", sawangkaew:"2002-07-10",
   jones:"2000-09-19", romero:"2002-04-06", ristic:"2006-05-17", rajeshwaran:"2009-06-12", dotsenko:"2011-10-07", newman:"2010-02-11",
-  lin:"2010-06-10", dudeney:"2003-05-28", jabeur:"1994-08-28", pinera:"2010-09-28", kanabar:"2011-11-30", mmakarova:"2010-01-14",
+  lin:"2010-06-10", mackenzie:"2008-01-15", dudeney:"2003-05-28", jabeur:"1994-08-28", pinera:"2010-09-28", kanabar:"2011-11-30", mmakarova:"2010-01-14",
 };
 const ageOn = iso => { const d = new Date(iso + "T12:00:00Z"), n = new Date(ukDate() + "T12:00:00Z");
   let a = n.getUTCFullYear() - d.getUTCFullYear();
@@ -1489,13 +1528,9 @@ function renderScouting(){
   $("#sqMore").hidden = SQ.all || rows.length <= 100;
   $("#sqMore").textContent = `Show all ${rows.length}`;
   const c = T.cmp || {};
-  $("#sqSrc").innerHTML = `Official ${SQ.t.toUpperCase()} singles ranking of ${sqFmt(T.week)}, compared with the rankings of ${sqFmt(c.w)} (1 wk), ${sqFmt(c.m3)} (3 mo) and ${sqFmt(c.m12)} (12 mo). <b>NEW</b> means the player was not ranked then${rows.some(p => p.w === -1 || p.m3 === -1 || p.m12 === -1) ? "; <b>—</b> means not tracked then (moves for older ATP players fill in as the weekly history builds up from 5 Oct 2026)" : ""}. Source: ${SQ.t === "atp" ? "ATP via Tennis Abstract" : "WTA"}. Updates itself every week.`;
+  $("#sqSrc").innerHTML = `Official ${SQ.t.toUpperCase()} singles ranking of ${sqFmt(T.week)}, compared with the rankings of ${sqFmt(c.w)} (1 wk), ${sqFmt(c.m3)} (3 mo) and ${sqFmt(c.m12)} (12 mo). <b>NEW</b> means the player was not ranked then${rows.some(p => p.w === -1 || p.m3 === -1 || p.m12 === -1) ? "; <b>—</b> means not tracked then (older ATP weeks are being filled in for every player, a few weeks every half hour)" : ""}. Source: ${SQ.t === "atp" ? "ATP via Tennis Abstract" : "WTA"}. Updates itself every week.`;
 }
 document.addEventListener("click", e => {
-  // "72 trends" links on 72 Rankings: open this page on that tour, 72 players only, all ages and rankings
-  const tr = e.target.closest("[data-trend]");
-  if (tr) { Object.assign(SQ, { t: tr.dataset.trend, o72: true, by: "age", ag: "all", age: 0, yr: 0, rk: "all", top: 0, q: "", c: "", all: true });
-    $("#sqQ").value = ""; document.querySelectorAll(".sqt").forEach(b => b.classList.toggle("on", b.dataset.t === SQ.t)); renderScouting(); return; }
   const t = e.target.closest(".sqt, .sqm, .sqa, .sqy, .sqr, .sqo, .sq-row.h button, #sqMore");
   if (!t) return;
   if (t.classList.contains("sqt")) { SQ.t = t.dataset.t; SQ.all = false; document.querySelectorAll(".sqt").forEach(b => b.classList.toggle("on", b === t)); }
@@ -1528,7 +1563,7 @@ $("#sqAgeIn").addEventListener("input", e => { SQ.age = sqNum(e.target); SQ.all 
 $("#sqC").addEventListener("change", e => { SQ.c = e.target.value; renderScouting(); });
 async function loadScouting(){
   try { const r = await fetch("scouting.json?t=" + Date.now(), { cache: "no-store" }); if (r.ok) SCOUT = await r.json(); else if (!SCOUT) SCOUT = {}; } catch (e) { if (!SCOUT) SCOUT = {}; }
-  renderScouting(); renderHome();
+  renderScouting(); renderRankings(); renderHome();
 }
 /* ---------- Home portal ---------- */
 // home greeting: "Welcome to 72 Central" the first time, then a greeting that changes each visit
