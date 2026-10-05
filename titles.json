@@ -53,16 +53,11 @@
    {
     "id": "dotsenko",
     "tournament": "W15 Monastir",
+    "tier": "W15",
+    "type": "ITF World Tennis Tour",
     "week": "28 Sep to 04 Oct 2026",
     "end": "2026-10-04",
     "link": "https://www.itftennis.com/en/tournament/w15-monastir/tun/2026/w-itf-tun-2026-035/"
-   },
-   {
-    "id": "dotsenko",
-    "tournament": "W15 Monastir",
-    "week": "21 Sep to 27 Sep 2026",
-    "end": "2026-09-27",
-    "link": "https://www.itftennis.com/en/tournament/w15-monastir/tun/2026/w-itf-tun-2026-034/"
    },
    {
     "id": "bonding",
@@ -74,8 +69,19 @@
     "link": "https://www.itftennis.com/en/tournament/m15-columbia-sc/usa/2026/m-itf-usa-2026-039/"
    },
    {
+    "id": "dotsenko",
+    "tournament": "W15 Monastir",
+    "tier": "W15",
+    "type": "ITF World Tennis Tour",
+    "week": "21 Sep to 27 Sep 2026",
+    "end": "2026-09-27",
+    "link": "https://www.itftennis.com/en/tournament/w15-monastir/tun/2026/w-itf-tun-2026-034/"
+   },
+   {
     "id": "ristic",
     "tournament": "W75 Kursumlijska Banja",
+    "tier": "W75",
+    "type": "ITF World Tennis Tour",
     "week": "10 Aug to 16 Aug 2026",
     "end": "2026-08-16",
     "link": "https://www.itftennis.com/en/tournament/w75-kursumlijska-banja/srb/2026/w-itf-srb-2026-014/"
@@ -83,6 +89,8 @@
    {
     "id": "ristic",
     "tournament": "W75 Cordenons",
+    "tier": "W75",
+    "type": "ITF World Tennis Tour",
     "week": "20 Jul to 25 Jul 2026",
     "end": "2026-07-25",
     "link": "https://www.itftennis.com/en/tournament/w75-cordenons/ita/2026/w-itf-ita-2026-005/"
@@ -90,6 +98,8 @@
    {
     "id": "dudeney",
     "tournament": "W50 Nottingham",
+    "tier": "W50",
+    "type": "ITF World Tennis Tour",
     "week": "13 Jul to 19 Jul 2026",
     "end": "2026-07-19",
     "link": "https://www.itftennis.com/en/tournament/w50-nottingham/gbr/2026/w-itf-gbr-2026-007/"
@@ -106,6 +116,8 @@
    {
     "id": "dudeney",
     "tournament": "W35 ESTEPONA",
+    "tier": "W35",
+    "type": "ITF World Tennis Tour",
     "week": "18 May to 24 May 2026",
     "end": "2026-05-24",
     "link": "https://www.itftennis.com/en/tournament/w35-estepona/esp/2026/w-itf-esp-2026-006/"
@@ -113,6 +125,8 @@
    {
     "id": "dudeney",
     "tournament": "W35 Nottingham",
+    "tier": "W35",
+    "type": "ITF World Tennis Tour",
     "week": "04 May to 10 May 2026",
     "end": "2026-05-10",
     "link": "https://www.itftennis.com/en/tournament/w35-nottingham/gbr/2026/w-itf-gbr-2026-006/"
@@ -120,6 +134,8 @@
    {
     "id": "sawangkaew",
     "tournament": "W100 Gifu",
+    "tier": "W100",
+    "type": "ITF World Tennis Tour",
     "week": "27 Apr to 03 May 2026",
     "end": "2026-05-03",
     "link": "https://www.itftennis.com/en/tournament/w100-gifu/jpn/2026/w-itf-jpn-2026-001/"
@@ -127,16 +143,11 @@
    {
     "id": "newman",
     "tournament": "W15 Orlando, FL",
+    "tier": "W15",
+    "type": "ITF World Tennis Tour",
     "week": "20 Apr to 26 Apr 2026",
     "end": "2026-04-26",
     "link": "https://www.itftennis.com/en/tournament/w15-orlando-fl/usa/2026/w-itf-usa-2026-013/"
-   },
-   {
-    "id": "dudeney",
-    "tournament": "W15 Monastir",
-    "week": "23 Mar to 29 Mar 2026",
-    "end": "2026-03-29",
-    "link": "https://www.itftennis.com/en/tournament/w15-monastir/tun/2026/w-itf-tun-2026-013/"
    },
    {
     "id": "ivanov",
@@ -150,6 +161,17 @@
    {
     "id": "dudeney",
     "tournament": "W15 Monastir",
+    "tier": "W15",
+    "type": "ITF World Tennis Tour",
+    "week": "23 Mar to 29 Mar 2026",
+    "end": "2026-03-29",
+    "link": "https://www.itftennis.com/en/tournament/w15-monastir/tun/2026/w-itf-tun-2026-013/"
+   },
+   {
+    "id": "dudeney",
+    "tournament": "W15 Monastir",
+    "tier": "W15",
+    "type": "ITF World Tennis Tour",
     "week": "16 Mar to 22 Mar 2026",
     "end": "2026-03-22",
     "link": "https://www.itftennis.com/en/tournament/w15-monastir/tun/2026/w-itf-tun-2026-012/"
@@ -157,12 +179,23 @@
    {
     "id": "sawangkaew",
     "tournament": "W75 Nonthaburi",
+    "tier": "W75",
+    "type": "ITF World Tennis Tour",
     "week": "05 Jan to 11 Jan 2026",
     "end": "2026-01-11",
     "link": "https://www.itftennis.com/en/tournament/w75-nonthaburi/tha/2026/w-itf-tha-2026-001/"
    }
   ],
   "2017": [
+   {
+    "id": "jones",
+    "tournament": "$15,000 Asuncion",
+    "tier": "$15K",
+    "type": "ITF Womens Circuit",
+    "week": "30 Oct to 05 Nov 2017",
+    "end": "2017-11-05",
+    "link": "https://www.itftennis.com/en/tournament/$15000-asuncion/par/2017/w-witf-par-01a-2017/"
+   },
    {
     "id": "deminaur",
     "tournament": "Portugal F11 Futures",
@@ -211,6 +244,15 @@
     "link": "https://www.itftennis.com/en/tournament/russia-f3-futures/rus/2014/m-fu-rus-03a-2014/"
    },
    {
+    "id": "jabeur",
+    "tournament": "$25,000 Tunis",
+    "tier": "$25K",
+    "type": "ITF Womens Circuit",
+    "week": "05 May to 11 May 2014",
+    "end": "2014-05-11",
+    "link": "https://www.itftennis.com/en/tournament/$25000-tunis/tun/2014/w-witf-tun-01a-2014/"
+   },
+   {
     "id": "rublev",
     "tournament": "Kazakhstan F2 Futures",
     "tier": "Futures",
@@ -238,6 +280,15 @@
     "week": "11 Nov to 17 Nov 2013",
     "end": "2013-11-17",
     "link": "https://www.itftennis.com/en/tournament/usa-f31-futures/usa/2013/m-fu-usa-31a-2013/"
+   },
+   {
+    "id": "jabeur",
+    "tournament": "$50,000 Saguenay",
+    "tier": "$50K",
+    "type": "ITF Womens Circuit",
+    "week": "21 Oct to 27 Oct 2013",
+    "end": "2013-10-27",
+    "link": "https://www.itftennis.com/en/tournament/$50000-saguenay/can/2013/w-witf-can-05a-2013/"
    },
    {
     "id": "coric",
@@ -276,6 +327,24 @@
     "link": "https://www.itftennis.com/en/tournament/$75000-donetsk/ukr/2013/w-witf-ukr-01a-2013/"
    },
    {
+    "id": "jabeur",
+    "tournament": "$50,000 Kurume",
+    "tier": "$50K",
+    "type": "ITF Womens Circuit",
+    "week": "13 May to 19 May 2013",
+    "end": "2013-05-19",
+    "link": "https://www.itftennis.com/en/tournament/$50000-kurume/jpn/2013/w-witf-jpn-05a-2013/"
+   },
+   {
+    "id": "jabeur",
+    "tournament": "$50,000 Fukuoka",
+    "tier": "$50K",
+    "type": "ITF Womens Circuit",
+    "week": "06 May to 12 May 2013",
+    "end": "2013-05-12",
+    "link": "https://www.itftennis.com/en/tournament/$50000-fukuoka/jpn/2013/w-witf-jpn-04a-2013/"
+   },
+   {
     "id": "coric",
     "tournament": "Great Britain F9 Futures",
     "tier": "Futures",
@@ -283,6 +352,15 @@
     "week": "22 Apr to 28 Apr 2013",
     "end": "2013-04-28",
     "link": "https://www.itftennis.com/en/tournament/great-britain-f9-futures/gbr/2013/m-fu-gbr-09a-2013/"
+   },
+   {
+    "id": "jabeur",
+    "tournament": "$25,000 Tunis",
+    "tier": "$25K",
+    "type": "ITF Womens Circuit",
+    "week": "22 Apr to 28 Apr 2013",
+    "end": "2013-04-28",
+    "link": "https://www.itftennis.com/en/tournament/$25000-tunis/tun/2013/w-witf-tun-03a-2013/"
    },
    {
     "id": "svitolina",
@@ -303,6 +381,24 @@
     "week": "30 Sep to 06 Oct 2024",
     "end": "2024-10-06",
     "link": "https://www.itftennis.com/en/tournament/w75-sibenik/cro/2024/w-itf-cro-2024-008/"
+   },
+   {
+    "id": "romero",
+    "tournament": "W75 Caserta",
+    "tier": "W75",
+    "type": "ITF World Tennis Tour",
+    "week": "03 Jun to 09 Jun 2024",
+    "end": "2024-06-09",
+    "link": "https://www.itftennis.com/en/tournament/w75-caserta/ita/2024/w-itf-ita-2024-011/"
+   },
+   {
+    "id": "jones",
+    "tournament": "W75 Grado",
+    "tier": "W75",
+    "type": "ITF World Tennis Tour",
+    "week": "20 May to 26 May 2024",
+    "end": "2024-05-26",
+    "link": "https://www.itftennis.com/en/tournament/w75-grado/ita/2024/w-itf-ita-2024-009/"
    },
    {
     "id": "buse",
@@ -330,6 +426,15 @@
     "week": "08 Jan to 14 Jan 2024",
     "end": "2024-01-14",
     "link": "https://www.itftennis.com/en/tournament/m15-manacor/esp/2024/m-itf-esp-2024-001/"
+   },
+   {
+    "id": "sawangkaew",
+    "tournament": "W50 Nonthaburi",
+    "tier": "W50",
+    "type": "ITF World Tennis Tour",
+    "week": "08 Jan to 14 Jan 2024",
+    "end": "2024-01-14",
+    "link": "https://www.itftennis.com/en/tournament/w50-nonthaburi/tha/2024/w-itf-tha-02a-2024/"
    }
   ],
   "2023": [
@@ -370,6 +475,15 @@
     "link": "https://www.itftennis.com/en/tournament/w25-santa-margherita-di-pula/ita/2023/w-itf-ita-04b-2023/"
    },
    {
+    "id": "starodubtseva",
+    "tournament": "W60 Rancho Santa Fe, CA",
+    "tier": "W60",
+    "type": "ITF World Tennis Tour",
+    "week": "09 Oct to 15 Oct 2023",
+    "end": "2023-10-15",
+    "link": "https://www.itftennis.com/en/tournament/w60-rancho-santa-fe-ca/usa/2023/w-itf-usa-46a-2023/"
+   },
+   {
     "id": "buse",
     "tournament": "M25 Mendoza",
     "tier": "M25",
@@ -388,6 +502,24 @@
     "link": "https://www.itftennis.com/en/tournament/m15-punta-del-este/uru/2023/m-itf-uru-01a-2023/"
    },
    {
+    "id": "ristic",
+    "tournament": "W60 Prerov",
+    "tier": "W60",
+    "type": "ITF World Tennis Tour",
+    "week": "21 Aug to 27 Aug 2023",
+    "end": "2023-08-27",
+    "link": "https://www.itftennis.com/en/tournament/w60-prerov/cze/2023/w-itf-cze-07a-2023/"
+   },
+   {
+    "id": "starodubtseva",
+    "tournament": "W60 Dallas, TX",
+    "tier": "W60",
+    "type": "ITF World Tennis Tour",
+    "week": "24 Jul to 30 Jul 2023",
+    "end": "2023-07-30",
+    "link": "https://www.itftennis.com/en/tournament/w60-dallas-tx/usa/2023/w-itf-usa-37a-2023/"
+   },
+   {
     "id": "bejlek",
     "tournament": "W25 Parnu",
     "tier": "W25",
@@ -397,6 +529,24 @@
     "link": "https://www.itftennis.com/en/tournament/w25-parnu/est/2023/w-itf-est-03a-2023/"
    },
    {
+    "id": "sawangkaew",
+    "tournament": "W25 Nakhon Si Thammarat",
+    "tier": "W25",
+    "type": "ITF World Tennis Tour",
+    "week": "03 Jul to 09 Jul 2023",
+    "end": "2023-07-09",
+    "link": "https://www.itftennis.com/en/tournament/w25-nakhon-si-thammarat/tha/2023/w-itf-tha-06a-2023/"
+   },
+   {
+    "id": "starodubtseva",
+    "tournament": "W60 Sumter, SC",
+    "tier": "W60",
+    "type": "ITF World Tennis Tour",
+    "week": "12 Jun to 18 Jun 2023",
+    "end": "2023-06-18",
+    "link": "https://www.itftennis.com/en/tournament/w60-sumter-sc/usa/2023/w-itf-usa-28a-2023/"
+   },
+   {
     "id": "kym",
     "tournament": "M25 Trento",
     "tier": "M25",
@@ -404,6 +554,15 @@
     "week": "27 Mar to 02 Apr 2023",
     "end": "2023-04-02",
     "link": "https://www.itftennis.com/en/tournament/m25-trento/ita/2023/m-itf-ita-01a-2023/"
+   },
+   {
+    "id": "starodubtseva",
+    "tournament": "W25 Spring, TX",
+    "tier": "W25",
+    "type": "ITF World Tennis Tour",
+    "week": "27 Feb to 05 Mar 2023",
+    "end": "2023-03-05",
+    "link": "https://www.itftennis.com/en/tournament/w25-spring-tx/usa/2023/w-itf-usa-10a-2023/"
    }
   ],
   "2019": [
@@ -442,6 +601,24 @@
     "week": "10 Jun to 16 Jun 2019",
     "end": "2019-06-16",
     "link": "https://www.itftennis.com/en/tournament/m15-kaltenkirchen/ger/2019/m-itf-ger-05a-2019/"
+   },
+   {
+    "id": "jones",
+    "tournament": "W25 Minsk",
+    "tier": "W25",
+    "type": "ITF World Tennis Tour",
+    "week": "10 Jun to 16 Jun 2019",
+    "end": "2019-06-16",
+    "link": "https://www.itftennis.com/en/tournament/w25-minsk/blr/2019/w-itf-blr-02a-2019/"
+   },
+   {
+    "id": "jones",
+    "tournament": "W25 Minsk",
+    "tier": "W25",
+    "type": "ITF World Tennis Tour",
+    "week": "03 Jun to 09 Jun 2019",
+    "end": "2019-06-09",
+    "link": "https://www.itftennis.com/en/tournament/w25-minsk/blr/2019/w-itf-blr-01a-2019/"
    }
   ],
   "2016": [
@@ -471,6 +648,33 @@
     "week": "20 Jun to 26 Jun 2016",
     "end": "2016-06-26",
     "link": "https://www.itftennis.com/en/tournament/belgium-f2-futures/bel/2016/m-fu-bel-02a-2016/"
+   },
+   {
+    "id": "jabeur",
+    "tournament": "$50,000 Tunis",
+    "tier": "$50K",
+    "type": "ITF Womens Circuit",
+    "week": "02 May to 08 May 2016",
+    "end": "2016-05-08",
+    "link": "https://www.itftennis.com/en/tournament/$50000-tunis/tun/2016/w-witf-tun-17a-2016/"
+   },
+   {
+    "id": "jabeur",
+    "tournament": "$25,000 Sunrise, FL",
+    "tier": "$25K",
+    "type": "ITF Womens Circuit",
+    "week": "25 Jan to 31 Jan 2016",
+    "end": "2016-01-31",
+    "link": "https://www.itftennis.com/en/tournament/$25000-sunrise-fl/usa/2016/w-witf-usa-03a-2016/"
+   },
+   {
+    "id": "jabeur",
+    "tournament": "$25,000 Daytona Beach, FL",
+    "tier": "$25K",
+    "type": "ITF Womens Circuit",
+    "week": "11 Jan to 17 Jan 2016",
+    "end": "2016-01-17",
+    "link": "https://www.itftennis.com/en/tournament/$25000-daytona-beach-fl/usa/2016/w-witf-usa-01a-2016/"
    }
   ],
   "2004": [
@@ -486,6 +690,33 @@
   ],
   "2025": [
    {
+    "id": "dudeney",
+    "tournament": "W15 Monastir",
+    "tier": "W15",
+    "type": "ITF World Tennis Tour",
+    "week": "08 Sep to 14 Sep 2025",
+    "end": "2025-09-14",
+    "link": "https://www.itftennis.com/en/tournament/w15-monastir/tun/2025/w-itf-tun-2025-038/"
+   },
+   {
+    "id": "dudeney",
+    "tournament": "W15 Monastir",
+    "tier": "W15",
+    "type": "ITF World Tennis Tour",
+    "week": "01 Sep to 07 Sep 2025",
+    "end": "2025-09-07",
+    "link": "https://www.itftennis.com/en/tournament/w15-monastir/tun/2025/w-itf-tun-2025-037/"
+   },
+   {
+    "id": "dudeney",
+    "tournament": "W35 Roehampton",
+    "tier": "W35",
+    "type": "ITF World Tennis Tour",
+    "week": "04 Aug to 10 Aug 2025",
+    "end": "2025-08-10",
+    "link": "https://www.itftennis.com/en/tournament/w35-roehampton/gbr/2025/w-itf-gbr-2025-009/"
+   },
+   {
     "id": "ivanov",
     "tournament": "M15 Szentendre",
     "tier": "M15",
@@ -493,6 +724,24 @@
     "week": "12 May to 18 May 2025",
     "end": "2025-05-18",
     "link": "https://www.itftennis.com/en/tournament/m15-szentendre/hun/2025/m-itf-hun-2025-001/"
+   },
+   {
+    "id": "jones",
+    "tournament": "W75 Prague ",
+    "tier": "W75",
+    "type": "ITF World Tennis Tour",
+    "week": "05 May to 11 May 2025",
+    "end": "2025-05-11",
+    "link": "https://www.itftennis.com/en/tournament/w75-prague-/cze/2025/w-itf-cze-2025-002/"
+   },
+   {
+    "id": "jones",
+    "tournament": "W75 Vacaria",
+    "tier": "W75",
+    "type": "ITF World Tennis Tour",
+    "week": "24 Mar to 30 Mar 2025",
+    "end": "2025-03-30",
+    "link": "https://www.itftennis.com/en/tournament/w75-vacaria/bra/2025/w-itf-bra-2025-002/"
    },
    {
     "id": "bonding",
@@ -555,6 +804,42 @@
   ],
   "2022": [
    {
+    "id": "romero",
+    "tournament": "W25 Jablonec nad Nisou",
+    "tier": "W25",
+    "type": "ITF World Tennis Tour",
+    "week": "12 Sep to 18 Sep 2022",
+    "end": "2022-09-18",
+    "link": "https://www.itftennis.com/en/tournament/w25-jablonec-nad-nisou/cze/2022/w-itf-cze-06a-2022/"
+   },
+   {
+    "id": "romero",
+    "tournament": "W25 Marbella",
+    "tier": "W25",
+    "type": "ITF World Tennis Tour",
+    "week": "05 Sep to 11 Sep 2022",
+    "end": "2022-09-11",
+    "link": "https://www.itftennis.com/en/tournament/w25-marbella/esp/2022/w-itf-esp-14a-2022/"
+   },
+   {
+    "id": "romero",
+    "tournament": "W25 Oldenzaal",
+    "tier": "W25",
+    "type": "ITF World Tennis Tour",
+    "week": "22 Aug to 28 Aug 2022",
+    "end": "2022-08-28",
+    "link": "https://www.itftennis.com/en/tournament/w25-oldenzaal/ned/2022/w-itf-ned-04a-2022/"
+   },
+   {
+    "id": "ristic",
+    "tournament": "W25 Vrnjacka Banja",
+    "tier": "W25",
+    "type": "ITF World Tennis Tour",
+    "week": "15 Aug to 21 Aug 2022",
+    "end": "2022-08-21",
+    "link": "https://www.itftennis.com/en/tournament/w25-vrnjacka-banja/srb/2022/w-itf-srb-03a-2022/"
+   },
+   {
     "id": "bejlek",
     "tournament": "W60 Olomouc",
     "tier": "W60",
@@ -573,6 +858,15 @@
     "link": "https://www.itftennis.com/en/tournament/w60-ceska-lipa/cze/2022/w-itf-cze-03a-2022/"
    },
    {
+    "id": "romero",
+    "tournament": "W25 Denain",
+    "tier": "W25",
+    "type": "ITF World Tennis Tour",
+    "week": "13 Jun to 19 Jun 2022",
+    "end": "2022-06-19",
+    "link": "https://www.itftennis.com/en/tournament/w25-denain/fra/2022/w-itf-fra-12a-2022/"
+   },
+   {
     "id": "bejlek",
     "tournament": "W25 Santa Margherita di Pula",
     "tier": "W25",
@@ -584,6 +878,15 @@
   ],
   "2021": [
    {
+    "id": "romero",
+    "tournament": "W15 Cairo",
+    "tier": "W15",
+    "type": "ITF World Tennis Tour",
+    "week": "26 Jul to 01 Aug 2021",
+    "end": "2021-08-01",
+    "link": "https://www.itftennis.com/en/tournament/w15-cairo/egy/2021/w-itf-egy-20a-2021/"
+   },
+   {
     "id": "bejlek",
     "tournament": "W60 Olomouc",
     "tier": "W60",
@@ -591,6 +894,82 @@
     "week": "19 Jul to 25 Jul 2021",
     "end": "2021-07-25",
     "link": "https://www.itftennis.com/en/tournament/w60-olomouc/cze/2021/w-itf-cze-03a-2021/"
+   },
+   {
+    "id": "romero",
+    "tournament": "W15 Cairo",
+    "tier": "W15",
+    "type": "ITF World Tennis Tour",
+    "week": "19 Jul to 25 Jul 2021",
+    "end": "2021-07-25",
+    "link": "https://www.itftennis.com/en/tournament/w15-cairo/egy/2021/w-itf-egy-19a-2021/"
+   },
+   {
+    "id": "jones",
+    "tournament": "W60 Biarritz",
+    "tier": "W60",
+    "type": "ITF World Tennis Tour",
+    "week": "12 Jul to 18 Jul 2021",
+    "end": "2021-07-18",
+    "link": "https://www.itftennis.com/en/tournament/w60-biarritz/fra/2021/w-itf-fra-12a-2021/"
+   }
+  ],
+  "2018": [
+   {
+    "id": "jones",
+    "tournament": "$15,000 Tampere",
+    "tier": "$15K",
+    "type": "ITF Womens Circuit",
+    "week": "23 Jul to 29 Jul 2018",
+    "end": "2018-07-29",
+    "link": "https://www.itftennis.com/en/tournament/$15000-tampere/fin/2018/w-witf-fin-01a-2018/"
+   },
+   {
+    "id": "jabeur",
+    "tournament": "$100,000 Manchester",
+    "tier": "$100K",
+    "type": "ITF Womens Circuit",
+    "week": "11 Jun to 17 Jun 2018",
+    "end": "2018-06-17",
+    "link": "https://www.itftennis.com/en/tournament/$100000-manchester/gbr/2018/w-witf-gbr-04a-2018/"
+   },
+   {
+    "id": "sawangkaew",
+    "tournament": "$15,000 Hua Hin",
+    "tier": "$15K",
+    "type": "ITF Womens Circuit",
+    "week": "07 May to 13 May 2018",
+    "end": "2018-05-13",
+    "link": "https://www.itftennis.com/en/tournament/$15000-hua-hin/tha/2018/w-witf-tha-02a-2018/"
+   },
+   {
+    "id": "jones",
+    "tournament": "$15,000 Villa Dolores",
+    "tier": "$15K",
+    "type": "ITF Womens Circuit",
+    "week": "16 Apr to 22 Apr 2018",
+    "end": "2018-04-22",
+    "link": "https://www.itftennis.com/en/tournament/$15000-villa-dolores/arg/2018/w-witf-arg-01a-2018/"
+   }
+  ],
+  "2010": [
+   {
+    "id": "jabeur",
+    "tournament": "$10,000 Casablanca",
+    "tier": "$10K",
+    "type": "ITF Womens Circuit",
+    "week": "19 Jul to 25 Jul 2010",
+    "end": "2010-07-25",
+    "link": "https://www.itftennis.com/en/tournament/$10000-casablanca/mar/2010/w-witf-mar-02a-2010/"
+   },
+   {
+    "id": "jabeur",
+    "tournament": "$10,000 Antalya",
+    "tier": "$10K",
+    "type": "ITF Womens Circuit",
+    "week": "26 Apr to 02 May 2010",
+    "end": "2010-05-02",
+    "link": "https://www.itftennis.com/en/tournament/$10000-antalya/tur/2010/w-witf-tur-07a-2010/"
    }
   ]
  },
@@ -619,7 +998,26 @@
   "farkxodov",
   "daraban",
   "svitolina",
-  "bejlek"
+  "bejlek",
+  "starodubtseva",
+  "kasatkina",
+  "sawangkaew",
+  "jones",
+  "jabeur",
+  "romero",
+  "ristic",
+  "rajeshwaran",
+  "dotsenko",
+  "newman",
+  "lin",
+  "pinera",
+  "iwasa",
+  "skryp",
+  "kurylova",
+  "dudeney",
+  "mmakarova",
+  "vmakarova",
+  "kanabar"
  ],
  "best": {
   "deminaur": {
@@ -713,33 +1111,87 @@
   "bejlek": {
    "rank": 28,
    "checked": "2026-10-05"
+  },
+  "starodubtseva": {
+   "rank": 42,
+   "checked": "2026-10-05"
+  },
+  "kasatkina": {
+   "rank": null,
+   "checked": "2026-10-05"
+  },
+  "sawangkaew": {
+   "rank": 74,
+   "checked": "2026-10-05"
+  },
+  "jones": {
+   "rank": 28,
+   "checked": "2026-10-05"
+  },
+  "jabeur": {
+   "rank": 2,
+   "checked": "2026-10-05"
+  },
+  "romero": {
+   "rank": 46,
+   "checked": "2026-10-05"
+  },
+  "ristic": {
+   "rank": 182,
+   "checked": "2026-10-05"
+  },
+  "rajeshwaran": {
+   "rank": 642,
+   "checked": "2026-10-05"
+  },
+  "dotsenko": {
+   "rank": 1215,
+   "checked": "2026-10-05"
+  },
+  "newman": {
+   "rank": 885,
+   "checked": "2026-10-05"
+  },
+  "lin": {
+   "rank": 848,
+   "checked": "2026-10-05"
+  },
+  "pinera": {
+   "rank": 1382,
+   "checked": "2026-10-05"
+  },
+  "iwasa": {
+   "rank": null,
+   "checked": "2026-10-05"
+  },
+  "skryp": {
+   "rank": null,
+   "checked": "2026-10-05"
+  },
+  "kurylova": {
+   "rank": null,
+   "checked": "2026-10-05"
+  },
+  "dudeney": {
+   "rank": 224,
+   "checked": "2026-10-05"
+  },
+  "mmakarova": {
+   "rank": null,
+   "checked": "2026-10-05"
+  },
+  "vmakarova": {
+   "rank": null,
+   "checked": "2026-10-05"
+  },
+  "kanabar": {
+   "rank": 1455,
+   "checked": "2026-10-05"
   }
  },
- "tried": "2026-10-05T10:33:06Z",
+ "tried": "2026-10-05T10:43:27Z",
  "pending": [],
- "todo": [
-  "starodubtseva",
-  "kasatkina",
-  "sawangkaew",
-  "jones",
-  "jabeur",
-  "romero",
-  "ristic",
-  "rajeshwaran",
-  "dotsenko",
-  "newman",
-  "lin",
-  "pinera",
-  "iwasa",
-  "skryp",
-  "kurylova",
-  "dudeney",
-  "mmakarova",
-  "vmakarova",
-  "momot",
-  "kanabar",
-  "liu"
- ],
+ "todo": [],
  "todoMode": "career",
  "source": "ITF singles results (itftennis.com)"
 }
