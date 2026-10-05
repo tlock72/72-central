@@ -4,7 +4,7 @@ on:
     - cron: "37 5 * * *"   # once a day, 06:37 UK summer time (05:37 UTC)
   workflow_dispatch:
 concurrency:
-  group: update-scores   # never at the same time as the score updates, so saves don't clash
+  group: tour-schedule   # its own queue: it takes 20-30 minutes and must not hold up the live score updates
   cancel-in-progress: false
 permissions:
   contents: write

@@ -14,7 +14,7 @@ It is hosted on GitHub Pages at tlock72.github.io/72-central and protected by a 
 ## Files
 | File | What it is |
 |---|---|
-| `index.html` | The whole site in one file (home portal, Live Scores, 72 Rankings, Age Filtered World Rankings, players). It has its own `ROSTER` list (around line 551), and the passcode gate is near the end. |
+| `index.html` | The whole site in one file (home portal, Live Scores, 72 Rankings, Age Filtered World Rankings, Tour Schedule, players). It has its own `ROSTER` list (around line 551), and the passcode gate is near the end. |
 | `data.json` | Matches and ATP/WTA rankings, written by `update.py`. Key fields: `matches[]`, `rankings{rid}`, `rankingsTourWeek{atp,wta}`, `rankingsWeek`, `rankingsNext` (holding area), `rankingsTry`, `quotaHit`, `lastChecked`. |
 | `players.json` | Roster id → Live Tennis API id, written by `update.py`. |
 | `titles.json` | ITF singles titles from the ITF's own results, written by `itf_titles.py`: `titles{year}` (each with tier and type), `full` (players whose whole career is loaded), `best{rid}` (career-high ATP/WTA rank, read once per ranking week from Tuesday; the player pages show it, combined with the live ranking). The home "ITF singles titles" count uses this year's ITF World Tennis Tour titles; player pages show every pro's career ITF titles (for anyone who is or has been in the top 100 they are left out of the "Career titles" total). Never type ITF titles into `index.html`. |
@@ -22,6 +22,7 @@ It is hosted on GitHub Pages at tlock72.github.io/72-central and protected by a 
 | `itfm.json` | ITF junior matches. |
 | `te.json` | Tennis Europe U14/U16 matches. |
 | `scouting.json`, `scouting_history.json` | Age Filtered World Rankings: every ranked ATP/WTA player with birth year and 1-week, 3-month and 12-month moves (the page filters by age group, birth year, ranking and "72 only"; 72 Rankings links to the 72-only view). A move of `-1` means "not tracked then". ATP history only kept young players before 5 Oct 2026; `scouting.py` fills those weeks in for everyone from Tennis Explorer (5 weeks a run, stored as `_tok` weeks keyed by name in any word order, after checking it agrees with Tennis Abstract). The 1 wk / 3 mo / 12 mo moves for 72 players also show on 72 Rankings. |
+| `schedule.json` | Tour Schedule tab, written daily by `schedule.py`: `events[]` from this week to 31 Dec (`tour`: atp, wta, ch, itfm, itfw (incl. WTA 125), jun, te; `cat`; `tier` 1 = Grand Slams/Finals … 8 = M/W15, J30–J100, TE Cat 3; `e72` = 72 players entered), `entriesTo` (entries only shown up to 4 weeks ahead), `errors{part}`. |
 | `*.webp` | Player photos, named by roster id. |
 | `FILL_GAPS.md`, `ITF_JUNIORS.md` | Manual fallback instructions for Claude, used only when asked. |
 
@@ -37,6 +38,7 @@ Roster ids are short surnames (`deminaur`, `svitolina`, `mmakarova`…). **Addin
 - `itf_matches.py`: ITF junior draws and results, about twice a day.
 - `itf_titles.py`: ITF singles titles for the whole roster from the ITF site (circuit `MT` men / `WT` women, singles, main-draw finals won; ITF World Tennis Tour plus pre-2019 Futures and ITF Women's Circuit). Loads each player's whole career once, then the current year daily from 07:00 UK, and career highs weekly. Stops at the ITF bot check and never guesses an unreadable final.
 - `te_matches.py`: Tennis Europe matches, once a day from 07:30 UK.
+- `schedule.py`: Tour Schedule, once a day (`schedule.yml`). Calendars: ATP Tour and Challenger from Wikipedia's "2026 ATP Tour" / "2026 ATP Challenger Tour" pages (atptour.com blocks GitHub; its calendar PDF has a fixed January name), WTA + WTA 125 from api.wtatennis.com, ITF men/women/juniors from the ITF calendar API, Tennis Europe from its tournament search. 72 entries (events up to 4 weeks ahead): ITF acceptance lists matched by ITF id (`titles.json` ids + `itf.json`), WTA player lists by name, Tennis Europe player profiles (`te.json` profiles), ATP/Challenger only once in a draw (`data.json`). Never uses the Live Tennis API. A failing part keeps its previous events and is alerted.
 - `report_gaps.py`: alerting. It comments on the GitHub issue "72 Central: missing info" (GitHub emails Tobey) and reports each message once, so **never put times in alert text**. It also runs as the watchdog.
 
 ## Workflows (`.github/workflows/`)
@@ -44,6 +46,7 @@ Roster ids are short surnames (`deminaur`, `svitolina`, `mmakarova`…). **Addin
   - Checkout uses `ref: main`, because a run queued behind another must start from the newest data.
   - The save step does `pull --rebase -X theirs`, and on failure aborts and skips (the next run catches up).
 - `itf-juniors.yml`: Mondays at 08:20, 11:20 and 14:20 UK.
+- `schedule.yml`: daily at 06:37 UK. Has its own concurrency group (it must not hold up live scores); it only saves `schedule.json`, so its pull-rebase save can't clash with the score updates. Takes about 20–30 minutes (ITF acceptance lists, one every 4 seconds).
 - `watchdog.yml`: every 3 hours. Alerts if updates stop, runs keep failing, or Pages fails to build.
 - `check-api.yml`: a one-off API shape check (`discover.py`).
 
