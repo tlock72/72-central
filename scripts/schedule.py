@@ -443,8 +443,9 @@ def tt_entries(events, men, need, everyone):
 
 
 def sp_entries(events, men, everyone):
-    """Spazio Tennis: {(roster id, event key): "main" or "alt"} for 72 men. Its lists are in Italian ('Firenze',
-    'Basilea'), so each list is matched to the event that live-tennis.eu shows most of the same players at."""
+    """Spazio Tennis: {(roster id, event key): "main" or "alt"} for 72 men. Each list is matched to the coming event in
+    the city its heading names (Italian names like 'Firenze' translated), and only used if most of its players are
+    also down for that event on live-tennis.eu or Tick Tock, so an old edition's list is never used."""
     cat = json.loads(get(f"{SP_API}/categories?slug=ent&_fields=id"))
     if not cat:
         raise RuntimeError("the 'Entry List' category is missing")
@@ -457,7 +458,7 @@ def sp_entries(events, men, everyone):
         body = (post.get("content") or {}).get("rendered") or ""
         for sec in re.split(r"<h3[^>]*>", body)[1:]:
             head = html.unescape(re.sub(r"<[^>]+>", " ", sec.split("</h3>", 1)[0]))
-            if not re.search(r"ENTRY LIST ATP", head, re.I) or re.search(r"QUALI", head, re.I):
+            if not re.search(r"ENTRY LIST", head, re.I) or re.search(r"QUALI|WTA", head, re.I):
                 continue
             main, alt, part = set(), set(), "main"
             for line in re.split(r"<br\s*/?>|</p>", sec.split("</h3>", 1)[-1]):
@@ -470,17 +471,15 @@ def sp_entries(events, men, everyone):
                     (main if part == "main" else alt).add(pkey(m.group(2) + " " + m.group(1)))
             if len(main) < 8:
                 continue
-            score = sorted(((len(main & everyone.get(k, set())), k) for k in window), reverse=True)
-            if not score or score[0][0] < max(4, len(main) * 0.4) or (len(score) > 1 and score[1][0] * 2 > score[0][0]):
-                continue  # not clearly one of the coming events (or an old list)
             city = unicodedata.normalize("NFKD", head).encode("ascii", "ignore").decode().lower()
             city = re.sub(r"entry list|\batp\b|challenger|masters|\d+", " ", city)
             for it, en in IT_CITY.items():
                 city = re.sub(rf"\b{it}\b", en, city)
-            ev = byk[score[0][1]]
-            if not place_words(city) or not place_words(city) <= place_words(ev["name"]) | place_words(ev["place"]):
-                print("Spazio list skipped, its name doesn't match the event its players point to:", head.strip(), "->", ev["name"])
-                continue
+            want = place_words(city)
+            same = [k for k in window if want and want <= place_words(byk[k]["name"]) | place_words(byk[k]["place"])]
+            score = sorted(((len(main & everyone.get(k, set())), k) for k in same), reverse=True)
+            if not score or score[0][0] < max(4, len(main) * 0.4) or (len(score) > 1 and score[1][0] * 2 > score[0][0]):
+                continue  # not a coming event in that city, or an old edition's list (too few of the same players)
             lists += 1
             for k in main | alt:
                 if k in men:
