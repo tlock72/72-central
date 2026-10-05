@@ -1,0 +1,12 @@
+name: Probe calendar sources (temporary)
+on:
+  push:
+    branches: [claude/72-rankings-mobile-ui-g5ouo8]
+    paths: [scripts/probe_tmp.py]
+jobs:
+  probe:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v6
+      - run: pip install -q beautifulsoup4 && python3 scripts/probe_tmp.py
