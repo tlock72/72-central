@@ -390,6 +390,110 @@ body.on-home header nav{display:none}
   .hp-tile h2{font-size:24px}
   .hp-stat b{font-size:36px}
 }
+/* Phone layout: compact header, home on one screen, 3 match cards per row, compact roster */
+nav .sh,.nm-s{display:none}
+.p-find{display:block;width:100%;max-width:360px;margin:0 0 18px;padding:10px 16px;border-radius:999px;border:1px solid var(--line);background:var(--navy-2);color:var(--white);font:inherit;font-size:14px;outline:none}
+.p-find:focus{border-color:var(--gold)}
+@media (max-width:640px){
+  header .bar{flex-direction:row;align-items:center;gap:10px;padding-block:10px}
+  .brand{flex:none}
+  .brand img{height:15px}
+  .p-find{margin-bottom:10px;padding:8px 14px;font-size:16px}
+  .badge72{display:none!important}
+  .champ{font-size:11px;padding:7px 12px;margin:8px 0 0}
+  nav{display:grid;grid-template-columns:repeat(4,auto);gap:2px;padding:3px;border-radius:999px;margin-left:auto}
+  nav a{padding:7px 7px;font-size:10px;letter-spacing:.03em;white-space:nowrap}
+  nav .n72{display:none}
+  #champs{margin-top:8px}
+  nav .lg{display:none} nav .sh{display:inline}
+  body.on-home header .bar{justify-content:center}
+  .hero{padding-block:14px 10px;gap:10px}
+  .hero h1{font-size:30px}
+  .hero .eyebrow{display:none}
+  .sec-h h2 .dt{font-size:11px;margin-left:6px}
+  .hero .sub{font-size:12px;margin-top:6px}
+  #page-scores .hero .sub,#page-scores .sec-d{display:none}
+  .checked{font-size:11px}
+  section.block{margin-bottom:22px}
+  .sec-h{margin-bottom:8px}
+  .sec-h h2{font-size:13px}
+  /* match cards: 3 per row */
+  .grid{grid-template-columns:repeat(3,minmax(0,1fr));gap:6px}
+  .match{border-radius:9px}
+  .match.today{box-shadow:none}
+  .m-top{flex-direction:column;align-items:flex-start;gap:1px;padding:5px 6px;font-size:9px}
+  .m-top .t{max-width:100%}
+  .m-top .r{margin-left:3px}
+  .when{font-size:8.5px;letter-spacing:.04em;white-space:normal;line-height:1.2}
+  .times{gap:0 5px;padding:4px 6px 0;font-size:8px;letter-spacing:0}
+  .times > span{display:none}
+  .times b{font-size:10px}
+  .m-body{padding:2px 0}
+  .row{gap:3px;padding:3px 6px}
+  .pname{font-size:10.5px;gap:3px}
+  .pname .nm{display:none}
+  .pname .nm-s{display:block;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;min-width:0}
+  .badge72{font-size:7.5px;padding:0 3px;border-radius:3px}
+  .tick{font-size:9px}
+  .sets{gap:1px}
+  .set{min-width:9px;font-size:11px}
+  .set sup{font-size:6px}
+  .game{min-width:20px;height:16px;font-size:10px;border-radius:4px}
+  .note{padding:0 6px 4px;font-size:8.5px;line-height:1.3}
+  .note.gen{display:none}
+  .m-foot{padding:4px 5px;justify-content:center}
+  .m-foot > span:first-child{display:none}
+  .m-foot .live-btn{font-size:8px;letter-spacing:.02em;padding:4px 6px;gap:4px;white-space:normal;text-align:center;line-height:1.2}
+  .m-foot .live-btn .dot{display:none}
+  .empty{padding:12px 14px;font-size:12px}
+  /* roster on the scores page: 2 per row */
+  .roster{grid-template-columns:repeat(2,minmax(0,1fr));gap:6px}
+  .pl{flex-direction:column;align-items:stretch;gap:4px;padding:7px 9px;border-radius:9px}
+  .pl .nm{font-size:11.5px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  .pl .st{font-size:10px;margin-top:2px;white-space:normal;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical}
+  .pl a{align-self:flex-start;font-size:9.5px;padding:2px 8px}
+  .r-group{font-size:10.5px;margin-top:4px}
+  /* players page: 3 small photo cards per row, filter chips stay in view */
+  .pgrid{grid-template-columns:repeat(3,minmax(0,1fr));gap:8px}
+  .pc{min-height:150px;padding:8px;border-radius:12px}
+  .pc .bg{opacity:.8;filter:none;transform:none;background-position:center 15%}
+  .pc .shade{background:linear-gradient(180deg,transparent 0%,transparent 40%,rgba(10,16,41,.92) 78%,#0A1029 100%)}
+  .pc .mono,.pc .meta,.pc .go,.pc .cc{display:none}
+  .pc .tr{font-size:7.5px;letter-spacing:.08em;padding:2px 5px}
+  .pc .fn{margin-top:auto;font-size:9px;letter-spacing:.1em;padding-top:60px}
+  .pc .ln{font-size:13px;overflow-wrap:normal;word-break:break-word}
+  .pc .nums{grid-template-columns:1fr;padding-top:4px;margin-top:4px;gap:0;border-top:0}
+  .pc .nums div:not(:first-child){display:none}
+  .pc .nums b{font-size:13px;display:inline}
+  .pc .nums span{display:inline;font-size:8px;letter-spacing:.06em;margin:0 0 0 4px}
+  /* home: everything on one screen */
+  #page-home{padding-bottom:8px}
+  .hp-hero .eyebrow{display:none}
+  .hp-hero{margin:8px 0 8px;padding:12px 14px 12px;border-radius:16px}
+  .hp-hero .mono{font-size:150px;bottom:-30px}
+  .hp-hero .eyebrow{font-size:9px}
+  .hp-hero h1{font-size:28px}
+  .hp-meta{margin-top:8px;gap:6px}
+  .hp-pill{font-size:9px;padding:4px 9px;letter-spacing:.08em}
+  .hp-grid{grid-template-columns:repeat(2,minmax(0,1fr));gap:8px}
+  .hp-tile{min-height:0;padding:12px 12px 10px;border-radius:14px}
+  .hp-tile .no{font-size:10px}
+  .hp-tile h2{font-size:15px;margin:3px 0 0;letter-spacing:.03em}
+  .hp-tile p,.hp-faces,.hp-go,.hp-foot{display:none}
+  .hp-stat{padding-top:8px}
+  .hp-stat b{font-size:24px}
+  .hp-stat b small{display:block;font-size:10px;margin:3px 0 0;line-height:1.25}
+  .hp-stat > div > span{font-size:9.5px;margin-top:4px;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
+  #hpT2{font-size:20px;display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}
+  .hp-sep{display:none}
+  .hp-ld{min-width:0}
+  .hp-ld .lb{font-size:7px;letter-spacing:.02em;margin-bottom:2px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  .hp-ld .nmx{font-size:9.5px;margin-top:2px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+}
+@media (max-width:360px){
+  nav a{padding:6px 6px;font-size:9px}
+  .pname{font-size:9.5px}
+}
 @media (prefers-reduced-motion:reduce){*{transition:none!important;animation:none!important}}
 /* passcode screen */
 html.locked body > *:not(#gate){display:none !important}
@@ -419,10 +523,10 @@ html.locked #gate{display:grid}
       <img src="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHhtbG5zOnhsaW5rPSJodHRwOi8vd3d3LnczLm9yZy8xOTk5L3hsaW5rIiBpZD0iQ2FwYV8xIiB4PSIwcHgiIHk9IjBweCIgd2lkdGg9IjI4NnB4IiBoZWlnaHQ9IjQ5cHgiIHZpZXdCb3g9IjAgMCAyODYgNDkiIHN0eWxlPSJlbmFibGUtYmFja2dyb3VuZDpuZXcgMCAwIDI4NiA0OTsiIHhtbDpzcGFjZT0icHJlc2VydmUiPjxzdHlsZSB0eXBlPSJ0ZXh0L2NzcyI+CS5zdDB7ZmlsbDojRDBBNTc5O308L3N0eWxlPjxnPjxwYXRoIGNsYXNzPSJzdDAiIGQ9Ik03LjYsMjAuMWMtMS4zLDAtMi42LTAuMi0zLjctMC43Yy0xLjEtMC41LTItMS4yLTIuNy0yLjFjLTAuNy0xLTEuMS0yLjItMS4xLTMuNmgzLjVjMCwwLjcsMC4yLDEuNCwwLjYsMS44IGMwLjQsMC41LDAuOSwwLjgsMS41LDEuMWMwLjYsMC4yLDEuMywwLjQsMi4xLDAuNGMwLjcsMCwxLjQtMC4xLDEuOS0wLjNjMC42LTAuMiwxLTAuNSwxLjMtMC44YzAuMy0wLjQsMC41LTAuOCwwLjUtMS4zIGMwLTAuNi0wLjItMS4xLTAuNi0xLjVjLTAuNC0wLjQtMS0wLjctMS45LTFMNSwxMC41Yy0xLjUtMC42LTIuNi0xLjMtMy40LTJDMC44LDcuNywwLjQsNi42LDAuNCw1LjNjMC0xLjYsMC42LTIuOCwxLjktMy44IGMxLjItMSwzLTEuNSw1LjItMS41czMuOCwwLjUsNSwxLjVjMS4yLDEsMS45LDIuNCwyLDQuMkgxMWMtMC4xLTAuOC0wLjUtMS40LTEtMS44QzkuNCwzLjQsOC41LDMuMiw3LjQsMy4yYy0xLDAtMS44LDAuMi0yLjQsMC42IEM0LjUsNC4yLDQuMiw0LjcsNC4yLDUuM2MwLDAuNSwwLjIsMSwwLjUsMS4zYzAuNCwwLjMsMC45LDAuNiwxLjcsMC45bDQuMiwxLjZjMS40LDAuNiwyLjUsMS4zLDMuMywyLjFjMC44LDAuOCwxLjEsMS45LDEuMSwzLjIgYzAsMS4yLTAuMywyLjItMC45LDNjLTAuNiwwLjgtMS40LDEuNS0yLjYsMkMxMC41LDE5LjgsOS4yLDIwLjEsNy42LDIwLjFMNy42LDIwLjFMNy42LDIwLjF6Ij48L3BhdGg+PHBhdGggY2xhc3M9InN0MCIgZD0iTTY1LjIsMTUuOGw0LjktMTUuNGgzLjdsLTYuNywxOS4zaC0zLjdMNTYuOSwwLjRoMy43bDQuOSwxNS40SDY1LjJ6Ij48L3BhdGg+PHBhdGggY2xhc3M9InN0MCIgZD0iTTExNi40LDAuNGgzLjhsOC44LDEzLjdoLTAuM1YwLjRoMy41djE5LjNoLTMuNmwtOS40LTE0LjZoMC42djE0LjZoLTMuNVYwLjR6Ij48L3BhdGg+PHBhdGggY2xhc3M9InN0MCIgZD0iTTE0Ni4xLDMuNHYtM2gxNS41djNoLTYuOGwwLjgtMC44djE3aC0zLjV2LTE3bDAuOCwwLjhIMTQ2LjFMMTQ2LjEsMy40eiI+PC9wYXRoPjxwYXRoIGNsYXNzPSJzdDAiIGQ9Ik0xNzIuOSwwLjRoNC4ybDQuNiw4LjNoLTAuN2w0LjgtOC4zaDQuMWwtNi45LDExLjN2OGgtMy41di04TDE3Mi45LDAuNEwxNzIuOSwwLjR6Ij48L3BhdGg+PHBhdGggY2xhc3M9InN0MCIgZD0iTTIwMS4zLDMuNHYtM2gxNS41djNIMjEwbDAuOC0wLjh2MTdoLTMuNXYtMTdsMC44LDAuOEgyMDEuM0wyMDEuMywzLjR6Ij48L3BhdGg+PHBhdGggY2xhc3M9InN0MCIgZD0iTTIyOC4yLDAuNGgzLjlsNC43LDE2LjJoLTAuOWw0LjYtMTQuOWgyLjRsNC44LDE0LjdoLTAuOGw0LjktMTUuOWg0bC02LjYsMTkuM2gtMy43bC0zLjgtMTEuNGgwLjNsLTMuOCwxMS40IGgtMy43TDIyOC4yLDAuNEwyMjguMiwwLjR6Ij48L3BhdGg+PHBhdGggY2xhc3M9InN0MCIgZD0iTTI3Ny4yLDIwLjFjLTEuNywwLTMuMi0wLjQtNC42LTEuMWMtMS4zLTAuOC0yLjMtMS45LTMuMS0zLjRjLTAuNy0xLjUtMS4xLTMuMy0xLjEtNS42YzAtMi4yLDAuNC00LjEsMS4xLTUuNiBjMC43LTEuNSwxLjgtMi42LDMuMS0zLjNjMS4zLTAuNywyLjgtMS4xLDQuNi0xLjFzMy4zLDAuNCw0LjYsMS4xYzEuMywwLjcsMi40LDEuOSwzLjEsMy4zUzI4Niw3LjgsMjg2LDEwYzAsMi4yLTAuNCw0LjEtMS4xLDUuNiBjLTAuNywxLjUtMS44LDIuNi0zLjEsMy4zQzI4MC41LDE5LjcsMjc4LjksMjAuMSwyNzcuMiwyMC4xTDI3Ny4yLDIwLjF6IE0yNzcuMiwxNi45YzEuNiwwLDIuOC0wLjYsMy44LTEuOCBjMC45LTEuMiwxLjQtMi45LDEuNC01LjFjMC0yLjItMC41LTMuOC0xLjQtNWMtMC45LTEuMi0yLjItMS44LTMuOC0xLjhjLTEuNiwwLTIuOCwwLjYtMy43LDEuOGMtMC45LDEuMi0xLjQsMi45LTEuNCw1LjEgYzAsMi4yLDAuNSwzLjksMS40LDUuMUMyNzQuNCwxNi4zLDI3NS43LDE2LjksMjc3LjIsMTYuOUwyNzcuMiwxNi45eiI+PC9wYXRoPjxwYXRoIGNsYXNzPSJzdDAiIGQ9Ik0zMC43LDE2LjZ2My4xaDEyLjR2LTMuMWgtNkgzMC43eiI+PC9wYXRoPjxwYXRoIGNsYXNzPSJzdDAiIGQ9Ik0zMC43LDguNXYzaDMuN2g4Ljh2LTNoLTUuN2gtMy4xSDMwLjd6Ij48L3BhdGg+PHBhdGggY2xhc3M9InN0MCIgZD0iTTM3LjIsMy40aDZ2LTNIMzAuN3YzaDMuNUgzNy4yeiI+PC9wYXRoPjxwYXRoIGNsYXNzPSJzdDAiIGQ9Ik04OCwxNi42djMuMWgxMi40di0zLjFoLTZIODh6Ij48L3BhdGg+PHBhdGggY2xhc3M9InN0MCIgZD0iTTg4LDguNXYzaDMuN2g4Ljh2LTNoLTUuN2gtMy4xSDg4eiI+PC9wYXRoPjxwYXRoIGNsYXNzPSJzdDAiIGQ9Ik05NC41LDMuNGg2di0zSDg4djNoMy41SDk0LjV6Ij48L3BhdGg+PHBhdGggY2xhc3M9InN0MCIgZD0iTTQ3LjcsNDljLTAuOCwwLTEuNi0wLjEtMi4yLTAuNGMtMC43LTAuMy0xLjItMC43LTEuNi0xLjNjLTAuNC0wLjYtMC42LTEuMy0wLjctMi4xaDEuNyBjMCwwLjUsMC4xLDAuOSwwLjQsMS4zYzAuMywwLjMsMC42LDAuNiwxLDAuN2MwLjQsMC4yLDAuOSwwLjIsMS40LDAuMmMwLjUsMCwxLTAuMSwxLjQtMC4yYzAuNC0wLjIsMC43LTAuNCwwLjktMC42IHMwLjMtMC42LDAuMy0wLjljMC0wLjUtMC4xLTAuOC0wLjQtMS4xYy0wLjMtMC4zLTAuNy0wLjUtMS4zLTAuN0w0Ni40LDQzYy0xLTAuNC0xLjctMC44LTIuMi0xLjJjLTAuNS0wLjUtMC43LTEuMS0wLjctMS45IGMwLTAuOSwwLjQtMS43LDEuMS0yLjNjMC43LTAuNiwxLjgtMC45LDMuMS0wLjlzMi4zLDAuMywzLDAuOWMwLjcsMC42LDEuMSwxLjQsMS4yLDIuNGgtMS44Yy0wLjEtMC41LTAuMy0wLjktMC43LTEuMiBjLTAuNC0wLjMtMS0wLjQtMS43LTAuNHMtMS4zLDAuMi0xLjcsMC41Yy0wLjQsMC4zLTAuNiwwLjctMC42LDEuMmMwLDAuNCwwLjEsMC43LDAuNCwwLjljMC4zLDAuMiwwLjcsMC40LDEuMiwwLjZsMi41LDAuOSBjMC45LDAuMywxLjUsMC43LDIsMS4yYzAuNSwwLjUsMC43LDEuMiwwLjcsMmMwLDAuNy0wLjIsMS4zLTAuNSwxLjhjLTAuMywwLjUtMC45LDAuOS0xLjUsMS4yQzQ5LjUsNDguOSw0OC43LDQ5LDQ3LjcsNDlMNDcuNyw0OSBMNDcuNyw0OXoiPjwvcGF0aD48cGF0aCBjbGFzcz0ic3QwIiBkPSJNNjEuNyw0OC44VjM2LjloNGMxLjMsMCwyLjQsMC4zLDMuMSwxYzAuNywwLjcsMS4xLDEuNiwxLjEsMi43YzAsMS4yLTAuNCwyLjEtMS4xLDIuN2MtMC43LDAuNy0xLjcsMS0zLjEsMSBoLTIuMnY0LjVINjEuN3ogTTYzLjUsNDIuN2gyLjJjMC44LDAsMS4zLTAuMiwxLjctMC42YzAuNC0wLjQsMC42LTAuOSwwLjYtMS42YzAtMC42LTAuMi0xLjItMC42LTEuNmMtMC40LTAuNC0xLTAuNi0xLjctMC42aC0yLjIgVjQyLjd6Ij48L3BhdGg+PHBhdGggY2xhc3M9InN0MCIgZD0iTTgzLjEsNDljLTEsMC0xLjktMC4yLTIuNy0wLjdjLTAuOC0wLjUtMS40LTEuMS0xLjktMi4xYy0wLjUtMC45LTAuNy0yLjEtMC43LTMuNGMwLTEuNCwwLjItMi41LDAuNy0zLjUgYzAuNS0wLjksMS4xLTEuNiwxLjktMmMwLjgtMC40LDEuNy0wLjcsMi43LTAuN2MxLDAsMS45LDAuMiwyLjcsMC43YzAuOCwwLjUsMS40LDEuMSwxLjksMi4xYzAuNSwwLjksMC43LDIuMSwwLjcsMy40IHMtMC4yLDIuNS0wLjcsMy40Yy0wLjUsMC45LTEuMSwxLjYtMS45LDIuMUM4NS4xLDQ4LjgsODQuMSw0OSw4My4xLDQ5TDgzLjEsNDl6IE04My4xLDQ3LjRjMS4xLDAsMS45LTAuNCwyLjUtMS4yIGMwLjYtMC44LDAuOS0xLjksMC45LTMuNHMtMC4zLTIuNi0wLjktMy40Yy0wLjYtMC44LTEuNS0xLjItMi41LTEuMnMtMS45LDAuNC0yLjUsMS4yYy0wLjYsMC44LTAuOSwxLjktMC45LDMuNCBjMCwxLjUsMC4zLDIuNiwwLjksMy40QzgxLjIsNDcsODIuMSw0Ny40LDgzLjEsNDcuNHoiPjwvcGF0aD48cGF0aCBjbGFzcz0ic3QwIiBkPSJNOTcuOCw0OC44VjM2LjloNC4zYzEuNCwwLDIuNSwwLjMsMy4yLDFjMC43LDAuNywxLjEsMS41LDEuMSwyLjZjMCwxLjEtMC40LDEuOS0xLjEsMi42Yy0wLjcsMC43LTEuOCwxLTMuMiwxIGgtMi41djQuOEw5Ny44LDQ4LjhMOTcuOCw0OC44eiBNOTkuNSw0Mi44aDIuM2MwLjksMCwxLjUtMC4yLDEuOS0wLjZjMC40LTAuNCwwLjctMC45LDAuNy0xLjZjMC0wLjYtMC4yLTEuMi0wLjYtMS42IGMtMC40LTAuNC0xLTAuNi0xLjgtMC42aC0yLjVWNDIuOHogTTEwNC4zLDQ4LjhsLTMuMy01LjVoMS45bDMuNyw1LjVIMTA0LjN6Ij48L3BhdGg+PHBhdGggY2xhc3M9InN0MCIgZD0iTTExNCwzOC40di0xLjVoOS40djEuNWgtNC4ybDAuNC0wLjR2MTAuOGgtMS44VjM4bDAuNCwwLjRIMTE0TDExNCwzOC40eiI+PC9wYXRoPjxwYXRoIGNsYXNzPSJzdDAiIGQ9Ik0xMzUuNyw0OWMtMC44LDAtMS42LTAuMS0yLjItMC40Yy0wLjctMC4zLTEuMi0wLjctMS42LTEuM2MtMC40LTAuNi0wLjYtMS4zLTAuNy0yLjFoMS43IGMwLDAuNSwwLjEsMC45LDAuNCwxLjNjMC4zLDAuMywwLjYsMC42LDEsMC43YzAuNCwwLjIsMC45LDAuMiwxLjQsMC4yczEtMC4xLDEuNC0wLjJjMC40LTAuMiwwLjctMC40LDAuOS0wLjYgYzAuMi0wLjMsMC4zLTAuNiwwLjMtMC45YzAtMC41LTAuMS0wLjgtMC40LTEuMWMtMC4zLTAuMy0wLjctMC41LTEuMy0wLjdsLTIuMi0wLjhjLTEtMC40LTEuNy0wLjgtMi4yLTEuMiBjLTAuNS0wLjUtMC43LTEuMS0wLjctMS45YzAtMC45LDAuNC0xLjcsMS4xLTIuM2MwLjctMC42LDEuOC0wLjksMy4xLTAuOWMxLjMsMCwyLjMsMC4zLDMsMC45YzAuNywwLjYsMS4xLDEuNCwxLjIsMi40aC0xLjggYy0wLjEtMC41LTAuMy0wLjktMC43LTEuMmMtMC40LTAuMy0xLTAuNC0xLjctMC40Yy0wLjcsMC0xLjMsMC4yLTEuNywwLjVjLTAuNCwwLjMtMC42LDAuNy0wLjYsMS4yYzAsMC40LDAuMSwwLjcsMC40LDAuOSBjMC4zLDAuMiwwLjYsMC40LDEuMiwwLjZsMi41LDAuOWMwLjksMC4zLDEuNSwwLjcsMiwxLjJjMC41LDAuNSwwLjcsMS4yLDAuNywyYzAsMC43LTAuMiwxLjMtMC41LDEuOGMtMC40LDAuNS0wLjksMC45LTEuNSwxLjIgQzEzNy41LDQ4LjksMTM2LjcsNDksMTM1LjcsNDlMMTM1LjcsNDlMMTM1LjcsNDl6Ij48L3BhdGg+PHBhdGggY2xhc3M9InN0MCIgZD0iTTE2MC4yLDQ5Yy0xLDAtMS44LTAuMi0yLjYtMC44Yy0wLjgtMC41LTEuNC0xLjItMS45LTIuMWMtMC41LTAuOS0wLjctMi0wLjctMy4yYzAtMSwwLjEtMS45LDAuNC0yLjcgczAuNy0xLjQsMS4yLTJjMC41LTAuNSwxLjEtMC45LDEuOC0xLjJjMC43LTAuMywxLjQtMC40LDIuMi0wLjRjMSwwLDEuOSwwLjIsMi42LDAuNmMwLjcsMC40LDEuMywxLjEsMS44LDJsLTEuOCwwLjUgYy0wLjQtMC41LTAuOC0wLjktMS4yLTEuMmMtMC40LTAuMy0wLjktMC40LTEuNS0wLjRjLTAuNywwLTEuMywwLjItMS44LDAuNmMtMC42LDAuNC0xLDAuOS0xLjMsMS42Yy0wLjMsMC43LTAuNSwxLjUtMC41LDIuNSBjMCwwLjksMC4xLDEuNywwLjQsMi4zYzAuMywwLjcsMC43LDEuMiwxLjIsMS42YzAuNSwwLjQsMS4xLDAuNiwxLjgsMC42YzAuNiwwLDEtMC4xLDEuNS0wLjRjMC40LTAuMiwwLjgtMC42LDEtMS4xIGMwLjMtMC41LDAuNC0xLjEsMC40LTEuOGgwLjVjMCwxLTAuMSwxLjktMC40LDIuNmMtMC4yLDAuNy0wLjYsMS4zLTEuMSwxLjdDMTYxLjcsNDguOCwxNjEsNDksMTYwLjIsNDlMMTYwLjIsNDl6IE0xNjMuNSw0OC44IGwtMC4zLTIuN3YtMmwtMi45LTAuMXYtMS4yaDQuNnY2SDE2My41eiI+PC9wYXRoPjxwYXRoIGNsYXNzPSJzdDAiIGQ9Ik0xNzQuOCw0OC44VjM2LjloNC4zYzEuNCwwLDIuNSwwLjMsMy4yLDFjMC43LDAuNywxLjEsMS41LDEuMSwyLjZjMCwxLjEtMC40LDEuOS0xLjEsMi42IGMtMC43LDAuNy0xLjgsMS0zLjIsMWgtMi41djQuOEwxNzQuOCw0OC44TDE3NC44LDQ4Ljh6IE0xNzYuNiw0Mi44aDIuM2MwLjksMCwxLjUtMC4yLDEuOS0wLjZjMC40LTAuNCwwLjctMC45LDAuNy0xLjYgYzAtMC42LTAuMi0xLjItMC42LTEuNmMtMC40LTAuNC0xLTAuNi0xLjgtMC42aC0yLjVWNDIuOHogTTE4MS40LDQ4LjhsLTMuMy01LjVoMS45bDMuNyw1LjVIMTgxLjR6Ij48L3BhdGg+PHBhdGggY2xhc3M9InN0MCIgZD0iTTE5Ny4zLDQ5Yy0xLDAtMS45LTAuMi0yLjctMC43Yy0wLjgtMC41LTEuNC0xLjEtMS45LTIuMWMtMC41LTAuOS0wLjctMi4xLTAuNy0zLjRjMC0xLjQsMC4yLTIuNSwwLjctMy41IGMwLjUtMC45LDEuMS0xLjYsMS45LTJjMC44LTAuNCwxLjctMC43LDIuNy0wLjdjMSwwLDEuOSwwLjIsMi43LDAuN2MwLjgsMC41LDEuNCwxLjEsMS45LDIuMWMwLjUsMC45LDAuNywyLjEsMC43LDMuNCBzLTAuMiwyLjUtMC43LDMuNGMtMC41LDAuOS0xLjEsMS42LTEuOSwyLjFDMTk5LjIsNDguOCwxOTguMyw0OSwxOTcuMyw0OUwxOTcuMyw0OXogTTE5Ny4zLDQ3LjRjMS4xLDAsMS45LTAuNCwyLjUtMS4yIGMwLjYtMC44LDAuOS0xLjksMC45LTMuNHMtMC4zLTIuNi0wLjktMy40Yy0wLjYtMC44LTEuNS0xLjItMi41LTEuMmMtMS4xLDAtMS45LDAuNC0yLjUsMS4yYy0wLjYsMC44LTAuOSwxLjktMC45LDMuNCBjMCwxLjUsMC4zLDIuNiwwLjksMy40QzE5NS40LDQ3LDE5Ni4yLDQ3LjQsMTk3LjMsNDcuNHoiPjwvcGF0aD48cGF0aCBjbGFzcz0ic3QwIiBkPSJNMjExLjQsMzYuOWgxLjh2Ny41YzAsMS4xLDAuMywxLjgsMC44LDIuM2MwLjUsMC41LDEuMiwwLjcsMi4xLDAuN2MwLjksMCwxLjUtMC4yLDIuMS0wLjcgYzAuNS0wLjUsMC44LTEuMiwwLjgtMi4zdi03LjVoMS44djcuNWMwLDEtMC4yLDEuOC0wLjYsMi41Yy0wLjQsMC43LTAuOSwxLjItMS42LDEuNmMtMC43LDAuNC0xLjUsMC41LTIuNSwwLjUgYy0xLDAtMS44LTAuMi0yLjUtMC41Yy0wLjctMC40LTEuMi0wLjktMS42LTEuNmMtMC40LTAuNy0wLjYtMS41LTAuNi0yLjVMMjExLjQsMzYuOUwyMTEuNCwzNi45eiI+PC9wYXRoPjxwYXRoIGNsYXNzPSJzdDAiIGQ9Ik0yMzAuNSw0OC44VjM2LjloNGMxLjMsMCwyLjQsMC4zLDMuMSwxYzAuNywwLjcsMS4xLDEuNiwxLjEsMi43YzAsMS4yLTAuNCwyLjEtMS4xLDIuN2MtMC43LDAuNy0xLjcsMS0zLjEsMSBoLTIuMnY0LjVIMjMwLjV6IE0yMzIuMyw0Mi43aDIuMmMwLjgsMCwxLjMtMC4yLDEuNy0wLjZjMC40LTAuNCwwLjYtMC45LDAuNi0xLjZjMC0wLjYtMC4yLTEuMi0wLjYtMS42Yy0wLjQtMC40LTEtMC42LTEuNy0wLjYgaC0yLjJWNDIuN3oiPjwvcGF0aD48L2c+PC9zdmc+" alt="SeventyTwo Sports Group">
     </a>
     <nav>
-      <a href="#scores" data-tab="scores"><span class="n72">72 </span>Competition Zone</a>
+      <a href="#scores" data-tab="scores"><span class="lg"><span class="n72">72 </span>Competition Zone</span><span class="sh">Scores</span></a>
       <a href="#rankings" data-tab="rankings"><span class="n72">72 </span>Rankings</a>
       <a href="#players" data-tab="players"><span class="n72">72 </span>Players</a>
-      <a href="#scouting" data-tab="scouting">Age Filtered World Rankings</a>
+      <a href="#scouting" data-tab="scouting"><span class="lg">Age Filtered World Rankings</span><span class="sh">By Age</span></a>
     </nav>
   </div>
 </header>
@@ -530,6 +634,7 @@ html.locked #gate{display:grid}
       </div>
       <div class="chips" role="group" aria-label="Filter by tour"><button class="chip on" data-f="ALL">All</button><button class="chip" data-f="ATP">ATP</button><button class="chip" data-f="WTA">WTA</button><button class="chip" data-f="NEXT">Next Gen</button></div>
     </div>
+    <input class="p-find" id="pFind" type="search" placeholder="Find a player…" aria-label="Find a player" autocomplete="off">
     <div class="pgrid" id="pgrid"></div>
   </div>
   <div id="page-scouting" hidden>
@@ -678,6 +783,8 @@ function esTime(date, time){
   const real = new Date(guess.getTime() - off * 60000);
   return real.toLocaleTimeString("en-GB", { timeZone:"Europe/Madrid", hour:"2-digit", minute:"2-digit", hourCycle:"h23" });
 }
+// "Alex de Minaur" -> "A. de Minaur", used on phones where match cards are narrow
+const shortName = n => { const w = String(n || "").trim().split(/\s+/); return w.length > 1 && !/^\(/.test(w[0]) ? w[0][0] + ". " + w.slice(1).join(" ") : String(n || ""); };
 function card(m){
   const today = m.date === ukDate();
   const fin = m.status === "finished";
@@ -690,7 +797,7 @@ function card(m){
     const lost = fin && m.winner && m.winner !== side;
     const won = fin && m.winner === side;
     return `<div class="row ${ours(id) ? "ours" : ""} ${lost ? "lost" : ""}">
-      <span class="pname"><span class="nm">${esc(name)}</span>${ours(id) ? '<span class="badge72">72</span>' : ""}${won ? '<span class="tick" aria-label="winner">✓</span>' : ""}</span>
+      <span class="pname"><span class="nm">${esc(name)}</span><span class="nm-s">${esc(shortName(name))}</span>${ours(id) ? '<span class="badge72">72</span>' : ""}${won ? '<span class="tick" aria-label="winner">✓</span>' : ""}</span>
       <span class="sets">${fin ? scoreCells(m.score, side) : ""}</span>
     </div>`;
   };
@@ -714,7 +821,7 @@ function card(m){
     ${times}
     <div class="m-body">${row(1)}${row(2)}</div>
     ${m.note ? `<div class="note">${esc(m.note)}</div>` : ""}
-    ${(m.source === "itf" || m.source === "te") && !fin ? `<div class="note">Live score not available for this match. The result appears here after the next ${m.source === "itf" ? "ITF" : "Tennis Europe"} check.</div>` : ""}
+    ${(m.source === "itf" || m.source === "te") && !fin ? `<div class="note gen">Live score not available for this match. The result appears here after the next ${m.source === "itf" ? "ITF" : "Tennis Europe"} check.</div>` : ""}
     <div class="m-foot"><span>${esc(m.category || "")}</span>${btn}</div>
   </article>`;
 }
@@ -1089,6 +1196,10 @@ const fmtN = n => n >= M ? (Math.round(n / M * 10) / 10) + "M" : n >= K ? (Math.
 const pad2 = n => n == null ? "—" : String(n).padStart(2, "0");
 const initials = p => (p.first[0] + p.last.replace(/^de /i, "")[0]).toUpperCase();
 let pFilter = "ALL";
+// player search: ignores accents and capitals, so "cori" finds Ćorić
+let pFind = "";
+const norm = t => String(t).normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLowerCase();
+document.addEventListener("input", e => { if (e.target.id === "pFind") { pFind = norm(e.target.value.trim()); renderPlayers(); } });
 const bestOf = (...a) => { a = a.filter(Boolean); return a.length ? Math.min(...a) : null; };
 
 function playerRank(id){
@@ -1136,6 +1247,7 @@ function playerList(){
   const key = o => o.x.kind === "junior" ? (o.rank ? 2e4 + o.rank : 4e4 + (o.itf ?? 9e3)) : (o.rank ?? 1e4);
   return ALL_PROFILES.map(x => ({ x, p: byId[x.id], rank: playerRank(x.id), itf: itfOf(x.id)?.rank ?? null }))
     .filter(o => o.p && (pFilter === "ALL" || groupsOf(o.x, o.p).includes(pFilter)))
+    .filter(o => !pFind || norm(o.p.first + " " + o.p.last).includes(pFind))
     .sort((a, b) => key(a) - key(b) || a.p.last.localeCompare(b.p.last));
 }
 function cardNums(x, rank){
