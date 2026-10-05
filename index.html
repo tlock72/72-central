@@ -335,7 +335,7 @@ select.sq-in option{background:var(--navy-2);color:var(--white)}
   nav{display:grid;grid-template-columns:1fr 1fr;border-radius:22px}
   nav a{padding:9px 6px}
 }
-/* Tour Schedule: events by week, coloured and sized by importance (tier 1 = Grand Slams and Finals ... 8 = smallest) */
+/* Tour Schedule: events by week, coloured and sized by importance (see the sg colour groups below) */
 .sch-key{display:flex;flex-wrap:wrap;gap:6px 14px;margin:4px 0 22px;font-size:11px;color:var(--muted)}
 .sch-key span{display:inline-flex;align-items:center;gap:6px}
 .sch-key i{width:10px;height:10px;border-radius:3px;background:var(--t)}
@@ -350,21 +350,21 @@ select.sq-in option{background:var(--navy-2);color:var(--white)}
 .ev .e72{grid-column:1/-1;display:flex;flex-wrap:wrap;gap:5px;margin-top:3px}
 .ev .e72 b{font-size:11px;font-weight:600;color:var(--navy);background:var(--gold);border-radius:999px;padding:2px 9px}
 .ev .e72 b em{font-style:normal;font-weight:400;opacity:.75;margin-left:4px}
-.tier1{--t:#F3CF8E;--tb:rgba(243,207,142,.16);--fs:21px;--pad:15px}
-.tier2{--t:#D0A579;--tb:rgba(208,165,121,.12);--fs:18px;--pad:13px}
-.tier3{--t:#C49BE0;--tb:rgba(196,155,224,.09);--fs:16px;--pad:11px}
-.tier4{--t:#86AEEB;--tb:rgba(134,174,235,.07);--fs:15px;--pad:10px}
-.tier5{--t:#73C8B6;--tb:rgba(115,200,182,.05);--fs:14px;--pad:8px}
-.tier6{--t:#9FB0C4;--tb:transparent;--fs:13px;--pad:7px}
-.tier7{--t:#7A8AA6;--tb:transparent;--fs:13px;--pad:6px}
-.tier8{--t:#56637F;--tb:transparent;--fs:12.5px;--pad:5px}
-.tier6 .cat,.tier7 .cat,.tier8 .cat{color:var(--white);background:transparent;border:1px solid var(--t);font-weight:500}
+/* colour groups: sg1 Slams & Finals, sg2 1000, sg3 500, sg4 250, sg5 Challenger/WTA/ITF 125 down to 50, sg6 35 down to 15, sg7 ITF Juniors, sg8 Tennis Europe */
+.sg1{--t:#F3CF8E;--tb:rgba(243,207,142,.16);--fs:21px;--pad:15px}
+.sg2{--t:#D0A579;--tb:rgba(208,165,121,.12);--fs:18px;--pad:13px}
+.sg3{--t:#C49BE0;--tb:rgba(196,155,224,.09);--fs:16px;--pad:11px}
+.sg4{--t:#86AEEB;--tb:rgba(134,174,235,.07);--fs:15px;--pad:10px}
+.sg5{--t:#73C8B6;--tb:rgba(115,200,182,.05);--fs:14px;--pad:8px}
+.sg6{--t:#E8907A;--tb:rgba(232,144,122,.05);--fs:13px;--pad:6px}
+.sg7{--t:#9CD67E;--tb:rgba(156,214,126,.05);--fs:13px;--pad:6px}
+.sg8{--t:#E77FC0;--tb:rgba(231,127,192,.05);--fs:13px;--pad:6px}
 .ev.pp{opacity:.55}
 @media (max-width:640px){
   .ev{padding:var(--pad) 10px var(--pad) 12px;gap:3px 8px}
   .ev .cat{font-size:9.5px;padding:2px 7px}
   .ev .mt{font-size:11px}
-  .tier1{--fs:18px}.tier2{--fs:16px}.tier3{--fs:15px}.tier4{--fs:14px}
+  .sg1{--fs:18px}.sg2{--fs:16px}.sg3{--fs:15px}.sg4{--fs:14px}
   .sch-key{font-size:10px;gap:4px 10px;margin-bottom:14px}
 }
 /* Rankings: roster facts */
@@ -1645,7 +1645,16 @@ $("#sqC").addEventListener("change", e => { SQ.c = e.target.value; renderScoutin
 let SCHED = null;
 const SCH = { tour: "all", lvl: "all", e72: false, q: "" };
 const SCH_TOURS = [["all", "All"], ["atp", "ATP Tour"], ["wta", "WTA Tour"], ["ch", "Challenger"], ["itfm", "Men's ITF"], ["itfw", "Women's ITF & WTA 125"], ["jun", "ITF Juniors"], ["te", "Tennis Europe"]];
-const SCH_TIERS = ["Grand Slams & Finals", "1000", "500 & team finals", "250", "Challenger 125+, WTA 125, J500, TE Super Cat & Masters", "Challenger 75–100, W75–100, J300, TE Cat 1", "Challenger 50, M/W25–50, J200, TE Cat 2", "M/W15, J30–J100, TE Cat 3"];
+// colour groups, in the order they are listed each week: Slams, 1000, 500, 250, 125 to 50, 35 to 15, ITF Juniors, Tennis Europe (within each group, biggest number first)
+const SCH_GROUPS = ["Grand Slams & Finals", "1000", "500 & team finals", "250", "125 to 50", "35 to 15", "ITF Juniors", "Tennis Europe"];
+const schNum = e => +((e.cat || "").match(/\d+/) || [0])[0];
+function schGrp(e){
+  if (e.tour === "jun") return 7;
+  if (e.tour === "te") return 8;
+  if (e.tour === "atp" || e.tour === "wta") return Math.min(e.tier, 4);
+  const n = schNum(e) || [0, 0, 0, 0, 0, 125, 75, 50, 15][e.tier] || 15;  // Challenger and ITF: by the number in the category
+  return n >= 50 ? 5 : 6;
+}
 const schDay = iso => new Date(iso + "T12:00:00Z");
 const schFmt = (iso, o) => schDay(iso).toLocaleDateString("en-GB", { day:"numeric", month:"short", timeZone:"UTC", ...o });
 function schMonday(iso){ const d = schDay(iso); d.setUTCDate(d.getUTCDate() - (d.getUTCDay() + 6) % 7); return d.toISOString().slice(0, 10); }
@@ -1662,7 +1671,7 @@ function renderSchedule(){
   if (SCH.lvl !== "all" && !lv.includes(SCH.lvl)) SCH.lvl = "all";
   $("#schLvlLine").hidden = lv.length < 2;
   $("#schLvls").innerHTML = [["all", "All"], ...lv.map(l => [l, l])].map(([k, l]) => `<button class="chip schl${SCH.lvl === k ? " on" : ""}" data-l="${esc(k)}">${esc(l)}</button>`).join("");
-  $("#schKey").innerHTML = SCH_TIERS.map((t, i) => `<span class="tier${i + 1}"><i></i>${t}</span>`).join("");
+  $("#schKey").innerHTML = SCH_GROUPS.map((t, i) => `<span class="sg${i + 1}"><i></i>${t}</span>`).join("");
   const q = sqKey(SCH.q);
   const rows = evs.filter(e => (SCH.tour === "all" || e.tour === SCH.tour) && (SCH.lvl === "all" || schLvl(e) === SCH.lvl)
     && (!SCH.e72 || (e.e72 || []).length) && (!q || sqKey(e.name + e.place).includes(q)));
@@ -1672,7 +1681,7 @@ function renderSchedule(){
   const nm = id => byId[id] ? `${byId[id].first[0]}. ${byId[id].last}` : id;
   $("#schList").innerHTML = rows.length ? [...weeks.entries()].sort().map(([w, list]) => `<section class="sch-wk">
       <h3>Week of ${schFmt(w, { weekday:"short" })}<small>${list.length} event${list.length === 1 ? "" : "s"}</small></h3>
-      ${list.sort((a, b) => a.tier - b.tier || a.start.localeCompare(b.start) || a.name.localeCompare(b.name)).map(e => `<a class="ev tier${e.tier}${e.status ? " pp" : ""}" href="${esc(e.link || "#")}" target="_blank" rel="noopener">
+      ${list.sort((a, b) => schGrp(a) - schGrp(b) || a.tier - b.tier || schNum(b) - schNum(a) || (a.tour === "ch" ? 0 : 1) - (b.tour === "ch" ? 0 : 1) || a.start.localeCompare(b.start) || a.name.localeCompare(b.name)).map(e => `<a class="ev sg${schGrp(e)}${e.status ? " pp" : ""}" href="${esc(e.link || "#")}" target="_blank" rel="noopener">
         <div class="nm">${esc(e.name)}</div>
         <span class="cat">${esc(e.tour === "te" ? schLvl(e) : e.cat)}</span>
         <div class="mt">${esc([e.place, e.surface, e.weekOnly ? "" : `${schFmt(e.start)} – ${schFmt(e.end)}`, (e.ages || []).length ? e.ages.map(a => "U" + a).join("/") : "", e.status].filter(Boolean).join(" · "))}</div>
