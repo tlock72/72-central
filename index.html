@@ -343,9 +343,9 @@ select.sq-in option{background:var(--navy-2);color:var(--white)}
 .rk-facts .s{display:block;font-size:11px;color:var(--muted-2);margin-top:3px;line-height:1.4}
 .rk-sep{padding:10px 22px;font-size:10px;letter-spacing:.16em;text-transform:uppercase;color:var(--muted-2);border-bottom:1px solid var(--line-2);background:rgba(255,255,255,.02)}
 @media (max-width:860px){.rk-facts{grid-template-columns:repeat(2,minmax(0,1fr))}}
-/* 72 Rankings: ATP / WTA buttons only when the two tables would stack (phones), showing one tour at a time */
+/* 72 Rankings: ATP / WTA and ITF Boys / Girls buttons only when the two tables would stack (phones), one table at a time */
 .rk-pick{display:none;margin:0 0 12px}
-@media (max-width:860px){.rk-pick{display:flex}#rkTours:not(.wta) .tp-wta,#rkTours.wta .tp-atp{display:none}}
+@media (max-width:860px){.rk-pick{display:flex}.tours.pick:not(.second)>.tour:nth-child(2),.tours.pick.second>.tour:first-child{display:none}}
 @media (max-width:640px){
   /* small tiles on phones (72 Rankings, ITF juniors, Age Filtered World Rankings) */
   .stats{gap:6px;margin-bottom:14px}
@@ -659,17 +659,18 @@ html.name-only .gate-box h2,html.name-only .gate-digits{display:none}
     <div class="stale" id="staleRanks" hidden></div>
     <div class="stats" id="stats"></div>
     <div class="rk-facts" id="rkFacts"></div>
-    <div class="chips rk-pick" role="group" aria-label="Choose tour"><button class="chip tp on" data-tp="atp">ATP</button><button class="chip tp" data-tp="wta">WTA</button></div>
-    <div class="tours" id="rkTours">
-      <div class="tour tp-atp"><div class="tour-h"><h3><span>ATP</span> Singles</h3><span class="k" id="atpN"></span></div><div id="atpList"></div></div>
-      <div class="tour tp-wta"><div class="tour-h"><h3><span>WTA</span> Singles</h3><span class="k" id="wtaN"></span></div><div id="wtaList"></div></div>
+    <div class="chips rk-pick" role="group" aria-label="Choose tour"><button class="chip tp on" data-tp="0">ATP</button><button class="chip tp" data-tp="1">WTA</button></div>
+    <div class="tours pick">
+      <div class="tour"><div class="tour-h"><h3><span>ATP</span> Singles</h3><span class="k" id="atpN"></span></div><div id="atpList"></div></div>
+      <div class="tour"><div class="tour-h"><h3><span>WTA</span> Singles</h3><span class="k" id="wtaN"></span></div><div id="wtaList"></div></div>
     </div>
     <p class="src" id="rankSrc"></p>
     </div>
     <div id="rk-itf" hidden>
     <div class="stale" id="staleItf" hidden></div>
     <div class="stats" id="itfStats"></div>
-    <div class="tours">
+    <div class="chips rk-pick" role="group" aria-label="Choose boys or girls"><button class="chip tp on" data-tp="0">Boys</button><button class="chip tp" data-tp="1">Girls</button></div>
+    <div class="tours pick">
       <div class="tour"><div class="tour-h"><h3><span>ITF</span> Junior Boys</h3><span class="k" id="itfBN"></span></div><div id="itfBoys"></div></div>
       <div class="tour"><div class="tour-h"><h3><span>ITF</span> Junior Girls</h3><span class="k" id="itfGN"></span></div><div id="itfGirls"></div></div>
     </div>
@@ -1433,7 +1434,7 @@ document.addEventListener("click", e => {
   const chip = e.target.closest(".chip[data-f]"); if (chip) { pFilter = chip.dataset.f; return renderPlayers(); }
   const rt = e.target.closest("[data-rt]"); if (rt) { rankTab = rt.dataset.rt; return renderRankings(); }
   const tp = e.target.closest("[data-tp]");
-  if (tp) { $("#rkTours").classList.toggle("wta", tp.dataset.tp === "wta"); document.querySelectorAll(".chip.tp").forEach(b => b.classList.toggle("on", b === tp)); return; }
+  if (tp) { const g = tp.parentElement; g.nextElementSibling.classList.toggle("second", tp.dataset.tp === "1"); g.querySelectorAll(".chip.tp").forEach(b => b.classList.toggle("on", b === tp)); return; }
   const go = e.target.closest("[data-go]"); if (go) return openProfile(go.dataset.go);
   if (e.target.closest("[data-close]") || e.target.id === "prof") $("#prof").close();
 });
