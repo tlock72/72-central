@@ -190,6 +190,7 @@ dialog.prof[open]{animation:pop .28s ease}
 .pb{padding:30px 40px 40px;display:grid;grid-template-columns:minmax(0,1fr);gap:30px}
 dialog.prof{overflow-x:hidden}
 .big{display:grid;grid-template-columns:repeat(4,1fr);gap:12px}
+.big.b3{grid-template-columns:repeat(3,1fr)}
 .big div{border:1px solid var(--line-2);border-radius:16px;padding:18px;background:rgba(255,255,255,.025)}
 .big b{display:block;font-family:var(--display);font-size:40px;font-weight:600;color:var(--white);line-height:1;font-variant-numeric:tabular-nums}
 .big b small{font-size:18px;color:var(--gold);margin-right:2px;font-weight:500}
@@ -252,7 +253,7 @@ blockquote.q cite{display:block;margin-top:12px;font-style:normal;font-family:va
 .pnav button:hover{color:var(--gold)}
 @media (max-width:640px){
   .ph{padding:30px 22px 24px}.pb{padding:24px 22px 30px}
-  .big{grid-template-columns:repeat(2,1fr)}.big b{font-size:32px}
+  .big,.big.b3{grid-template-columns:repeat(2,1fr)}.big b{font-size:32px}.big.b3>div:last-child{grid-column:1/-1}
   .pc{min-height:290px}.pc .fn{margin-top:22px}
   .pc .ln{font-size:30px}
   .ph .pimg{width:100%;opacity:.4;-webkit-mask-image:linear-gradient(to top,transparent,#000 70%);mask-image:linear-gradient(to top,transparent,#000 70%)}
@@ -1109,6 +1110,8 @@ function titlesOf(x){
   for (const t of c) by[t.tier] = (by[t.tier] || 0) + 1;
   return [...x.titles, { k:"ITF titles", n:c.length, ex, note:"No ITF singles titles", p:Object.entries(by).sort((a, b) => tierNum(b[0]) - tierNum(a[0])) }];
 }
+// has won an ATP or WTA title (Challenger and ITF titles don't count): only they get a "Career titles" tile
+const hasTourTitle = x => x.titles.some(t => /^(ATP|WTA) titles$/.test(t.k) && t.n > 0);
 const titleSum = tl => tl.reduce((s, t) => s + (t.team || t.ex ? 0 : t.n), 0);
 const titleExcl = tl => { const e = [tl.some(t => t.team) && "team", tl.some(t => t.ex) && "ITF"].filter(Boolean); return e.length ? ` (excl. ${e.join(" & ")})` : ""; };
 // junior results: ITF pro titles come from the ITF and replace the typed-in title lines (runner-up, doubles and junior lines stay)
@@ -1134,8 +1137,9 @@ function playerList(){
 }
 function cardNums(x, rank){
   if (x.kind !== "junior") {
-    const titles = titleSum(titlesOf(x));
-    return [[rank ? pad2(rank) : "—", "Ranking"], [pad2(bestOf(x.high, rank)), "Career high"], [pad2(titles), "Titles"]];
+    const tl = titlesOf(x), itf = tl.find(t => t.k === "ITF titles");
+    const last = hasTourTitle(x) ? [pad2(titleSum(tl)), "Titles"] : [pad2(itf ? itf.n : null), "ITF titles"];
+    return [[rank ? pad2(rank) : "—", "Ranking"], [pad2(bestOf(x.high, rank)), "Career high"], last];
   }
   const it = itfOf(x.id);
   return [[it?.rank ? pad2(it.rank) : "—", "ITF junior"], [rank ? rank : "—", byId[x.id].tour === "WTA" ? "WTA rank" : "ATP rank"], [x.born, "Born"]];
@@ -1168,10 +1172,11 @@ function proBody(x, p, rank){
       : `<div class="leg" style="margin-top:12px">${esc(t.note || "")}</div>`;
     return `<div class="tb"><div class="h"><span>${esc(t.k)}</span><b>${pad2(t.n)}</b></div>${bar}</div>`;
   };
-  return `<div class="big">
+  const tour = hasTourTitle(x);
+  return `<div class="big${tour ? "" : " b3"}">
         <div><b>${rank ? `<small>#</small>${rank}` : "—"}</b><span>Current ${p.tour} ranking</span></div>
         <div><b>${x.junior ? `<small>#</small>${x.junior}` : best ? `<small>#</small>${best}` : "—"}</b><span>${x.junior ? "Highest ITF junior ranking" : "Career-high ranking"}</span></div>
-        <div><b>${pad2(titles)}</b><span>Career titles${titleExcl(tl)}</span></div>
+        ${tour ? `<div><b>${pad2(titles)}</b><span>Career titles${titleExcl(tl)}</span></div>` : ""}
         <div><b>${fmtN(reach)}</b><span>Social following</span></div>
       </div>
       <section><h3 class="pk">Titles</h3><div class="tg">${tl.map(tblock).join("") || `<div class="leg">No titles yet</div>`}</div></section>
