@@ -5,8 +5,8 @@ For every roster player it reads their ITF singles results from the ITF's own si
 main-draw final they won in titles.json, with the tournament and its week:
   - once per player, their whole career (ITF World Tennis Tour M/W15-M/W100, and before 2019 the
     men's Futures and the ITF Women's Circuit), then every day just the current year;
-  - once a week, their career-high ATP/WTA ranking ("best"), so the website can leave the ITF box
-    off for anyone who is or has been in the top 100.
+  - once a ranking week (from Tuesday), their career-high ATP/WTA ranking ("best"), shown on the
+    player pages and used to leave ITF titles out of the totals of anyone who is or has been top 100.
 The home page counts this year's ITF World Tennis Tour titles and the player pages show the career
 ITF titles, so both always match the ITF's records: doubles never count, and two titles at the
 same venue are two titles.
@@ -156,7 +156,9 @@ def main():
     ids, missing = data.setdefault("ids", {}), data.setdefault("notFound", {})
     titles = data.setdefault("titles", {})
     year = uk.year
-    week_ago = (uk.date() - timedelta(days=7)).isoformat()
+    # career highs are re-read once per ranking week, from the Tuesday (the tours publish on Monday)
+    tue = uk.date() - timedelta(days=(uk.weekday() - 1) % 7)
+    week_ago = (tue - timedelta(days=1)).isoformat()
     pending, todo, blocked = [], [], False
     for rid in order:
         if rid not in ROSTER:
