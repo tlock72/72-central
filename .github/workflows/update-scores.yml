@@ -59,6 +59,11 @@ jobs:
         timeout-minutes: 8
         env:
           SOURCE: ${{ github.event_name == 'schedule' && 'timer' || inputs.source || 'manual' }}
+      - id: titles
+        name: ITF World Tennis Tour singles titles (once a day from 07:00 UK, from the ITF site, no Claude)
+        run: python3 scripts/itf_titles.py
+        continue-on-error: true
+        timeout-minutes: 9
       - id: te
         name: Tennis Europe matches (once a day from 07:30 UK, no Claude)
         run: pip install -q beautifulsoup4 && python3 scripts/te_matches.py
