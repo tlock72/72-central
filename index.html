@@ -941,7 +941,7 @@ const PROFILES = [
     partners:["AGEL","Babolat","THAYA"], social:{ Instagram:45*K } },
   { id:"starodubtseva", age:26, nat:"Ukrainian", plays:BH,
     titles:[],
-    partners:["adidas"], social:{ Instagram:17*K },
+    partners:["Head","adidas"], social:{ Instagram:17*K },
     quote:["Starodubtseva has become only the seventh player since 2009 to make the last eight in her first WTA 1000 main draw. Yuliia is the first woman in the Open Era to qualify for all four majors in a single season.","WTA"] },
   { id:"coric", age:29, nat:"Croatian", plays:BH, high:12,
     titles:[{ k:"ATP titles", n:3, p:[["Masters 1000",1],["500",1],["250",1]] }],
@@ -1072,7 +1072,7 @@ ALL_PROFILES.forEach(x => { const d = DOB[x.id]; if (!d) return; x.dob = d; x.ag
 // U12 = turning 12 or younger this year (2014 and younger in 2026)
 JUNIOR_PROFILES.forEach(x => { if (x.born >= new Date().getFullYear() - 12) x.grp = "U12"; });
 /* racket and clothing partners are picked out in the partner line-up */
-const RACKET = ["wilson","yonex","head","babolat","dunlop","tecnifibre","prince","artengo","solinco","prokennex","volkl"];
+const RACKET = ["wilson","yonex","head","babolat","dunlop","tecnifibre","prince","artengo","solinco","prokennex","volkl","diadem"];
 const APPAREL = ["nike","adidas","asics","lotto","k-swiss","joma","ea7","castore","lacoste","fila","on","diadora","ellesse","hydrogen","le coq sportif","uniqlo","new balance","mizuno","sergio tacchini","australian","bidi badu"];
 // players whose racket brand also dresses them (one brand for both)
 const SAME_KIT = new Set(["deminaur", "altmaier", "dotsenko", "iwasa", "lin", "kym", "mackenzie"]);
