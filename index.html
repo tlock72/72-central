@@ -535,6 +535,95 @@ nav .sh,.nm-s{display:none}
   nav a{padding:6px 6px;font-size:9px}
   .pname{font-size:9.5px}
 }
+/* Players page on phones: 2 slim rows per line (photo, name, ranking) instead of tall photo cards */
+@media (max-width:640px){
+  .pgrid{grid-template-columns:repeat(2,minmax(0,1fr));gap:6px}
+  .pc{min-height:0;display:grid;grid-template-columns:34px minmax(0,1fr) auto;grid-template-rows:auto auto;column-gap:8px;align-items:center;padding:6px 8px;border-radius:10px}
+  .pc:hover{transform:none;box-shadow:none}
+  .pc .bg{position:static;grid-row:1/3;grid-column:1;width:34px;height:34px;border-radius:50%;opacity:1;filter:none;transform:none;background-color:var(--navy-3);background-position:center 15%}
+  .pc:hover .bg{transform:none}
+  .pc .shade,.pc .mono,.pc .top,.pc .meta,.pc .go,.pc .cc{display:none}
+  .pc .fn{grid-column:2;grid-row:1;align-self:end;margin:0;padding:0;font-size:8.5px;letter-spacing:.08em;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  .pc .ln{grid-column:2;grid-row:2;align-self:start;margin:0;font-size:13px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;overflow-wrap:normal;word-break:normal}
+  .pc .nums{grid-column:3;grid-row:1/3;display:block;margin:0;padding:0;border:0;text-align:right}
+  .pc .nums div:not(:first-child){display:none}
+  .pc .nums b{display:block;font-size:14px}
+  .pc .nums span{display:block;font-size:7px;letter-spacing:.06em;margin:1px 0 0}
+}
+/* Event colours by importance (1 = biggest), the same scale as the tour schedule: use var(--tier1)…var(--tier9) */
+:root{
+  --tier1:#D0A579;  /* Grand Slams, ATP/WTA Finals */
+  --tier2:#B79CFF;  /* 1000s, Olympics */
+  --tier3:#6FA8FF;  /* 500s, team cups (Davis Cup, BJK Cup, United Cup, Laver Cup) */
+  --tier4:#4FD1C5;  /* 250s */
+  --tier5:#9BD77B;  /* Challenger 125+, WTA 125, ITF 100+, Junior Slams / J500, TE Super Category */
+  --tier6:#E8C468;  /* Challenger 75-100, ITF 75, J300, TE Category 1 */
+  --tier7:#F0A06A;  /* Challenger 50, ITF 25-50, J200, TE Category 2 */
+  --tier8:#9AA6C8;  /* ITF 15, lower juniors, TE Category 3 */
+  --tier9:#F28DC0;  /* exhibitions */
+  --tier0:#5E6888;  /* not on official records */
+  --win:#2E9E5B; --loss:#D14B4B;
+}
+.res-btn{display:inline-flex;align-items:center;gap:8px;margin-top:18px;font-family:var(--display);text-transform:uppercase;letter-spacing:.14em;font-size:12px;font-weight:600;color:var(--navy);background:var(--gold);border-radius:999px;padding:9px 18px}
+.res-btn:hover{background:var(--gold-2)}
+.rs-top{display:flex;align-items:center;gap:14px;flex-wrap:wrap;padding:22px 40px 18px;border-bottom:1px solid var(--line);background:linear-gradient(160deg,var(--navy-3),#0B1230)}
+.rs-top .back{font-family:var(--display);text-transform:uppercase;letter-spacing:.14em;font-size:12px;color:var(--gold);border:1px solid var(--line);border-radius:999px;padding:7px 14px}
+.rs-top h2{flex:1;min-width:0;margin:0;font-family:var(--display);text-transform:uppercase;font-weight:600;font-size:26px;letter-spacing:.02em;color:var(--white);line-height:1.05}
+.rs-top h2 small{display:block;font-size:11px;letter-spacing:.2em;color:var(--gold);font-weight:500;margin-bottom:3px}
+.rs-top .x{margin-left:auto;width:36px;height:36px;border-radius:50%;border:1px solid var(--line);color:var(--gold);font-size:17px;display:grid;place-items:center}
+.rs-body{padding:22px 40px 34px;display:grid;gap:22px}
+.rs-yrs{display:grid;grid-template-columns:repeat(auto-fit,minmax(118px,1fr));gap:8px}
+.rs-yr{text-align:left;border:1px solid var(--line-2);border-radius:12px;padding:10px 12px;background:rgba(255,255,255,.02);color:var(--text)}
+.rs-yr.on{border-color:var(--gold);background:var(--gold-dim)}
+.rs-yr b{display:block;font-family:var(--display);font-size:13px;letter-spacing:.14em;color:var(--gold)}
+.rs-yr .wl{display:block;font-family:var(--display);font-size:22px;font-weight:600;color:var(--white);margin-top:2px;font-variant-numeric:tabular-nums}
+.rs-yr .wlbar{display:flex;height:5px;border-radius:9px;overflow:hidden;margin-top:6px;background:rgba(255,255,255,.06)}
+.rs-yr .wlbar i{display:block;background:var(--win)} .rs-yr .wlbar u{display:block;background:var(--loss)}
+.rs-yr .pc2{display:block;font-size:10px;color:var(--muted);margin-top:4px}
+.rs-form{display:flex;align-items:center;gap:12px;flex-wrap:wrap}
+.rs-form .k{font-family:var(--display);text-transform:uppercase;letter-spacing:.2em;font-size:11px;color:var(--muted)}
+.rs-form .bx{display:flex;gap:5px}
+.wlb{display:inline-grid;place-items:center;width:28px;height:28px;border-radius:6px;font-family:var(--display);font-weight:700;font-size:14px;color:#fff;background:var(--win)}
+.wlb.l{background:var(--loss)}
+.rs-form .lt{font-size:10px;color:var(--muted-2)}
+.rs-leg{display:flex;flex-wrap:wrap;gap:6px 14px;font-size:11px;color:var(--muted)}
+.rs-leg span{display:inline-flex;align-items:center;gap:6px}
+.rs-leg em{width:10px;height:10px;border-radius:3px;display:inline-block}
+.rs-ev{border:1px solid var(--line-2);border-left:4px solid var(--tc,var(--tier0));border-radius:12px;background:rgba(255,255,255,.02);overflow:hidden}
+.rs-eh{display:flex;align-items:baseline;gap:10px;flex-wrap:wrap;padding:11px 14px 8px}
+.rs-eh .t{font-weight:600;color:var(--white);font-size:14px}
+.rs-eh a.t{text-decoration:none} .rs-eh a.t:hover{text-decoration:underline}
+.rs-eh .cat{font-family:var(--display);text-transform:uppercase;letter-spacing:.1em;font-size:10px;font-weight:600;color:var(--navy);background:var(--tc,var(--tier0));border-radius:4px;padding:2px 7px}
+.rs-eh .dt{font-size:11px;color:var(--muted-2);margin-left:auto}
+.rs-m{display:grid;grid-template-columns:44px 26px minmax(0,1fr) auto;gap:10px;align-items:center;padding:6px 14px;border-top:1px solid var(--line-2);font-size:13px}
+.rs-m .r{font-family:var(--display);letter-spacing:.06em;font-size:12px;color:var(--muted);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.rs-m .wlb{width:22px;height:22px;font-size:12px;border-radius:5px}
+.rs-m .wlb.wo{background:var(--muted-2)}
+.rs-m .o{min-width:0;color:var(--text);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.rs-m .o small{color:var(--muted-2);margin-left:6px;font-size:11px}
+.rs-m .s{font-variant-numeric:tabular-nums;color:var(--white);text-align:right;white-space:nowrap}
+.rs-note{font-size:12px;color:var(--muted-2);line-height:1.5}
+@media (max-width:640px){
+  .ph .res-btn{margin-top:12px;font-size:10.5px;padding:7px 14px}
+  .rs-top{padding:14px 16px 12px;gap:10px}
+  .rs-top h2{font-size:17px}
+  .rs-top .back{padding:6px 10px;font-size:10px;letter-spacing:.08em}
+  .rs-top .x{width:32px;height:32px}
+  .rs-body{padding:14px 12px 24px;gap:16px}
+  .rs-yrs{grid-template-columns:repeat(4,minmax(0,1fr));gap:5px}
+  .rs-yr{padding:7px 7px;border-radius:9px}
+  .rs-yr b{font-size:11px;letter-spacing:.06em}
+  .rs-yr .wl{font-size:16px}
+  .rs-yr .pc2{font-size:9px}
+  .wlb{width:24px;height:24px;font-size:12px}
+  .rs-eh{padding:8px 10px 6px;gap:6px}
+  .rs-eh .t{font-size:13px}
+  .rs-eh .dt{flex-basis:100%;margin-left:0;font-size:10px}
+  .rs-m{grid-template-columns:30px 20px minmax(0,1fr) auto;gap:7px;padding:5px 10px;font-size:12px}
+  .rs-m .r{font-size:10.5px}
+  .rs-m .wlb{width:19px;height:19px;font-size:10.5px}
+  .rs-m .o small{display:none}
+}
 @media (prefers-reduced-motion:reduce){*{transition:none!important;animation:none!important}}
 /* passcode screen */
 html.locked body > *:not(#gate){display:none !important}
@@ -807,8 +896,8 @@ function route(){
   $("#page-rankings").hidden = tab !== "rankings";
   $("#page-players").hidden = tab !== "players";
   $("#page-scouting").hidden = tab !== "scouting";
-  const pid = hash.startsWith("#players/") ? hash.slice(9) : null;
-  if (pid && profById[pid]) openProfile(pid);
+  const [pid, sub] = hash.startsWith("#players/") ? hash.slice(9).split("/") : [null];
+  if (pid && profById[pid]) sub === "results" ? openResults(pid) : openProfile(pid);
   else if ($("#prof").open) $("#prof").close();
   document.querySelectorAll("nav a").forEach(a => a.classList.toggle("active", a.dataset.tab === tab));
   // the champions banner sits at the top of both the home page and Competition Zone
@@ -1418,6 +1507,7 @@ function openProfile(id){
       <div class="fn">${esc(p.first)}</div>
       <div class="ln">${esc(p.last)}</div>
       <div class="facts">${facts.map(([k, v]) => `<span>${esc(k)} <b>${esc(v)}</b></span>`).join("")}</div>
+      <button class="res-btn" data-results="${x.id}">All results since 2023 <span aria-hidden="true">→</span></button>
     </div>
     <div class="pb">
       ${(lr => lr ? `<section><h3 class="pk">Latest result</h3><div class="plr">${card(lr)}</div></section>` : "")(latestResult(id))}
@@ -1436,9 +1526,81 @@ document.addEventListener("click", e => {
   const tp = e.target.closest("[data-tp]");
   if (tp) { const g = tp.parentElement; g.nextElementSibling.classList.toggle("second", tp.dataset.tp === "1"); g.querySelectorAll(".chip.tp").forEach(b => b.classList.toggle("on", b === tp)); return; }
   const go = e.target.closest("[data-go]"); if (go) return openProfile(go.dataset.go);
+  const rb = e.target.closest("[data-results]"); if (rb) return openResults(rb.dataset.results);
+  const ry = e.target.closest("[data-ry]"); if (ry) { RES.year = +ry.dataset.ry; return renderResults(); }
   if (e.target.closest("[data-close]") || e.target.id === "prof") $("#prof").close();
 });
 $("#prof").addEventListener("close", () => { if (location.hash.startsWith("#players/")) history.replaceState(null, "", "#players"); });
+
+/* ---------- a player's results since 2023 (results/<id>.json, rebuilt daily by scripts/results.py) ---------- */
+// colours follow the tour schedule's importance scale (CSS --tier1…--tier9, 0 = not on official records)
+const TIER_NAMES = { 1:"Grand Slam / Finals", 2:"1000 / Olympics", 3:"500 / team cup", 4:"250", 5:"Challenger 125 · WTA 125 · ITF 100+ · Junior Slam / J500",
+  6:"Challenger 75–100 · ITF 75 · J300", 7:"Challenger 50 · ITF 25–50 · J200", 8:"ITF 15 · junior / Tennis Europe", 9:"Exhibition", 0:"Other event" };
+const tierColor = k => `var(--tier${k in TIER_NAMES ? k : 0})`;
+const RESULTS = {};  // id -> file contents (or null if not there yet)
+const RES = { id: null, year: null };
+const official = m => !m.wo;  // walkovers don't count in win-loss records
+const isExh = e => e.k === 9 || e.k === 0;
+async function openResults(id){
+  if (!profById[id] || !byId[id]) return;
+  if (RES.id !== id) RES.year = null;
+  RES.id = id;
+  const d = $("#prof");
+  if (!d.open) d.showModal();
+  if (!(id in RESULTS)) {
+    d.innerHTML = `<div class="rs-top"><button class="back" data-go="${id}">← Profile</button><h2><small>Results since 2023</small>${esc(byId[id].first)} ${esc(byId[id].last)}</h2><button class="x" data-close aria-label="Close">✕</button></div><div class="rs-body"><p class="rs-note">Loading results…</p></div>`;
+    try { const r = await fetch(`results/${id}.json?t=` + Date.now(), { cache: "no-store" }); RESULTS[id] = r.ok ? await r.json() : null; } catch (e) { RESULTS[id] = null; }
+    if (RES.id !== id) return;  // moved on while loading
+  }
+  renderResults();
+  d.scrollTop = 0;
+  if (location.hash !== `#players/${id}/results`) history.replaceState(null, "", `#players/${id}/results`);
+}
+function renderResults(){
+  const id = RES.id, p = byId[id], data = RESULTS[id];
+  const events = data?.events || [];
+  const thisYear = +ukDate().slice(0, 4);
+  const years = [...new Set([thisYear, ...events.map(e => e.y)])].filter(y => y >= (data?.from || 2023)).sort((a, b) => b - a);
+  if (!RES.year || !years.includes(RES.year)) RES.year = years[0];
+  // win-loss per year: official matches only (exhibitions and walkovers are listed but not counted)
+  const wl = y => { const ms = events.filter(e => e.y === y && !isExh(e)).flatMap(e => e.m).filter(official);
+    return [ms.filter(m => m.res === "W").length, ms.filter(m => m.res === "L").length]; };
+  const xl = y => { const ms = events.filter(e => e.y === y && isExh(e)).flatMap(e => e.m).filter(official);
+    return [ms.filter(m => m.res === "W").length, ms.filter(m => m.res === "L").length]; };
+  const yearBtn = y => { const [w, l] = wl(y), n = w + l;
+    return `<button class="rs-yr${y === RES.year ? " on" : ""}" data-ry="${y}"><b>${y}</b><span class="wl">${w}–${l}</span>
+      <span class="wlbar">${n ? `<i style="flex:${w}"></i><u style="flex:${l}"></u>` : ""}</span><span class="pc2">${n ? Math.round(100 * w / n) + "% won" : "No matches"}</span></button>`; };
+  const yev = events.filter(e => e.y === RES.year);
+  // form: the last 5 official matches of the current year, oldest on the left, latest on the right
+  const form = RES.year === thisYear ? yev.filter(e => !isExh(e)).flatMap(e => e.m).filter(official).slice(0, 5).reverse() : [];
+  const [xw, xlo] = xl(RES.year);
+  const cats = [...new Map(yev.map(e => [e.k, e])).keys()].sort((a, b) => (a || 99) - (b || 99));
+  const day = iso => iso ? new Date(iso + "T12:00:00Z").toLocaleDateString("en-GB", { day:"numeric", month:"short", timeZone:"UTC" }) : "";
+  const span = e => e.w0 === e.w1 ? day(e.w0) : `${day(e.w0)} – ${day(e.w1)}`;
+  const link = e => /^https:\/\/(www\.itftennis\.com|te\.tournamentsoftware\.com)\//.test(e.link || "") ? e.link : null;
+  const evHtml = e => `<div class="rs-ev" style="--tc:${tierColor(e.k)}">
+      <div class="rs-eh">${link(e) ? `<a class="t" href="${esc(link(e))}" target="_blank" rel="noopener">${esc(e.t)}</a>` : `<span class="t">${esc(e.t)}</span>`}
+        <span class="cat">${esc(e.team ? "Team event" : e.c)}</span><span class="dt">${esc([span(e), e.sf].filter(Boolean).join(" · "))}</span></div>
+      ${e.m.map(m => `<div class="rs-m"><span class="r" title="${esc(m.r)}">${esc(m.r || "")}</span>
+        <span class="wlb${m.res === "L" ? " l" : ""}${m.wo ? " wo" : ""}" title="${m.wo ? "Walkover (not counted)" : m.res === "W" ? "Won" : "Lost"}">${m.res}</span>
+        <span class="o">${m.res === "W" ? "d." : "lost to"} ${esc(m.o)}${m.oc ? ` (${esc(m.oc)})` : ""}${m.d ? `<small>${esc(day(m.d))}</small>` : ""}</span>
+        <span class="s">${esc(m.wo ? "Walkover" : m.s)}</span></div>`).join("")}
+    </div>`;
+  $("#prof").innerHTML = `
+    <div class="rs-top"><button class="back" data-go="${id}">← Profile</button>
+      <h2><small>Results since ${data?.from || 2023}</small>${esc(p.first)} ${esc(p.last)}</h2>
+      <button class="x" data-close aria-label="Close">✕</button></div>
+    <div class="rs-body">
+      ${!data ? `<p class="rs-note">${esc(p.first)}'s results are still being loaded from the ITF and Tennis Explorer. They appear here within a day.</p>` : `
+      <section><h3 class="pk">Win–loss by year</h3><div class="rs-yrs">${years.map(yearBtn).join("")}</div></section>
+      ${form.length ? `<div class="rs-form"><span class="k">Form · last ${form.length}</span><span class="bx">${form.map(m => `<span class="wlb${m.res === "L" ? " l" : ""}" title="${esc(`${m.res === "W" ? "Won" : "Lost"} v ${m.o} ${m.s}`)}">${m.res}</span>`).join("")}</span><span class="lt">latest →</span></div>` : ""}
+      <section><h3 class="pk">${RES.year} results</h3>
+        ${cats.length ? `<div class="rs-leg" style="margin-bottom:12px">${cats.map(k => `<span><em style="background:${tierColor(k)}"></em>${esc(TIER_NAMES[k] || TIER_NAMES[0])}</span>`).join("")}</div>` : ""}
+        <div style="display:grid;gap:10px">${yev.map(evHtml).join("") || `<p class="rs-note">No matches in ${RES.year} yet.</p>`}</div>
+      </section>
+      <p class="rs-note">Singles, main draw and qualifying. The win–loss counts official matches only${xw + xlo ? `; exhibitions (${xw}–${xlo} in ${RES.year}) are listed but not counted` : ""}, and walkovers are not counted. Sources: ITF (all official events), Tennis Explorer (exhibitions and match days) and Tennis Europe.${data.updated ? ` Updated ${esc(fmtDob(data.updated))}.` : ""}</p>`}
+    </div>`;
+}
 
 function render(){ renderScores(); renderRankings(); renderPlayers(); renderHome(); }
 

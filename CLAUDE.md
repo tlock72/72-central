@@ -22,6 +22,7 @@ It is hosted on GitHub Pages at tlock72.github.io/72-central and protected by a 
 | `itfm.json` | ITF junior matches. |
 | `te.json` | Tennis Europe U14/U16 matches. |
 | `scouting.json`, `scouting_history.json` | Age Filtered World Rankings: every ranked ATP/WTA player with birth year and 1-week, 3-month and 12-month moves (the page filters by age group, birth year, ranking and "72 only"; 72 Rankings links to the 72-only view). A move of `-1` means "not tracked then". ATP history only kept young players before 5 Oct 2026; `scouting.py` fills those weeks in for everyone from Tennis Explorer (5 weeks a run, stored as `_tok` weeks keyed by name in any word order, after checking it agrees with Tennis Abstract). The 1 wk / 3 mo / 12 mo moves for 72 players also show on 72 Rankings. |
+| `results.json`, `results/<id>.json` | Every player's singles results since 2023, written by `results.py`, one file per player (opened by the "All results since 2023" button on a profile: win–loss per year, a 5-match form tracker for this year, events coloured by importance). `results.json` holds the Tennis Explorer profile each player was matched to, `full` (players loaded from 2023), `pending`, and `teArchive` (Tennis Europe matches kept from `te.json`). Event `k` is the importance tier (1 Slam … 8 ITF 15/lower juniors, 9 exhibition, 0 not on official records); the colours are `--tier1`…`--tier9` in `index.html`, shared with the tour schedule. |
 | `*.webp` | Player photos, named by roster id. |
 | `FILL_GAPS.md`, `ITF_JUNIORS.md` | Manual fallback instructions for Claude, used only when asked. |
 
@@ -37,10 +38,11 @@ Roster ids are short surnames (`deminaur`, `svitolina`, `mmakarova`…). **Addin
 - `itf_matches.py`: ITF junior draws and results, about twice a day.
 - `itf_titles.py`: ITF singles titles for the whole roster from the ITF site (circuit `MT` men / `WT` women, singles, main-draw finals won; ITF World Tennis Tour plus pre-2019 Futures and ITF Women's Circuit). Loads each player's whole career once, then the current year daily from 07:00 UK, and career highs weekly. Stops at the ITF bot check and never guesses an unreadable final.
 - `te_matches.py`: Tennis Europe matches, once a day from 07:30 UK.
+- `results.py`: player results since 2023, once a day from 08:00 UK (6-minute budget per run, players not reached carry over). Official matches and their category come from the ITF's player activity (same API as `itf_titles.py`, stops at the bot check); exhibitions, team events the ITF lacks and exact match days come from Tennis Explorer, only after its profile's matches agree with the ITF's. Unmatched non-exhibition events from the last 3 weeks are held back (the ITF lists events once finished). Win–loss counts exclude exhibitions and walkovers.
 - `report_gaps.py`: alerting. It comments on the GitHub issue "72 Central: missing info" (GitHub emails Tobey) and reports each message once, so **never put times in alert text**. It also runs as the watchdog.
 
 ## Workflows (`.github/workflows/`)
-- `update-scores.yml`: runs every 30 minutes (cron `13,43 6-22 * * *` UTC, plus cron-job.org dispatches with `source=timer`). It runs update.py, then ITF ranks if due, scouting, ITF matches, TE, save, and alert.
+- `update-scores.yml`: runs every 30 minutes (cron `13,43 6-22 * * *` UTC, plus cron-job.org dispatches with `source=timer`). It runs update.py, then ITF ranks if due, scouting, ITF matches, ITF titles, TE, player results, save, and alert.
   - Checkout uses `ref: main`, because a run queued behind another must start from the newest data.
   - The save step does `pull --rebase -X theirs`, and on failure aborts and skips (the next run catches up).
 - `itf-juniors.yml`: Mondays at 08:20, 11:20 and 14:20 UK.

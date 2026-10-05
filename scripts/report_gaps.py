@@ -27,6 +27,7 @@ STEP_NAMES = {
     "itfm": "ITF junior matches",
     "titles": "ITF World Tennis Tour titles",
     "te": "Tennis Europe matches",
+    "results": "player results since 2023",
     "save": "saving the new data (this usually sorts itself out on the next run)",
 }
 
@@ -83,6 +84,13 @@ def gaps():
                    "(the ITF site blocked or failed the check, or a final couldn't be read). Their saved titles are still counted.")
     if ti.get("checked") and ti["checked"] < ago(3):
         out.append(f"ITF World Tennis Tour titles haven't been checked since {ti['checked']}.")
+    # 4c) player results since 2023 (results.py): players that couldn't be read, or the daily check hasn't run
+    rs = load("results.json")
+    if rs.get("pending"):
+        out.append(f"Player results could not be updated on {rs.get('tried', '')[:10]} for: {', '.join(rs['pending'])} "
+                   "(the ITF site blocked or failed the check). Their saved results are still shown.")
+    if rs.get("checked") and rs["checked"] < ago(3):
+        out.append(f"Player results haven't been updated since {rs['checked']}.")
     # 5) ATP/WTA rankings
     d = load("data.json")
     if d.get("quotaHit") and ukday(d["quotaHit"]) == TODAY:
