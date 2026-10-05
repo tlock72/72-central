@@ -1,9 +1,11 @@
 """
 72 Central - Scouting HQ (runs inside the "Update scores" GitHub Action, no Claude needed).
 
-Builds scouting.json: every ranked ATP and WTA singles player aged 21 or under by birth year
-(born in or after this year minus 21), with birth year, current official ranking and how far
-they have moved in the last week, 3 months (13 weeks) and 12 months (52 weeks).
+Builds scouting.json: every ranked ATP and WTA singles player (the website filters by age, birth
+year and ranking), with birth year, current official ranking and how far they have moved in the
+last week, 3 months (13 weeks) and 12 months (52 weeks).
+A move of -1 means "not tracked then": until 5 Oct 2026 the ATP history kept only players aged
+about 23 or under, so older ATP players' moves fill in as the weekly history builds up.
 
 Sources (both free, no key):
   - ATP: Tennis Abstract's weekly ranking report (official ATP ranking + date of birth)
@@ -24,6 +26,7 @@ OUT, HIST = "scouting.json", "scouting_history.json"
 NOW = datetime.now(timezone.utc)
 FORCE = os.environ.get("RANKINGS") == "1" or os.environ.get("FORCE") == "1"
 BACK = {"w": 7, "m3": 91, "m12": 364}  # 1 week, 13 weeks, 52 weeks
+AGES = "all"  # scouting.json holds every age; an older file (young players only) is rebuilt once
 
 
 def get(url, tries=3):
@@ -124,7 +127,8 @@ def main():
     data = load(OUT, {})
     hist = load(HIST, {})
     last = data.get("checked")
-    if not FORCE and data.get("atp") and data.get("wta") and last:
+    force = FORCE or data.get("ages") != AGES
+    if not force and data.get("atp") and data.get("wta") and last:
         # hourly on Mondays and Tuesdays (when the tours publish), every 3 hours otherwise
         if NOW - datetime.fromisoformat(last) < timedelta(hours=1 if NOW.weekday() in (0, 1) else 3):
             print("Scouting HQ: checked recently, nothing to do")
@@ -138,37 +142,29 @@ def main():
     # ---- ATP ----
     try:
         week, rows = atp_current()
-        if FORCE or not data.get("atp") or data["atp"].get("week") != week:
+        if force or not data.get("atp") or data["atp"].get("week") != week:
             weeks = hist["atp"]
-            # keep a compact copy of this week's young players for future comparisons
-            weeks[week] = {key(r["name"]): r["rank"] for r in rows if r["dob"][:4].isdigit() and int(r["dob"][:4]) >= min_year - 2}
+            # keep a compact copy of this week's ranking for future comparisons ("_all": every player is in it;
+            # older weeks without it only hold players born in or after min_year - 2)
+            weeks[week] = {key(r["name"]): r["rank"] for r in rows}
+            weeks[week]["_all"] = 1
             cmp = {k: pick_week([w for w in weeks if w < week], (date.fromisoformat(week) - timedelta(days=d)).isoformat())
                    for k, d in BACK.items()}
             players = []
             for r in rows:
-                y = int(r["dob"][:4]) if r["dob"][:4].isdigit() else None
-                if not y or y < min_year:
-                    continue
+                y = int(r["dob"][:4]) if r["dob"][:4].isdigit() else None  # None: birth date not published
                 k = key(r["name"])
-                prev = {c: (snapshot_rank(weeks[w], k) if w else None) for c, w in cmp.items()}
+                prev = {c: (snapshot_rank(weeks[w], k) if "_all" in weeks[w] or (y and y >= min_year - 2) else -1) if w else None
+                        for c, w in cmp.items()}
                 players.append([r["rank"], r["name"], r["cty"], y, prev["w"], prev["m3"], prev["m12"], r["url"]])
             data["atp"] = {"week": week, "cmp": cmp, "players": players}
-            # trim history: last 60 weeks, young players only
+            # trim history: last 60 weeks
             cutoff = (date.fromisoformat(week) - timedelta(weeks=60)).isoformat()
-            young = {key(r["name"]) for r in rows if r["dob"][:4].isdigit() and int(r["dob"][:4]) >= min_year - 2}
-            by8 = {}
-            for y2 in young:
-                by8.setdefault(y2[:8], []).append(y2)
-
-            def keep(k):
-                return k in young or (len(k) >= 8 and any(k.startswith(y2) or y2.startswith(k) for y2 in by8.get(k[:8], [])))
             for w in list(weeks):
                 if w < cutoff:
                     del weeks[w]
-                else:
-                    weeks[w] = {k: v for k, v in weeks[w].items() if keep(k)}
             changed = True
-            print(f"Scouting HQ: ATP week {week}, {len(players)} players born {min_year}+, compared with {cmp}")
+            print(f"Scouting HQ: ATP week {week}, {len(players)} players, compared with {cmp}")
         else:
             print("Scouting HQ: ATP unchanged", week)
         errors.pop("atp", None)
@@ -180,7 +176,7 @@ def main():
     try:
         cur = wta_list()
         week = monday(date.fromisoformat(cur[0]["rankedAt"][:10])).isoformat()
-        if FORCE or not data.get("wta") or data["wta"].get("week") != week:
+        if force or not data.get("wta") or data["wta"].get("week") != week:
             cmp, prev_maps = {}, {}
             for c, d in BACK.items():
                 at = (date.fromisoformat(week) - timedelta(days=d)).isoformat()
@@ -191,9 +187,7 @@ def main():
             for r in cur:
                 p = r["player"]
                 dob = p.get("dateOfBirth") or ""
-                y = int(dob[:4]) if dob[:4].isdigit() else None
-                if not y or y < min_year:
-                    continue
+                y = int(dob[:4]) if dob[:4].isdigit() else None  # None: birth date not published
                 name = p.get("fullName") or f"{p.get('firstName', '')} {p.get('lastName', '')}".strip()
                 slug = re.sub(r"[^a-z0-9]+", "-", unicodedata.normalize("NFKD", name).encode("ascii", "ignore").decode().lower()).strip("-")
                 players.append([r["ranking"], name, p.get("countryCode") or "", y,
@@ -201,7 +195,7 @@ def main():
                                 f"https://www.wtatennis.com/players/{p['id']}/{slug}"])
             data["wta"] = {"week": week, "cmp": cmp, "players": players}
             changed = True
-            print(f"Scouting HQ: WTA week {week}, {len(players)} players born {min_year}+, compared with {cmp}")
+            print(f"Scouting HQ: WTA week {week}, {len(players)} players, compared with {cmp}")
         else:
             print("Scouting HQ: WTA unchanged", week)
         errors.pop("wta", None)
@@ -210,6 +204,8 @@ def main():
         errors["wta"] = {"at": NOW.isoformat(timespec="seconds"), "msg": str(e)[:200]}
 
     data["minYear"] = min_year
+    if data.get("atp") and data.get("wta") and not ({"atp", "wta"} & set(errors)):
+        data["ages"] = AGES
     data["errors"] = errors
     if changed:
         data["updated"] = NOW.isoformat(timespec="seconds")

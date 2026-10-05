@@ -275,10 +275,17 @@ blockquote.q cite{display:block;margin-top:12px;font-style:normal;font-family:va
   .stat .v{font-size:28px}
 }
 /* Scouting HQ */
-.sq-bar{display:flex;flex-wrap:wrap;gap:10px 14px;align-items:center;margin:0 0 16px}
-.sq-bar .chips{gap:6px}
-.sq-bar .chip{padding:7px 13px;font-size:11px}
-.sq-in.sq-top{flex:0 0 110px}
+.sq-filters{display:grid;gap:12px;margin:0 0 16px}
+.sq-line{display:flex;flex-wrap:wrap;gap:8px 12px;align-items:center}
+.sq-lbl{flex:0 0 76px;font-size:11px;letter-spacing:.14em;text-transform:uppercase;color:var(--gold)}
+.sq-line .chips{gap:6px}
+.sq-line .chip{padding:7px 13px;font-size:11px}
+.sq-mode{display:flex;border:1px solid var(--line);border-radius:999px;padding:3px}
+.sq-mode button{font-size:11px;letter-spacing:.06em;padding:5px 12px;border-radius:999px;color:var(--muted)}
+.sq-mode button.on{background:rgba(255,255,255,.1);color:var(--white)}
+.sq-search{padding-top:4px}
+@media (max-width:640px){.sq-lbl{flex-basis:100%}}
+.sq-in.sq-num{flex:0 0 110px}
 .sq-in{flex:1 1 200px;min-width:0;height:38px;border-radius:999px;border:1px solid var(--line);background:rgba(255,255,255,.03);color:var(--white);font:14px var(--body);padding:0 16px;outline:none}
 .sq-in:focus{border-color:var(--gold)}
 select.sq-in{flex:0 1 170px;appearance:none;-webkit-appearance:none;cursor:pointer;background-image:linear-gradient(45deg,transparent 50%,var(--gold) 50%),linear-gradient(135deg,var(--gold) 50%,transparent 50%);background-position:calc(100% - 18px) 16px,calc(100% - 13px) 16px;background-size:5px 5px;background-repeat:no-repeat;padding-right:34px}
@@ -529,18 +536,28 @@ html.locked #gate{display:grid}
       <div>
         <div class="eyebrow">SeventyTwo Sports Group</div>
         <h1>Age Filtered World Rankings</h1>
-        <p class="sub" id="sqSub">72's scouting radar for the next generation. Every ranked ATP and WTA singles player aged 21 or under, with their birth year and ranking moves over the last week, 3 months and 12 months, so we can spot rising talent early and see how 72 players (marked <span class="sq-72">72</span>) compare with their age group.</p>
+        <p class="sub" id="sqSub">72's scouting radar. Every ranked ATP and WTA singles player, filtered by age group or birth year and by ranking, with ranking moves over the last week, 3 months and 12 months, so we can spot rising talent early and see how 72 players (marked <span class="sq-72">72</span>) compare with their age group.</p>
       </div>
       <div class="chips" role="group" aria-label="Choose tour"><button class="chip sqt on" data-t="atp">ATP</button><button class="chip sqt" data-t="wta">WTA</button></div>
     </div>
     <div class="stale" id="staleScout" hidden></div>
     <div class="stats" id="sqStats"></div>
-    <div class="sq-bar">
-      <div class="chips" role="group" aria-label="Age group" id="sqAges"></div>
-      <div class="chips" role="group" aria-label="Ranking range" id="sqRanks"></div>
-      <input class="sq-in sq-top" id="sqTop" type="number" min="1" step="1" inputmode="numeric" placeholder="Top…" aria-label="Show players ranked in the top" hidden>
-      <input class="sq-in" id="sqQ" type="search" placeholder="Search player" aria-label="Search player">
-      <select class="sq-in" id="sqC" aria-label="Country"></select>
+    <div class="sq-filters">
+      <div class="sq-line">
+        <span class="sq-lbl">Age</span>
+        <div class="sq-mode" role="group" aria-label="Filter age by"><button class="sqm" data-m="age">Age group</button><button class="sqm" data-m="year">Birth year</button></div>
+        <div class="chips" role="group" aria-label="Age" id="sqAges"></div>
+        <input class="sq-in sq-num" id="sqAgeIn" type="number" min="1" step="1" inputmode="numeric" placeholder="Under…" aria-label="Show players under this age" hidden>
+      </div>
+      <div class="sq-line">
+        <span class="sq-lbl">Ranking</span>
+        <div class="chips" role="group" aria-label="Ranking range" id="sqRanks"></div>
+        <input class="sq-in sq-num" id="sqTop" type="number" min="1" step="1" inputmode="numeric" placeholder="Top…" aria-label="Show players ranked in the top" hidden>
+      </div>
+      <div class="sq-line sq-search">
+        <input class="sq-in" id="sqQ" type="search" placeholder="Search player" aria-label="Search player">
+        <select class="sq-in" id="sqC" aria-label="Country"></select>
+      </div>
     </div>
     <div class="sq-tbl" id="sqTbl"></div>
     <button class="sq-more" id="sqMore" hidden>Show all</button>
@@ -1221,13 +1238,19 @@ function addItfMatches(st, im, src = "itf"){
 }
 /* ---------- Scouting HQ (scouting.json, rebuilt weekly by scripts/scouting.py) ---------- */
 let SCOUT = null;
-const SQ = { t: "atp", age: 21, rk: "all", top: 0, q: "", c: "", sort: "rank", asc: true, all: false };  // rk: "all", "100"…"1000" or "custom"; top: 0 = no ranking limit
+// by: "age" (age groups) or "year" (one birth year); ag: "all", "21"…"16" or "custom"; age: under-age limit, 0 = all ages;
+// yr: birth year, 0 = all; rk: "all", "100"…"1000" or "custom"; top: ranking limit, 0 = no limit
+const SQ = { t: "atp", by: "age", ag: "21", age: 21, yr: 0, rk: "all", top: 0, q: "", c: "", sort: "rank", asc: true, all: false };
+const SQ_AGES = [["all", "All"], ["21", "U21"], ["20", "U20"], ["19", "U19"], ["18", "U18"], ["17", "U17"], ["16", "U16"], ["custom", "Custom"]];
 const SQ_RANKS = [["all", "All"], ["100", "Top 100"], ["300", "Top 300"], ["500", "Top 500"], ["1000", "Top 1000"], ["custom", "Custom"]];
+const sqNum = el => Math.max(0, parseInt(el.value, 10) || 0);
+const sqAgeTxt = () => SQ.by === "year" ? (SQ.yr ? `Born ${SQ.yr}` : "All ages") : (SQ.age ? `U${SQ.age}` : "All ages");
 const sqKey = s => String(s || "").normalize("NFD").toLowerCase().replace(/[^a-z]/g, "").replace(/ae/g, "a").replace(/oe/g, "o").replace(/ue/g, "u");  // Schwärzler = Schwaerzler
 const SQ72 = new Set(ROSTER.map(p => p.tour.toLowerCase() + ":" + sqKey(p.first + p.last)));
 const sqFmt = iso => iso ? new Date(iso + "T12:00:00Z").toLocaleDateString("en-GB", { day:"numeric", month:"short", year:"numeric", timeZone:"UTC" }) : "—";
-function sqMove(rank, prev){ return prev == null ? null : prev - rank; }
+function sqMove(rank, prev){ return prev == null || prev < 0 ? null : prev - rank; }
 function sqCell(rank, prev){
+  if (prev === -1) return `<div class="ch same" title="Not tracked then: the move will appear as the weekly history builds up">—</div>`;
   if (prev == null) return `<div class="ch new" title="Not ranked then">NEW</div>`;
   const d = prev - rank;
   const cls = d > 0 ? "up" : d < 0 ? "down" : "same";
@@ -1242,7 +1265,7 @@ function sqRows(){
   return T.players.map(p => ({ rank:p[0], name:p[1], cty:p[2], born:p[3], w:p[4], m3:p[5], m12:p[6], url:p[7],
       is72: SQ72.has(SQ.t + ":" + sqKey(p[1])) }))
     .map(p => { if (p.is72) { const r = ROSTER.find(x => x.tour.toLowerCase() === SQ.t && sqKey(x.first + x.last) === sqKey(p.name)); if (r) p.name = `${r.first} ${r.last}`; } return p; })
-    .filter(p => p.born >= year - SQ.age && (!SQ.top || p.rank <= SQ.top) && (!q || sqKey(p.name).includes(q)) && (!SQ.c || p.cty === SQ.c));
+    .filter(p => (SQ.by === "year" ? !SQ.yr || p.born === SQ.yr : !SQ.age || p.born >= year - SQ.age) && (!SQ.top || p.rank <= SQ.top) && (!q || sqKey(p.name).includes(q)) && (!SQ.c || p.cty === SQ.c));
 }
 function sqSort(rows){
   const mv = (p, k) => { const d = sqMove(p.rank, p[k]); return d == null ? 0.5 : d; }; // a new entry sits just after the climbers
@@ -1254,7 +1277,14 @@ function renderScouting(){
   const T = SCOUT && SCOUT[SQ.t];
   if (!T) { $("#sqTbl").innerHTML = `<div class="sq-empty">${SCOUT ? "No ranking data for this tour yet." : "Loading the scouting list…"}</div>`; $("#sqStats").innerHTML = ""; return; }
   const year = (SCOUT.minYear || new Date().getFullYear() - 21) + 21;
-  $("#sqAges").innerHTML = [21, 20, 19, 18, 17, 16].map(a => `<button class="chip sqa${SQ.age === a ? " on" : ""}" data-a="${a}" title="Born ${year - a} or later">U${a}</button>`).join("");
+  document.querySelectorAll(".sqm").forEach(b => b.classList.toggle("on", b.dataset.m === SQ.by));
+  // age groups (born in or after a year), or birth years from the youngest ranked player to the oldest
+  const years = [...new Set(T.players.map(p => p[3]).filter(Boolean))].sort((a, b) => b - a);
+  if (SQ.yr && !years.includes(SQ.yr)) SQ.yr = 0;  // that birth year has nobody on this tour
+  $("#sqAges").innerHTML = SQ.by === "year"
+    ? [["all", "All"], ...years.map(y => [String(y), String(y)])].map(([k, l]) => `<button class="chip sqy${String(SQ.yr || "all") === k ? " on" : ""}" data-y="${k}">${l}</button>`).join("")
+    : SQ_AGES.map(([k, l]) => `<button class="chip sqa${SQ.ag === k ? " on" : ""}" data-a="${k}"${/^\d+$/.test(k) ? ` title="Born ${year - k} or later"` : ""}>${l}</button>`).join("");
+  $("#sqAgeIn").hidden = SQ.by !== "age" || SQ.ag !== "custom";
   $("#sqRanks").innerHTML = SQ_RANKS.map(([k, l]) => `<button class="chip sqr${SQ.rk === k ? " on" : ""}" data-r="${k}">${l}</button>`).join("");
   $("#sqTop").hidden = SQ.rk !== "custom";
   const wk = T.week ? new Date(T.week + "T12:00:00Z") : null;
@@ -1265,11 +1295,12 @@ function renderScouting(){
   const rows = sqSort(sqRows());
   // climbers are picked from players now inside the top 300 (U21, U20) or top 500 (U19, U18); younger groups use everyone
   //   (or the ranking filter, if that is tighter)
-  const cap = Math.min(SQ.age >= 20 ? 300 : SQ.age >= 18 ? 500 : Infinity, SQ.top || Infinity), capTxt = cap < Infinity ? ` · top ${cap} only` : "";
-  const best = k => rows.filter(p => p[k] != null && p.rank <= cap).sort((a, b) => (b[k] - b.rank) - (a[k] - a.rank) || a.rank - b.rank)[0];
+  const lim = (SQ.by === "year" ? SQ.yr && year - SQ.yr : SQ.age) || 99;  // youngest age group in view (99 = all ages)
+  const cap = Math.min(lim >= 20 ? 300 : lim >= 18 ? 500 : Infinity, SQ.top || Infinity), capTxt = cap < Infinity ? ` · top ${cap} only` : "";
+  const best = k => rows.filter(p => p[k] > 0 && p.rank <= cap).sort((a, b) => (b[k] - b.rank) - (a[k] - a.rank) || a.rank - b.rank)[0];
   const top = rows.reduce((m, p) => !m || p.rank < m.rank ? p : m, null), b3 = best("m3"), b12 = best("m12");
   $("#sqStats").innerHTML = `
-    <div class="stat"><div class="k">Players in this filter</div><div class="v">${rows.length}<small>U${SQ.age}${SQ.top ? ` · Top ${SQ.top}` : ""} · ${SQ.t.toUpperCase()}</small></div></div>
+    <div class="stat"><div class="k">Players in this filter</div><div class="v">${rows.length}<small>${sqAgeTxt()}${SQ.top ? ` · Top ${SQ.top}` : ""} · ${SQ.t.toUpperCase()}</small></div></div>
     <div class="stat"><div class="k">Highest ranked</div><div class="v nm">${top ? `${esc(top.name)}<small>#${top.rank}</small>` : "—"}</div></div>
     <div class="stat"><div class="k">Biggest climb · 3 months${capTxt}</div><div class="v nm">${b3 && b3.m3 > b3.rank ? `${esc(b3.name)}<small>▲${b3.m3 - b3.rank}</small>` : "—"}</div></div>
     <div class="stat"><div class="k">Biggest climb · 12 months${capTxt}</div><div class="v nm">${b12 && b12.m12 > b12.rank ? `${esc(b12.name)}<small>▲${b12.m12 - b12.rank}</small>` : "—"}</div></div>`;
@@ -1279,22 +1310,28 @@ function renderScouting(){
   $("#sqTbl").innerHTML = head + (shown.length ? shown.map(p => `<div class="sq-row">
       <div class="no">${p.rank}</div>
       <div style="min-width:0">${p.url ? `<a class="nm" href="${esc(p.url)}" target="_blank" rel="noopener">` : `<span class="nm">`}${esc(p.name)}${p.is72 ? `<span class="sq-72">72</span>` : ""}${p.url ? "</a>" : "</span>"}<div class="ct">${esc(p.cty)}</div></div>
-      <div class="by">${p.born}<small>U${year - p.born}</small></div>
+      <div class="by">${p.born || "—"}${p.born ? `<small>U${year - p.born}</small>` : ""}</div>
       ${sqCell(p.rank, p.w)}${sqCell(p.rank, p.m3)}${sqCell(p.rank, p.m12)}
     </div>`).join("") : `<div class="sq-empty">No players match these filters.</div>`);
   $("#sqMore").hidden = SQ.all || rows.length <= 100;
   $("#sqMore").textContent = `Show all ${rows.length}`;
   const c = T.cmp || {};
-  $("#sqSrc").innerHTML = `Official ${SQ.t.toUpperCase()} singles ranking of ${sqFmt(T.week)}, compared with the rankings of ${sqFmt(c.w)} (1 wk), ${sqFmt(c.m3)} (3 mo) and ${sqFmt(c.m12)} (12 mo). <b>NEW</b> means the player was not ranked then. Source: ${SQ.t === "atp" ? "ATP via Tennis Abstract" : "WTA"}. Updates itself every week.`;
+  $("#sqSrc").innerHTML = `Official ${SQ.t.toUpperCase()} singles ranking of ${sqFmt(T.week)}, compared with the rankings of ${sqFmt(c.w)} (1 wk), ${sqFmt(c.m3)} (3 mo) and ${sqFmt(c.m12)} (12 mo). <b>NEW</b> means the player was not ranked then${rows.some(p => p.w === -1 || p.m3 === -1 || p.m12 === -1) ? "; <b>—</b> means not tracked then (moves for older ATP players fill in as the weekly history builds up from 5 Oct 2026)" : ""}. Source: ${SQ.t === "atp" ? "ATP via Tennis Abstract" : "WTA"}. Updates itself every week.`;
 }
 document.addEventListener("click", e => {
-  const t = e.target.closest(".sqt, .sqa, .sqr, .sq-row.h button, #sqMore");
+  const t = e.target.closest(".sqt, .sqm, .sqa, .sqy, .sqr, .sq-row.h button, #sqMore");
   if (!t) return;
   if (t.classList.contains("sqt")) { SQ.t = t.dataset.t; SQ.all = false; document.querySelectorAll(".sqt").forEach(b => b.classList.toggle("on", b === t)); }
-  else if (t.classList.contains("sqa")) { SQ.age = +t.dataset.a; SQ.all = false; }
+  else if (t.classList.contains("sqm")) { SQ.by = t.dataset.m; SQ.all = false; }
+  else if (t.classList.contains("sqy")) { SQ.yr = t.dataset.y === "all" ? 0 : +t.dataset.y; SQ.all = false; }
+  else if (t.classList.contains("sqa")) {
+    SQ.ag = t.dataset.a; SQ.all = false;
+    SQ.age = SQ.ag === "all" ? 0 : SQ.ag === "custom" ? sqNum($("#sqAgeIn")) : +SQ.ag;
+    if (SQ.ag === "custom") setTimeout(() => $("#sqAgeIn").focus(), 0);
+  }
   else if (t.classList.contains("sqr")) {
     SQ.rk = t.dataset.r; SQ.all = false;
-    SQ.top = SQ.rk === "all" ? 0 : SQ.rk === "custom" ? Math.max(0, parseInt($("#sqTop").value, 10) || 0) : +SQ.rk;
+    SQ.top = SQ.rk === "all" ? 0 : SQ.rk === "custom" ? sqNum($("#sqTop")) : +SQ.rk;
     if (SQ.rk === "custom") setTimeout(() => $("#sqTop").focus(), 0);
   }
   else if (t.id === "sqMore") SQ.all = true;
@@ -1303,7 +1340,9 @@ document.addEventListener("click", e => {
 });
 $("#sqQ").addEventListener("input", e => { SQ.q = e.target.value; renderScouting(); });
 // custom ranking range: "Top" + any number typed in; empty or invalid shows everyone until a number is entered
-$("#sqTop").addEventListener("input", e => { SQ.top = Math.max(0, parseInt(e.target.value, 10) || 0); SQ.all = false; renderScouting(); });
+$("#sqTop").addEventListener("input", e => { SQ.top = sqNum(e.target); SQ.all = false; renderScouting(); });
+// custom age: "Under" + any age typed in (born in or after this year minus that age); empty shows all ages
+$("#sqAgeIn").addEventListener("input", e => { SQ.age = sqNum(e.target); SQ.all = false; renderScouting(); });
 $("#sqC").addEventListener("change", e => { SQ.c = e.target.value; renderScouting(); });
 async function loadScouting(){
   try { const r = await fetch("scouting.json?t=" + Date.now(), { cache: "no-store" }); if (r.ok) SCOUT = await r.json(); else if (!SCOUT) SCOUT = {}; } catch (e) { if (!SCOUT) SCOUT = {}; }
@@ -1347,7 +1386,7 @@ function renderHome(){
     const mine = [];
     for (const t of ["atp", "wta"]) {
       const list = SCOUT[t]?.players || [], byYear = {};
-      for (const p of list) (byYear[p[3]] = byYear[p[3]] || []).push(p);
+      for (const p of list) if (p[3] >= SCOUT.minYear) (byYear[p[3]] = byYear[p[3]] || []).push(p);  // under-21s, as on the old list
       for (const yr in byYear) byYear[yr].sort((a, b) => a[0] - b[0]).forEach((p, i) => {
         if (SQ72.has(t + ":" + sqKey(p[1]))) mine.push({ name: p[1], born: p[3], pos: i + 1, tour: t.toUpperCase() });
       });
