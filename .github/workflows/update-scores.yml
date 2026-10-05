@@ -49,7 +49,7 @@ jobs:
         name: Scouting HQ rankings (checks every 3 hours, rebuilds when a new ranking week is out, no Claude)
         run: python3 scripts/scouting.py
         continue-on-error: true
-        timeout-minutes: 10
+        timeout-minutes: 15
         env:
           RANKINGS: ${{ inputs.source == 'rankings' && '1' || '0' }}
       - id: itfm

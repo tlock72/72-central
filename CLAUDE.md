@@ -21,7 +21,7 @@ It is hosted on GitHub Pages at tlock72.github.io/72-central and protected by a 
 | `itf.json` | ITF junior rankings, with players that couldn't be read listed under `pending`. |
 | `itfm.json` | ITF junior matches. |
 | `te.json` | Tennis Europe U14/U16 matches. |
-| `scouting.json`, `scouting_history.json` | Age Filtered World Rankings: every ranked ATP/WTA player with birth year and 1-week, 3-month and 12-month moves (the page filters by age group, birth year, ranking and "72 only"; 72 Rankings links to the 72-only view). A move of `-1` means "not tracked then": ATP history only kept young players before 5 Oct 2026, so older ATP players' moves fill in over the following year. |
+| `scouting.json`, `scouting_history.json` | Age Filtered World Rankings: every ranked ATP/WTA player with birth year and 1-week, 3-month and 12-month moves (the page filters by age group, birth year, ranking and "72 only"; 72 Rankings links to the 72-only view). A move of `-1` means "not tracked then". ATP history only kept young players before 5 Oct 2026; `scouting.py` fills those weeks in for everyone from Tennis Explorer (5 weeks a run, stored as `_tok` weeks keyed by name in any word order, after checking it agrees with Tennis Abstract). The 1 wk / 3 mo / 12 mo moves for 72 players also show on 72 Rankings. |
 | `*.webp` | Player photos, named by roster id. |
 | `FILL_GAPS.md`, `ITF_JUNIORS.md` | Manual fallback instructions for Claude, used only when asked. |
 
@@ -32,7 +32,7 @@ Roster ids are short surnames (`deminaur`, `svitolina`, `mmakarova`…). **Addin
   - **Rankings** follow the official week: they only fetch when `scouting.json` shows a newer ATP/WTA week than `rankingsTourWeek`.
   - It first probes 3 top players. If their points are unchanged, the feed is lagging, so it retries in 2 hours (and from Wednesday accepts whatever the feed has).
   - It then publishes each tour all at once.
-- `scouting.py`: free sources, no key. ATP comes from Tennis Abstract (`reports/atpRankings.html`, "Last update" date) and WTA from `api.wtatennis.com` (`rankedAt`). It checks hourly on Mondays and Tuesdays and every 3 hours otherwise. **It is also the "is a new ranking week out?" signal.**
+- `scouting.py`: free sources, no key. ATP comes from Tennis Abstract (`reports/atpRankings.html`, "Last update" date) and WTA from `api.wtatennis.com` (`rankedAt`). It checks hourly on Mondays and Tuesdays and every 3 hours otherwise (every run while old ATP weeks are still being filled in from Tennis Explorer). **It is also the "is a new ranking week out?" signal.**
 - `itf_juniors.py`: ITF junior rankings, weekly. It stops immediately at the ITF bot check and never bypasses it.
 - `itf_matches.py`: ITF junior draws and results, about twice a day.
 - `itf_titles.py`: ITF singles titles for the whole roster from the ITF site (circuit `MT` men / `WT` women, singles, main-draw finals won; ITF World Tennis Tour plus pre-2019 Futures and ITF Women's Circuit). Loads each player's whole career once, then the current year daily from 07:00 UK, and career highs weekly. Stops at the ITF bot check and never guesses an unreadable final.
