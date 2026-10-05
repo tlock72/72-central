@@ -350,16 +350,17 @@ select.sq-in option{background:var(--navy-2);color:var(--white)}
 .ev .e72{grid-column:1/-1;display:flex;flex-wrap:wrap;gap:5px;margin-top:3px}
 .ev .e72 b{font-size:11px;font-weight:600;color:var(--navy);background:var(--gold);border-radius:999px;padding:2px 9px}
 .ev .e72 b em{font-style:normal;font-weight:400;opacity:.75;margin-left:4px}
-/* colour groups: sg1 Slams & Finals, sg2 1000, sg3 500, sg4 250, sg5 125, sg6 men's Challenger 100 down to M15, sg7 women's W100 down to W15, sg8 ITF Juniors, sg9 Tennis Europe */
+/* colour groups: sg1 Slams & Finals, sg2 1000, sg3 500, sg4 250, sg5 Challenger/WTA/ITF 125 down to 50, sg6 35 and 25, sg7 15, sg8 ITF Juniors, sg9 Tennis Europe */
 .sg1{--t:#F3CF8E;--tb:rgba(243,207,142,.16);--fs:21px;--pad:15px}
 .sg2{--t:#D0A579;--tb:rgba(208,165,121,.12);--fs:18px;--pad:13px}
 .sg3{--t:#C49BE0;--tb:rgba(196,155,224,.09);--fs:16px;--pad:11px}
 .sg4{--t:#86AEEB;--tb:rgba(134,174,235,.07);--fs:15px;--pad:10px}
 .sg5{--t:#73C8B6;--tb:rgba(115,200,182,.05);--fs:14px;--pad:8px}
 .sg6{--t:#E8907A;--tb:rgba(232,144,122,.05);--fs:13px;--pad:6px}
-.sg7{--t:#E5C76B;--tb:rgba(229,199,107,.05);--fs:13px;--pad:6px}
+.sg7{--t:#7A8AA6;--tb:transparent;--fs:12.5px;--pad:5px}
 .sg8{--t:#9CD67E;--tb:rgba(156,214,126,.05);--fs:13px;--pad:6px}
 .sg9{--t:#E77FC0;--tb:rgba(231,127,192,.05);--fs:13px;--pad:6px}
+.sg7 .cat{color:var(--white);background:transparent;border:1px solid var(--t);font-weight:500}
 .ev.pp{opacity:.55}
 @media (max-width:640px){
   .ev{padding:var(--pad) 10px var(--pad) 12px;gap:3px 8px}
@@ -1646,15 +1647,15 @@ $("#sqC").addEventListener("change", e => { SQ.c = e.target.value; renderScoutin
 let SCHED = null;
 const SCH = { tour: "all", lvl: "all", e72: false, q: "" };
 const SCH_TOURS = [["all", "All"], ["atp", "ATP Tour"], ["wta", "WTA Tour"], ["ch", "Challenger"], ["itfm", "Men's ITF"], ["itfw", "Women's ITF & WTA 125"], ["jun", "ITF Juniors"], ["te", "Tennis Europe"]];
-// colour groups, in the order they are listed each week: Slams, 1000, 500, 250, 125, men's Challenger and ITF, women's ITF, ITF Juniors, Tennis Europe (within each group, biggest number first)
-const SCH_GROUPS = ["Grand Slams & Finals", "1000", "500 & team finals", "250", "125", "Men's Challenger 100 to M15", "Women's W100 to W15", "ITF Juniors", "Tennis Europe"];
+// colour groups, in the order they are listed each week: Slams, 1000, 500, 250, 125 to 50, 35 and 25, 15, ITF Juniors, Tennis Europe (within each group, biggest number first)
+const SCH_GROUPS = ["Grand Slams & Finals", "1000", "500 & team finals", "250", "125 to 50", "35 & 25", "15", "ITF Juniors", "Tennis Europe"];
 const schNum = e => +((e.cat || "").match(/\d+/) || [0])[0];
 function schGrp(e){
   if (e.tour === "jun") return 8;
   if (e.tour === "te") return 9;
   if (e.tour === "atp" || e.tour === "wta") return Math.min(e.tier, 4);
-  if (e.tier <= 5 || schNum(e) >= 125) return 5;  // Challenger 125+ and WTA 125
-  return e.tour === "itfw" ? 7 : 6;
+  const n = schNum(e) || [0, 0, 0, 0, 0, 125, 75, 50, 15][e.tier] || 15;  // Challenger and ITF: by the number in the category
+  return n >= 50 ? 5 : n >= 25 ? 6 : 7;
 }
 const schDay = iso => new Date(iso + "T12:00:00Z");
 const schFmt = (iso, o) => schDay(iso).toLocaleDateString("en-GB", { day:"numeric", month:"short", timeZone:"UTC", ...o });
