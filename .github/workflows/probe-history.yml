@@ -18,15 +18,13 @@ jobs:
                       return r.status, r.read().decode("utf-8", "replace")
               except Exception as e:
                   return getattr(e, "code", "ERR"), str(e)[:200]
-          tests = [
-            "https://www.tennisexplorer.com/ranking/atp-men/?date=2025-09-29&page=1",
-            "https://www.tennisexplorer.com/ranking/atp-men/?date=2025-09-29&page=30",
-            "https://archive.org/wayback/available?url=tennisabstract.com/reports/atpRankings.html&timestamp=20251001",
-            "https://web.archive.org/cdx/search/cdx?url=tennisabstract.com/reports/atpRankings.html&from=2025&output=json&fl=timestamp,statuscode,length&collapse=timestamp:8",
-            "https://app.atptour.com/api/gateway/rankings.ranksglrollrange?fromRank=1&toRank=10&date=2025-09-29",
-            "https://www.sofascore.com/api/v1/team/549693/rankings",
-            "https://api.github.com/repos/JeffSackmann/tennis_atp",
-          ]
+          tests = []
+          for pg in (1, 33, 40, 45, 60):
+              st, b = get(f"https://www.tennisexplorer.com/ranking/atp-men/?date=2025-09-29&page={pg}")
+              rows = re.findall(r"<tr[^>]*>(.*?)</tr>", b, re.S)
+              rr = [re.sub(r"\s+", " ", r) for r in rows if "rank" in r and "/player/" in r]
+              print("PAGE", pg, st, len(rr))
+              for r in rr[:2] + rr[-1:]: print("   ", r[:700])
           for u in tests:
               st, b = get(u)
               print("=====", u, "->", st, len(b))
