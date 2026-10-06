@@ -401,6 +401,14 @@ select.sq-in option{background:var(--navy-2);color:var(--white)}
 .cn-add .sq-in{flex:1 1 150px}
 .cn-add #cnName{flex:2 1 220px}
 .cn-add .sq-in.sm{flex:0 1 140px}
+.cn-nat{position:relative;flex:0 1 190px;min-width:0;display:flex}
+.cn-add .cn-nat .sq-in{flex:1 1 auto}
+.cn-natl{position:absolute;z-index:20;top:42px;left:0;right:0;min-width:200px;max-height:240px;overflow-y:auto;margin:0;padding:6px;list-style:none;background:var(--navy-2);border:1px solid var(--gold);border-radius:14px;box-shadow:0 10px 30px rgba(0,0,0,.4)}
+.cn-natl[hidden]{display:none}
+.cn-natl li{display:flex;justify-content:space-between;gap:10px;padding:7px 10px;border-radius:8px;font-size:13px;cursor:pointer}
+.cn-natl li small{color:var(--muted);font-size:11px;letter-spacing:.06em}
+.cn-natl li.on,.cn-natl li:hover{background:rgba(255,255,255,.08)}
+.cn-natl li.none{color:var(--muted);cursor:default;background:none}
 .cn-add button{font-family:var(--display);text-transform:uppercase;letter-spacing:.14em;font-size:12px;font-weight:600;color:var(--navy);background:var(--gold);border-radius:999px;padding:0 22px;height:38px}
 .cn-msg{margin:8px 0 0;font-size:12px;color:var(--muted);min-height:16px}
 .cn-msg.err{color:var(--down)}
@@ -951,8 +959,8 @@ html.name-only .gate-box h2,html.name-only .gate-digits{display:none}
       <form id="cnForm" autocomplete="off">
         <input class="sq-in" id="cnName" placeholder="Full name, e.g. Laurens Drijver" aria-label="Full name" maxlength="60" required>
         <select class="sq-in sm" id="cnG" aria-label="Male or female" required><option value="">Male/female</option><option value="M">Male</option><option value="F">Female</option></select>
-        <input class="sq-in sm" id="cnNat" placeholder="Nation: GBR" aria-label="Nation, 3 letters" maxlength="3">
-        <input class="sq-in sm" id="cnBorn" placeholder="Born: 2011" aria-label="Birth year" inputmode="numeric" maxlength="4">
+        <div class="cn-nat"><input class="sq-in" id="cnNat" placeholder="Nation" aria-label="Nation" role="combobox" aria-autocomplete="list" aria-expanded="false" aria-controls="cnNatList" maxlength="40"><ul class="cn-natl" id="cnNatList" role="listbox" hidden></ul></div>
+        <input class="sq-in sm" id="cnBorn" placeholder="Birth year" aria-label="Birth year" inputmode="numeric" maxlength="4">
         <button type="submit">Add</button>
       </form>
       <p class="cn-msg" id="cnMsg">Nation and birth year are optional, but they make sure we link the right player.</p>
@@ -2083,15 +2091,57 @@ $("#cnList").addEventListener("submit", e => {
 });
 document.querySelectorAll(".cng").forEach(b => b.addEventListener("click", () => { CN.g = b.dataset.g; renderCorner(); }));
 $("#cnQ").addEventListener("input", e => { CN.q = e.target.value; renderCorner(); });
+/* Nation box: a dropdown of nations that narrows as you type (name or 3-letter code). The code is what gets sent (ITF/IOC style, e.g. GBR, SUI, GER). */
+const CN_NATS = ("AFG Afghanistan|ALB Albania|ALG Algeria|AND Andorra|ANG Angola|ARG Argentina|ARM Armenia|ARU Aruba|AUS Australia|AUT Austria|AZE Azerbaijan|BAH Bahamas|BRN Bahrain|BAN Bangladesh|BAR Barbados|BLR Belarus|BEL Belgium|BEN Benin|BER Bermuda|BOL Bolivia|BIH Bosnia and Herzegovina|BOT Botswana|BRA Brazil|BUL Bulgaria|BUR Burkina Faso|BDI Burundi|CAM Cambodia|CMR Cameroon|CAN Canada|CHI Chile|CHN China|TPE Chinese Taipei|COL Colombia|CRC Costa Rica|CIV Côte d'Ivoire|CRO Croatia|CUB Cuba|CYP Cyprus|CZE Czechia|DEN Denmark|DOM Dominican Republic|ECU Ecuador|EGY Egypt|ESA El Salvador|EST Estonia|ETH Ethiopia|FIJ Fiji|FIN Finland|FRA France|GAB Gabon|GEO Georgia|GER Germany|GHA Ghana|GBR Great Britain|GRE Greece|GUA Guatemala|HAI Haiti|HON Honduras|HKG Hong Kong|HUN Hungary|ISL Iceland|IND India|INA Indonesia|IRI Iran|IRQ Iraq|IRL Ireland|ISR Israel|ITA Italy|JAM Jamaica|JPN Japan|JOR Jordan|KAZ Kazakhstan|KEN Kenya|KOR Korea, South|KOS Kosovo|KUW Kuwait|KGZ Kyrgyzstan|LAT Latvia|LIB Lebanon|LBA Libya|LIE Liechtenstein|LTU Lithuania|LUX Luxembourg|MAC Macau|MAD Madagascar|MAS Malaysia|MLT Malta|MRI Mauritius|MEX Mexico|MDA Moldova|MON Monaco|MGL Mongolia|MNE Montenegro|MAR Morocco|MOZ Mozambique|NAM Namibia|NEP Nepal|NED Netherlands|NZL New Zealand|NCA Nicaragua|NGR Nigeria|MKD North Macedonia|NOR Norway|OMA Oman|PAK Pakistan|PAN Panama|PAR Paraguay|PER Peru|PHI Philippines|POL Poland|POR Portugal|PUR Puerto Rico|QAT Qatar|ROU Romania|RUS Russia|RWA Rwanda|SMR San Marino|KSA Saudi Arabia|SEN Senegal|SRB Serbia|SGP Singapore|SVK Slovakia|SLO Slovenia|RSA South Africa|ESP Spain|SRI Sri Lanka|SUD Sudan|SWE Sweden|SUI Switzerland|SYR Syria|TJK Tajikistan|TAN Tanzania|THA Thailand|TOG Togo|TTO Trinidad and Tobago|TUN Tunisia|TUR Türkiye|TKM Turkmenistan|UGA Uganda|UKR Ukraine|UAE United Arab Emirates|USA United States|URU Uruguay|UZB Uzbekistan|VEN Venezuela|VIE Vietnam|ZAM Zambia|ZIM Zimbabwe")
+  .split("|").map(x => ({ c: x.slice(0, 3), n: x.slice(4) }));
+const cnFold = t => t.normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLowerCase();
+const cnNatLabel = x => `${x.n} (${x.c})`;
+// what was typed -> the 3-letter code: a code, a nation name, or "Spain (ESP)" from the list; "" if it isn't one
+function cnNatCode(t){
+  const f = cnFold(t.trim()), m = f.match(/\(([a-z]{3})\)$/);
+  const hit = CN_NATS.find(x => cnFold(x.c) === (m ? m[1] : f) || cnFold(x.n) === f) || (/^[a-z]{3}$/.test(f) ? { c: f.toUpperCase() } : null);
+  return hit ? hit.c : "";
+}
+const cnNatUI = { at: -1, list: [] };
+function cnNatShow(){
+  const box = $("#cnNatList"), f = cnFold($("#cnNat").value.trim());
+  // codes that start with what's typed first, then names that start with it, then names containing it
+  const score = x => !f ? 1 : cnFold(x.c).startsWith(f) ? 0 : cnFold(x.n).startsWith(f) ? 1 : cnFold(x.n).includes(f) ? 2 : 9;
+  cnNatUI.list = CN_NATS.map(x => [score(x), x]).filter(a => a[0] < 9).sort((a, b) => a[0] - b[0] || a[1].n.localeCompare(b[1].n)).map(a => a[1]);
+  cnNatUI.at = f && cnNatUI.list.length ? 0 : -1;
+  box.innerHTML = cnNatUI.list.map((x, i) => `<li role="option" data-i="${i}"${i === cnNatUI.at ? ' class="on"' : ""}>${esc(x.n)}<small>${x.c}</small></li>`).join("")
+    || `<li class="none">No nation matches. You can also type a 3-letter code.</li>`;
+  box.hidden = false; $("#cnNat").setAttribute("aria-expanded", "true");
+}
+function cnNatHide(){ $("#cnNatList").hidden = true; $("#cnNat").setAttribute("aria-expanded", "false"); }
+function cnNatPick(i){ const x = cnNatUI.list[i]; if (x) $("#cnNat").value = cnNatLabel(x); cnNatHide(); }
+function cnNatMove(d){
+  if (!cnNatUI.list.length) return;
+  cnNatUI.at = (cnNatUI.at + d + cnNatUI.list.length) % cnNatUI.list.length;
+  const lis = $("#cnNatList").querySelectorAll("li");
+  lis.forEach((li, i) => li.classList.toggle("on", i === cnNatUI.at));
+  lis[cnNatUI.at]?.scrollIntoView({ block: "nearest" });
+}
+$("#cnNat").addEventListener("focus", cnNatShow);
+$("#cnNat").addEventListener("input", cnNatShow);
+$("#cnNat").addEventListener("blur", () => setTimeout(cnNatHide, 150));
+$("#cnNat").addEventListener("keydown", e => {
+  const open = !$("#cnNatList").hidden;
+  if (e.key === "ArrowDown") { e.preventDefault(); open ? cnNatMove(1) : cnNatShow(); }
+  else if (e.key === "ArrowUp") { e.preventDefault(); if (open) cnNatMove(-1); }
+  else if (e.key === "Enter" && open && cnNatUI.at >= 0) { e.preventDefault(); cnNatPick(cnNatUI.at); }
+  else if (e.key === "Escape" || e.key === "Tab") { if (e.key === "Tab" && open && cnNatUI.at >= 0 && $("#cnNat").value.trim()) cnNatPick(cnNatUI.at); cnNatHide(); }
+});
+$("#cnNatList").addEventListener("mousedown", e => { const li = e.target.closest("li[data-i]"); if (li) { e.preventDefault(); cnNatPick(+li.dataset.i); } });
 $("#cnForm").addEventListener("submit", e => {
   e.preventDefault();
   const msg = $("#cnMsg"), name = $("#cnName").value.trim().replace(/\s+/g, " "), g = $("#cnG").value;
-  const nat = $("#cnNat").value.trim().toUpperCase(), born = $("#cnBorn").value.trim();
+  const natTxt = $("#cnNat").value.trim(), nat = natTxt ? cnNatCode(natTxt) : "", born = $("#cnBorn").value.trim();
   const bad = t => { msg.textContent = t; msg.classList.add("err"); };
   msg.classList.remove("err");
   if (!/^[\p{L}][\p{L} .'\-]{2,59}$/u.test(name) || !name.includes(" ")) return bad("Please type their first name and surname.");
   if (!g) return bad("Please choose male or female.");
-  if (nat && !/^[A-Z]{3}$/.test(nat)) return bad("Nation is a 3-letter code, e.g. GBR, ESP, USA.");
+  if (natTxt && !nat) return bad("Please pick the nation from the list (start typing, e.g. Spain or ESP).");
   if (born && !/^(19|20)\d\d$/.test(born)) return bad("Birth year is 4 digits, e.g. 2011.");
   if (ROSTER.some(r => cnKey(r.first + r.last) === cnKey(name))) return bad(`${name} is already a 72 player.`);
   if (cnShown()[cnKey(name)] || [...CN_SHEET, ...cnLocal()].some(x => cnKey(x.name) === cnKey(name))) return bad(`${name} is already on the watch list.`);
