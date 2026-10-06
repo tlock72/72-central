@@ -301,6 +301,7 @@ blockquote.q cite{display:block;margin-top:12px;font-style:normal;font-family:va
 .sq-in{flex:1 1 200px;min-width:0;height:38px;border-radius:999px;border:1px solid var(--line);background:rgba(255,255,255,.03);color:var(--white);font:14px var(--body);padding:0 16px;outline:none}
 .sq-in:focus{border-color:var(--gold)}
 select.sq-in{flex:0 1 170px;appearance:none;-webkit-appearance:none;cursor:pointer;background-image:linear-gradient(45deg,transparent 50%,var(--gold) 50%),linear-gradient(135deg,var(--gold) 50%,transparent 50%);background-position:calc(100% - 18px) 16px,calc(100% - 13px) 16px;background-size:5px 5px;background-repeat:no-repeat;padding-right:34px}
+#schP{flex:1 1 230px}
 select.sq-in option{background:var(--navy-2);color:var(--white)}
 .sq-tbl{border:1px solid var(--line-2);border-radius:18px;overflow:hidden;background:linear-gradient(180deg,var(--navy-2),rgba(17,27,63,.55))}
 .sq-row{display:grid;grid-template-columns:64px minmax(0,1fr) 64px repeat(3,74px);align-items:center;gap:8px;padding:11px 20px;border-bottom:1px solid var(--line-2)}
@@ -354,6 +355,7 @@ select.sq-in option{background:var(--navy-2);color:var(--white)}
 .ev .cat{grid-row:1;grid-column:2;justify-self:end;font-family:var(--display);font-size:11px;font-weight:600;letter-spacing:.08em;text-transform:uppercase;padding:3px 9px;border-radius:999px;color:var(--navy);background:var(--t);white-space:nowrap}
 .ev .e72{grid-column:1/-1;display:flex;flex-wrap:wrap;gap:5px;margin-top:3px}
 .ev .e72 b{font-size:11px;font-weight:600;color:var(--navy);background:var(--gold);border-radius:999px;padding:2px 9px}
+.ev .e72 b.me{box-shadow:0 0 0 2px var(--white)}
 .ev .e72 b em{font-style:normal;font-weight:400;opacity:.75;margin-left:4px}
 /* colour groups: sg1 Slams & Finals, sg2 1000, sg3 500, sg4 250, sg5 Challenger/WTA/ITF 125 down to 50, sg6 35 down to 15, sg7 ITF Juniors, sg8 Tennis Europe */
 .sg1{--t:#F3CF8E;--tb:rgba(243,207,142,.16);--fs:21px;--pad:15px}
@@ -760,7 +762,7 @@ html.name-only .gate-box h2,html.name-only .gate-digits{display:none}
     <div class="sq-filters">
       <div class="sq-line"><span class="sq-lbl">Tour</span><div class="chips" id="schTours" role="group" aria-label="Tour"></div></div>
       <div class="sq-line" id="schLvlLine" hidden><span class="sq-lbl">Level</span><div class="chips" id="schLvls" role="group" aria-label="Level"></div></div>
-      <div class="sq-line"><span class="sq-lbl">Players</span><div class="chips" role="group" aria-label="Players"><button class="chip sch72 on" data-e="all">All events</button><button class="chip sch72" data-e="72">72 entered</button></div></div>
+      <div class="sq-line"><span class="sq-lbl">Players</span><div class="chips" role="group" aria-label="Players"><button class="chip sch72 on" data-e="all">All events</button><button class="chip sch72" data-e="72">72 entered</button></div><select class="sq-in" id="schP" aria-label="72 player"></select></div>
       <div class="sq-line sq-search"><input class="sq-in" id="schQ" type="search" placeholder="Search tournament or place" aria-label="Search tournament or place"></div>
     </div>
     <div class="sch-key" id="schKey"></div>
@@ -1654,7 +1656,7 @@ $("#sqAgeIn").addEventListener("input", e => { SQ.age = sqNum(e.target); SQ.all 
 $("#sqC").addEventListener("change", e => { SQ.c = e.target.value; renderScouting(); });
 /* ---------- Tour Schedule (schedule.json, rebuilt daily by scripts/schedule.py) ---------- */
 let SCHED = null;
-const SCH = { tour: "all", lvl: "all", e72: false, q: "" };
+const SCH = { tour: "all", lvl: "all", e72: false, p: "", q: "" };
 const SCH_TOURS = [["all", "All"], ["atp", "ATP Tour"], ["wta", "WTA Tour"], ["ch", "Challenger"], ["itfm", "Men's ITF"], ["itfw", "Women's ITF & WTA 125"], ["jun", "ITF Juniors"], ["te", "Tennis Europe"]];
 // colour groups, in the order they are listed each week: Slams, 1000, 500, 250, 125 to 50, 35 to 15, ITF Juniors, Tennis Europe (within each group, biggest number first)
 const SCH_GROUPS = ["Grand Slams & Finals", "1000", "500 & team finals", "250", "125 to 50", "35 to 15", "ITF Juniors", "Tennis Europe"];
@@ -1677,6 +1679,11 @@ function renderSchedule(){
   document.querySelectorAll(".sch72").forEach(b => b.classList.toggle("on", (b.dataset.e === "72") === SCH.e72));
   if (!SCHED) return;
   const evs = SCHED.events || [];
+  // one 72 player's events: every roster player, by surname, with how many events they are entered in
+  const cnt = {};
+  for (const e of evs) for (const x of e.e72 || []) cnt[x.id] = (cnt[x.id] || 0) + 1;
+  $("#schP").innerHTML = `<option value="">Any 72 player</option>` + [...ROSTER].sort((a, b) => a.last.localeCompare(b.last, "en")).map(p =>
+    `<option value="${esc(p.id)}"${SCH.p === p.id ? " selected" : ""}>${esc(p.first + " " + p.last)}${cnt[p.id] ? ` (${cnt[p.id]})` : ""}</option>`).join("");
   // level chips for the chosen tour, biggest first
   const lv = SCH.tour === "all" ? [] : [...new Map(evs.filter(e => e.tour === SCH.tour).sort((a, b) => a.tier - b.tier || schLvl(a).localeCompare(schLvl(b), "en", { numeric: true })).map(e => [schLvl(e), 1])).keys()];
   if (SCH.lvl !== "all" && !lv.includes(SCH.lvl)) SCH.lvl = "all";
@@ -1685,7 +1692,7 @@ function renderSchedule(){
   $("#schKey").innerHTML = SCH_GROUPS.map((t, i) => `<span class="sg${i + 1}"><i></i>${t}</span>`).join("");
   const q = sqKey(SCH.q);
   const rows = evs.filter(e => (SCH.tour === "all" || e.tour === SCH.tour) && (SCH.lvl === "all" || schLvl(e) === SCH.lvl)
-    && (!SCH.e72 || (e.e72 || []).length) && (!q || sqKey(e.name + e.place).includes(q)));
+    && (!SCH.e72 || (e.e72 || []).length) && (!SCH.p || (e.e72 || []).some(x => x.id === SCH.p)) && (!q || sqKey(e.name + e.place).includes(q)));
   const from = SCHED.from || ukDate();
   const weeks = new Map();
   for (const e of rows) { const w = schMonday(e.start < from ? from : e.start); if (!weeks.has(w)) weeks.set(w, []); weeks.get(w).push(e); }
@@ -1699,9 +1706,9 @@ function renderSchedule(){
         <div class="nm">${esc(e.name)}</div>
         <span class="cat">${esc(e.tour === "te" ? schLvl(e) : e.cat)}</span>
         <div class="mt">${esc([e.place, e.surface, e.weekOnly ? "" : `${schFmt(e.start)} – ${schFmt(e.end)}`, (e.ages || []).length ? e.ages.map(a => "U" + a).join("/") : "", e.status].filter(Boolean).join(" · "))}</div>
-        ${(e.e72 || []).length ? `<div class="e72">${e.e72.map(x => `<b title="${esc(x.how)}">${esc(nm(x.id))}<em>${esc(x.how)}</em></b>`).join("")}</div>` : ""}
+        ${(e.e72 || []).length ? `<div class="e72">${e.e72.map(x => `<b${x.id === SCH.p ? ' class="me"' : ""} title="${esc(x.how)}">${esc(nm(x.id))}<em>${esc(x.how)}</em></b>`).join("")}</div>` : ""}
       </a>`).join("")}
-    </section>`).join("") : `<div class="sq-empty">${SCH.e72 ? "No 72 players are entered in these events yet. Entry lists come out about 3 to 4 weeks before each event." : "No events match these filters."}</div>`;
+    </section>`).join("") : `<div class="sq-empty">${SCH.p ? `${esc(byId[SCH.p] ? byId[SCH.p].first + " " + byId[SCH.p].last : SCH.p)} isn't entered in any of these events yet. Entry lists come out about 3 to 4 weeks before each event.` : SCH.e72 ? "No 72 players are entered in these events yet. Entry lists come out about 3 to 4 weeks before each event." : "No events match these filters."}</div>`;
   const up = SCHED.updated ? new Date(SCHED.updated) : null;
   setStale("#staleSch", up && Date.now() - up > 3 * 864e5 ? `<b>Heads up:</b> the schedule was last updated ${up.toLocaleDateString("en-GB", { day:"numeric", month:"long", timeZone:"Europe/London" })}, so it may be out of date.` : "");
   $("#schSrc").innerHTML = `Updated every morning. 72 entries are shown for events up to ${schFmt(SCHED.entriesTo || from, { year:"numeric" })}, about as far ahead as entry lists are published: ITF from the official acceptance lists, WTA and WTA 125 from the WTA player lists, Tennis Europe from each player's Tennis Europe entries, and ATP and Challenger when any of live-tennis.eu, Tick Tock Tennis or Spazio Tennis lists the player (left out if any of them shows a withdrawal), then from the draw once it is out. Sources: ATP Tour and Challenger calendars from Wikipedia's 2026 season pages (ATP events show the week only), WTA, ITF and Tennis Europe.`;
@@ -1714,6 +1721,7 @@ document.addEventListener("click", e => {
   else SCH.e72 = t.dataset.e === "72";
   renderSchedule();
 });
+$("#schP").addEventListener("change", e => { SCH.p = e.target.value; renderSchedule(); });
 $("#schQ").addEventListener("input", e => { SCH.q = e.target.value; renderSchedule(); });
 async function loadSchedule(){
   try { const r = await fetch("schedule.json?t=" + Date.now(), { cache: "no-store" }); if (r.ok) SCHED = await r.json(); else if (!SCHED) SCHED = { events: [] }; } catch (e) { if (!SCHED) SCHED = { events: [] }; }
