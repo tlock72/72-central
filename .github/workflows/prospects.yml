@@ -3,6 +3,11 @@ on:
   schedule:
     - cron: "7,37 * * * *"   # every 30 minutes: new names are looked up straight away, everyone else once a day from 05:00 UK
   workflow_dispatch:          # also started by the Google Sheet when a name is added on the site (optional, see SCOUTING_CORNER.md)
+    inputs:
+      force:
+        description: "Refresh everyone now (even if already refreshed today)"
+        type: boolean
+        default: false
 concurrency:
   group: scouting-corner      # its own queue: it must not hold up the live score updates
   cancel-in-progress: false
@@ -20,6 +25,8 @@ jobs:
       - id: corner
         name: Link every prospect across Tennis Europe, ITF and ATP/WTA (free sources, no Claude)
         run: pip install -q beautifulsoup4 && python3 scripts/prospects.py
+        env:
+          FORCE: ${{ inputs.force && '1' || '' }}
         timeout-minutes: 30
       - name: Save changes
         run: |

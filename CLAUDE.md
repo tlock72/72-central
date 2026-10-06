@@ -53,7 +53,7 @@ Roster ids are short surnames (`deminaur`, `svitolina`, `mmakarova`…). **Addin
   - The save step does `pull --rebase -X theirs`, and on failure aborts and skips (the next run catches up).
 - `itf-juniors.yml`: Mondays at 08:20, 11:20 and 14:20 UK.
 - `schedule.yml`: daily at 06:37 UK. Has its own concurrency group (it must not hold up live scores); it only saves `schedule.json`, so its pull-rebase save can't clash with the score updates. Takes about 30–40 minutes (ITF and Tennis Europe lists, one every 4 seconds).
-- `prospects.yml`: Scouting Corner, every 30 minutes (`7,37`) and on dispatch from the Sheet. Own concurrency group; saves only `corner.json`.
+- `prospects.yml`: Scouting Corner, every 30 minutes (`7,37`) and on dispatch from the Sheet. Own concurrency group; saves only `corner.json`. Ticking "force" on Run workflow sets `FORCE=1`: everyone is refreshed at once, even if already done today.
 - `watchdog.yml`: every 3 hours. Alerts if updates stop, runs keep failing, or Pages fails to build.
 - `check-api.yml`: a one-off API shape check (`discover.py`).
 
