@@ -1641,7 +1641,7 @@ $("#prof").addEventListener("close", () => { if (location.hash.startsWith("#play
 
 function render(){ renderScores(); renderRankings(); renderPlayers(); renderHome(); }
 
-/* ITF junior matches (itfm.json, refreshed about twice a day): added to the match list, skipping any the main feed already has */
+/* ITF junior matches (itfm.json, refreshed twice a day, and hourly for juniors with a match today): added to the match list, skipping any the main feed already has */
 function addItfMatches(st, im, src = "itf"){
   st[src + "Checked"] = im.checked || null;
   const last = s => (s || "").split(" ").pop().toLowerCase();

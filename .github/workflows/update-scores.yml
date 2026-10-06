@@ -53,7 +53,7 @@ jobs:
         env:
           RANKINGS: ${{ inputs.source == 'rankings' && '1' || '0' }}
       - id: itfm
-        name: ITF junior matches (about twice a day, no Claude)
+        name: ITF junior matches (full check twice a day, hourly while a 72 junior has a match today, no Claude)
         run: python3 scripts/itf_matches.py
         continue-on-error: true
         timeout-minutes: 8
