@@ -17,12 +17,9 @@ Sources (all free, no key):
   - ITF: the official acceptance list, matched by ITF player id.
   - WTA / WTA 125: the WTA player list, matched by name.
   - Tennis Europe: the player's own Tennis Europe profile.
-  - ATP / Challenger: the ATP's own site blocks GitHub, so three free sites are read. live-tennis.eu (each
-    top ~1,000 player's events for the next 3 weeks, the most up to date) must list the player, and Tick Tock
-    Tennis (each event's main draw, qualifying and alternate lists) or Spazio Tennis (each event's official
-    acceptance list) must agree on the same event. This week's events aren't on live-tennis.eu, so for those
-    Tick Tock and Spazio must both list the player. Once the draw is out, the matches in data.json show the
-    player as "In the draw".
+  - ATP / Challenger: the ATP's own site blocks GitHub, so three free sites are read: live-tennis.eu, Tick Tock
+    Tennis and Spazio Tennis (see atp_entries). A player shows if any one lists him, unless one shows a withdrawal.
+    Once the draw is out, data.json and ESPN's published draws show the player as "In the draw".
 A part that fails keeps what it had last time and is listed under "errors" (report_gaps.py alerts).
 """
 import html, json, os, re, sys, time, unicodedata, urllib.parse, urllib.request
@@ -450,7 +447,7 @@ def sp_entries(events, men, everyone):
     also down for that event on live-tennis.eu or Tick Tock, so an old edition's list is never used.
     When neither of the other sites covers that event (live-tennis.eu only looks 3 weeks ahead, and both move on once an
     event has started) the list is used on its own, but only if it is this year's (the year is in its title or heading),
-    it was posted in the 10 weeks before the event, and only one coming event is in that city."""
+    it was posted in the 10 weeks before the event, the event hasn't started, and only one coming event is in that city."""
     cat = json.loads(get(f"{SP_API}/categories?slug=ent&_fields=id"))
     if not cat:
         raise RuntimeError("the 'Entry List' category is missing")
@@ -494,7 +491,8 @@ def sp_entries(events, men, everyone):
             same = [k for k in window if want and want <= place_words(byk[k]["name"]) | place_words(byk[k]["place"])]
             score = sorted(((len(main & everyone.get(k, set())), k) for k in same), reverse=True)
             alone = (len(same) == 1 and not everyone.get(same[0]) and str(YEAR) in f"{title} {head}" and posted
-                     and (date.fromisoformat(byk[same[0]]["start"]) - timedelta(days=70)).isoformat() <= posted <= byk[same[0]]["start"])
+                     and (date.fromisoformat(byk[same[0]]["start"]) - timedelta(days=70)).isoformat() <= posted <= byk[same[0]]["start"]
+                     and T.isoformat() < byk[same[0]]["start"])  # once an event has started, its draw is the better source
             if alone:
                 score = [(len(main), same[0])]  # no other site covers it: this year's list, posted shortly before the event
             elif not score or score[0][0] < max(4, len(main) * 0.4) or (len(score) > 1 and score[1][0] * 2 > score[0][0]):
