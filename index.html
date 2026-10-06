@@ -436,6 +436,7 @@ a.cn-st.ok:hover{border-color:var(--gold)}
 .cn .sq-row .lv{font-size:12px;color:var(--text);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
 .cn .sq-row .lv small{display:block;font-size:10px;color:var(--muted-2);letter-spacing:.06em}
 .cn .sq-row .ch.note{font-family:var(--body);font-size:10px;line-height:1.3;letter-spacing:.02em;color:var(--muted-2);white-space:normal}
+@media (min-width:641px){.cn .sq-row .ch.note{text-align:left;font-size:11px;line-height:1.4;color:var(--muted);background:var(--navy-3);border:1px solid var(--line);border-radius:10px;padding:6px 11px}}
 .cn .sq-row.h span{font-family:var(--display);text-transform:uppercase;letter-spacing:.14em;font-size:10px;color:var(--muted);text-align:right}
 .cn .sq-row.h span:first-child{text-align:left}
 .cn-more{display:block;width:100%;padding:10px 20px;font-family:var(--display);text-transform:uppercase;letter-spacing:.14em;font-size:11px;color:var(--gold);text-align:left;border-top:1px solid var(--line-2)}
@@ -2035,7 +2036,7 @@ function cnRow(level, sub, rank, high, w, m3, m12, note){
   const vals = [w, m3, m12];
   let i = 3;
   while (note && i > 0 && vals[i - 1] === -1) i--;
-  const gap = 3 - i, txt = gap > 1 ? note : "No past ITF data yet";
+  const gap = 3 - i, txt = [, "Not yet", "No past ITF data, filling in weekly", note][gap];  // shorter as the space shrinks; full note on hover
   const moves = vals.slice(0, i).map(mv).join("") + (gap ? `<div class="ch note" style="grid-column:span ${gap}" title="${esc(note)}">${esc(txt)}</div>` : "");
   return `<div class="sq-row"><div class="lv">${esc(level)}${sub ? `<small>${esc(sub)}</small>` : ""}</div><div class="by">${rank ?? "—"}</div><div class="by">${high ?? "—"}</div>${moves}</div>`;
 }
