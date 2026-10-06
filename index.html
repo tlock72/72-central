@@ -2059,7 +2059,7 @@ function renderCorner(){
     // ATP/WTA rank first, then ITF Juniors, then best Tennis Europe rank, then name
     .sort((a, b) => cnOrd(a[1].pro?.rank || a[1].itfPro?.rank) - cnOrd(b[1].pro?.rank || b[1].itfPro?.rank) || cnOrd(a[1].itfJr?.rank) - cnOrd(b[1].itfJr?.rank) || cnOrd(cnTeBest(a[1])) - cnOrd(cnTeBest(b[1])) || a[1].name.localeCompare(b[1].name))
     .map(([k, p]) => cnCard(k, p));
-  const wait = waiting.filter(x => keep(x.name, x.g)).map(x => `<div class="cn cn-wait"><div class="cn-h"><span class="nm">${esc(x.name)}</span><span class="mt">Looking up… usually within 30 minutes${x.by ? " · added by " + esc(x.by) : ""}</span></div></div>`);
+  const wait = waiting.filter(x => keep(x.name, x.g)).map(x => `<div class="cn cn-wait"><div class="cn-h"><span class="nm">${esc(x.name)}</span><span class="mt">Looking up… usually within 10 minutes${x.by ? " · added by " + esc(x.by) : ""}</span></div></div>`);
   $("#cnList").innerHTML = [...wait, ...cards].join("") || `<div class="sq-empty">${CORNER ? (Object.keys(P).length ? "No prospect matches." : "No prospects yet. Add the first one above.") : "Loading the watch list…"}</div>`;
   $("#cnSrc").textContent = CORNER?.checked ? `Sources: Tennis Europe (internal use only), the ITF and the official ATP/WTA rankings. Last updated ${new Date(CORNER.checked).toLocaleString("en-GB", { day:"numeric", month:"short", hour:"2-digit", minute:"2-digit", timeZone:"Europe/London" })} UK.` : "";
 }
@@ -2116,7 +2116,7 @@ function cnSend(name, g, nat, born, by){
   const msg = $("#cnMsg");
   try { fetch(CORNER_URL, { method: "POST", mode: "no-cors", body: JSON.stringify({ kind: "prospect", name, g, nat, born, by }) }).catch(() => {}); } catch (err) {}
   try { localStorage.setItem("72c-prospects", JSON.stringify([...cnLocal(), { name, g, by, at: Date.now() }].slice(-30))); } catch (err) {}
-  msg.textContent = `Added ${name}. We're looking them up now; their rankings and results appear here within about 30 minutes.`;
+  msg.textContent = `Added ${name}. We're looking them up now; their rankings and results appear here within about 10 minutes.`;
   $("#cnForm").reset();
   renderCorner();
 }
