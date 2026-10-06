@@ -1,4 +1,4 @@
-name: Check Tenipo (one-off)
+name: Check Tenipo (one-off, test branch only)
 on:
   workflow_dispatch: {}
   push:
