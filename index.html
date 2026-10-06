@@ -103,6 +103,10 @@ section.block{margin-bottom:38px}
 .live-btn:hover{background:var(--gold-2)}
 .live-btn .dot{width:6px;height:6px;border-radius:50%;background:var(--navy)}
 .note{padding:0 16px 10px;font-size:11px;color:var(--muted-2)}
+/* finals (coming up or today only): gold frame, gold header band, "Final" pill */
+.match.final{border-color:rgba(208,165,121,.7);box-shadow:0 0 0 1px rgba(208,165,121,.25),0 16px 44px -22px rgba(208,165,121,.55)}
+.match.final .m-top{background:linear-gradient(120deg,rgba(230,201,165,.22),rgba(208,165,121,.08) 60%,transparent);border-bottom-color:rgba(208,165,121,.35)}
+.fpill{display:inline-block;margin-left:8px;font-family:var(--display);font-size:10px;font-weight:600;letter-spacing:.14em;text-transform:uppercase;color:var(--navy);background:linear-gradient(120deg,#E6C9A5,#D0A579 55%,#B98C5E);border-radius:999px;padding:2px 8px;vertical-align:1px}
 
 /* roster strip */
 .roster{display:grid;grid-template-columns:repeat(auto-fill,minmax(250px,1fr));gap:10px}
@@ -522,6 +526,7 @@ nav .sh,.nm-s{display:none}
   .game{min-width:20px;height:16px;font-size:10px;border-radius:4px}
   .note{padding:0 6px 4px;font-size:8.5px;line-height:1.3}
   .note.gen{display:none}
+  .fpill{margin-left:4px;font-size:7.5px;letter-spacing:.06em;padding:0 5px}
   .m-foot{padding:4px 5px;justify-content:center}
   .m-foot > span:first-child{display:none}
   .m-foot .live-btn{font-size:8px;letter-spacing:.02em;padding:4px 6px;gap:4px;white-space:normal;text-align:center;line-height:1.2}
@@ -952,6 +957,8 @@ function card(m){
   // in progress (no live scoreboard) only if the feed confirmed it in the last 90 minutes; otherwise "result pending"
   const fresh = m.status === "live" && m.seenLive && Date.now() - new Date(m.seenLive) < 90 * 60e3;
   const live = !!fresh;
+  // finals get the gold look while coming up or today; once they move into results they look like any other match
+  const final = /^(final|f)\b/i.test((m.round || "").trim()) && (m.date >= ukDate() || live);
   const ours = id => !!byId[id];
   const row = (side) => {
     const id = side === 1 ? m.p1Id : m.p2Id, name = side === 1 ? m.p1 : m.p2;
@@ -977,8 +984,8 @@ function card(m){
   const btn = itfLink ? `<a class="live-btn" href="${esc(itfLink)}" target="_blank" rel="noopener"><span class="dot"></span>ITF draw &amp; results</a>`
     : teLink ? `<a class="live-btn" href="${esc(teLink)}" target="_blank" rel="noopener"><span class="dot"></span>Tennis Europe draw</a>`
     : !fin && link ? `<a class="live-btn" href="${esc(link)}" target="_blank" rel="noopener"><span class="dot"></span>${pending ? "Check result" : "Check live score"}</a>` : "";
-  return `<article class="match ${(today && !fin) || live ? "today" : ""} ${live ? "is-live" : ""}">
-    <div class="m-top"><span class="t">${esc(m.tournament)}<span class="r">${esc(m.round || "")}</span></span>${when}</div>
+  return `<article class="match ${(today && !fin) || live ? "today" : ""} ${live ? "is-live" : ""} ${final ? "final" : ""}">
+    <div class="m-top"><span class="t">${esc(m.tournament)}${final ? `<span class="fpill">🏆 ${esc(m.round)}</span>` : `<span class="r">${esc(m.round || "")}</span>`}</span>${when}</div>
     ${times}
     <div class="m-body">${row(1)}${row(2)}</div>
     ${m.note ? `<div class="note">${esc(m.note)}</div>` : ""}
