@@ -2129,7 +2129,7 @@ setInterval(() => { if (!document.hidden) renderScores(); }, 5 * 60 * 1000);
   <h2>72 Central · Enter passcode</h2>
   <div class="gate-digits"><input type="password" inputmode="numeric" maxlength="6" autocomplete="one-time-code" aria-label="Digit 1"><input type="password" inputmode="numeric" maxlength="6" autocomplete="one-time-code" aria-label="Digit 2"><input type="password" inputmode="numeric" maxlength="6" autocomplete="one-time-code" aria-label="Digit 3"><input type="password" inputmode="numeric" maxlength="6" autocomplete="one-time-code" aria-label="Digit 4"><input type="password" inputmode="numeric" maxlength="6" autocomplete="one-time-code" aria-label="Digit 5"><input type="password" inputmode="numeric" maxlength="6" autocomplete="one-time-code" aria-label="Digit 6"></div>
   <div class="gate-err" id="gateErr"></div>
-  <p class="gate-note">For SeventyTwo Sports Group staff only.<br>72 Central is in beta, so some features may still change.</p>
+  <p class="gate-note">For SeventyTwo Sports Group staff only. Visits are logged by name.<br>72 Central is in beta, so some features may still change.</p>
 </div></div>
 <script>(() => {
   const H = "89e1a9fa4a91850fd074bb35fc4770ed59a4906addbd786b09c8556e89d1459a", ins = [...document.querySelectorAll(".gate-digits input")];
@@ -2150,6 +2150,35 @@ setInterval(() => { if (!document.hidden) renderScores(); }, 5 * 60 * 1000);
     window.dispatchEvent(new Event("resize"));
     window.renderHome?.();
     if (!location.hash || location.hash === "#" || location.hash === "#home") window.spinLogo?.();
+    startLog();
+  }
+  // visit log: sends each visit's name, start time, minutes on screen and pages to Tobey's Google Sheet
+  // (scripts/visit_log.gs, set up as in VISIT_LOG.md). Off while LOG_URL is empty.
+  // Only time with the tab on screen counts; 30 minutes away starts a new visit.
+  const LOG_URL = "";
+  const PAGES = { home: "Home", scores: "Scores", rankings: "Rankings", players: "Players", scouting: "By Age", schedule: "Schedule" };
+  let visit = null, awayAt = 0;
+  const pageNow = () => PAGES[location.hash.slice(1).split("/")[0]] || "Home";
+  function newVisit(){ visit = { id: Date.now().toString(36) + Math.random().toString(36).slice(2, 8), start: Date.now(), secs: 0, since: document.hidden ? 0 : Date.now(), pages: [pageNow()] }; awayAt = Date.now(); }
+  function sendLog(){
+    if (!visit) return;
+    if (visit.since) { visit.secs += (Date.now() - visit.since) / 1000; visit.since = document.hidden ? 0 : Date.now(); }
+    let name = ""; try { name = localStorage.getItem("72c-name") || ""; } catch (e) {}
+    const body = JSON.stringify({ id: visit.id, name, start: visit.start, secs: Math.round(visit.secs), pages: visit.pages.join(", "),
+      device: /Mobi|Android|iPhone|iPad/i.test(navigator.userAgent) ? "Phone/tablet" : "Computer" });
+    try { fetch(LOG_URL, { method: "POST", mode: "no-cors", keepalive: true, body }).catch(() => {}); } catch (e) {}
+  }
+  function startLog(){
+    if (!LOG_URL || visit) return;
+    newVisit(); sendLog();
+    setInterval(() => { if (!document.hidden) sendLog(); }, 60000);
+    window.addEventListener("hashchange", () => { const p = pageNow(); if (!visit.pages.includes(p)) visit.pages.push(p); });
+    document.addEventListener("visibilitychange", () => {
+      if (document.hidden) { awayAt = Date.now(); sendLog(); }
+      else if (Date.now() - awayAt > 30 * 60000) { newVisit(); sendLog(); }
+      else visit.since = Date.now();
+    });
+    window.addEventListener("pagehide", () => { if (!document.hidden) sendLog(); });
   }
   // returning device that was unlocked before names were asked: name only, no passcode
   // (also shown if the passcode was typed before the name)
@@ -2184,6 +2213,7 @@ setInterval(() => { if (!document.hidden) renderScores(); }, 5 * 60 * 1000);
     inp.addEventListener("keydown", e => { if (e.key === "Backspace") ins.forEach(i => i.type = "password"); if (e.key === "Backspace" && !inp.value && k > 0) { ins[k - 1].value = ""; ins[k - 1].focus(); } });
   });
   document.getElementById("gateLogo").src = document.querySelector(".brand img")?.src || "";
+  if (!root.classList.contains("locked")) startLog();
   if (root.classList.contains("locked")) (getName() && !root.classList.contains("name-only") ? ins[0] : nameIn).focus();
 })();</script>
 </body>
