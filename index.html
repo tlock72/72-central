@@ -934,7 +934,7 @@ html.name-only .gate-box h2,html.name-only .gate-digits{display:none}
       <h3>Add a prospect</h3>
       <form id="cnForm" autocomplete="off">
         <input class="sq-in" id="cnName" placeholder="Full name, e.g. Laurens Drijver" aria-label="Full name" maxlength="60" required>
-        <select class="sq-in sm" id="cnG" aria-label="Boy or girl" required><option value="">Boy/girl</option><option value="M">Boy / man</option><option value="F">Girl / woman</option></select>
+        <select class="sq-in sm" id="cnG" aria-label="Male or female" required><option value="">Male/female</option><option value="M">Male</option><option value="F">Female</option></select>
         <input class="sq-in sm" id="cnNat" placeholder="Nation: GBR" aria-label="Nation, 3 letters" maxlength="3">
         <input class="sq-in sm" id="cnBorn" placeholder="Born: 2011" aria-label="Birth year" inputmode="numeric" maxlength="4">
         <button type="submit">Add</button>
@@ -943,7 +943,7 @@ html.name-only .gate-box h2,html.name-only .gate-digits{display:none}
     </div>
     <div class="sq-filters">
       <div class="sq-line">
-        <div class="chips" role="group" aria-label="Show"><button class="chip cng on" data-g="">Everyone</button><button class="chip cng" data-g="M">Boys / men</button><button class="chip cng" data-g="F">Girls / women</button></div>
+        <div class="chips" role="group" aria-label="Show"><button class="chip cng on" data-g="">Everyone</button><button class="chip cng" data-g="M">Male</button><button class="chip cng" data-g="F">Female</button></div>
         <input class="sq-in" id="cnQ" type="search" placeholder="Search prospect" aria-label="Search prospect">
       </div>
     </div>
@@ -2028,7 +2028,7 @@ $("#cnForm").addEventListener("submit", e => {
   const bad = t => { msg.textContent = t; msg.classList.add("err"); };
   msg.classList.remove("err");
   if (!/^[\p{L}][\p{L} .'\-]{2,59}$/u.test(name) || !name.includes(" ")) return bad("Please type their first name and surname.");
-  if (!g) return bad("Please choose boy or girl.");
+  if (!g) return bad("Please choose male or female.");
   if (nat && !/^[A-Z]{3}$/.test(nat)) return bad("Nation is a 3-letter code, e.g. GBR, ESP, USA.");
   if (born && !/^(19|20)\d\d$/.test(born)) return bad("Birth year is 4 digits, e.g. 2011.");
   if (ROSTER.some(r => cnKey(r.first + r.last) === cnKey(name))) return bad(`${name} is already a 72 player.`);
