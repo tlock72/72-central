@@ -137,6 +137,21 @@ section.block{margin-bottom:38px}
 /* finals (coming up or today only): gold frame, gold header band, "Final" pill */
 .match.final{border-color:rgba(208,165,121,.7);box-shadow:0 0 0 1px rgba(208,165,121,.25),0 16px 44px -22px rgba(208,165,121,.55)}
 .match.final .m-top{background:linear-gradient(120deg,rgba(230,201,165,.22),rgba(208,165,121,.08) 60%,transparent);border-bottom-color:rgba(208,165,121,.35)}
+/* finished finals (today and past results): solid 72 gold tile with navy text, thick green edge for a 72 win, red for a 72 loss */
+.match.fdone{background:linear-gradient(160deg,#E6C9A5,#D0A579 55%,#C39566);border:3px solid var(--gold);color:var(--navy)}
+.match.fdone.win72{border-color:#1E9E5A;box-shadow:0 0 0 1px rgba(30,158,90,.35),0 16px 44px -22px rgba(30,158,90,.6)}
+.match.fdone.loss72{border-color:#D63B3A;box-shadow:0 0 0 1px rgba(214,59,58,.35),0 16px 44px -22px rgba(214,59,58,.6)}
+.match.fdone .m-top{background:rgba(12,20,49,.08);border-bottom-color:rgba(12,20,49,.18)}
+.match.fdone .m-top .t,.match.fdone .when.fin,.match.fdone .row.ours .pname,.match.fdone .set.w,.match.fdone .rstats b{color:var(--navy)}
+.match.fdone .pname,.match.fdone .set,.match.fdone .set sup,.match.fdone .rstats span,.match.fdone .m-foot,.match.fdone .note{color:rgba(12,20,49,.72)}
+.match.fdone .rstats span,.match.fdone .rtag{border-color:rgba(12,20,49,.3)}
+.match.fdone .m-foot{border-top-color:rgba(12,20,49,.18)}
+.match.fdone .rtag{color:var(--navy);font-weight:600}
+.match.fdone.win72 .rtag{color:#fff;background:#1E9E5A;border-color:#1E9E5A}
+.match.fdone.loss72 .rtag{color:#fff;background:#D63B3A;border-color:#D63B3A}
+.match.fdone .badge72,.match.fdone .fpill,.match.fdone .live-btn{background:var(--navy);color:var(--gold)}
+.match.fdone .live-btn .dot{background:var(--gold)}
+.match.fdone .tick{color:var(--navy)}
 .fpill{display:inline-block;margin-left:8px;font-family:var(--display);font-size:10px;font-weight:600;letter-spacing:.14em;text-transform:uppercase;color:var(--navy);background:linear-gradient(120deg,#E6C9A5,#D0A579 55%,#B98C5E);border-radius:999px;padding:2px 8px;vertical-align:1px}
 
 /* roster strip */
@@ -1015,8 +1030,10 @@ function card(m){
   const today = m.date === ukDate();
   const fin = m.status === "finished";
   const live = isLive(m);
-  // finals get the gold look while coming up or today; once they move into results they look like any other match
-  const final = /^(final|f)\b/i.test((m.round || "").trim()) && (m.date >= ukDate() || live);
+  const isFinal = /^(final|f)\b/i.test((m.round || "").trim());
+  // finals get the gold look while coming up or live; once finished (today or past results) the whole tile turns 72 gold with a green or red edge
+  const fdone = isFinal && fin;
+  const final = isFinal && !fin && (m.date >= ukDate() || live);
   const ours = id => !!byId[id];
   const row = (side) => {
     const id = side === 1 ? m.p1Id : m.p2Id, name = side === 1 ? m.p1 : m.p2;
@@ -1059,8 +1076,8 @@ function card(m){
   const kind = eventKind(m);
   const nolive = live && !m.espnLive
     ? `<div class="nolive"><span>${kind ? `We can't pull live scores for ${esc(kind)} matches` : "We can't pull the live score for this match right now"}${btn ? ". Check it here" : ""}</span>${btn ? '<span class="arr" aria-hidden="true">↓</span>' : ""}</div>` : "";
-  return `<article class="match ${(today && !fin) || live ? "today" : ""} ${live ? "is-live" : ""} ${delayed ? "delayed" : ""} ${final ? "final" : ""} ${fin ? "done " + wl : ""}">
-    <div class="m-top"><span class="t">${esc(m.tournament)}${final ? `<span class="fpill">🏆 ${esc(m.round)}</span>` : `<span class="r">${esc(m.round || "")}</span>`}</span>${when}</div>
+  return `<article class="match ${(today && !fin) || live ? "today" : ""} ${live ? "is-live" : ""} ${delayed ? "delayed" : ""} ${final ? "final" : ""} ${fdone ? "fdone" : ""} ${fin ? "done " + wl : ""}">
+    <div class="m-top"><span class="t">${esc(m.tournament)}${final || fdone ? `<span class="fpill">🏆 ${esc(m.round)}</span>` : `<span class="r">${esc(m.round || "")}</span>`}</span>${when}</div>
     ${times}${stats}
     <div class="m-body">${row(1)}${row(2)}${nolive}</div>
     ${delayed ? `<div class="note delay">Play is stopped for now${/^(delayed|in progress)$/i.test(m.delay) ? "" : ` (${esc(m.delay)})`}. The score is where play stopped; it updates when they're back on court.</div>` : ""}
