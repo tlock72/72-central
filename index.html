@@ -943,7 +943,7 @@ html.name-only .gate-box h2,html.name-only .gate-digits{display:none}
       <div>
         <div class="eyebrow">SeventyTwo Sports Group</div>
         <h1>Scouting Corner</h1>
-        <p class="sub">Players we're watching, each followed through every stage: Tennis Europe, ITF juniors, then the ITF pro tour, ATP and WTA. Every ranking they hold with its 1 week, 3 month and 12 month move, and their results from the last 12 months. A stage marked <b>Check</b> fits more than one player, so it isn't linked until someone confirms who it is.</p>
+        <p class="sub">Players we're watching, each followed through every stage, most important first: ATP and WTA (and the ITF pro tour), ITF juniors, then Tennis Europe. Players with an ATP/WTA ranking are listed first. Every ranking they hold with its 1 week, 3 month and 12 month move, and their results from the last 12 months. A stage marked <b>Check</b> fits more than one player, so it isn't linked until someone confirms who it is.</p>
       </div>
     </div>
     <div class="cn-add">
@@ -2003,14 +2003,15 @@ function cnRow(level, sub, rank, high, w, m3, m12){
 function cnCard(k, p){
   const L = p.links || {}, tourName = p.g === "F" ? "WTA" : "ATP";
   const te = [...(p.te || [])].sort((a, b) => a.rank - b.rank)[0], jr = p.itfJr, pro = p.pro;  // best Tennis Europe category
-  const path = cnStage("Tennis Europe", L.te, te ? `No. ${te.rank} ${te.cat}` : "", L.te?.id ? `https://te.tournamentsoftware.com/player-profile/${L.te.id}` : "")
+  // most important first: ATP/WTA, then ITF Juniors, then Tennis Europe
+  const path = cnStage(tourName, L.pro?.status ? L.pro : null, pro ? `No. ${pro.rank}` : "", L.pro?.url)
     + cnStage("ITF Juniors", L.itf, jr?.rank ? `No. ${jr.rank}` : jr?.high ? `Best ${jr.high}` : L.itf?.status === "linked" ? "ITF profile" : "", L.itf?.id ? `https://www.itftennis.com/en/players/${cnKey(p.name) && p.name.normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLowerCase().replace(/[^a-z]+/g, "-").replace(/^-|-$/g, "")}/${L.itf.id}/${(L.itf.nat || "").toLowerCase()}/` : "")
-    + cnStage(tourName, L.pro?.status ? L.pro : null, pro ? `No. ${pro.rank}` : "", L.pro?.url);
+    + cnStage("Tennis Europe", L.te, te ? `No. ${te.rank} ${te.cat}` : "", L.te?.id ? `https://te.tournamentsoftware.com/player-profile/${L.te.id}` : "");
   const rows = [];
-  for (const r of p.te || []) rows.push(cnRow("Tennis Europe", r.cat, r.rank, r.high, r.w, r.m3, r.m12));
-  if (jr && (jr.rank || jr.high)) rows.push(cnRow("ITF Juniors", jr.date ? "as of " + jr.date : "", jr.rank, jr.high, jr.w, jr.m3, jr.m12));
   if (pro) rows.push(cnRow(tourName, pro.week ? "week of " + sqFmt(pro.week) : "", pro.rank, pro.high, pro.w, pro.m3, pro.m12));
   else if (p.itfPro?.rank) rows.push(cnRow(tourName, "as of " + (p.itfPro.date || ""), p.itfPro.rank, p.itfPro.high));
+  if (jr && (jr.rank || jr.high)) rows.push(cnRow("ITF Juniors", jr.date ? "as of " + jr.date : "", jr.rank, jr.high, jr.w, jr.m3, jr.m12));
+  for (const r of p.te || []) rows.push(cnRow("Tennis Europe", r.cat, r.rank, r.high, r.w, r.m3, r.m12));
   const res = p.results || [];
   const won = res.filter(r => r.res === "W").length, lost = res.filter(r => r.res === "L").length;
   // results grouped by tournament, newest first
@@ -2045,6 +2046,7 @@ function cnShown(){
   const gone = new Set(CN_REMOVED.map(cnKey)), onSheet = new Set(CN_SHEET.map(x => cnKey(x.name)));
   return Object.fromEntries(Object.entries(CORNER?.players || {}).filter(([k, p]) => !gone.has(cnKey(p.name)) && !(CN_SHEET_OK && p.src === "site" && !onSheet.has(cnKey(p.name)))));
 }
+const cnOrd = r => r || 1e6, cnTeBest = p => Math.min(...(p.te || []).map(t => t.rank || 1e6), 1e6);
 function renderCorner(){
   if (!$("#page-corner")) return;
   const P = cnShown(), gone = new Set(CN_REMOVED.map(cnKey));
@@ -2054,7 +2056,8 @@ function renderCorner(){
   const q = cnKey(CN.q);
   const keep = (name, g) => (!CN.g || g === CN.g) && (!q || cnKey(name).includes(q));
   const cards = Object.entries(P).filter(([k, p]) => keep(p.name, p.g))
-    .sort((a, b) => (a[1].pro?.rank || 1e4) - (b[1].pro?.rank || 1e4) || (a[1].itfJr?.rank || 1e4) - (b[1].itfJr?.rank || 1e4) || a[1].name.localeCompare(b[1].name))
+    // ATP/WTA rank first, then ITF Juniors, then best Tennis Europe rank, then name
+    .sort((a, b) => cnOrd(a[1].pro?.rank || a[1].itfPro?.rank) - cnOrd(b[1].pro?.rank || b[1].itfPro?.rank) || cnOrd(a[1].itfJr?.rank) - cnOrd(b[1].itfJr?.rank) || cnOrd(cnTeBest(a[1])) - cnOrd(cnTeBest(b[1])) || a[1].name.localeCompare(b[1].name))
     .map(([k, p]) => cnCard(k, p));
   const wait = waiting.filter(x => keep(x.name, x.g)).map(x => `<div class="cn cn-wait"><div class="cn-h"><span class="nm">${esc(x.name)}</span><span class="mt">Looking up… usually within 30 minutes${x.by ? " · added by " + esc(x.by) : ""}</span></div></div>`);
   $("#cnList").innerHTML = [...wait, ...cards].join("") || `<div class="sq-empty">${CORNER ? (Object.keys(P).length ? "No prospect matches." : "No prospects yet. Add the first one above.") : "Loading the watch list…"}</div>`;
