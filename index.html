@@ -112,7 +112,6 @@ section.block{margin-bottom:38px}
 /* in progress with no live scoreboard: a line in place of the score, with an arrow down to the live score button */
 .nolive{display:flex;align-items:center;justify-content:flex-end;gap:8px;padding:2px 16px 6px;font-size:12px;color:var(--muted);text-align:right}
 .nolive .arr{color:var(--gold);font-size:16px;line-height:1}
-.nolive .arr.m{display:none}
 /* finished matches: flatter card and a "Result" tag; green edge for a 72 win, red for a 72 loss (no colour when two 72 players meet) */
 .match.done{background:rgba(255,255,255,.025)}
 .match.done .m-top{background:rgba(255,255,255,.035)}
@@ -562,8 +561,6 @@ nav .sh,.nm-s{display:none}
   .note.gen{display:none}
   .nolive{justify-content:center;gap:4px;padding:1px 6px 3px;font-size:8.5px;line-height:1.3;text-align:center}
   .nolive .arr{font-size:11px}
-  .nolive .arr.d{display:none}
-  .nolive .arr.m{display:inline}
   .fpill{margin-left:4px;font-size:7.5px;letter-spacing:.06em;padding:0 5px}
   .m-foot{padding:4px 5px;justify-content:center}
   .m-foot > span:first-child{display:none}
@@ -1061,7 +1058,7 @@ function card(m){
   // in progress with no live scoreboard: say why in place of the score and point to the live score button
   const kind = eventKind(m);
   const nolive = live && !m.espnLive
-    ? `<div class="nolive"><span>${kind ? `We can't pull live scores for ${esc(kind)} matches` : "We can't pull the live score for this match right now"}${btn ? ". Check it here" : ""}</span>${btn ? '<span class="arr d" aria-hidden="true">↘</span><span class="arr m" aria-hidden="true">↓</span>' : ""}</div>` : "";
+    ? `<div class="nolive"><span>${kind ? `We can't pull live scores for ${esc(kind)} matches` : "We can't pull the live score for this match right now"}${btn ? ". Check it here" : ""}</span>${btn ? '<span class="arr" aria-hidden="true">↓</span>' : ""}</div>` : "";
   return `<article class="match ${(today && !fin) || live ? "today" : ""} ${live ? "is-live" : ""} ${delayed ? "delayed" : ""} ${final ? "final" : ""} ${fin ? "done " + wl : ""}">
     <div class="m-top"><span class="t">${esc(m.tournament)}${final ? `<span class="fpill">🏆 ${esc(m.round)}</span>` : `<span class="r">${esc(m.round || "")}</span>`}</span>${when}</div>
     ${times}${stats}
