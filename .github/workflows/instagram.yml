@@ -1,0 +1,41 @@
+name: Instagram followers
+on:
+  schedule:
+    - cron: "47 7 * * 1"   # once a week, Mondays 08:47 UK summer time (07:47 UTC)
+  workflow_dispatch:
+concurrency:
+  group: instagram
+  cancel-in-progress: false
+permissions:
+  contents: write
+  issues: write
+jobs:
+  instagram:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v6
+        with:
+          ref: main
+      - id: instagram
+        name: Instagram follower counts for the pros (Instagram's free Graph API, no Claude)
+        run: python3 scripts/instagram.py
+        env:
+          IG_TOKEN: ${{ secrets.IG_TOKEN }}
+          IG_USER_ID: ${{ secrets.IG_USER_ID }}
+      - name: Save changes
+        run: |
+          git config user.name "72 Hub updater"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add social.json
+          if git diff --cached --quiet; then echo "No changes"; exit 0; fi
+          git commit -q -m "Update Instagram followers"
+          if git pull -q --rebase -X theirs; then git push
+          else git rebase --abort; echo "Another update saved first - skipping, next week's run will catch up"; fi
+      - name: Tell Tobey about anything missed (GitHub issue + email)
+        if: always()
+        continue-on-error: true
+        run: python3 scripts/report_gaps.py
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          STEPS_JSON: ${{ toJSON(steps) }}

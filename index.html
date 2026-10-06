@@ -1076,7 +1076,7 @@ function renderScores(){
 const RANK_FALLBACK = { asOf:"", source:"ATP & WTA singles rankings", players:{} };
 const mergeRanks = s => ({ ...(s || {}) });
 const mv = m => m == null ? `<span class="mv same"></span>` : m > 0 ? `<span class="mv up">▲ ${m}</span>` : m < 0 ? `<span class="mv down">▼ ${Math.abs(m)}</span>` : `<span class="mv same">–</span>`;
-let rankTab = "tour", ITF = null, TITLES = null;
+let rankTab = "tour", ITF = null, TITLES = null, SOCIAL = null;
 function renderItf(){
   const ic = ITF?.checked ? new Date(ITF.checked + "T12:00:00Z") : null;
   setStale("#staleItf", ITF && (!ic || Date.now() - ic > 9 * 864e5)
@@ -1433,10 +1433,16 @@ function renderPlayers(){
   }).join("") || `<p class="sec-d">No players in this group right now.</p>`;
   document.querySelectorAll(".chip[data-f]").forEach(c => c.classList.toggle("on", c.dataset.f === pFilter));
 }
+// a player's following: the Instagram figure comes from Instagram itself each week (social.json), the rest as typed above
+function socialOf(x){
+  const ig = SOCIAL?.players?.[x.id]?.followers;
+  return ig ? { ...x.social, Instagram: ig } : x.social;
+}
 function proBody(x, p, rank){
   const best = careerHigh(x);
   const tl = titlesOf(x), titles = titleSum(tl);
-  const reach = Object.values(x.social).reduce((s, v) => s + v, 0);
+  const social = socialOf(x), igAt = SOCIAL?.players?.[x.id]?.at;
+  const reach = Object.values(social).reduce((s, v) => s + v, 0);
   const tblock = t => {
     const parts = t.p || [];
     const bar = parts.length ? `<div class="bar2">${parts.map(([, n], i) => `<i style="flex:${n};background:${TONES[i % TONES.length]}"></i>`).join("")}</div>
@@ -1455,7 +1461,7 @@ function proBody(x, p, rank){
       <section><h3 class="pk">Partner line-up</h3>${partnersHtml(x.partners, x.id)}</section>
       <section><h3 class="pk">Social media</h3><div class="soc">
         <div class="tot"><b>${fmtN(reach)}</b><span>Combined following</span></div>
-        ${Object.entries(x.social).map(([k, v]) => `<div><b>${fmtN(v)}</b><span>${esc(k)}</span></div>`).join("")}
+        ${Object.entries(social).map(([k, v]) => `<div><b>${fmtN(v)}</b><span>${esc(k)}${k === "Instagram" && igAt ? ` · ${esc(sqFmt(igAt))}` : ""}</span></div>`).join("")}
       </div></section>
       ${x.quote ? `<blockquote class="q"><p>${esc(x.quote[0])}</p><cite>${esc(x.quote[1])}</cite></blockquote>` : ""}`;
 }
@@ -1961,6 +1967,7 @@ async function load(){
     try { const rt = await fetch("te.json?t=" + Date.now(), { cache: "no-store" }); if (rt.ok) addItfMatches(STATE, await rt.json(), "te"); } catch (e) {}
     try { const ri = await fetch("itf.json?t=" + Date.now(), { cache: "no-store" }); if (ri.ok) ITF = await ri.json(); } catch (e) {}
     try { const rl = await fetch("titles.json?t=" + Date.now(), { cache: "no-store" }); if (rl.ok) TITLES = await rl.json(); } catch (e) {}
+    try { const rs = await fetch("social.json?t=" + Date.now(), { cache: "no-store" }); if (rs.ok) SOCIAL = await rs.json(); } catch (e) {}
     normalizeMatches(STATE);
     applyLive(STATE);
     render();
