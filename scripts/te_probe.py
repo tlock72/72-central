@@ -1,14 +1,11 @@
-"""One-off: run the new Tennis Europe entry list check (read-only, prints to the log, saves nothing)."""
-import json, sys, time
+"""One-off: the new Tennis Europe list check must find Kurylova at last week's World TEC Cup (read-only)."""
+import json, sys
 sys.path.insert(0, "scripts")
 import schedule as S
 
-t0 = time.time()
+S.in_window = lambda start, end: True
 TE = S.te_session()
-evs = S.te_events(TE)
-win = [e for e in evs if S.in_window(e["start"], e["end"])]
-print(len(evs), "Tennis Europe events,", len(win), "in the entry window")
-failed = S.te_lists(TE, evs, json.load(open("te.json"))["profiles"], {})
-for e in sorted(win, key=lambda e: e["start"]):
-    print(e["start"], e["name"], e.get("ages"), "list:", e.get("list"), "72:", e.get("e72"))
-print("failed:", failed, "minutes:", round((time.time() - t0) / 60, 1))
+ev = {"tour": "te", "src": "te", "name": "WORLD TEC CUP", "start": "2026-09-26", "end": "2026-10-04",
+      "teId": "D7456117-0012-4B95-AC0A-04EC993CC621"}
+failed = S.te_lists(TE, [ev], json.load(open("te.json"))["profiles"], {})
+print("RESULT list:", ev.get("list"), "72:", ev.get("e72"), "failed:", failed)
