@@ -230,18 +230,20 @@ footer .wrap{display:flex;justify-content:space-between;gap:12px;flex-wrap:wrap}
   border:1px solid var(--line-2);background:linear-gradient(160deg,var(--navy-3) 0%,var(--navy-2) 45%,#0A1029 100%);transition:transform .25s ease,border-color .25s ease,box-shadow .25s ease}
 .pc::before{content:"";position:absolute;inset:0;z-index:-1;background:radial-gradient(420px 220px at 110% -10%,rgba(208,165,121,.20),transparent 60%)}
 .pc:hover{transform:translateY(-4px);border-color:var(--line);box-shadow:0 18px 40px rgba(0,0,0,.35)}
-.pc .bg{position:absolute;inset:0;z-index:-3;background:center 18%/cover no-repeat;opacity:.5;filter:blur(2.5px) saturate(.8);transform:scale(1.08);transition:opacity .4s ease,filter .4s ease,transform .6s ease}
-.pc .shade{position:absolute;inset:0;z-index:-2;background:linear-gradient(180deg,rgba(12,20,49,.30) 0%,rgba(12,20,49,.62) 38%,rgba(10,16,41,.94) 70%,#0A1029 100%)}
-.pc:hover .bg{opacity:.72;filter:blur(0) saturate(1);transform:scale(1.03)}
+.pc{min-height:420px}
+/* the photo box has the photos' own shape (380x434), so the whole picture shows: nothing squashed or cut off */
+.pc .bg{position:absolute;inset:0 0 auto 0;aspect-ratio:380/434;z-index:-3;background:center top/cover no-repeat;opacity:.85;transition:opacity .4s ease}
+.pc .shade{position:absolute;inset:0;z-index:-2;background:linear-gradient(180deg,transparent 0%,transparent 42%,rgba(10,16,41,.88) 66%,#0A1029 82%)}
+.pc:hover .bg{opacity:1}
 .pc .mono{position:absolute;right:-8px;bottom:-30px;z-index:-1;font-family:var(--display);font-weight:700;font-size:190px;line-height:1;letter-spacing:-.04em;
   color:transparent;-webkit-text-stroke:1.5px rgba(208,165,121,.17);user-select:none;pointer-events:none}
 .pc .top{display:flex;justify-content:space-between;align-items:center}
 .pc .tr{font-family:var(--display);font-size:11px;letter-spacing:.2em;color:var(--navy);background:var(--gold);padding:3px 9px;border-radius:4px;font-weight:600}
 .pc .cc{font-family:var(--display);font-size:12px;letter-spacing:.2em;color:var(--muted)}
-.pc .fn{font-family:var(--display);text-transform:uppercase;letter-spacing:.24em;font-size:13px;color:var(--text);margin-top:34px}
+.pc .fn{font-family:var(--display);text-transform:uppercase;letter-spacing:.24em;font-size:13px;color:var(--text);margin-top:auto}
 .pc .ln{font-family:var(--display);text-transform:uppercase;font-weight:600;font-size:34px;line-height:1.02;color:var(--gold);letter-spacing:.01em;margin-top:2px;overflow-wrap:anywhere}
 .pc .meta{font-size:12px;color:var(--muted);margin-top:10px}
-.pc .nums{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-top:auto;padding-top:22px;border-top:1px solid var(--line);}
+.pc .nums{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-top:16px;padding-top:16px;border-top:1px solid var(--line);}
 .pc .nums div{min-width:0}
 .pc .nums b{display:block;font-family:var(--display);font-size:28px;font-weight:600;color:var(--white);line-height:1;font-variant-numeric:tabular-nums}
 .pc .nums span{display:block;font-size:10px;letter-spacing:.14em;text-transform:uppercase;color:var(--muted-2);margin-top:6px}
@@ -256,12 +258,13 @@ dialog.prof[open]{animation:pop .28s ease}
 .ph{position:relative;padding:38px 40px 30px;overflow:hidden;isolation:isolate;border-bottom:1px solid var(--line);
   background:radial-gradient(700px 300px at 100% 0%,rgba(208,165,121,.22),transparent 60%),linear-gradient(160deg,var(--navy-3),#0B1230)}
 .ph .mono{position:absolute;right:20px;top:-40px;z-index:-1;font-family:var(--display);font-weight:700;font-size:300px;line-height:1;color:transparent;-webkit-text-stroke:2px rgba(208,165,121,.16);user-select:none}
-.ph .pimg{position:absolute;right:0;top:0;height:100%;width:46%;object-fit:cover;object-position:center 20%;z-index:-1;
-  -webkit-mask-image:linear-gradient(to left,#000 45%,transparent);mask-image:linear-gradient(to left,#000 45%,transparent)}
-.ph .pblur{position:absolute;inset:-30px;z-index:-2;background:center/cover no-repeat;filter:blur(40px) saturate(1.1);opacity:.28}
+/* the whole photo (photos are 380x434), framed on the right; the name and facts keep clear of it */
+.ph .pimg{position:absolute;right:76px;top:30px;height:clamp(220px,30vw,300px);aspect-ratio:380/434;object-fit:cover;z-index:0;
+  border-radius:16px;box-shadow:0 18px 44px rgba(0,0,0,.5)}
+.ph:has(.pimg){min-height:calc(clamp(220px,30vw,300px) + 60px);padding-right:calc(clamp(220px,30vw,300px) * 380 / 434 + 106px)}
+.ph .pblur{position:absolute;inset:-30px;z-index:-2;background:center/cover no-repeat;filter:blur(40px) saturate(1.1);opacity:.4}
 .ph .pimg~.mono{display:none}
 .ph{min-height:230px}
-  .ph .pimg[src="svitolina.webp"]{object-position:center top;transform:scale(1.2);transform-origin:25% 0}
 .ph .x{z-index:2;position:absolute;top:18px;right:18px;width:38px;height:38px;border-radius:50%;border:1px solid var(--line);color:var(--gold);font-size:18px;line-height:1;display:grid;place-items:center;background:rgba(12,20,49,.6)}
 .ph .x:hover{background:var(--gold-dim)}
 .ph .fn{font-family:var(--display);text-transform:uppercase;letter-spacing:.3em;font-size:15px;color:var(--text)}
@@ -337,9 +340,7 @@ blockquote.q cite{display:block;margin-top:12px;font-style:normal;font-family:va
 @media (max-width:640px){
   .ph{padding:30px 22px 24px}.pb{padding:24px 22px 30px}
   .big,.big.b3{grid-template-columns:repeat(2,1fr)}.big b{font-size:32px}.big.b3>div:last-child{grid-column:1/-1}
-  .pc{min-height:290px}.pc .fn{margin-top:22px}
   .pc .ln{font-size:30px}
-  .ph .pimg{width:100%;opacity:.4;-webkit-mask-image:linear-gradient(to top,transparent,#000 70%);mask-image:linear-gradient(to top,transparent,#000 70%)}
   .pnav .live-btn{order:-1;width:100%;justify-content:center}
 }
 
@@ -857,11 +858,10 @@ nav .sh,.nm-s{display:none}
   .chip{font-size:10px;letter-spacing:.07em;padding:6px 11px}
   dialog.prof{width:calc(100vw - 20px);max-height:calc(100vh - 24px);border-radius:18px}
   dialog.prof{max-height:calc(100dvh - 24px)}
-  .ph{min-height:0;padding:18px 16px 16px}
+  .ph,.ph:has(.pimg){min-height:0;padding:18px 16px 16px}
   /* phones: the whole photo (zoomed right out, nothing cropped) sits in its own space above the name, over a blurred copy of itself */
-  .ph .pimg{position:relative;display:block;z-index:0;width:auto;height:min(310px,44vh);aspect-ratio:380/434;max-width:100%;margin:6px auto 16px;
+  .ph .pimg{position:relative;inset:auto;display:block;z-index:0;width:auto;height:min(310px,44vh);aspect-ratio:380/434;max-width:100%;margin:6px auto 16px;
     object-fit:contain;opacity:1;border-radius:14px;box-shadow:0 14px 34px rgba(0,0,0,.5);-webkit-mask-image:none;mask-image:none}
-  .ph .pimg[src]{transform:none}
   .ph .pblur{opacity:.5}
   .ph .x{top:12px;right:12px;width:32px;height:32px;font-size:15px}
   .ph .fn{font-size:11px;letter-spacing:.24em}
