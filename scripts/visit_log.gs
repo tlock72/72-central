@@ -1,3 +1,4 @@
+/** @OnlyCurrentDoc */
 // 72 Central visit log. Not run by GitHub: paste this into your Google Sheet
 // (Extensions > Apps Script) and follow VISIT_LOG.md.
 // The site sends each visit here; each visit is one row on the "Visits" tab,
