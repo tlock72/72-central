@@ -110,8 +110,12 @@ section.block{margin-bottom:38px}
 .live-btn .dot{width:6px;height:6px;border-radius:50%;background:var(--navy)}
 .note{padding:0 16px 10px;font-size:11px;color:var(--muted-2)}
 /* in progress with no live scoreboard: a line in place of the score, with an arrow down to the live score button */
-.nolive{display:flex;align-items:center;justify-content:flex-end;gap:8px;padding:2px 16px 6px;font-size:12px;color:var(--muted);text-align:right}
-.nolive .arr{color:var(--gold);font-size:16px;line-height:1}
+.nolive{display:flex;flex-direction:column;align-items:flex-end;gap:4px;padding:2px 16px 8px;font-size:12px;color:var(--muted);text-align:right}
+/* the arrow sits in a box as wide as the button (an invisible copy of it), so it lines up over the button's middle */
+.arrw{display:flex;flex-direction:column;align-items:center}
+.nolive .arrw > .live-btn{visibility:hidden;height:0;padding-top:0;padding-bottom:0;overflow:hidden}
+.nolive .arr{position:relative;width:2px;height:26px;margin-bottom:7px;color:var(--gold);background:currentColor}
+.nolive .arr::after{content:"";position:absolute;left:50%;top:100%;transform:translateX(-50%);border:7px solid transparent;border-bottom:0;border-top-color:currentColor}
 /* finished matches: flatter card and a "Result" tag; green edge for a 72 win, red for a 72 loss (no colour when two 72 players meet) */
 .match.done{background:rgba(255,255,255,.025)}
 .match.done .m-top{background:rgba(255,255,255,.035)}
@@ -584,13 +588,14 @@ nav .sh,.nm-s{display:none}
   .rstats{gap:3px;padding:4px 6px 0}
   .rstats span{padding:0 5px;font-size:8px;white-space:normal}
   .note.gen{display:none}
-  .nolive{flex-direction:column;justify-content:center;gap:1px;padding:1px 6px 3px;font-size:8.5px;line-height:1.3;text-align:center}
-  .nolive .arr{font-size:11px}
+  .nolive{align-items:center;gap:2px;padding:1px 6px 4px;font-size:8.5px;line-height:1.3;text-align:center}
+  .nolive .arr{height:14px;margin-bottom:5px}
+  .nolive .arr::after{border-width:5px 5px 0}
   .fpill{margin-left:4px;font-size:7.5px;letter-spacing:.06em;padding:0 5px}
   .m-foot{padding:4px 5px;justify-content:center}
   .m-foot > span:first-child{display:none}
-  .m-foot .live-btn{font-size:8px;letter-spacing:.02em;padding:4px 6px;gap:4px;white-space:normal;text-align:center;line-height:1.2}
-  .m-foot .live-btn .dot{display:none}
+  .m-foot .live-btn,.arrw > .live-btn{font-size:8px;letter-spacing:.02em;padding:4px 6px;gap:4px;white-space:normal;text-align:center;line-height:1.2}
+  .m-foot .live-btn .dot,.arrw > .live-btn .dot{display:none}
   .empty{padding:12px 14px;font-size:12px}
   /* roster on the scores page: 2 per row */
   .roster{grid-template-columns:repeat(2,minmax(0,1fr));gap:6px}
@@ -1085,7 +1090,7 @@ function card(m){
   // in progress with no live scoreboard: say why in place of the score and point to the live score button
   const kind = eventKind(m);
   const nolive = live && !m.espnLive
-    ? `<div class="nolive"><span>${kind ? `We can't pull live scores for ${esc(kind)} matches` : "We can't pull the live score for this match right now"}${btn ? ". Check it here" : ""}</span>${btn ? '<span class="arr" aria-hidden="true">↓</span>' : ""}</div>` : "";
+    ? `<div class="nolive"><span>${kind ? `We can't pull live scores for ${esc(kind)} matches` : "We can't pull the live score for this match right now"}${btn ? ". Check it here" : ""}</span>${btn ? `<span class="arrw" aria-hidden="true">${btn}<span class="arr"></span></span>` : ""}</div>` : "";
   return `<article class="match ${(today && !fin) || live ? "today" : ""} ${live ? "is-live" : ""} ${delayed ? "delayed" : ""} ${final ? "final fgold" : ""} ${fdone ? "fgold" : ""} ${fin ? "done " + wl : ""}">
     <div class="m-top"><span class="t">${esc(m.tournament)}${final || fdone ? `<span class="fpill">🏆 ${esc(m.round)}</span>` : `<span class="r">${esc(m.round || "")}</span>`}</span>${when}</div>
     ${times}${stats}
