@@ -1,5 +1,5 @@
 """One-off: see where Tennis Europe publishes entry/acceptance lists for coming events (read-only, prints to the log)."""
-import json, re, sys, time
+import html, json, re, sys, time
 from datetime import date, timedelta
 sys.path.insert(0, "scripts")
 import te_matches as TE
@@ -28,22 +28,41 @@ def text(b):
     return re.sub(r"\s+", " ", re.sub("<[^>]+>", " ", b))
 
 
-evs = sorted(evs, key=lambda e: e["start"])
-pick = evs[:3] + evs[len(evs) // 2:len(evs) // 2 + 2] + evs[-2:]
-for e in pick:
+evs = [e for e in s["events"] if e["tour"] == "te" and e["end"] >= t.isoformat() and e["start"] <= (t + timedelta(days=28)).isoformat()]
+mine = {pid.upper(): rid for rid, pid in json.load(open("te.json"))["profiles"].items() if ":" not in rid}
+cat = next(e for e in evs if "E21AD649" in e["link"])
+b = TE.fetch("/sport/acceptancelist.aspx?id=" + cat["link"].split("id=")[-1])
+i = b.find("Select event")
+print("SELECT RAW:", b[i - 200:i + 1500])
+for word in ("Qualifying (", "Withdrawn", "Alternate", "Main ("):
+    j = b.find(word)
+    print(f"RAW around {word!r}:", b[max(0, j - 700):j + 500] if j >= 0 else "not found")
+opts = re.findall(r'<option[^>]*value="([^"]*)"[^>]*>([^<]*)</option>', b[i:i + 3000])
+print("options:", opts)
+links = sorted(set(re.findall(r'href="([^"]*acceptancelist[^"]*)"', b, re.I)))
+print("acceptance links:", links)
+
+print("\n== SCAN", len(evs), "events")
+for e in sorted(evs, key=lambda e: e["start"]):
     tid = e["link"].split("id=")[-1]
-    print("\n==", e["name"], e["start"], e["cat"], e.get("ages"), tid)
     try:
         b = TE.fetch(f"/sport/acceptancelist.aspx?id={tid}")
     except Exception as x:
-        print("  FAILED", x)
+        print(e["start"], e["name"], "FAILED", x)
         continue
-    print("  chars", len(b), "profile links", len(re.findall(r"/player-profile/", b)), "player links", len(re.findall(r'href="[^"]*player[^"]*"', b, re.I)))
-    print("  sample links:", sorted(set(re.findall(r'href="([^"]*(?:player|accept|event)[^"]*)"', b, re.I)))[:15])
-    print("  ajax:", sorted(set(re.findall(r"['\"](/[^'\"]*(?:Accept|accept|Players|Entr)[^'\"]*)['\"]", b)))[:15])
-    t = text(b)
-    i = t.find("Acceptance list")
-    print("  text:", t[max(0, i - 100):i + 2500])
-    if e is pick[0]:
-        i = b.find("Acceptance")
-        print("  RAW:", b[b.find("<table") if "<table" in b else i: (b.find("<table") if "<table" in b else i) + 3000])
+    i = b.find("Select event")
+    evlinks = sorted(set(l for l in re.findall(r'href="([^"]*acceptancelist[^"]*)"', b[i:i + 5000], re.I) if "event=" in l.lower()))
+    opts = re.findall(r'<option[^>]*value="([^"]*)"', b[i:i + 3000])
+    pages = [b]
+    for l in evlinks[1:]:
+        try:
+            pages.append(TE.fetch(html.unescape(l)))
+        except Exception as x:
+            print("   sub-event failed", l, x)
+    hit = []
+    for pb in pages:
+        for g in re.findall(r"/player-profile/([0-9A-Fa-f-]{36})", pb):
+            if g.upper() in mine:
+                hit.append(mine[g.upper()])
+    state = "NOT YET" if "not yet available" in b else ("0 entries" if re.search(r">\s*0\s*</[^>]*>\s*Active entries|\b0 Active entries", re.sub("<[^>]+>", " ", b)) else "out")
+    print(e["start"], e["name"], e.get("ages"), state, "sub-events", len(evlinks), "opts", opts[:6], "72:", sorted(set(hit)))
