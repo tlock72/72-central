@@ -344,6 +344,9 @@ select.sq-in option{background:var(--navy-2);color:var(--white)}
 .sch-wk{margin:0 0 22px}
 .sch-wk h3{display:flex;align-items:baseline;gap:10px;font-family:var(--display);font-weight:500;letter-spacing:.14em;text-transform:uppercase;font-size:13px;color:var(--white);margin:0 0 8px;padding-bottom:6px;border-bottom:1px solid var(--line)}
 .sch-wk h3 small{color:var(--muted-2);font-size:11px;letter-spacing:.08em}
+/* red line where entry lists stop: weeks below it have no 72 entries yet */
+.sch-cut{margin:4px 0 22px;padding-top:8px;border-top:2px solid #E5484D;font-size:12px;color:#F2A3A5;line-height:1.4}
+.sch-cut b{color:#E5484D;font-family:var(--display);font-weight:600;letter-spacing:.08em;text-transform:uppercase;margin-right:6px}
 .ev{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:4px 14px;align-items:center;padding:var(--pad) 14px var(--pad) 16px;margin:0 0 6px;border:1px solid var(--line-2);border-left:4px solid var(--t);border-radius:12px;background:linear-gradient(90deg,var(--tb),rgba(255,255,255,.015) 60%);text-decoration:none;color:inherit}
 .ev:hover{border-color:var(--t)}
 .ev .nm{font-family:var(--display);font-weight:600;font-size:var(--fs);color:var(--white);line-height:1.2;min-width:0;overflow-wrap:anywhere}
@@ -1687,7 +1690,10 @@ function renderSchedule(){
   const weeks = new Map();
   for (const e of rows) { const w = schMonday(e.start < from ? from : e.start); if (!weeks.has(w)) weeks.set(w, []); weeks.get(w).push(e); }
   const nm = id => byId[id] ? `${byId[id].first[0]}. ${byId[id].last}` : id;
-  $("#schList").innerHTML = rows.length ? [...weeks.entries()].sort().map(([w, list]) => `<section class="sch-wk">
+  // red line before the first week that starts after the entry-list cut-off: no 72 entries are shown from there on
+  const cutTo = SCHED.entriesTo, cutWk = cutTo && [...weeks.keys()].sort().find(w => w > cutTo);
+  const cut = w => w === cutWk ? `<div class="sch-cut"><b>Entry lists not out yet</b>Entry lists are only published about 4 weeks before each event, so 72 players are shown for events starting up to ${schFmt(cutTo, { year:"numeric" })}. Events below this line won't show 72 players until their lists come out.</div>` : "";
+  $("#schList").innerHTML = rows.length ? [...weeks.entries()].sort().map(([w, list]) => `${cut(w)}<section class="sch-wk">
       <h3>Week of ${schFmt(w, { weekday:"short" })}<small>${list.length} event${list.length === 1 ? "" : "s"}</small></h3>
       ${list.sort((a, b) => schGrp(a) - schGrp(b) || a.tier - b.tier || schNum(b) - schNum(a) || (a.tour === "ch" ? 0 : 1) - (b.tour === "ch" ? 0 : 1) || a.start.localeCompare(b.start) || a.name.localeCompare(b.name)).map(e => `<a class="ev sg${schGrp(e)}${e.status ? " pp" : ""}" href="${esc(e.link || "#")}" target="_blank" rel="noopener">
         <div class="nm">${esc(e.name)}</div>
