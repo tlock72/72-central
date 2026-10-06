@@ -29,6 +29,7 @@ STEP_NAMES = {
     "te": "Tennis Europe matches",
     "save": "saving the new data (this usually sorts itself out on the next run)",
     "schedule": "the tour schedule",
+    "corner": "Scouting Corner",
 }
 
 
@@ -133,6 +134,13 @@ def gaps():
         out.append(f"Tour schedule: {c}")
     if sc.get("updated") and ukday(sc["updated"]) < TODAY - timedelta(days=3):
         out.append(f"Tour schedule: not updated since {ukday(sc['updated'])}. Check the 'Tour schedule' job: {ACTIONS_URL}")
+    # 6b) Scouting Corner: links a person needs to check (unsure, name only, not found), and the site's list not readable
+    co = load("corner.json")
+    for c in co.get("checks") or []:
+        out.append(f"Scouting Corner: {c}")
+    for k, e in (co.get("errors") or {}).items():
+        if ukday(e.get("at")) == TODAY:
+            out.append(f"Scouting Corner: the {(e.get('msg') or '').split(' (')[0]} on {TODAY}. Names on prospects.json still update.")
     # 7) updates have stopped: live scores normally refresh every 30 minutes from 07:13 to 23:43 UK
     lc = when(d.get("lastChecked"))
     if UK_NOW.hour >= 9 and lc and NOW - lc > timedelta(hours=2):
