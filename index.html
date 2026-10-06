@@ -905,6 +905,12 @@ function route(){
     $("#sqQ").value = ""; $("#sqC").value = "";
     renderScouting();
   }
+  // coming to Tour Schedule from another tab always starts on All tours, All levels, All events
+  if (tab === "schedule" && window._tab !== "schedule") {
+    Object.assign(SCH, { tour: "all", lvl: "all", e72: false, p: "", q: "" });
+    $("#schQ").value = "";
+    if (SCHED) renderSchedule();
+  }
   if (window._tab && window._tab !== tab) window.scrollTo(0, 0);
   window._tab = tab;
 }
