@@ -2155,7 +2155,7 @@ setInterval(() => { if (!document.hidden) renderScores(); }, 5 * 60 * 1000);
   // visit log: sends each visit's name, start time, minutes on screen and pages to Tobey's Google Sheet
   // (scripts/visit_log.gs, set up as in VISIT_LOG.md). Off while LOG_URL is empty.
   // Only time with the tab on screen counts; 30 minutes away starts a new visit.
-  const LOG_URL = "";
+  const LOG_URL = "https://script.google.com/macros/s/AKfycbwzEb0YNoDmZaaJ5fQg05ubEe_lowMLiGoYaXuclycqQikOngLQEmENPN5KoL_KJXu1kA/exec";
   const PAGES = { home: "Home", scores: "Scores", rankings: "Rankings", players: "Players", scouting: "By Age", schedule: "Schedule" };
   let visit = null, awayAt = 0;
   const pageNow = () => PAGES[location.hash.slice(1).split("/")[0]] || "Home";
