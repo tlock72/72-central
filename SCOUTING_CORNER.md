@@ -13,6 +13,17 @@ without Claude, and uses no Live Tennis API calls.
   Only the name is needed. `g` (M or F), `nat` (3-letter nation) and `born` make the linking safer.
   To remove someone, delete their line.
 
+## Removing players ("Request removal")
+- Every card has a small **Request removal** button. Anyone can press it (with an optional reason). The card then
+  says "Removal requested" and Tobey gets an email from his own Google account.
+- The email has a link to a page with **Approve** and **Decline** buttons. Nothing is removed until Approve is pressed.
+  Approved: the player disappears from the site straight away, their row on the "Prospects" tab is deleted, and
+  GitHub leaves them out from then on, even if they're in `prospects.json` (you can delete their line there too, to tidy up).
+- Every request is kept on the **Removals** tab of the Sheet (asked, by whom, reason, Approved / Declined).
+- To bring someone back: add them again with the box on the site (that cancels the old removal), or change
+  their Status on the Removals tab from "Approved" to "Re-added".
+- Deleting a row on the "Prospects" tab by hand still works too: the site hides them at once and GitHub drops them on its next run.
+
 ## How the stages are linked (never guessed)
 - **ITF** is the anchor: one ITF player id covers a player's junior and pro career. It's found by exact full name
   (and nationality, when known).
@@ -32,7 +43,11 @@ without Claude, and uses no Live Tennis API calls.
 2. **Make the tab and publish.** In the function dropdown pick `setupProspects` and click **Run** (Google asks for
    permission again, because the script can now start the GitHub update: **Advanced > Go to … > Allow**). Then
    **Deploy > Manage deployments > Edit (pencil) > Version: New version > Deploy**. The URL stays the same.
-3. **Optional, for near-instant lookups:** in GitHub go to **Settings > Developer settings > Fine-grained tokens >
+3. **For "Request removal" (added 6 Oct 2026):** after pasting the new script, pick `setupRemovals` in the function
+   dropdown and click **Run** (Google asks for permission to send email as you: **Advanced > Go to … > Allow**), then
+   do the **Deploy > Manage deployments > Edit > Version: New version > Deploy** step again. Until then the button
+   shows on the site but requests go nowhere.
+4. **Optional, for near-instant lookups:** in GitHub go to **Settings > Developer settings > Fine-grained tokens >
    Generate new token**. Pick only the `72-central` repository, and under permissions set **Actions: Read and write**.
    Copy the token. In Apps Script, go to **Project Settings (cog) > Script properties > Add property**, name it
    `GH_TOKEN` and paste the token. Without it, names are still picked up by the half-hourly run.

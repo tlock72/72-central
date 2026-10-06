@@ -6,6 +6,9 @@
 // Scouting Corner's "Add a prospect" box also sends names here (the "Prospects" tab); GitHub reads
 // that list (doGet, ?kind=prospects) and links each name to Tennis Europe, the ITF and the ATP/WTA.
 // To remove a prospect added on the site, delete their row on the "Prospects" tab.
+// Each Scouting Corner card also has a "Request removal" button: the request goes on the "Removals" tab and
+// Tobey gets an email with a link to approve or decline it. Approved = taken off the Scouting Corner
+// (their row on the "Prospects" tab is deleted, and GitHub stops showing anyone from prospects.json too).
 
 const TZ = "Europe/London";
 
@@ -37,6 +40,18 @@ function setupProspects() {
   p.getRange(1, 1, 1, 6).setValues([["Added", "Name", "Boy/Girl", "Nation", "Born", "Added by"]]).setFontWeight("bold");
   p.setFrozenRows(1);
   p.getRange("A:A").setNumberFormat("ddd d mmm yyyy HH:mm");
+  setupRemovals();
+}
+
+// Run once by hand (setupProspects() runs it too): creates the "Removals" tab.
+function setupRemovals() {
+  const ss = SpreadsheetApp.getActiveSpreadsheet();
+  const r = ss.getSheetByName("Removals") || ss.insertSheet("Removals");
+  r.getRange(1, 1, 1, 8).setValues([["Asked", "Name", "Asked by", "Reason", "Status", "Decided", "Request ID", "Code"]]).setFontWeight("bold");
+  r.setFrozenRows(1);
+  r.getRange("A:A").setNumberFormat("ddd d mmm yyyy HH:mm");
+  r.getRange("F:F").setNumberFormat("ddd d mmm yyyy HH:mm");
+  r.hideColumns(7, 2);
 }
 
 // Called by the site. Adds a row for a new visit, or updates the row of a visit already logged.
@@ -44,6 +59,7 @@ function doPost(e) {
   let d;
   try { d = JSON.parse(e.postData.contents); } catch (err) { return out("bad"); }
   if (d.kind === "prospect") return addProspect(d);
+  if (d.kind === "removal") return askRemoval(d);
   const id = String(d.id || "").slice(0, 40), start = new Date(Number(d.start));
   if (!id || isNaN(start)) return out("bad");
   // text starting with = + - @ would be read as a formula, so it's kept as plain text
@@ -83,6 +99,9 @@ function addProspect(d) {
     const names = sh.getLastRow() > 1 ? sh.getRange(2, 2, sh.getLastRow() - 1, 1).getValues().map(r => key(r[0])) : [];
     if (names.includes(key(name))) return out("dup");
     sh.appendRow([new Date(), name, g, nat, born, by]);
+    // added again after a removal was approved: the old removal no longer applies
+    const rm = removalRows_().filter(x => x.status === "Approved" && key(x.name) === key(name));
+    rm.forEach(x => x.sheet.getRange(x.row, 5).setValue("Re-added"));
   } finally {
     lock.releaseLock();
   }
@@ -105,9 +124,98 @@ function startLookup() {
   } catch (err) {}
 }
 
-// Read by GitHub (scripts/prospects.py) and by the site: the names added on the site.
+// Scouting Corner: someone pressed "Request removal" on a card. One open request per name; Tobey is emailed.
+function askRemoval(d) {
+  const clean = x => String(x || "").replace(/[\u0000-\u001f]/g, "").trim();
+  const plain = t => /^[=+\-@]/.test(t) ? "'" + t : t;  // never read as a formula
+  const name = clean(d.name).replace(/\s+/g, " ").slice(0, 60);
+  if (name.length < 3 || !/^[\p{L}][\p{L} .'\-|]+$/u.test(name)) return out("bad");
+  const by = plain(clean(d.by).slice(0, 30)), why = plain(clean(d.reason).slice(0, 300));
+  const key = s => String(s).normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLowerCase().replace(/[^a-z]/g, "");
+  const lock = LockService.getScriptLock();
+  lock.waitLock(10000);
+  let id, code;
+  try {
+    const ss = SpreadsheetApp.getActiveSpreadsheet();
+    const sh = ss.getSheetByName("Removals");
+    if (!sh) return out("no tab");
+    if (removalRows_().some(x => x.status === "Waiting" && key(x.name) === key(name))) return out("dup");
+    id = Utilities.getUuid().slice(0, 8);
+    code = Utilities.getUuid().replace(/-/g, "");  // secret: only in Tobey's email, so only Tobey can decide
+    sh.appendRow([new Date(), name, by, why, "Waiting", "", id, code]);
+  } finally {
+    lock.releaseLock();
+  }
+  const link = ScriptApp.getService().getUrl() + "?kind=decide&id=" + id + "&code=" + code;
+  try {
+    MailApp.sendEmail(Session.getEffectiveUser().getEmail(), "72 Central: remove " + name + " from Scouting Corner?",
+      (by.replace(/^'/, "") || "Someone") + " asked for " + name + " to be removed from the Scouting Corner.\n" +
+      (why ? "Reason given: " + why.replace(/^'/, "") + "\n" : "") +
+      "\nOpen this link to approve or decline it:\n" + link + "\n\nNothing is removed until you approve. All requests are on the \"Removals\" tab of the visit-log Sheet.");
+  } catch (err) {}  // e.g. Google's daily email limit: the request is still on the "Removals" tab
+  return out("ok");
+}
+
+// Every row on the "Removals" tab, with its row number. (The _ at the end keeps it private: the page can't call it.)
+function removalRows_() {
+  const sh = SpreadsheetApp.getActiveSpreadsheet().getSheetByName("Removals");
+  if (!sh || sh.getLastRow() < 2) return [];
+  return sh.getRange(2, 1, sh.getLastRow() - 1, 8).getValues().map((r, i) => ({
+    sheet: sh, row: i + 2, name: String(r[1]).replace(/^'/, "").trim(), status: String(r[4]), id: String(r[6]), code: String(r[7])
+  })).filter(x => x.name);
+}
+
+// The page Tobey opens from the email. It only shows the request; nothing changes until a button is pressed
+// (so an email link-scanner opening the link can't approve anything).
+function decidePage(e) {
+  const p = e.parameter, x = removalRows_().find(r => r.id === p.id && r.code && r.code === p.code);
+  const t = HtmlService.createTemplate(
+    '<div style="font-family:sans-serif;max-width:480px;margin:40px auto;line-height:1.5">' +
+    '<h2>Scouting Corner: removal request</h2><p id="m"><?= msg ?></p>' +
+    '<? if (open) { ?><button onclick="go(true)" style="padding:10px 18px;margin-right:8px">Approve: remove <?= name ?></button>' +
+    '<button onclick="go(false)" style="padding:10px 18px">Decline: keep them</button><? } ?></div>' +
+    '<script>function go(yes){document.querySelectorAll("button").forEach(b=>b.disabled=true);' +
+    'google.script.run.withSuccessHandler(t=>{document.getElementById("m").textContent=t;document.querySelectorAll("button").forEach(b=>b.remove())})' +
+    '.decideRemoval(<?!= JSON.stringify(id) ?>,<?!= JSON.stringify(code) ?>,yes)}</script>');
+  t.open = !!x && x.status === "Waiting";
+  t.name = x ? x.name : "";
+  t.id = x ? x.id : ""; t.code = x ? x.code : "";  // only the Sheet's own values go into the page
+  t.msg = !x ? "This request wasn't found (the link may be incomplete)."
+    : t.open ? "Remove " + x.name + " from the Scouting Corner?" : x.name + ": already decided (" + x.status + ").";
+  return t.evaluate().setTitle("72 Central: removal request");
+}
+
+// Called by the Approve / Decline buttons. Approved: the request is marked, their "Prospects" row is deleted and
+// GitHub is asked to update the Scouting Corner (prospects.py also leaves out anyone approved here).
+function decideRemoval(id, code, yes) {
+  const lock = LockService.getScriptLock();
+  lock.waitLock(10000);
+  let name;
+  try {
+    const x = removalRows_().find(r => r.id === String(id) && r.code && r.code === String(code));
+    if (!x) return "This request wasn't found.";
+    if (x.status !== "Waiting") return x.name + ": already decided (" + x.status + ").";
+    name = x.name;
+    x.sheet.getRange(x.row, 5, 1, 2).setValues([[yes ? "Approved" : "Declined", new Date()]]);
+    if (!yes) return "Declined: " + name + " stays on the Scouting Corner.";
+    const key = s => String(s).normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLowerCase().replace(/[^a-z]/g, "");
+    const sh = SpreadsheetApp.getActiveSpreadsheet().getSheetByName("Prospects");
+    if (sh && sh.getLastRow() > 1) {
+      const names = sh.getRange(2, 2, sh.getLastRow() - 1, 1).getValues();
+      for (let i = names.length - 1; i >= 0; i--) if (key(String(names[i][0]).split("|")[0]) === key(name.split("|")[0])) sh.deleteRow(i + 2);
+    }
+  } finally {
+    lock.releaseLock();
+  }
+  startLookup();
+  return "Approved: " + name + " is taken off the Scouting Corner (the site updates within about 30 minutes, often sooner).";
+}
+
+// Read by GitHub (scripts/prospects.py) and by the site: the names added on the site, plus removal requests
+// (names only; the request IDs and codes never leave the Sheet).
 function doGet(e) {
   const kind = (e && e.parameter && e.parameter.kind) || "";
+  if (kind === "decide") return decidePage(e);
   if (kind !== "prospects") return out("72 Central");
   const sh = SpreadsheetApp.getActiveSpreadsheet().getSheetByName("Prospects");
   const rows = sh && sh.getLastRow() > 1 ? sh.getRange(2, 1, sh.getLastRow() - 1, 6).getValues() : [];
@@ -116,5 +224,8 @@ function doGet(e) {
     born: r[4] ? Number(r[4]) : null, by: String(r[5] || "").replace(/^'/, ""),
     at: r[0] instanceof Date ? Utilities.formatDate(r[0], TZ, "yyyy-MM-dd") : ""
   }));
-  return ContentService.createTextOutput(JSON.stringify({ prospects: list })).setMimeType(ContentService.MimeType.JSON);
+  const rm = removalRows_();
+  const removed = rm.filter(x => x.status === "Approved").map(x => x.name);
+  const asked = rm.filter(x => x.status === "Waiting").map(x => x.name);
+  return ContentService.createTextOutput(JSON.stringify({ prospects: list, removed, asked })).setMimeType(ContentService.MimeType.JSON);
 }

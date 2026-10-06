@@ -18,6 +18,8 @@ How the stages are linked (never guessed - an unsure link is left empty and aler
 A link, once made, is kept; stages not linked yet are looked for again (new ones on every run, then once a
 week), so a junior who moves up a level is picked up by themselves.
 Any id can be pinned by hand in prospects.json ("itf", "te"), which always wins.
+Anyone whose removal Tobey approved (the site's "Request removal" button -> the Sheet's "Removals" tab) is left
+out, wherever they were added; the last list read is kept in corner.json ("removed") for when the Sheet can't be read.
 Each run refreshes the prospects not refreshed today (new ones first) within a time budget; the next run
 carries on. If the ITF or Tennis Europe answers with a bot check / cookie page, that site is left alone for
 3 hours and the previous data is kept.
@@ -291,8 +293,8 @@ def itf_week(s):
 
 
 # ---------- who is on the list ----------
-def prospects():
-    """Hand list first (it wins), then names added on the site."""
+def prospects(removed):
+    """Hand list first (it wins), then names added on the site. Leaves out approved removals; returns the new list of those."""
     out, errors = {}, {}
     for p in load(LIST, {}).get("players") or []:
         if p.get("name"):
@@ -301,6 +303,7 @@ def prospects():
         req = urllib.request.Request(SHEET_URL + "?kind=prospects", headers={"User-Agent": UA})
         with urllib.request.urlopen(req, timeout=30) as r:
             sheet = json.loads(r.read().decode("utf-8", "replace"))
+        removed = sorted({key_of(str(n).split("|")[0]) for n in sheet.get("removed") or []} - {""})
         for p in sheet.get("prospects") or []:
             k = key_of(p.get("name"))
             if k and k not in out:
@@ -317,7 +320,8 @@ def prospects():
             p["born"] = int(p.get("born")) if p.get("born") else None
         except (TypeError, ValueError):
             p["born"] = None
-    return out, errors
+    out = {k: p for k, p in out.items() if key_of(p["name"]) not in removed}
+    return out, errors, removed
 
 
 def pro_row(scout, tour, rank, names, nat, born):
@@ -340,7 +344,7 @@ def main():
     before = json.dumps({k: v for k, v in data.items() if k != "checked"}, sort_keys=True)
     players = data.setdefault("players", {})
     errors = data.setdefault("errors", {})
-    plist, errs = prospects()
+    plist, errs, data["removed"] = prospects(data.get("removed") or [])
     old = errors.pop("sheet", None)
     if "sheet" in errs and old and ago(old.get("at")) < timedelta(hours=20):
         errs["sheet"] = old  # same problem as earlier today: keep it as it was (no new commit every run)
@@ -348,7 +352,7 @@ def main():
     if "sheet" in errs and not plist:
         print(errs["sheet"]["msg"])
     for k in [k for k in players if k not in plist]:
-        if players[k].get("src") == "site" and "sheet" in errs:
+        if players[k].get("src") == "site" and "sheet" in errs and key_of(players[k].get("name")) not in data["removed"]:
             continue  # the Sheet couldn't be read this time: keep the names added on the site
         del players[k]  # taken off the list
     scout = load("scouting.json", {})
