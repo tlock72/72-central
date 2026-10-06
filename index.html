@@ -41,8 +41,8 @@ button{font:inherit;color:inherit;background:none;border:0;cursor:pointer}
 .wrap{max-width:1180px;margin:0 auto;padding-inline:24px}
 
 header{position:sticky;top:env(safe-area-inset-top,0px);z-index:10;background:rgba(12,20,49,.9);backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);border-bottom:1px solid var(--line)}
-.bar{display:flex;align-items:center;justify-content:space-between;gap:20px;padding-block:18px}
-.brand{display:flex;align-items:center;gap:18px;text-decoration:none;min-width:0}
+.bar{display:flex;align-items:center;justify-content:space-between;gap:32px;padding-block:18px}
+.brand{display:flex;align-items:center;gap:18px;text-decoration:none;flex:none}
 .brand img{height:40px;width:auto;display:block}
 .brand .tag{font-family:var(--display);font-weight:500;letter-spacing:.22em;font-size:11px;color:var(--muted);text-transform:uppercase;padding-left:18px;border-left:1px solid var(--line);white-space:nowrap}
 nav{display:flex;gap:6px;background:rgba(255,255,255,.04);border:1px solid var(--line-2);padding:5px;border-radius:999px}
@@ -504,7 +504,7 @@ a.cn-st.ok:hover{border-color:var(--gold)}
 .rk-pick{display:none;margin:0 0 12px}
 @media (max-width:860px){.rk-pick{display:flex}.tours.pick:not(.second)>.tour:nth-child(2),.tours.pick.second>.tour:first-child{display:none}}
 @media (max-width:640px){
-  /* small tiles on phones (72 Rankings, ITF juniors, Age Filtered World Rankings) */
+  /* small tiles on phones (72 Rankings, ITF juniors, Filtered Rankings) */
   .stats{gap:6px;margin-bottom:14px}
   .stat{padding:8px 10px;border-radius:10px}
   .stat .k{font-size:9px;letter-spacing:.08em}
@@ -582,6 +582,8 @@ body.on-home header nav{display:none}
 /* Phone layout: compact header, home on one screen, 3 match cards per row, compact roster */
 nav .sh,.nm-s{display:none}
 @media (max-width:1180px) and (min-width:641px){nav .lg{display:none} nav .sh{display:inline}}
+/* small tablets: a slightly smaller logo and tighter tabs so the logo keeps clear space without the menu running off the screen */
+@media (max-width:760px) and (min-width:641px){.bar{gap:20px}.brand img{height:32px}nav a{padding:10px 6px}}
 .p-find{display:block;width:100%;max-width:360px;margin:0 0 18px;padding:10px 16px;border-radius:999px;border:1px solid var(--line);background:var(--navy-2);color:var(--white);font:inherit;font-size:14px;outline:none}
 .p-find:focus{border-color:var(--gold)}
 @media (max-width:640px){
@@ -697,7 +699,7 @@ nav .sh,.nm-s{display:none}
   .hp-ld .nmx{font-size:11px;margin-top:2px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 }
 @media (max-width:360px){
-  nav a{padding:6px 6px;font-size:9px}
+  nav a{padding:6px 1px;font-size:9px}
   .pname{font-size:9.5px}
 }
 @media (prefers-reduced-motion:reduce){*{transition:none!important;animation:none!important}}
@@ -737,12 +739,12 @@ html.name-only .gate-box h2,html.name-only .gate-digits{display:none}
       <img src="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAzMjggOTIiIHdpZHRoPSIzMjgiIGhlaWdodD0iOTIiPgo8ZGVmcz4KPHJhZGlhbEdyYWRpZW50IGlkPSJiZyIgY3g9IjM0JSIgY3k9IjI4JSIgcj0iODAlIj48c3RvcCBvZmZzZXQ9IjAiIHN0b3AtY29sb3I9IiNGM0UwQzYiLz48c3RvcCBvZmZzZXQ9Ii41IiBzdG9wLWNvbG9yPSIjRDZBRTgyIi8+PHN0b3Agb2Zmc2V0PSIxIiBzdG9wLWNvbG9yPSIjQTk3RDUxIi8+PC9yYWRpYWxHcmFkaWVudD4KPGxpbmVhckdyYWRpZW50IGlkPSJ0ZyIgeDE9IjAiIHkxPSIyMCIgeDI9IjAiIHkyPSI2OCIgZ3JhZGllbnRVbml0cz0idXNlclNwYWNlT25Vc2UiPjxzdG9wIG9mZnNldD0iMCIgc3RvcC1jb2xvcj0iI0VCRDJCMiIvPjxzdG9wIG9mZnNldD0iMSIgc3RvcC1jb2xvcj0iI0M3OUE2QyIvPjwvbGluZWFyR3JhZGllbnQ+CjxsaW5lYXJHcmFkaWVudCBpZD0ic3QiIHgxPSIwIiB5MT0iMCIgeDI9IjEiIHkyPSIwIj48c3RvcCBvZmZzZXQ9IjAiIHN0b3AtY29sb3I9IiNEMEE1NzkiIHN0b3Atb3BhY2l0eT0iMCIvPjxzdG9wIG9mZnNldD0iMSIgc3RvcC1jb2xvcj0iI0QwQTU3OSIvPjwvbGluZWFyR3JhZGllbnQ+CjwvZGVmcz4KPHN0eWxlPgouYiwuc3t0cmFuc2Zvcm0tYm94OmZpbGwtYm94O3RyYW5zZm9ybS1vcmlnaW46NTAlIDUwJX0KLmJ7YW5pbWF0aW9uOnNwaW4gM3MgY3ViaWMtYmV6aWVyKC4xNSwuNiwuMjUsMSkgYm90aH0KLnN7YW5pbWF0aW9uOnN0cmVhayAxLjJzIGVhc2Utb3V0IGJvdGh9CkBrZXlmcmFtZXMgc3Bpbntmcm9te3RyYW5zZm9ybTp0cmFuc2xhdGVYKC05MHB4KSByb3RhdGUoLTE4MDBkZWcpO29wYWNpdHk6MH0xNSV7b3BhY2l0eToxfXRve3RyYW5zZm9ybTpub25lO29wYWNpdHk6MX19CkBrZXlmcmFtZXMgc3RyZWFre2Zyb217dHJhbnNmb3JtOnRyYW5zbGF0ZVgoLTYwcHgpO29wYWNpdHk6MH02MCV7b3BhY2l0eToxfXRve3RyYW5zZm9ybTpub25lfX0KQG1lZGlhIChwcmVmZXJzLXJlZHVjZWQtbW90aW9uOnJlZHVjZSl7LmIsLnN7YW5pbWF0aW9uOm5vbmV9fQo8L3N0eWxlPgo8ZyBjbGFzcz0icyI+PHBhdGggZD0iTTIsMzJIMzhNMTQsNDZIMzRNNiw2MEgzOCIgc3Ryb2tlPSJ1cmwoI3N0KSIgc3Ryb2tlLXdpZHRoPSIzIiBzdHJva2UtbGluZWNhcD0icm91bmQiLz48L2c+CjxnIGNsYXNzPSJiIj48ZyB0cmFuc2Zvcm09InRyYW5zbGF0ZSg2NiA0Nikgc2NhbGUoMS4wNzE0KSByb3RhdGUoLTI4KSI+CjxjaXJjbGUgcj0iMjgiIGZpbGw9InVybCgjYmcpIi8+CjxwYXRoIGQ9Ik0tMjIsLTE3Qy0xNCwtNy0xNCw3LTIyLDE3TTIyLC0xN0MxNCwtNyAxNCw3IDIyLDE3IiBmaWxsPSJub25lIiBzdHJva2U9IiMwQzE0MzEiIHN0cm9rZS13aWR0aD0iMi4zIiBzdHJva2UtbGluZWNhcD0icm91bmQiIG9wYWNpdHk9Ii45Ii8+CjxwYXRoIHRyYW5zZm9ybT0icm90YXRlKDI4KSIgZD0iTS03LjUyNDAwMDAwMDAwMDAwMSA3LjAgLTQuMjk0MDAwMDAwMDAwMDAxIC02LjE0OEgtOC40OTNWLTguMzg5OTk5OTk5OTk5OTk5SC0xLjQyNTAwMDAwMDAwMDAwMTZWLTYuNDUyTC00LjY3NDAwMDAwMDAwMDAwMSA3LjBaTTAuMDM3OTk5OTk5OTk5OTk4NTkgNy4wVjQuOTI5TDMuNzgwOTk5OTk5OTk5OTk5IC0wLjgyNzk5OTk5OTk5OTk5OTRRNC4xOTg5OTk5OTk5OTk5OTggLTEuNDc0MDAwMDAwMDAwMDAwMiA0LjU2OTQ5OTk5OTk5OTk5OCAtMi4wNjI5OTk5OTk5OTk5OTk3UTQuOTM5OTk5OTk5OTk5OTk5IC0yLjY1MTk5OTk5OTk5OTk5OTIgNS4xNzc0OTk5OTk5OTk5OTggLTMuMjY5NVE1LjQxNDk5OTk5OTk5OTk5OCAtMy44ODcwMDAwMDAwMDAwMDA1IDUuNDE0OTk5OTk5OTk5OTk4IC00LjU5UTUuNDE0OTk5OTk5OTk5OTk4IC01LjMzMDk5OTk5OTk5OTk5OTUgNS4xMjk5OTk5OTk5OTk5OTkgLTUuNzIwNDk5OTk5OTk5OTk5NVE0Ljg0NDk5OTk5OTk5OTk5OSAtNi4xMDk5OTk5OTk5OTk5OTkgNC4zMTI5OTk5OTk5OTk5OTkgLTYuMTA5OTk5OTk5OTk5OTk5UTMuNzQyOTk5OTk5OTk5OTk4NiAtNi4xMDk5OTk5OTk5OTk5OTkgMy40Mzg5OTk5OTk5OTk5OTgzIC01Ljc5NjVRMy4xMzQ5OTk5OTk5OTk5OTg1IC01LjQ4MzAwMDAwMDAwMDAwMDUgMy4wMjA5OTk5OTk5OTk5OTggLTQuOTdRMi45MDY5OTk5OTk5OTk5OTgzIC00LjQ1Njk5OTk5OTk5OTk5OSAyLjkwNjk5OTk5OTk5OTk5ODMgLTMuODQ5Vi0zLjEyNjk5OTk5OTk5OTk5OUgwLjAzNzk5OTk5OTk5OTk5ODU5Vi0zLjg4NzAwMDAwMDAwMDAwMDVRMC4wMzc5OTk5OTk5OTk5OTg1OSAtNS4yNTQ5OTk5OTk5OTk5OTkgMC40NjU0OTk5OTk5OTk5OTg1IC02LjMxODk5OTk5OTk5OTk5OVEwLjg5Mjk5OTk5OTk5OTk5ODUgLTcuMzgyOTk5OTk5OTk5OTk5IDEuODE0NDk5OTk5OTk5OTk4NCAtNy45ODE1UTIuNzM1OTk5OTk5OTk5OTk4NCAtOC41OCA0LjIzNjk5OTk5OTk5OTk5OCAtOC41OFE2LjI2OTk5OTk5OTk5OTk5OSAtOC41OCA3LjI5NTk5OTk5OTk5OTk5OSAtNy41MTZROC4zMjIgLTYuNDUyIDguMzIyIC00LjUzMjk5OTk5OTk5OTk5OTVROC4zMjIgLTMuNjAyMDAwMDAwMDAwMDAwMyA4LjAzNjk5OTk5OTk5OTk5OSAtMi44MTM1MDAwMDAwMDAwMDAzUTcuNzUxOTk5OTk5OTk5OTk5IC0yLjAyNTAwMDAwMDAwMDAwMDQgNy4yODY0OTk5OTk5OTk5OTggLTEuMjkzNDk5OTk5OTk5OTk5OVE2LjgyMDk5OTk5OTk5OTk5OCAtMC41NjE5OTk5OTk5OTk5OTk0IDYuMjg4OTk5OTk5OTk5OTk5IDAuMjE3MDAwMDAwMDAwMDAwNTNMMy4zMjQ5OTk5OTk5OTk5OTg0IDQuNjgySDcuOTAzOTk5OTk5OTk5OTk4VjcuMFoiIGZpbGw9IiMwQzE0MzEiLz4KPC9nPjwvZz4KPGcgdHJhbnNmb3JtPSJza2V3WCgtOSkiIHRyYW5zZm9ybS1vcmlnaW49IjAgNjgiPjxwYXRoIGQ9Ik0xMzAuNDk0IDY4LjU3MlExMjUuODE0IDY4LjU3MiAxMjMuMDg0IDY2LjgwNFExMjAuMzU0IDY1LjAzNiAxMTkuMjYyIDYxLjg5UTExOC4xNyA1OC43NDQgMTE4LjE3IDU0LjU4NFYzOS40NTJRMTE4LjE3IDM1LjA4NCAxMTkuMjYyIDMxLjkzODAwMDAwMDAwMDAwMlExMjAuMzU0IDI4Ljc5MiAxMjMuMDg0IDI3LjA3NlExMjUuODE0IDI1LjM2IDEzMC40OTQgMjUuMzZRMTM1LjAxOCAyNS4zNiAxMzcuNTkxOTk5OTk5OTk5OTggMjYuODY4MDAwMDAwMDAwMDAyUTE0MC4xNjYgMjguMzc2MDAwMDAwMDAwMDA1IDE0MS4yMzIgMzEuMTMyUTE0Mi4yOTggMzMuODg4IDE0Mi4yOTggMzcuNTI4MDAwMDAwMDAwMDA2VjQxLjA2NEgxMzMuOTc4VjM3LjExMlExMzMuOTc4IDM1LjY1NiAxMzMuODIyIDM0LjM4MjAwMDAwMDAwMDAwNVExMzMuNjY2IDMzLjEwODAwMDAwMDAwMDAwNCAxMzIuOTY0IDMyLjMwMjAwMDAwMDAwMDAxUTEzMi4yNjIgMzEuNDk2MDAwMDAwMDAwMDAyIDEzMC41NDYgMzEuNDk2MDAwMDAwMDAwMDAyUTEyOC44MyAzMS40OTYwMDAwMDAwMDAwMDIgMTI4LjA1IDMyLjMyOFExMjcuMjcgMzMuMTYwMDAwMDAwMDAwMDA0IDEyNy4wNjIgMzQuNDg2MDAwMDAwMDAwMDA0UTEyNi44NTQgMzUuODEyMDAwMDAwMDAwMDA1IDEyNi44NTQgMzcuNDI0MDAwMDAwMDAwMDFWNTYuNTZRMTI2Ljg1NCA1OC4zMjggMTI3LjE0IDU5LjY1NFExMjcuNDI2IDYwLjk4MDAwMDAwMDAwMDAwNCAxMjguMjMyIDYxLjY4MlExMjkuMDM4IDYyLjM4NCAxMzAuNTQ2IDYyLjM4NFExMzIuMjEgNjIuMzg0IDEzMi45MTIgNjEuNTc4UTEzMy42MTQgNjAuNzcyIDEzMy43OTYgNTkuNDJRMTMzLjk3OCA1OC4wNjggMTMzLjk3OCA1Ni41NlY1Mi40NTJIMTQyLjI5OFY1NS45MzZRMTQyLjI5OCA1OS42MjggMTQxLjI1Nzk5OTk5OTk5OTk4IDYyLjQ2MlExNDAuMjE4IDY1LjI5NiAxMzcuNjcwMDAwMDAwMDAwMDIgNjYuOTM0UTEzNS4xMjIgNjguNTcyIDEzMC40OTQgNjguNTcyWk0xNTEuNzg0IDY4LjBWMjUuODgwMDAwMDAwMDAwMDAzSDE3MC4xNFYzMS44MDhIMTYwLjM2NFY0Mi45ODhIMTY3LjkwNFY0OC45NjhIMTYwLjM2NFY2Mi4xNzZIMTcwLjI0NFY2OC4wWk0xNzguNzY4IDY4LjBWMjUuODgwMDAwMDAwMDAwMDAzSDE4NC43NDhMMTk0LjEwOCA0Ny44MjRWMjUuODgwMDAwMDAwMDAwMDAzSDIwMS4xOFY2OC4wSDE5NS40NkwxODYuMSA0NC43MDRWNjguMFpNMjE1LjczNiA2OC4wVjMyLjI3NkgyMDkuMjM2VjI1Ljg4MDAwMDAwMDAwMDAwM0gyMzAuNzYzOTk5OTk5OTk5OThWMzIuMjc2SDIyNC4zNjhWNjguMFpNMjM4LjAxNCA2OC4wVjI1Ljg4MDAwMDAwMDAwMDAwM0gyNDguOTM0MDAwMDAwMDAwMDNRMjUzLjE5OCAyNS44ODAwMDAwMDAwMDAwMDMgMjU2LjI0IDI2Ljg0MjAwMDAwMDAwMDAwMlEyNTkuMjgyMDAwMDAwMDAwMDQgMjcuODA0MDAwMDAwMDAwMDAyIDI2MC45MiAzMC4yNDhRMjYyLjU1OCAzMi42OTIgMjYyLjU1OCAzNy4wMDhRMjYyLjU1OCAzOS42MDgwMDAwMDAwMDAwMDQgMjYyLjExNiA0MS42MVEyNjEuNjc0MDAwMDAwMDAwMDQgNDMuNjEyIDI2MC41NTYwMDAwMDAwMDAwNCA0NS4wOTRRMjU5LjQzOCA0Ni41NzYgMjU3LjQxIDQ3LjQ2TDI2My4yMzQwMDAwMDAwMDAwNCA2OC4wSDI1NC40NDYwMDAwMDAwMDAwM0wyNDkuNjEgNDguOTE2SDI0Ni41OTQwMDAwMDAwMDAwMlY2OC4wWk0yNDYuNTk0MDAwMDAwMDAwMDIgNDMuODJIMjQ5LjA5UTI1MS4xNzAwMDAwMDAwMDAwMiA0My44MiAyNTIuMzY2IDQzLjE0NDAwMDAwMDAwMDAwNVEyNTMuNTYyIDQyLjQ2OCAyNTQuMDU2IDQxLjA5UTI1NC41NSAzOS43MTIgMjU0LjU1IDM3LjY4NFEyNTQuNTUgMzQuNzcyIDI1My40ODQgMzMuMjM4UTI1Mi40MTggMzEuNzA0IDI0OS41MDYgMzEuNzA0SDI0Ni41OTQwMDAwMDAwMDAwMlpNMjY3LjEwNCA2OC4wIDI3NS4yNjgwMDAwMDAwMDAwMyAyNS44ODAwMDAwMDAwMDAwMDNIMjg0Ljc4NEwyOTIuODk2IDY4LjBIMjg0Ljk0TDI4My40MzIgNTguNzQ0SDI3Ni43NzZMMjc1LjE2NCA2OC4wWk0yNzcuNTU2IDUzLjQ5MjAwMDAwMDAwMDAwNEgyODIuNkwyODAuMDUyIDM2LjQ4OFpNMzAxLjkxNDAwMDAwMDAwMDA0IDY4LjBWMjUuODgwMDAwMDAwMDAwMDAzSDMxMC40OTRWNjIuMTc2SDMyMC4zNzRWNjguMFoiIGZpbGw9InVybCgjdGcpIi8+PC9nPgo8L3N2Zz4=" alt="72 Central">
     </a>
     <nav>
-      <a href="#scores" data-tab="scores"><span class="lg"><span class="n72">72 </span>Competition Zone</span><span class="sh">Scores</span></a>
+      <a href="#scores" data-tab="scores"><span class="lg"><span class="n72">72 </span>Competition Zone</span><span class="sh"><span class="n72">72 </span>Scores</span></a>
       <a href="#rankings" data-tab="rankings"><span class="n72">72 </span>Rankings</a>
-      <a href="#players" data-tab="players"><span class="n72">72 </span>Players</a>
-      <a href="#scouting" data-tab="scouting"><span class="lg">Age Filtered World Rankings</span><span class="sh">By Age</span></a>
-      <a href="#schedule" data-tab="schedule"><span class="lg">Tour Schedule</span><span class="sh">Events</span></a>
-      <a href="#corner" data-tab="corner"><span class="lg">Scouting Corner</span><span class="sh">Scout</span></a>
+      <a href="#players" data-tab="players"><span class="n72">72 </span>Roster</a>
+      <a href="#scouting" data-tab="scouting"><span class="lg">Filtered Rankings</span><span class="sh">Filtered</span></a>
+      <a href="#schedule" data-tab="schedule"><span class="lg">Tour Schedule</span><span class="sh">Schedule</span></a>
+      <a href="#corner" data-tab="corner"><span class="lg">Scouting Corner</span><span class="sh">Scouting</span></a>
     </nav>
   </div>
 </header>
@@ -768,13 +770,13 @@ html.name-only .gate-box h2,html.name-only .gate-digits{display:none}
         <div class="hp-stat"><div><b id="hpT2">—</b><span id="hpS2">Loading rankings…</span></div><span class="hp-go" aria-hidden="true">→</span></div>
       </a>
       <a class="hp-tile" href="#players">
-        <h2>72 Players</h2>
+        <h2>72 Roster</h2>
         <p>Profiles for the whole roster: titles, partners, social following and results.</p>
         <div class="hp-faces" id="hpFaces"></div>
         <div class="hp-stat"><div><b id="hpT3">—</b><span id="hpS3"></span></div><span class="hp-go" aria-hidden="true">→</span></div>
       </a>
       <a class="hp-tile" href="#scouting">
-        <h2>Age Filtered World Rankings</h2>
+        <h2>Filtered Rankings</h2>
         <p>72's scouting radar: every ranked ATP and WTA player aged 21 or under, with their ranking moves over 1 week, 3 months and 12 months, to spot the next 72 signing early.</p>
         <div class="hp-stat"><div><b id="hpT4">—</b><span id="hpS4">Loading the scouting list…</span></div><span class="hp-go" aria-hidden="true">→</span></div>
       </a>
@@ -859,7 +861,7 @@ html.name-only .gate-box h2,html.name-only .gate-digits{display:none}
     <div class="hero">
       <div>
         <div class="eyebrow">SeventyTwo Sports Group</div>
-        <h1><span class="n">72</span> Players</h1>
+        <h1><span class="n">72</span> Roster</h1>
         <p class="sub">The 2026 tennis roster. Under-18s appear under ATP or WTA and in Next Gen. Tap a player for their full profile.</p>
       </div>
       <div class="chips" role="group" aria-label="Filter by tour"><button class="chip on" data-f="ALL">All</button><button class="chip" data-f="ATP">ATP</button><button class="chip" data-f="WTA">WTA</button><button class="chip" data-f="NEXT">Next Gen</button></div>
@@ -890,7 +892,7 @@ html.name-only .gate-box h2,html.name-only .gate-digits{display:none}
     <div class="hero">
       <div>
         <div class="eyebrow">SeventyTwo Sports Group</div>
-        <h1>Age Filtered World Rankings</h1>
+        <h1>Filtered Rankings</h1>
         <p class="sub" id="sqSub">72's scouting radar. Every ranked ATP and WTA singles player, filtered by age group or birth year and by ranking, with ranking moves over the last week, 3 months and 12 months, so we can spot rising talent early and see how 72 players (marked <span class="sq-72">72</span>) compare with their age group.</p>
       </div>
       <div class="chips" role="group" aria-label="Choose tour"><button class="chip sqt on" data-t="atp">ATP</button><button class="chip sqt" data-t="wta">WTA</button></div>
@@ -1047,7 +1049,7 @@ function route(){
   if (tab === "home" || tab === "scores") { $("#page-" + tab).prepend($("#champs")); fitChamps(); }
   if (tab === "home") renderHome();
   if (tab === "home" && window._tab && window._tab !== "home") spinLogo();
-  // coming to Age Filtered World Rankings from another tab always starts on Everyone, all ages, all rankings
+  // coming to Filtered Rankings from another tab always starts on Everyone, all ages, all rankings
   if (tab === "scouting" && window._tab !== "scouting") {
     Object.assign(SQ, { o72: false, by: "age", ag: "all", age: 0, yr: 0, rk: "all", top: 0, q: "", c: "", all: false });
     $("#sqQ").value = ""; $("#sqC").value = "";
@@ -1309,7 +1311,7 @@ function renderRankings(){
   const rows = tour => ROSTER.filter(p => p.tour === tour).map(p => ({ p, d: r.players[p.id] || {} })).filter(x => x.d.rank).sort((a,b) => (a.d.rank ?? 1e9) - (b.d.rank ?? 1e9));
   // players who have held an ATP/WTA ranking (a career high is on file) but are not ranked now go at the bottom
   const former = tour => ROSTER.filter(p => p.tour === tour && !(r.players[p.id] || {}).rank && profById[p.id]?.high).map(p => ({ p, d: { note: `Not currently ranked · career high #${profById[p.id].high}` } }));
-  // 1 wk / 3 mo / 12 mo moves from the official weekly rankings in scouting.json (same list as Age Filtered World Rankings)
+  // 1 wk / 3 mo / 12 mo moves from the official weekly rankings in scouting.json (same list as Filtered Rankings)
   const trendOf = p => { const T = SCOUT && SCOUT[p.tour.toLowerCase()]; if (!T?.players) return null;
     const k = rkKey(p.first + p.last); let x = T.players.find(q => rkKey(q[1]) === k);
     if (!x) { const h = T.players.filter(q => { const n = rkKey(q[1]); return n.startsWith(k) || k.startsWith(n); }); if (h.length === 1) x = h[0]; } // e.g. "Leyre Romero Gormaz"
@@ -2341,7 +2343,7 @@ setInterval(() => { if (!document.hidden) renderScores(); }, 5 * 60 * 1000);
   // (scripts/visit_log.gs, set up as in VISIT_LOG.md). Off while LOG_URL is empty.
   // Only time with the tab on screen counts; 30 minutes away starts a new visit.
   const LOG_URL = "https://script.google.com/macros/s/AKfycbwzEb0YNoDmZaaJ5fQg05ubEe_lowMLiGoYaXuclycqQikOngLQEmENPN5KoL_KJXu1kA/exec";
-  const PAGES = { home: "Home", scores: "Scores", rankings: "Rankings", players: "Players", scouting: "By Age", schedule: "Schedule", corner: "Scouting Corner" };
+  const PAGES = { home: "Home", scores: "Scores", rankings: "Rankings", players: "Roster", scouting: "Filtered Rankings", schedule: "Schedule", corner: "Scouting Corner" };
   let visit = null, awayAt = 0;
   const pageNow = () => PAGES[location.hash.slice(1).split("/")[0]] || "Home";
   function newVisit(){ visit = { id: Date.now().toString(36) + Math.random().toString(36).slice(2, 8), start: Date.now(), secs: 0, since: document.hidden ? 0 : Date.now(), pages: [pageNow()] }; awayAt = Date.now(); }
