@@ -1420,7 +1420,7 @@ const PROFILES = [
     titles:[{ k:"ATP titles", n:3, p:[["Masters 1000",1],["500",1],["250",1]] }],
     partners:["ASICS","HEAD"], social:{ Instagram:232*K, Facebook:145*K, X:63*K },
     quote:["No one is surprised to see Borna win Cincinnati. He was the leader of the next gen, he has so much game and deserves to be at the top.","Serena Williams"] },
-  { id:"kym", age:23, nat:"Swiss", plays:BH,
+  { id:"kym", age:23, nat:"Swiss", plays:BH, high:123,
     titles:[{ k:"ATP Challenger titles", n:2, p:[["Challenger",2]] }],
     partners:["HEAD"], social:{ Instagram:11*K } },
   { id:"schwaerzler", age:20, nat:"Austrian", plays:"Left-handed · two-handed backhand", junior:1,
@@ -1435,7 +1435,7 @@ const PROFILES = [
   { id:"sawangkaew", age:23, nat:"Thai", plays:BH,
     titles:[{ k:"WTA titles", n:1, p:[["125",1]] }],
     partners:["ASICS","Wilson","PTT"], social:{ Instagram:6.9*K } },
-  { id:"jones", age:25, nat:"British", plays:BH,
+  { id:"jones", age:25, nat:"British", plays:BH, high:65,
     titles:[{ k:"WTA titles", n:4, p:[["125",4]] }],
     partners:["adidas","Wilson"], social:{ Instagram:10.6*K } },
   { id:"ristic", age:20, nat:"Serbian", plays:BH,
@@ -1577,10 +1577,14 @@ const itfOf = id => ITF?.players?.[id] || null;
    Every pro gets an ITF box with their whole ITF career. For anyone who is or has been in the ATP/WTA top 100
    it is left out of their "Career titles" total (ex), so that number still matches their official tour titles. */
 const itfCareer = id => TITLES?.full?.includes(id) && TITLES.best?.[id] ? Object.values(TITLES.titles || {}).flat().filter(t => t.id === id) : null;
-// career-high ATP/WTA ranking: the official one from the ITF (itf_titles.py, weekly) and this week's live ranking,
-// whichever is better, so a new high shows straight away; the typed-in profile value only until the ITF one has loaded
-const careerHigh = x => { const b = TITLES?.best?.[x.id]; return bestOf(b ? b.rank : x.high, playerRank(x.id)); };
-const everTop100 = x => [x.high, playerRank(x.id), TITLES?.best?.[x.id]?.rank].some(r => r && r <= 100);
+// career-high ATP/WTA ranking: the official one from the ITF (itf_titles.py, checked weekly against the official
+// rankings) and this week's live ranking, whichever is better, so a new high shows straight away. The typed-in
+// profile value is used until the ITF one has loaded, or when the ITF one failed the check ("issue"); with no
+// checked value at all it is left blank rather than guessed from this week's ranking.
+const careerHigh = x => { const b = TITLES?.best?.[x.id];
+  if (b?.issue) return x.high ? bestOf(x.high, playerRank(x.id)) : null;
+  return bestOf(b?.rank ?? x.high, playerRank(x.id)); };
+const everTop100 = x => [x.high, playerRank(x.id), TITLES?.best?.[x.id]?.rank, TITLES?.best?.[x.id]?.seen].some(r => r && r <= 100);
 const tierNum = k => k === "Futures" ? 0 : +(k.match(/\d+/) || [0])[0];  // W100 > W75 > … ; old $25K events sort by prize money
 function titlesOf(x){
   if (x.kind === "junior" || !TITLES) return x.titles;

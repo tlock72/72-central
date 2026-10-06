@@ -5,8 +5,11 @@ For every roster player it reads their ITF singles results from the ITF's own si
 main-draw final they won in titles.json, with the tournament and its week:
   - once per player, their whole career (ITF World Tennis Tour M/W15-M/W100, and before 2019 the
     men's Futures and the ITF Women's Circuit), then every day just the current year;
-  - once a ranking week (from Tuesday), their career-high ATP/WTA ranking ("best"), shown on the
-    player pages and used to leave ITF titles out of the totals of anyone who is or has been top 100.
+  - after each new official ranking week (and at least weekly), their career-high ATP/WTA ranking
+    ("best"), shown on the player pages and used to leave ITF titles out of the totals of anyone who is
+    or has been top 100. It is only shown if it fits the ranks seen in the official weekly lists
+    (scouting.json, kept as "seen") and the career high typed into the profile in index.html; otherwise
+    it is left blank ("issue") and Tobey is alerted.
 The home page counts this year's ITF World Tennis Tour titles and the player pages show the career
 ITF titles, so both always match the ITF's records: doubles never count, and two titles at the
 same venue are two titles.
@@ -119,11 +122,70 @@ def titles_of(rid, pid, year=None):
 
 
 def best_of(rid, pid):
-    """Career-high ATP/WTA singles ranking from the ITF player overview (None if never ranked)."""
-    ov = get("/PlayerApi/GetPlayerOverview", circuitCode="MT" if ROSTER[rid][1] == "atp" else "WT", matchTypeCode="S", playerId=pid)
-    ranks = [r.get("rank") for r in ov.get("careerHighRankings") or []
-             if "singles" in (r.get("name") or "").lower() and "junior" not in (r.get("name") or "").lower() and r.get("rank")]
-    return min(ranks) if ranks else None
+    """Career-high ATP/WTA singles ranking from the ITF player overview, as (rank, problem).
+    The overview can list more than one singles career high (e.g. the ITF's own old World Tennis Tour
+    ranking next to the WTA one), so only the tour's own entry counts, never simply the lowest number.
+    (None, "") = never ranked; (None, text) = can't tell which entry is the tour's."""
+    tour = ROSTER[rid][1]
+    ov = get("/PlayerApi/GetPlayerOverview", circuitCode="MT" if tour == "atp" else "WT", matchTypeCode="S", playerId=pid)
+    rows = [r for r in ov.get("careerHighRankings") or [] if r.get("rank")]
+    singles = [r for r in rows if "singles" in (r.get("name") or "").lower() and "junior" not in (r.get("name") or "").lower()]
+    named = [r for r in singles if tour in (r.get("name") or "").lower()]
+    pick = named or [r for r in singles if "itf" not in (r.get("name") or "").lower()]
+    ranks = {r["rank"] for r in pick}
+    if len(ranks) == 1:
+        return ranks.pop(), ""
+    if not singles:
+        return None, ""
+    return None, "the ITF profile lists " + ", ".join(f'{r.get("name")} {r["rank"]}' for r in rows)
+
+
+def norm_key(name):
+    return re.sub(r"[^a-z]", "", norm(name))
+
+
+def seen_ranks(rid, scout):
+    """Official ranks this player has held in the weekly lists in scouting.json (this week, 1 week, 3 and 12 months ago)."""
+    name, tour = ROSTER[rid]
+    rows = (scout.get(tour) or {}).get("players") or []
+    k = norm_key(name.split("|")[0])
+    hit = [r for r in rows if norm_key(r[1]) == k]
+    if not hit:
+        hit = [r for r in rows if norm_key(r[1]).startswith(k) or k.startswith(norm_key(r[1]))]  # "Leyre Romero Gormaz"
+    if len(hit) != 1:
+        return []
+    return [x for x in [hit[0][0]] + list(hit[0][4:7]) if isinstance(x, int) and x > 0]
+
+
+def typed_highs():
+    """Career highs typed into the player profiles in index.html (high:123), checked by Tobey."""
+    try:
+        page = open("index.html", encoding="utf-8").read()
+    except OSError:
+        return {}
+    return {m.group(1): int(m.group(2)) for m in re.finditer(r'\{ id:"(\w+)",[^\n]*?\bhigh:(\d+)', page)}
+
+
+def check_best(rid, itf, why, typed, seen, label):
+    """Decide which career high to show. Returns (rank or None, problem text or "")."""
+    name = ROSTER[rid][0].split("|")[0]
+    if why:
+        return None, f"Career high for {name}: can't tell which ranking is the {label} one ({why})."
+    if itf is None:
+        if seen:
+            return None, (f"Career high for {name}: the ITF profile shows no {label} career high, but they have been No. {seen} "
+                          f"in the official {label} rankings. Their profile's 'high' in index.html is shown instead, if set.")
+        return None, ""
+    if seen and itf > seen:
+        return None, (f"Career high for {name}: the ITF says {label} No. {itf}, but they were No. {seen} in the official "
+                      f"{label} rankings, so the ITF figure is wrong. Not shown until it is fixed.")
+    if typed and itf > typed:
+        return None, (f"Career high for {name}: the ITF says {label} No. {itf}, but their profile says No. {typed}. "
+                      f"Showing No. {typed}; check it and fix 'high' in index.html if needed.")
+    if typed and itf < typed and itf != seen:
+        return None, (f"Career high for {name}: the ITF says {label} No. {itf}, but their profile says No. {typed}. "
+                      f"Showing No. {typed}; if No. {itf} is right, change 'high' in index.html to {itf}.")
+    return itf, ""
 
 
 def main():
@@ -156,9 +218,14 @@ def main():
     ids, missing = data.setdefault("ids", {}), data.setdefault("notFound", {})
     titles = data.setdefault("titles", {})
     year = uk.year
-    # career highs are re-read once per ranking week, from the Tuesday (the tours publish on Monday)
-    tue = uk.date() - timedelta(days=(uk.weekday() - 1) % 7)
-    week_ago = (tue - timedelta(days=1)).isoformat()
+    # career highs are re-read after each new official ranking week (scouting.json, which runs just before this),
+    # and at least once a week, then checked against the ranks seen in the official lists and the typed profiles
+    try:
+        scout = json.load(open("scouting.json"))
+    except (FileNotFoundError, json.JSONDecodeError):
+        scout = {}
+    typed = typed_highs()
+    week_ago = (uk.date() - timedelta(days=7)).isoformat()
     pending, todo, blocked = [], [], False
     for rid in order:
         if rid not in ROSTER:
@@ -176,8 +243,15 @@ def main():
                     print("not found on ITF:", name); missing[rid] = today; continue
                 missing.pop(rid, None)
             ids[rid] = pid
-            if (best.get(rid) or {}).get("checked", "") <= week_ago:
-                best[rid] = {"rank": best_of(rid, pid), "checked": today}
+            old = best.get(rid) or {}
+            tour = ROSTER[rid][1]
+            week = (scout.get(tour) or {}).get("week")
+            seen = min([x for x in seen_ranks(rid, scout) + [old.get("seen")] if x] or [None])
+            if old.get("checked", "") <= week_ago or (week and old.get("week") != week):
+                itf, why = best_of(rid, pid)
+                rank, issue = check_best(rid, itf, why, typed.get(rid), seen, tour.upper())
+                best[rid] = {k: v for k, v in {"rank": rank, "itf": itf, "seen": seen, "issue": issue,
+                                               "week": week, "checked": today}.items() if v is not None and v != ""}
             career = rid not in full
             got = titles_of(rid, pid, None if career else year)
             # replace this player's saved titles: every year after a career load, else just this year
@@ -201,6 +275,7 @@ def main():
         if not titles[y]:
             del titles[y]
     data["full"] = [r for r in full if r in ROSTER]
+    data["best"] = {r: b for r, b in best.items() if r in ROSTER}
     data["pending"], data["todo"], data["todoMode"] = pending, todo, mode
     if not todo and mode == "daily":
         data["checked"] = today
