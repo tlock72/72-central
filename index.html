@@ -1817,9 +1817,12 @@ function renderHome(){
     $("#hpS4").innerHTML = top10.length ? top10.slice(0, 3).map(m => `<strong>${esc(short(m.name))}</strong> No.${m.pos} born ${m.born} (${m.tour})`).join(" · ") : "";
   } else if (SCOUT) { $("#hpT4").textContent = "—"; $("#hpS4").textContent = "Scouting list not available yet"; }
   if (SCHED?.events?.length) {
-    const ent = SCHED.events.filter(e => (e.e72 || []).length), ppl = new Set(ent.flatMap(e => e.e72.map(x => x.id)));
-    $("#hpT5").innerHTML = `${ent.length}<small>events with 72 players entered</small>`;
-    $("#hpS5").textContent = `${ppl.size} players entered · ${SCHED.events.length} events to the end of the year`;
+    // 72 players playing in a week: everyone on an event that runs that week (two-week events count in both)
+    const wk0 = schMonday(ukDate()), wk1 = schMonday(new Date(schDay(wk0).getTime() + 7 * 864e5).toISOString().slice(0, 10));
+    const inWeek = w => { const ev = SCHED.events.filter(e => (e.e72 || []).length && schWeeks(e).includes(w)); return { ev: ev.length, ppl: new Set(ev.flatMap(e => e.e72.map(x => x.id))).size }; };
+    const now = inWeek(wk0), next = inWeek(wk1);
+    $("#hpT5").innerHTML = `${now.ppl}<small>72 player${now.ppl === 1 ? "" : "s"} playing this week</small>`;
+    $("#hpS5").textContent = `${now.ev} event${now.ev === 1 ? "" : "s"} this week · next week: ${next.ppl} player${next.ppl === 1 ? "" : "s"} in ${next.ev} event${next.ev === 1 ? "" : "s"}`;
   } else if (SCHED) { $("#hpT5").textContent = "—"; $("#hpS5").textContent = "Schedule not available yet"; }
 }
 /* ---------- one spelling per 72 player, and no duplicate fixtures ----------
