@@ -89,7 +89,7 @@ for m in re.findall(r'["\']((?:https?://[^"\'\s/]+)?/[^"\'\s<>]*(?:live|feed|aja
     if not re.search(r"\.(css|png|jpg|svg|gif|webp|ico|woff2?)(\?|$)", m, re.I):
         cands.add(m)
 cands = {c for c in cands if c.startswith("/") or DOM in urllib.parse.urlparse(c).netloc}
-for g in ("/live", "/livescore", "/live-scores", "/challenger", "/atp-challenger/"):
+for g in ("/live", "/livescore", "/live-scores", "/challenger", "/atp-challenger/", "/scores", "/scores/", "/live-scores/"):
     cands.add(g)
 print(f"{len(cands)} candidate URLs:", sorted(cands)[:40])
 
