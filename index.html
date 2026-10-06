@@ -402,6 +402,11 @@ select.sq-in option{background:var(--navy-2);color:var(--white)}
 .cn-add button{font-family:var(--display);text-transform:uppercase;letter-spacing:.14em;font-size:12px;font-weight:600;color:var(--navy);background:var(--gold);border-radius:999px;padding:0 22px;height:38px}
 .cn-msg{margin:8px 0 0;font-size:12px;color:var(--muted);min-height:16px}
 .cn-msg.err{color:var(--down)}
+.cn-ok{margin:12px 0 0;padding:12px 14px;border:1px solid var(--gold);border-radius:14px;font-size:13px}
+.cn-ok p{margin:0 0 10px}
+.cn-ok label{display:flex;align-items:center;gap:8px;font-size:12px;color:var(--muted);margin:0 0 10px}
+.cn-ok .bt{display:flex;gap:8px;flex-wrap:wrap}
+.cn-add .cn-ok button.no{background:transparent;color:var(--muted);border:1px solid var(--line)}
 .cn-list{display:grid;gap:12px}
 .cn{border:1px solid var(--line-2);border-radius:18px;background:linear-gradient(180deg,var(--navy-2),rgba(17,27,63,.55));overflow:hidden}
 .cn-h{display:flex;flex-wrap:wrap;align-items:baseline;gap:4px 12px;padding:14px 20px 10px}
@@ -942,6 +947,11 @@ html.name-only .gate-box h2,html.name-only .gate-digits{display:none}
         <button type="submit">Add</button>
       </form>
       <p class="cn-msg" id="cnMsg">Nation and birth year are optional, but they make sure we link the right player.</p>
+      <div class="cn-ok" id="cnOk" hidden>
+        <p id="cnOkTxt"></p>
+        <label><input type="checkbox" id="cnOkHide"> Don't show this again on this device</label>
+        <div class="bt"><button type="button" id="cnOkYes">Confirm</button><button type="button" class="no" id="cnOkNo">Cancel</button></div>
+      </div>
     </div>
     <div class="sq-filters">
       <div class="sq-line">
@@ -2036,12 +2046,30 @@ $("#cnForm").addEventListener("submit", e => {
   if (ROSTER.some(r => cnKey(r.first + r.last) === cnKey(name))) return bad(`${name} is already a 72 player.`);
   if ((CORNER?.players || {})[cnKey(name)] || [...CN_SHEET, ...cnLocal()].some(x => cnKey(x.name) === cnKey(name))) return bad(`${name} is already on the watch list.`);
   let by = ""; try { by = localStorage.getItem("72c-name") || ""; } catch (err) {}
+  // one-time check: everyone sees who added a prospect ("Don't show this again" remembers it on this device)
+  let seen = false; try { seen = localStorage.getItem("72c-addok") === "1"; } catch (err) {}
+  if (!seen) {
+    $("#cnOkTxt").innerHTML = `Everyone on 72 Central will see that you added <b>${esc(name)}</b>, with ${by ? `your name (<b>${esc(by)}</b>)` : "your name"} next to it. Happy to go ahead?`;
+    $("#cnOkHide").checked = false;
+    $("#cnOk").hidden = false;
+    $("#cnOkYes").onclick = () => {
+      if ($("#cnOkHide").checked) { try { localStorage.setItem("72c-addok", "1"); } catch (err) {} }
+      $("#cnOk").hidden = true;
+      cnSend(name, g, nat, born, by);
+    };
+    $("#cnOkNo").onclick = () => { $("#cnOk").hidden = true; msg.textContent = `${name} wasn't added.`; };
+    return;
+  }
+  cnSend(name, g, nat, born, by);
+});
+function cnSend(name, g, nat, born, by){
+  const msg = $("#cnMsg");
   try { fetch(CORNER_URL, { method: "POST", mode: "no-cors", body: JSON.stringify({ kind: "prospect", name, g, nat, born, by }) }).catch(() => {}); } catch (err) {}
   try { localStorage.setItem("72c-prospects", JSON.stringify([...cnLocal(), { name, g, by, at: Date.now() }].slice(-30))); } catch (err) {}
   msg.textContent = `Added ${name}. We're looking them up now; their rankings and results appear here within about 30 minutes.`;
   $("#cnForm").reset();
   renderCorner();
-});
+}
 async function loadCorner(){
   try { const r = await fetch("corner.json?t=" + Date.now(), { cache: "no-store" }); if (r.ok) CORNER = await r.json(); else if (!CORNER) CORNER = { players: {} }; } catch (e) { if (!CORNER) CORNER = { players: {} }; }
   // names added on the site but not looked up yet (the Sheet's list; skipped quietly if it can't be read)
