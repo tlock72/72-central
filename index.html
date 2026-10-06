@@ -92,7 +92,6 @@ section.block{margin-bottom:38px}
 .pname .nm{white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .row.ours .pname{color:var(--white);font-weight:700}
 .row.lost .pname{opacity:.55}
-.seed{flex:none;margin-left:-4px;font-size:.85em;font-weight:500;color:var(--muted);font-variant-numeric:tabular-nums}
 .badge72{flex:none;font-family:var(--display);font-size:10px;font-weight:600;letter-spacing:.06em;color:var(--navy);background:var(--gold);border-radius:4px;padding:1px 5px}
 .tick{flex:none;color:var(--gold);font-size:12px}
 .sets{display:flex;gap:4px;font-variant-numeric:tabular-nums}
@@ -1035,12 +1034,10 @@ function card(m){
   const ours = id => !!byId[id];
   const row = (side) => {
     const id = side === 1 ? m.p1Id : m.p2Id, name = side === 1 ? m.p1 : m.p2;
-    // seed in this tournament, e.g. (3), only when the feed gave a plain number
-    const sd = side === 1 ? m.p1Seed : m.p2Seed, seed = /^\d{1,2}$/.test(String(sd ?? "")) ? `<span class="seed">(${sd})</span>` : "";
     const lost = fin && m.winner && m.winner !== side;
     const won = fin && m.winner === side;
     return `<div class="row ${ours(id) ? "ours" : ""} ${lost ? "lost" : ""}">
-      <span class="pname"><span class="nm">${esc(name)}</span><span class="nm-s">${esc(shortName(name))}</span>${seed}${ours(id) ? '<span class="badge72">72</span>' : ""}${won ? '<span class="tick" aria-label="winner">✓</span>' : ""}</span>
+      <span class="pname"><span class="nm">${esc(name)}</span><span class="nm-s">${esc(shortName(name))}</span>${ours(id) ? '<span class="badge72">72</span>' : ""}${won ? '<span class="tick" aria-label="winner">✓</span>' : ""}</span>
       <span class="sets">${fin ? scoreCells(m.score, side) : live && m.espnLive ? scoreCells(m.score, side, true) : ""}</span>
     </div>`;
   };
@@ -2039,7 +2036,7 @@ function applyLive(st){
       const wo = /walkover/i.test(x.detail), ret = !wo && sc && /retire|default/i.test(x.detail);
       const out = wo ? "" : won === 2 ? flipScore(sc) : sc;  // the site lists the winner first, with the score from their side
       if (wo) m.round = `${m.round || ""} (walkover)`.trim();
-      if (won === 2) Object.assign(m, { p1: m.p2, p2: m.p1, p1Id: m.p2Id, p2Id: m.p1Id, p1Seed: m.p2Seed, p2Seed: m.p1Seed });
+      if (won === 2) Object.assign(m, { p1: m.p2, p2: m.p1, p1Id: m.p2Id, p2Id: m.p1Id });
       // seen in progress a minute ago and finished now: that's when it finished
       if (!m.endAt && m.status === "live" && m.espnLive) m.endAt = new Date(liveAt).toISOString();
       Object.assign(m, { status: "finished", winner: 1, score: out + (ret ? " ret." : ""), espnLive: false, delay: "" });

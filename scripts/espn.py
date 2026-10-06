@@ -36,18 +36,6 @@ def short(name):
     return f"{p[0][0]}. {' '.join(p[1:])}" if len(p) > 1 else (name or "")
 
 
-def seed(*objs):
-    """A player's seed in this tournament (1, 2...) if the feed gives one as a plain number, else None.
-    Feeds name it differently, so a few names are tried; anything that isn't a clear number is ignored."""
-    for o in objs:
-        for k in ("seed", "seeding", "tournamentSeed", "seedNumber", "seed_number"):
-            v = (o or {}).get(k) if isinstance(o, dict) else None
-            v = str(v if v is not None else "").strip().strip("[]()")
-            if v.isdigit() and 1 <= int(v) <= 64:
-                return int(v)
-    return None
-
-
 def category(city, women, day, events, known):
     """'ATP 500', 'WTA 1000', 'WTA 125'... from the Tour Schedule calendar (schedule.json), by city and date, or else
     from what the site already recorded for that tournament (the calendar only starts from the current week)."""
@@ -91,7 +79,6 @@ def fetch(roster, events, now, matches=()):
     today = now.astimezone(UK).date()
     lo, hi = (today - timedelta(days=7)).isoformat(), (today + timedelta(days=7)).isoformat()
     out = {}
-    shown_keys = False
     for league in ("atp", "wta"):
         for d in (-1, 0, 6):  # each day's scoreboard holds every match of the events running that day
             day = (today + timedelta(days=d)).strftime("%Y%m%d")
@@ -129,12 +116,6 @@ def fetch(roster, events, now, matches=()):
                              "round": ROUNDS.get(rnd.lower(), rnd), "p1": short(full[0]), "p1Id": ids[0],
                              "p2": short(full[1]), "p2Id": ids[1], "status": "scheduled", "score": "", "points": None,
                              "server": None, "winner": None}
-                        for i, p in enumerate(cs, 1):
-                            if seed(p):
-                                m[f"p{i}Seed"] = seed(p)
-                        if not shown_keys:
-                            shown_keys = True
-                            print("ESPN player fields (for seeds):", sorted(cs[0]))
                         court = str((c.get("venue") or {}).get("court") or "").strip() or courts.get(key)
                         if court:
                             m["court"] = court
@@ -154,10 +135,8 @@ def fetch(roster, events, now, matches=()):
                                 core = sc[:-5] if sc.endswith(" ret.") else sc
                                 flipped = ", ".join(re.sub(r"^(\d+)-(\d+)", r"\2-\1", x) for x in core.split(", ")) if core else ""
                                 m.update(p1=m["p2"], p2=m["p1"], p1Id=m["p2Id"], p2Id=m["p1Id"], winner=1,
-                                         p1Seed=m.get("p2Seed"), p2Seed=m.get("p1Seed"),
                                          score=flipped + (" ret." if sc.endswith(" ret.") else ""))
                         elif state == "post" and re.search(r"cancel", detail, re.I):
                             m["status"] = "cancelled"
-                        out[key] = {k: v for k, v in m.items() if not (k.endswith("Seed") and v is None)}
-    print(f'ESPN seeds: {sum(1 for m in out.values() for k in ("p1Seed", "p2Seed") if m.get(k))} found')
+                        out[key] = m
     return out
