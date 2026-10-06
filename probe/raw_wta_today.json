@@ -355,7 +355,7 @@
   "year": 2026
  },
  "day": {
-  "date": "2026-10-05"
+  "date": "2026-10-06"
  },
  "events": [
   {
@@ -24598,17 +24598,17 @@
        "date": "2026-10-06T04:30Z",
        "startDate": "2026-10-06T04:30Z",
        "timeValid": true,
-       "recent": true,
+       "recent": false,
        "status": {
-        "period": 1,
+        "period": 2,
         "type": {
-         "id": "2",
-         "name": "STATUS_IN_PROGRESS",
-         "state": "in",
-         "completed": false,
-         "description": "In Progress",
-         "detail": "1st Set",
-         "shortDetail": "1st"
+         "id": "3",
+         "name": "STATUS_FINAL",
+         "state": "post",
+         "completed": true,
+         "description": "Final",
+         "detail": "Final",
+         "shortDetail": "Final"
         }
        },
        "venue": {
@@ -24622,7 +24622,7 @@
        },
        "notes": [
         {
-         "text": "(19) Ekaterina Alexandrova (RUS) leads (5) Linda Noskova (CZE) 4-2",
+         "text": "(19) Ekaterina Alexandrova (RUS) bt (5) Linda Noskova (CZE) 6-2 6-2",
          "type": "event"
         }
        ],
@@ -24636,13 +24636,18 @@
          "type": "athlete",
          "order": 2,
          "homeAway": "away",
-         "possession": false,
+         "winner": true,
          "curatedRank": {
           "current": 19
          },
          "linescores": [
           {
-           "value": 4.0
+           "value": 6.0,
+           "winner": true
+          },
+          {
+           "value": 6.0,
+           "winner": true
           }
          ],
          "athlete": {
@@ -24682,13 +24687,18 @@
          "type": "athlete",
          "order": 1,
          "homeAway": "home",
-         "possession": true,
+         "winner": false,
          "curatedRank": {
           "current": 5
          },
          "linescores": [
           {
-           "value": 2.0
+           "value": 2.0,
+           "winner": false
+          },
+          {
+           "value": 2.0,
+           "winner": false
           }
          ],
          "athlete": {
@@ -24723,11 +24733,6 @@
          "statistics": []
         }
        ],
-       "situation": {
-        "onFirst": false,
-        "onSecond": false,
-        "onThird": false
-       },
        "tournamentId": 959,
        "type": {
         "id": "2",
@@ -24746,7 +24751,7 @@
        "date": "2026-10-06T07:00Z",
        "startDate": "2026-10-06T07:00Z",
        "timeValid": true,
-       "recent": false,
+       "recent": true,
        "status": {
         "period": 1,
         "type": {
@@ -25709,16 +25714,42 @@
          "statistics": []
         },
         {
-         "id": "-3",
-         "uid": "s:850~l:900~a:-3",
+         "id": "3182",
+         "uid": "s:850~l:900~a:3182",
          "type": "athlete",
          "order": 1,
          "homeAway": "home",
+         "curatedRank": {
+          "current": 19
+         },
          "athlete": {
-          "displayName": "TBD",
-          "shortName": "TBD",
-          "fullName": "TBD",
-          "links": []
+          "guid": "b4dc27b2-146b-000e-3f5d-5e1431231999",
+          "displayName": "Ekaterina Alexandrova",
+          "shortName": "E. Alexandrova",
+          "fullName": "Ekaterina Alexandrova",
+          "flag": {
+           "href": "https://a.espncdn.com/i/teamlogos/countries/500/rus.png",
+           "alt": "Russia",
+           "rel": [
+            "country-flag"
+           ]
+          },
+          "links": [
+           {
+            "language": "en-US",
+            "rel": [
+             "playercard",
+             "desktop",
+             "athlete"
+            ],
+            "href": "https://www.espn.com/tennis/player/_/id/3182/ekaterina-alexandrova",
+            "text": "Player Card",
+            "shortText": "Player Card",
+            "isExternal": false,
+            "isPremium": false,
+            "isHidden": false
+           }
+          ]
          },
          "statistics": []
         }
@@ -32922,15 +32953,15 @@
        "timeValid": true,
        "recent": true,
        "status": {
-        "period": 1,
+        "period": 2,
         "type": {
          "id": "2",
          "name": "STATUS_IN_PROGRESS",
          "state": "in",
          "completed": false,
          "description": "In Progress",
-         "detail": "1st Set",
-         "shortDetail": "1st"
+         "detail": "2nd Set",
+         "shortDetail": "2nd"
         }
        },
        "venue": {
@@ -32944,7 +32975,7 @@
        },
        "notes": [
         {
-         "text": "Hao-Ching Chan (TPO) & Miyu Kato (JPN) leads Tereza Mihalikova (SVK) & Olivia Nicholls (GBR) 3-1",
+         "text": "Tereza Mihalikova (SVK) & Olivia Nicholls (GBR) leads Hao-Ching Chan (TPO) & Miyu Kato (JPN) 7-5 4-1",
          "type": "event"
         }
        ],
@@ -32958,10 +32989,14 @@
          "type": "team",
          "order": 2,
          "homeAway": "away",
-         "possession": true,
+         "possession": false,
          "linescores": [
           {
-           "value": 1.0
+           "value": 7.0,
+           "winner": true
+          },
+          {
+           "value": 4.0
           }
          ],
          "roster": {
@@ -33036,10 +33071,14 @@
          "type": "team",
          "order": 1,
          "homeAway": "home",
-         "possession": false,
+         "possession": true,
          "linescores": [
           {
-           "value": 3.0
+           "value": 5.0,
+           "winner": false
+          },
+          {
+           "value": 1.0
           }
          ],
          "roster": {
@@ -33132,17 +33171,17 @@
        "date": "2026-10-06T04:50Z",
        "startDate": "2026-10-06T04:50Z",
        "timeValid": true,
-       "recent": true,
+       "recent": false,
        "status": {
-        "period": 1,
+        "period": 2,
         "type": {
-         "id": "2",
-         "name": "STATUS_IN_PROGRESS",
-         "state": "in",
-         "completed": false,
-         "description": "In Progress",
-         "detail": "1st Set",
-         "shortDetail": "1st"
+         "id": "3",
+         "name": "STATUS_FINAL",
+         "state": "post",
+         "completed": true,
+         "description": "Final",
+         "detail": "Final",
+         "shortDetail": "Final"
         }
        },
        "venue": {
@@ -33156,7 +33195,7 @@
        },
        "notes": [
         {
-         "text": "(8) Sara Errani (ITA) & Jasmine Paolini (ITA) leads Anastasia Detiuc (CZE) & Fang-Hsien Wu (TPO) 2-0",
+         "text": "(8) Sara Errani (ITA) & Jasmine Paolini (ITA) bt Anastasia Detiuc (CZE) & Fang-Hsien Wu (TPO) 6-2 6-4",
          "type": "event"
         }
        ],
@@ -33170,10 +33209,15 @@
          "type": "team",
          "order": 2,
          "homeAway": "away",
-         "possession": false,
+         "winner": false,
          "linescores": [
           {
-           "value": 0.0
+           "value": 2.0,
+           "winner": false
+          },
+          {
+           "value": 4.0,
+           "winner": false
           }
          ],
          "roster": {
@@ -33248,13 +33292,18 @@
          "type": "team",
          "order": 1,
          "homeAway": "home",
-         "possession": true,
+         "winner": true,
          "curatedRank": {
           "current": 8
          },
          "linescores": [
           {
-           "value": 2.0
+           "value": 6.0,
+           "winner": true
+          },
+          {
+           "value": 6.0,
+           "winner": true
           }
          ],
          "roster": {
@@ -33324,11 +33373,6 @@
          "statistics": []
         }
        ],
-       "situation": {
-        "onFirst": false,
-        "onSecond": false,
-        "onThird": false
-       },
        "tournamentId": 959,
        "type": {
         "id": "4",
@@ -33344,8 +33388,8 @@
       {
        "id": "184201",
        "uid": "s:850~l:900~e:959-2026~c:184201",
-       "date": "2026-10-06T06:00Z",
-       "startDate": "2026-10-06T06:00Z",
+       "date": "2026-10-06T06:15Z",
+       "startDate": "2026-10-06T06:15Z",
        "timeValid": true,
        "recent": true,
        "status": {
@@ -33356,8 +33400,8 @@
          "state": "pre",
          "completed": false,
          "description": "Scheduled",
-         "detail": "Tue, October 5th at 2:00 AM EDT",
-         "shortDetail": "10/6 - 2:00 AM EDT"
+         "detail": "Tue, October 5th at 2:15 AM EDT",
+         "shortDetail": "10/6 - 2:15 AM EDT"
         }
        },
        "venue": {
@@ -33540,7 +33584,7 @@
        "date": "2026-10-06T07:00Z",
        "startDate": "2026-10-06T07:00Z",
        "timeValid": true,
-       "recent": false,
+       "recent": true,
        "status": {
         "period": 1,
         "type": {
@@ -34749,26 +34793,75 @@
          "statistics": []
         },
         {
-         "id": "-3--4",
-         "uid": "s:850~l:900~t:-3--4",
+         "id": "636-2615",
+         "uid": "s:850~l:900~t:636-2615",
          "type": "team",
          "order": 1,
          "homeAway": "home",
+         "curatedRank": {
+          "current": 8
+         },
          "roster": {
-          "displayName": "TBD / TBD",
-          "shortDisplayName": "TBD / TBD",
+          "displayName": "Sara Errani / Jasmine Paolini",
+          "shortDisplayName": "S. Errani / J. Paolini",
           "athletes": [
            {
-            "displayName": "TBD",
-            "shortName": "TBD",
-            "fullName": "TBD",
-            "links": []
+            "guid": "82dfe891-e743-372d-3bde-0bab506abfa1",
+            "displayName": "Sara Errani",
+            "shortName": "S. Errani",
+            "fullName": "Sara Errani",
+            "flag": {
+             "href": "https://a.espncdn.com/i/teamlogos/countries/500/ita.png",
+             "alt": "Italy",
+             "rel": [
+              "country-flag"
+             ]
+            },
+            "links": [
+             {
+              "language": "en-US",
+              "rel": [
+               "playercard",
+               "desktop",
+               "athlete"
+              ],
+              "href": "https://www.espn.com/tennis/player/_/id/636/sara-errani",
+              "text": "Player Card",
+              "shortText": "Player Card",
+              "isExternal": false,
+              "isPremium": false,
+              "isHidden": false
+             }
+            ]
            },
            {
-            "displayName": "TBD",
-            "shortName": "TBD",
-            "fullName": "TBD",
-            "links": []
+            "guid": "1cb6cc14-00ad-6c8b-301e-aa8adc243503",
+            "displayName": "Jasmine Paolini",
+            "shortName": "J. Paolini",
+            "fullName": "Jasmine Paolini",
+            "flag": {
+             "href": "https://a.espncdn.com/i/teamlogos/countries/500/ita.png",
+             "alt": "Italy",
+             "rel": [
+              "country-flag"
+             ]
+            },
+            "links": [
+             {
+              "language": "en-US",
+              "rel": [
+               "playercard",
+               "desktop",
+               "athlete"
+              ],
+              "href": "https://www.espn.com/tennis/player/_/id/2615/jasmine-paolini",
+              "text": "Player Card",
+              "shortText": "Player Card",
+              "isExternal": false,
+              "isPremium": false,
+              "isHidden": false
+             }
+            ]
            }
           ]
          },
@@ -38711,17 +38804,17 @@
        "date": "2026-10-06T02:10Z",
        "startDate": "2026-10-06T02:10Z",
        "timeValid": true,
-       "recent": true,
+       "recent": false,
        "status": {
         "period": 3,
         "type": {
-         "id": "2",
-         "name": "STATUS_IN_PROGRESS",
-         "state": "in",
-         "completed": false,
-         "description": "In Progress",
-         "detail": "3rd Set",
-         "shortDetail": "3rd"
+         "id": "3",
+         "name": "STATUS_FINAL",
+         "state": "post",
+         "completed": true,
+         "description": "Final",
+         "detail": "Final",
+         "shortDetail": "Final"
         }
        },
        "venue": {
@@ -38735,7 +38828,7 @@
        },
        "notes": [
         {
-         "text": "Hanyu Guo (CHN) leads Aliona Falei (BLR) 6-7 (4-7) 6-4 3-2",
+         "text": "Aliona Falei (BLR) bt Hanyu Guo (CHN) 7-6 (7-4) 4-6 7-5",
          "type": "event"
         }
        ],
@@ -38749,6 +38842,7 @@
          "type": "athlete",
          "order": 2,
          "homeAway": "away",
+         "winner": true,
          "linescores": [
           {
            "value": 7.0,
@@ -38760,7 +38854,8 @@
            "winner": false
           },
           {
-           "value": 2.0
+           "value": 7.0,
+           "winner": true
           }
          ],
          "athlete": {
@@ -38800,6 +38895,7 @@
          "type": "athlete",
          "order": 1,
          "homeAway": "home",
+         "winner": false,
          "linescores": [
           {
            "value": 6.0,
@@ -38811,7 +38907,8 @@
            "winner": true
           },
           {
-           "value": 3.0
+           "value": 5.0,
+           "winner": false
           }
          ],
          "athlete": {
@@ -38864,17 +38961,17 @@
        "date": "2026-10-06T03:30Z",
        "startDate": "2026-10-06T03:30Z",
        "timeValid": true,
-       "recent": true,
+       "recent": false,
        "status": {
         "period": 2,
         "type": {
-         "id": "2",
-         "name": "STATUS_IN_PROGRESS",
-         "state": "in",
-         "completed": false,
-         "description": "In Progress",
-         "detail": "2nd Set",
-         "shortDetail": "2nd"
+         "id": "3",
+         "name": "STATUS_FINAL",
+         "state": "post",
+         "completed": true,
+         "description": "Final",
+         "detail": "Final",
+         "shortDetail": "Final"
         }
        },
        "venue": {
@@ -38888,7 +38985,7 @@
        },
        "notes": [
         {
-         "text": "(6) Renata Zarazua (MEX) leads Han Shi (CHN) 6-3 2-1",
+         "text": "(6) Renata Zarazua (MEX) bt Han Shi (CHN) 6-3 6-3",
          "type": "event"
         }
        ],
@@ -38902,7 +38999,7 @@
          "type": "athlete",
          "order": 2,
          "homeAway": "away",
-         "possession": true,
+         "winner": true,
          "curatedRank": {
           "current": 6
          },
@@ -38912,7 +39009,8 @@
            "winner": true
           },
           {
-           "value": 2.0
+           "value": 6.0,
+           "winner": true
           }
          ],
          "athlete": {
@@ -38952,14 +39050,15 @@
          "type": "athlete",
          "order": 1,
          "homeAway": "home",
-         "possession": false,
+         "winner": false,
          "linescores": [
           {
            "value": 3.0,
            "winner": false
           },
           {
-           "value": 1.0
+           "value": 3.0,
+           "winner": false
           }
          ],
          "athlete": {
@@ -38994,11 +39093,6 @@
          "statistics": []
         }
        ],
-       "situation": {
-        "onFirst": false,
-        "onSecond": false,
-        "onThird": false
-       },
        "tournamentId": 1029,
        "type": {
         "id": "2",
@@ -39017,17 +39111,17 @@
        "date": "2026-10-06T04:30Z",
        "startDate": "2026-10-06T04:30Z",
        "timeValid": true,
-       "recent": true,
+       "recent": false,
        "status": {
         "period": 2,
         "type": {
-         "id": "2",
-         "name": "STATUS_IN_PROGRESS",
-         "state": "in",
-         "completed": false,
-         "description": "In Progress",
-         "detail": "2nd Set",
-         "shortDetail": "2nd"
+         "id": "3",
+         "name": "STATUS_FINAL",
+         "state": "post",
+         "completed": true,
+         "description": "Final",
+         "detail": "Final",
+         "shortDetail": "Final"
         }
        },
        "venue": {
@@ -39041,7 +39135,7 @@
        },
        "notes": [
         {
-         "text": "(1) Oleksandra Oliynykova (UKR) is tied with Wushuang Zheng (CHN) 6-0 0-0",
+         "text": "(1) Oleksandra Oliynykova (UKR) bt Wushuang Zheng (CHN) 6-0 6-4",
          "type": "event"
         }
        ],
@@ -39055,14 +39149,15 @@
          "type": "athlete",
          "order": 2,
          "homeAway": "away",
-         "possession": false,
+         "winner": false,
          "linescores": [
           {
            "value": 0.0,
            "winner": false
           },
           {
-           "value": 0.0
+           "value": 4.0,
+           "winner": false
           }
          ],
          "athlete": {
@@ -39102,7 +39197,7 @@
          "type": "athlete",
          "order": 1,
          "homeAway": "home",
-         "possession": true,
+         "winner": true,
          "curatedRank": {
           "current": 1
          },
@@ -39112,7 +39207,8 @@
            "winner": true
           },
           {
-           "value": 0.0
+           "value": 6.0,
+           "winner": true
           }
          ],
          "athlete": {
@@ -39147,134 +39243,6 @@
          "statistics": []
         }
        ],
-       "situation": {
-        "onFirst": false,
-        "onSecond": false,
-        "onThird": false
-       },
-       "tournamentId": 1029,
-       "type": {
-        "id": "2",
-        "text": "Women's Singles",
-        "slug": "womens-singles"
-       },
-       "round": {
-        "id": "1",
-        "displayName": "Round 1"
-       },
-       "wasSuspended": false
-      },
-      {
-       "id": "185277",
-       "uid": "s:850~l:900~e:1029-2026~c:185277",
-       "date": "2026-10-06T05:10Z",
-       "startDate": "2026-10-06T05:10Z",
-       "timeValid": true,
-       "recent": true,
-       "status": {
-        "period": 1,
-        "type": {
-         "id": "1",
-         "name": "STATUS_SCHEDULED",
-         "state": "pre",
-         "completed": false,
-         "description": "Scheduled",
-         "detail": "Tue, October 5th at 1:10 AM EDT",
-         "shortDetail": "10/6 - 1:10 AM EDT"
-        }
-       },
-       "venue": {
-        "fullName": "Suzhou, China PR",
-        "court": "Court 1"
-       },
-       "format": {
-        "regulation": {
-         "periods": 3
-        }
-       },
-       "notes": [],
-       "geoBroadcasts": [],
-       "broadcasts": [],
-       "broadcast": "",
-       "competitors": [
-        {
-         "id": "6488",
-         "uid": "s:850~l:900~a:6488",
-         "type": "athlete",
-         "order": 2,
-         "homeAway": "away",
-         "curatedRank": {
-          "current": 4
-         },
-         "athlete": {
-          "guid": "0550ffc2-5467-3e83-a3b5-6eef9793aa34",
-          "displayName": "Darja Vidmanova",
-          "shortName": "D. Vidmanova",
-          "fullName": "Darja Vidmanova",
-          "flag": {
-           "href": "https://a.espncdn.com/i/teamlogos/countries/500/cze.png",
-           "alt": "Czechia",
-           "rel": [
-            "country-flag"
-           ]
-          },
-          "links": [
-           {
-            "language": "en-US",
-            "rel": [
-             "playercard",
-             "desktop",
-             "athlete"
-            ],
-            "href": "https://www.espn.com/tennis/player/_/id/6488/darja-vidmanova",
-            "text": "Player Card",
-            "shortText": "Player Card",
-            "isExternal": false,
-            "isPremium": false,
-            "isHidden": false
-           }
-          ]
-         },
-         "statistics": []
-        },
-        {
-         "id": "2431",
-         "uid": "s:850~l:900~a:2431",
-         "type": "athlete",
-         "order": 1,
-         "homeAway": "home",
-         "athlete": {
-          "guid": "5e9cae39-b8b7-c184-ceab-b8911fa26629",
-          "displayName": "Kyoka Okamura",
-          "shortName": "K. Okamura",
-          "fullName": "Kyoka Okamura",
-          "flag": {
-           "href": "https://a.espncdn.com/i/teamlogos/countries/500/jpn.png",
-           "alt": "Japan",
-           "rel": [
-            "country-flag"
-           ]
-          },
-          "links": [
-           {
-            "language": "en-US",
-            "rel": [
-             "playercard",
-             "desktop",
-             "athlete"
-            ],
-            "href": "https://www.espn.com/tennis/player/_/id/2431/kyoka-okamura",
-            "text": "Player Card",
-            "shortText": "Player Card",
-            "isExternal": false,
-            "isPremium": false,
-            "isHidden": false
-           }
-          ]
-         },
-         "statistics": []
-        }
-       ],
        "tournamentId": 1029,
        "type": {
         "id": "2",
@@ -39290,20 +39258,20 @@
       {
        "id": "185282",
        "uid": "s:850~l:900~e:1029-2026~c:185282",
-       "date": "2026-10-06T05:15Z",
-       "startDate": "2026-10-06T05:15Z",
+       "date": "2026-10-06T05:40Z",
+       "startDate": "2026-10-06T05:40Z",
        "timeValid": true,
        "recent": true,
        "status": {
         "period": 1,
         "type": {
-         "id": "1",
-         "name": "STATUS_SCHEDULED",
-         "state": "pre",
+         "id": "2",
+         "name": "STATUS_IN_PROGRESS",
+         "state": "in",
          "completed": false,
-         "description": "Scheduled",
-         "detail": "Tue, October 5th at 1:15 AM EDT",
-         "shortDetail": "10/6 - 1:15 AM EDT"
+         "description": "In Progress",
+         "detail": "1st Set",
+         "shortDetail": "1st"
         }
        },
        "venue": {
@@ -39315,7 +39283,12 @@
          "periods": 3
         }
        },
-       "notes": [],
+       "notes": [
+        {
+         "text": "Darya Khamutsianskaya (BLR) leads Tyra Caterina Grant (ITA) 4-1",
+         "type": "event"
+        }
+       ],
        "geoBroadcasts": [],
        "broadcasts": [],
        "broadcast": "",
@@ -39326,6 +39299,12 @@
          "type": "athlete",
          "order": 2,
          "homeAway": "away",
+         "possession": true,
+         "linescores": [
+          {
+           "value": 1.0
+          }
+         ],
          "athlete": {
           "guid": "4de89c8d-9ddf-3bec-9ffc-9acc44333516",
           "displayName": "Tyra Caterina Grant",
@@ -39363,6 +39342,12 @@
          "type": "athlete",
          "order": 1,
          "homeAway": "home",
+         "possession": false,
+         "linescores": [
+          {
+           "value": 4.0
+          }
+         ],
          "athlete": {
           "guid": "5ffbba46-2b1f-3bd3-8962-12b671030008",
           "displayName": "Darya Khamutsianskaya",
@@ -39395,6 +39380,156 @@
          "statistics": []
         }
        ],
+       "situation": {
+        "onFirst": false,
+        "onSecond": false,
+        "onThird": false
+       },
+       "tournamentId": 1029,
+       "type": {
+        "id": "2",
+        "text": "Women's Singles",
+        "slug": "womens-singles"
+       },
+       "round": {
+        "id": "1",
+        "displayName": "Round 1"
+       },
+       "wasSuspended": false
+      },
+      {
+       "id": "185277",
+       "uid": "s:850~l:900~e:1029-2026~c:185277",
+       "date": "2026-10-06T05:55Z",
+       "startDate": "2026-10-06T05:55Z",
+       "timeValid": true,
+       "recent": true,
+       "status": {
+        "period": 1,
+        "type": {
+         "id": "2",
+         "name": "STATUS_IN_PROGRESS",
+         "state": "in",
+         "completed": false,
+         "description": "In Progress",
+         "detail": "1st Set",
+         "shortDetail": "1st"
+        }
+       },
+       "venue": {
+        "fullName": "Suzhou, China PR",
+        "court": "Court 1"
+       },
+       "format": {
+        "regulation": {
+         "periods": 3
+        }
+       },
+       "notes": [
+        {
+         "text": "Kyoka Okamura (JPN) leads (4) Darja Vidmanova (CZE) 2-0",
+         "type": "event"
+        }
+       ],
+       "geoBroadcasts": [],
+       "broadcasts": [],
+       "broadcast": "",
+       "competitors": [
+        {
+         "id": "6488",
+         "uid": "s:850~l:900~a:6488",
+         "type": "athlete",
+         "order": 2,
+         "homeAway": "away",
+         "possession": true,
+         "curatedRank": {
+          "current": 4
+         },
+         "linescores": [
+          {
+           "value": 0.0
+          }
+         ],
+         "athlete": {
+          "guid": "0550ffc2-5467-3e83-a3b5-6eef9793aa34",
+          "displayName": "Darja Vidmanova",
+          "shortName": "D. Vidmanova",
+          "fullName": "Darja Vidmanova",
+          "flag": {
+           "href": "https://a.espncdn.com/i/teamlogos/countries/500/cze.png",
+           "alt": "Czechia",
+           "rel": [
+            "country-flag"
+           ]
+          },
+          "links": [
+           {
+            "language": "en-US",
+            "rel": [
+             "playercard",
+             "desktop",
+             "athlete"
+            ],
+            "href": "https://www.espn.com/tennis/player/_/id/6488/darja-vidmanova",
+            "text": "Player Card",
+            "shortText": "Player Card",
+            "isExternal": false,
+            "isPremium": false,
+            "isHidden": false
+           }
+          ]
+         },
+         "statistics": []
+        },
+        {
+         "id": "2431",
+         "uid": "s:850~l:900~a:2431",
+         "type": "athlete",
+         "order": 1,
+         "homeAway": "home",
+         "possession": false,
+         "linescores": [
+          {
+           "value": 2.0
+          }
+         ],
+         "athlete": {
+          "guid": "5e9cae39-b8b7-c184-ceab-b8911fa26629",
+          "displayName": "Kyoka Okamura",
+          "shortName": "K. Okamura",
+          "fullName": "Kyoka Okamura",
+          "flag": {
+           "href": "https://a.espncdn.com/i/teamlogos/countries/500/jpn.png",
+           "alt": "Japan",
+           "rel": [
+            "country-flag"
+           ]
+          },
+          "links": [
+           {
+            "language": "en-US",
+            "rel": [
+             "playercard",
+             "desktop",
+             "athlete"
+            ],
+            "href": "https://www.espn.com/tennis/player/_/id/2431/kyoka-okamura",
+            "text": "Player Card",
+            "shortText": "Player Card",
+            "isExternal": false,
+            "isPremium": false,
+            "isHidden": false
+           }
+          ]
+         },
+         "statistics": []
+        }
+       ],
+       "situation": {
+        "onFirst": false,
+        "onSecond": false,
+        "onThird": false
+       },
        "tournamentId": 1029,
        "type": {
         "id": "2",
@@ -39410,8 +39545,8 @@
       {
        "id": "185272",
        "uid": "s:850~l:900~e:1029-2026~c:185272",
-       "date": "2026-10-06T06:00Z",
-       "startDate": "2026-10-06T06:00Z",
+       "date": "2026-10-06T06:05Z",
+       "startDate": "2026-10-06T06:05Z",
        "timeValid": true,
        "recent": true,
        "status": {
@@ -39422,8 +39557,8 @@
          "state": "pre",
          "completed": false,
          "description": "Scheduled",
-         "detail": "Tue, October 5th at 2:00 AM EDT",
-         "shortDetail": "10/6 - 2:00 AM EDT"
+         "detail": "Tue, October 5th at 2:05 AM EDT",
+         "shortDetail": "10/6 - 2:05 AM EDT"
         }
        },
        "venue": {
@@ -39530,8 +39665,8 @@
       {
        "id": "185273",
        "uid": "s:850~l:900~e:1029-2026~c:185273",
-       "date": "2026-10-06T06:40Z",
-       "startDate": "2026-10-06T06:40Z",
+       "date": "2026-10-06T07:25Z",
+       "startDate": "2026-10-06T07:25Z",
        "timeValid": true,
        "recent": false,
        "status": {
@@ -39542,8 +39677,8 @@
          "state": "pre",
          "completed": false,
          "description": "Scheduled",
-         "detail": "Tue, October 5th at 2:40 AM EDT",
-         "shortDetail": "10/6 - 2:40 AM EDT"
+         "detail": "Tue, October 6th at 3:25 AM EDT",
+         "shortDetail": "10/6 - 3:25 AM EDT"
         }
        },
        "venue": {
@@ -39650,8 +39785,8 @@
       {
        "id": "185290",
        "uid": "s:850~l:900~e:1029-2026~c:185290",
-       "date": "2026-10-06T08:10Z",
-       "startDate": "2026-10-06T08:10Z",
+       "date": "2026-10-06T09:00Z",
+       "startDate": "2026-10-06T09:00Z",
        "timeValid": true,
        "recent": false,
        "status": {
@@ -39662,8 +39797,8 @@
          "state": "pre",
          "completed": false,
          "description": "Scheduled",
-         "detail": "Tue, October 6th at 4:10 AM EDT",
-         "shortDetail": "10/6 - 4:10 AM EDT"
+         "detail": "Tue, October 6th at 5:00 AM EDT",
+         "shortDetail": "10/6 - 5:00 AM EDT"
         }
        },
        "venue": {
@@ -39804,16 +39939,42 @@
        "broadcast": "",
        "competitors": [
         {
-         "id": "-4",
-         "uid": "s:850~l:900~a:-4",
+         "id": "2751",
+         "uid": "s:850~l:900~a:2751",
          "type": "athlete",
          "order": 2,
          "homeAway": "away",
+         "curatedRank": {
+          "current": 6
+         },
          "athlete": {
-          "displayName": "TBD",
-          "shortName": "TBD",
-          "fullName": "TBD",
-          "links": []
+          "guid": "9bfb142c-91cd-d97d-2fbc-85d8d2b81527",
+          "displayName": "Renata Zarazua",
+          "shortName": "R. Zarazua",
+          "fullName": "Renata Zarazua",
+          "flag": {
+           "href": "https://a.espncdn.com/i/teamlogos/countries/500/mex.png",
+           "alt": "Mexico",
+           "rel": [
+            "country-flag"
+           ]
+          },
+          "links": [
+           {
+            "language": "en-US",
+            "rel": [
+             "playercard",
+             "desktop",
+             "athlete"
+            ],
+            "href": "https://www.espn.com/tennis/player/_/id/2751/renata-zarazua",
+            "text": "Player Card",
+            "shortText": "Player Card",
+            "isExternal": false,
+            "isPremium": false,
+            "isHidden": false
+           }
+          ]
          },
          "statistics": []
         },
@@ -39998,30 +40159,79 @@
        "broadcast": "",
        "competitors": [
         {
-         "id": "-4",
-         "uid": "s:850~l:900~a:-4",
+         "id": "14566",
+         "uid": "s:850~l:900~a:14566",
          "type": "athlete",
          "order": 2,
          "homeAway": "away",
          "athlete": {
-          "displayName": "TBD",
-          "shortName": "TBD",
-          "fullName": "TBD",
-          "links": []
+          "guid": "a7b4a6db-09c3-30f9-b8c1-0aca1ee1f21f",
+          "displayName": "Aliona Falei",
+          "shortName": "A. Falei",
+          "fullName": "Aliona Falei",
+          "flag": {
+           "href": "https://a.espncdn.com/i/teamlogos/countries/500/blr.png",
+           "alt": "Belarus",
+           "rel": [
+            "country-flag"
+           ]
+          },
+          "links": [
+           {
+            "language": "en-US",
+            "rel": [
+             "playercard",
+             "desktop",
+             "athlete"
+            ],
+            "href": "https://www.espn.com/tennis/player/_/id/14566/aliona-falei",
+            "text": "Player Card",
+            "shortText": "Player Card",
+            "isExternal": false,
+            "isPremium": false,
+            "isHidden": false
+           }
+          ]
          },
          "statistics": []
         },
         {
-         "id": "-3",
-         "uid": "s:850~l:900~a:-3",
+         "id": "5705",
+         "uid": "s:850~l:900~a:5705",
          "type": "athlete",
          "order": 1,
          "homeAway": "home",
+         "curatedRank": {
+          "current": 1
+         },
          "athlete": {
-          "displayName": "TBD",
-          "shortName": "TBD",
-          "fullName": "TBD",
-          "links": []
+          "guid": "61caca75-ec3b-3cd3-8592-bd4e35becd03",
+          "displayName": "Oleksandra Oliynykova",
+          "shortName": "O. Oliynykova",
+          "fullName": "Oleksandra Oliynykova",
+          "flag": {
+           "href": "https://a.espncdn.com/i/teamlogos/countries/500/ukr.png",
+           "alt": "Ukraine",
+           "rel": [
+            "country-flag"
+           ]
+          },
+          "links": [
+           {
+            "language": "en-US",
+            "rel": [
+             "playercard",
+             "desktop",
+             "athlete"
+            ],
+            "href": "https://www.espn.com/tennis/player/_/id/5705/oleksandra-oliynykova",
+            "text": "Player Card",
+            "shortText": "Player Card",
+            "isExternal": false,
+            "isPremium": false,
+            "isHidden": false
+           }
+          ]
          },
          "statistics": []
         }
@@ -41539,10 +41749,10 @@
       {
        "id": "185303",
        "uid": "s:850~l:900~e:1029-2026~c:185303",
-       "date": "2026-10-06T06:45Z",
-       "startDate": "2026-10-06T06:45Z",
+       "date": "2026-10-06T07:00Z",
+       "startDate": "2026-10-06T07:00Z",
        "timeValid": true,
-       "recent": false,
+       "recent": true,
        "status": {
         "period": 1,
         "type": {
@@ -41551,8 +41761,8 @@
          "state": "pre",
          "completed": false,
          "description": "Scheduled",
-         "detail": "Tue, October 5th at 2:45 AM EDT",
-         "shortDetail": "10/6 - 2:45 AM EDT"
+         "detail": "Tue, October 6th at 3:00 AM EDT",
+         "shortDetail": "10/6 - 3:00 AM EDT"
         }
        },
        "venue": {
@@ -46459,7 +46669,7 @@
        "date": "2026-10-06T07:00Z",
        "startDate": "2026-10-06T07:00Z",
        "timeValid": true,
-       "recent": false,
+       "recent": true,
        "status": {
         "period": 1,
         "type": {
@@ -46582,7 +46792,7 @@
        "date": "2026-10-06T07:00Z",
        "startDate": "2026-10-06T07:00Z",
        "timeValid": true,
-       "recent": false,
+       "recent": true,
        "status": {
         "period": 1,
         "type": {
@@ -46702,7 +46912,7 @@
        "date": "2026-10-06T07:00Z",
        "startDate": "2026-10-06T07:00Z",
        "timeValid": true,
-       "recent": false,
+       "recent": true,
        "status": {
         "period": 1,
         "type": {

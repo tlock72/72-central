@@ -10694,20 +10694,20 @@
       {
        "id": "183529",
        "uid": "s:850~l:851~e:5-2026~c:183529",
-       "date": "2026-10-06T05:00Z",
-       "startDate": "2026-10-06T05:00Z",
+       "date": "2026-10-06T05:05Z",
+       "startDate": "2026-10-06T05:05Z",
        "timeValid": true,
        "recent": true,
        "status": {
         "period": 1,
         "type": {
-         "id": "1",
-         "name": "STATUS_SCHEDULED",
-         "state": "pre",
+         "id": "2",
+         "name": "STATUS_IN_PROGRESS",
+         "state": "in",
          "completed": false,
-         "description": "Scheduled",
-         "detail": "Tue, October 5th at 1:00 AM EDT",
-         "shortDetail": "10/6 - 1:00 AM EDT"
+         "description": "In Progress",
+         "detail": "1st Set",
+         "shortDetail": "1st"
         }
        },
        "venue": {
@@ -10719,7 +10719,12 @@
          "periods": 5
         }
        },
-       "notes": [],
+       "notes": [
+        {
+         "text": "(4) Austin Krajicek (USA) & Nikola Mektic (CRO) leads (2) Theo Arribage (FRA) & Albano Olivetti (FRA) 6-6 (4-3)",
+         "type": "event"
+        }
+       ],
        "geoBroadcasts": [],
        "broadcasts": [],
        "broadcast": "",
@@ -10733,6 +10738,12 @@
          "curatedRank": {
           "current": 2
          },
+         "linescores": [
+          {
+           "value": 6.0,
+           "tiebreak": 3
+          }
+         ],
          "roster": {
           "displayName": "Theo Arribage / Albano Olivetti",
           "shortDisplayName": "T. Arribage / A. Olivetti",
@@ -10808,6 +10819,12 @@
          "curatedRank": {
           "current": 4
          },
+         "linescores": [
+          {
+           "value": 6.0,
+           "tiebreak": 4
+          }
+         ],
          "roster": {
           "displayName": "Austin Krajicek / Nikola Mektic",
           "shortDisplayName": "A. Krajicek / N. Mektic",
@@ -35274,17 +35291,17 @@
        "date": "2026-10-06T04:30Z",
        "startDate": "2026-10-06T04:30Z",
        "timeValid": true,
-       "recent": true,
+       "recent": false,
        "status": {
-        "period": 1,
+        "period": 2,
         "type": {
-         "id": "2",
-         "name": "STATUS_IN_PROGRESS",
-         "state": "in",
-         "completed": false,
-         "description": "In Progress",
-         "detail": "1st Set",
-         "shortDetail": "1st"
+         "id": "3",
+         "name": "STATUS_FINAL",
+         "state": "post",
+         "completed": true,
+         "description": "Final",
+         "detail": "Final",
+         "shortDetail": "Final"
         }
        },
        "venue": {
@@ -35298,7 +35315,7 @@
        },
        "notes": [
         {
-         "text": "(19) Ekaterina Alexandrova (RUS) leads (5) Linda Noskova (CZE) 4-2",
+         "text": "(19) Ekaterina Alexandrova (RUS) bt (5) Linda Noskova (CZE) 6-2 6-2",
          "type": "event"
         }
        ],
@@ -35312,13 +35329,18 @@
          "type": "athlete",
          "order": 2,
          "homeAway": "away",
-         "possession": false,
+         "winner": true,
          "curatedRank": {
           "current": 19
          },
          "linescores": [
           {
-           "value": 4.0
+           "value": 6.0,
+           "winner": true
+          },
+          {
+           "value": 6.0,
+           "winner": true
           }
          ],
          "athlete": {
@@ -35358,13 +35380,18 @@
          "type": "athlete",
          "order": 1,
          "homeAway": "home",
-         "possession": true,
+         "winner": false,
          "curatedRank": {
           "current": 5
          },
          "linescores": [
           {
-           "value": 2.0
+           "value": 2.0,
+           "winner": false
+          },
+          {
+           "value": 2.0,
+           "winner": false
           }
          ],
          "athlete": {
@@ -35399,11 +35426,6 @@
          "statistics": []
         }
        ],
-       "situation": {
-        "onFirst": false,
-        "onSecond": false,
-        "onThird": false
-       },
        "tournamentId": 959,
        "type": {
         "id": "2",
@@ -35422,7 +35444,7 @@
        "date": "2026-10-06T07:00Z",
        "startDate": "2026-10-06T07:00Z",
        "timeValid": true,
-       "recent": false,
+       "recent": true,
        "status": {
         "period": 1,
         "type": {
@@ -36385,16 +36407,42 @@
          "statistics": []
         },
         {
-         "id": "-3",
-         "uid": "s:850~l:851~a:-3",
+         "id": "3182",
+         "uid": "s:850~l:851~a:3182",
          "type": "athlete",
          "order": 1,
          "homeAway": "home",
+         "curatedRank": {
+          "current": 19
+         },
          "athlete": {
-          "displayName": "TBD",
-          "shortName": "TBD",
-          "fullName": "TBD",
-          "links": []
+          "guid": "b4dc27b2-146b-000e-3f5d-5e1431231999",
+          "displayName": "Ekaterina Alexandrova",
+          "shortName": "E. Alexandrova",
+          "fullName": "Ekaterina Alexandrova",
+          "flag": {
+           "href": "https://a.espncdn.com/i/teamlogos/countries/500/rus.png",
+           "alt": "Russia",
+           "rel": [
+            "country-flag"
+           ]
+          },
+          "links": [
+           {
+            "language": "en-US",
+            "rel": [
+             "playercard",
+             "desktop",
+             "athlete"
+            ],
+            "href": "https://www.espn.com/tennis/player/_/id/3182/ekaterina-alexandrova",
+            "text": "Player Card",
+            "shortText": "Player Card",
+            "isExternal": false,
+            "isPremium": false,
+            "isHidden": false
+           }
+          ]
          },
          "statistics": []
         }
@@ -43598,15 +43646,15 @@
        "timeValid": true,
        "recent": true,
        "status": {
-        "period": 1,
+        "period": 2,
         "type": {
          "id": "2",
          "name": "STATUS_IN_PROGRESS",
          "state": "in",
          "completed": false,
          "description": "In Progress",
-         "detail": "1st Set",
-         "shortDetail": "1st"
+         "detail": "2nd Set",
+         "shortDetail": "2nd"
         }
        },
        "venue": {
@@ -43620,7 +43668,7 @@
        },
        "notes": [
         {
-         "text": "Hao-Ching Chan (TPO) & Miyu Kato (JPN) leads Tereza Mihalikova (SVK) & Olivia Nicholls (GBR) 3-1",
+         "text": "Tereza Mihalikova (SVK) & Olivia Nicholls (GBR) leads Hao-Ching Chan (TPO) & Miyu Kato (JPN) 7-5 4-1",
          "type": "event"
         }
        ],
@@ -43634,10 +43682,14 @@
          "type": "team",
          "order": 2,
          "homeAway": "away",
-         "possession": true,
+         "possession": false,
          "linescores": [
           {
-           "value": 1.0
+           "value": 7.0,
+           "winner": true
+          },
+          {
+           "value": 4.0
           }
          ],
          "roster": {
@@ -43712,10 +43764,14 @@
          "type": "team",
          "order": 1,
          "homeAway": "home",
-         "possession": false,
+         "possession": true,
          "linescores": [
           {
-           "value": 3.0
+           "value": 5.0,
+           "winner": false
+          },
+          {
+           "value": 1.0
           }
          ],
          "roster": {
@@ -43808,17 +43864,17 @@
        "date": "2026-10-06T04:50Z",
        "startDate": "2026-10-06T04:50Z",
        "timeValid": true,
-       "recent": true,
+       "recent": false,
        "status": {
-        "period": 1,
+        "period": 2,
         "type": {
-         "id": "2",
-         "name": "STATUS_IN_PROGRESS",
-         "state": "in",
-         "completed": false,
-         "description": "In Progress",
-         "detail": "1st Set",
-         "shortDetail": "1st"
+         "id": "3",
+         "name": "STATUS_FINAL",
+         "state": "post",
+         "completed": true,
+         "description": "Final",
+         "detail": "Final",
+         "shortDetail": "Final"
         }
        },
        "venue": {
@@ -43832,7 +43888,7 @@
        },
        "notes": [
         {
-         "text": "(8) Sara Errani (ITA) & Jasmine Paolini (ITA) leads Anastasia Detiuc (CZE) & Fang-Hsien Wu (TPO) 2-0",
+         "text": "(8) Sara Errani (ITA) & Jasmine Paolini (ITA) bt Anastasia Detiuc (CZE) & Fang-Hsien Wu (TPO) 6-2 6-4",
          "type": "event"
         }
        ],
@@ -43846,10 +43902,15 @@
          "type": "team",
          "order": 2,
          "homeAway": "away",
-         "possession": false,
+         "winner": false,
          "linescores": [
           {
-           "value": 0.0
+           "value": 2.0,
+           "winner": false
+          },
+          {
+           "value": 4.0,
+           "winner": false
           }
          ],
          "roster": {
@@ -43924,13 +43985,18 @@
          "type": "team",
          "order": 1,
          "homeAway": "home",
-         "possession": true,
+         "winner": true,
          "curatedRank": {
           "current": 8
          },
          "linescores": [
           {
-           "value": 2.0
+           "value": 6.0,
+           "winner": true
+          },
+          {
+           "value": 6.0,
+           "winner": true
           }
          ],
          "roster": {
@@ -44000,11 +44066,6 @@
          "statistics": []
         }
        ],
-       "situation": {
-        "onFirst": false,
-        "onSecond": false,
-        "onThird": false
-       },
        "tournamentId": 959,
        "type": {
         "id": "4",
@@ -44020,8 +44081,8 @@
       {
        "id": "184201",
        "uid": "s:850~l:851~e:959-2026~c:184201",
-       "date": "2026-10-06T06:00Z",
-       "startDate": "2026-10-06T06:00Z",
+       "date": "2026-10-06T06:15Z",
+       "startDate": "2026-10-06T06:15Z",
        "timeValid": true,
        "recent": true,
        "status": {
@@ -44032,8 +44093,8 @@
          "state": "pre",
          "completed": false,
          "description": "Scheduled",
-         "detail": "Tue, October 5th at 2:00 AM EDT",
-         "shortDetail": "10/6 - 2:00 AM EDT"
+         "detail": "Tue, October 5th at 2:15 AM EDT",
+         "shortDetail": "10/6 - 2:15 AM EDT"
         }
        },
        "venue": {
@@ -44216,7 +44277,7 @@
        "date": "2026-10-06T07:00Z",
        "startDate": "2026-10-06T07:00Z",
        "timeValid": true,
-       "recent": false,
+       "recent": true,
        "status": {
         "period": 1,
         "type": {
@@ -45425,26 +45486,75 @@
          "statistics": []
         },
         {
-         "id": "-3--4",
-         "uid": "s:850~l:851~t:-3--4",
+         "id": "636-2615",
+         "uid": "s:850~l:851~t:636-2615",
          "type": "team",
          "order": 1,
          "homeAway": "home",
+         "curatedRank": {
+          "current": 8
+         },
          "roster": {
-          "displayName": "TBD / TBD",
-          "shortDisplayName": "TBD / TBD",
+          "displayName": "Sara Errani / Jasmine Paolini",
+          "shortDisplayName": "S. Errani / J. Paolini",
           "athletes": [
            {
-            "displayName": "TBD",
-            "shortName": "TBD",
-            "fullName": "TBD",
-            "links": []
+            "guid": "82dfe891-e743-372d-3bde-0bab506abfa1",
+            "displayName": "Sara Errani",
+            "shortName": "S. Errani",
+            "fullName": "Sara Errani",
+            "flag": {
+             "href": "https://a.espncdn.com/i/teamlogos/countries/500/ita.png",
+             "alt": "Italy",
+             "rel": [
+              "country-flag"
+             ]
+            },
+            "links": [
+             {
+              "language": "en-US",
+              "rel": [
+               "playercard",
+               "desktop",
+               "athlete"
+              ],
+              "href": "https://www.espn.com/tennis/player/_/id/636/sara-errani",
+              "text": "Player Card",
+              "shortText": "Player Card",
+              "isExternal": false,
+              "isPremium": false,
+              "isHidden": false
+             }
+            ]
            },
            {
-            "displayName": "TBD",
-            "shortName": "TBD",
-            "fullName": "TBD",
-            "links": []
+            "guid": "1cb6cc14-00ad-6c8b-301e-aa8adc243503",
+            "displayName": "Jasmine Paolini",
+            "shortName": "J. Paolini",
+            "fullName": "Jasmine Paolini",
+            "flag": {
+             "href": "https://a.espncdn.com/i/teamlogos/countries/500/ita.png",
+             "alt": "Italy",
+             "rel": [
+              "country-flag"
+             ]
+            },
+            "links": [
+             {
+              "language": "en-US",
+              "rel": [
+               "playercard",
+               "desktop",
+               "athlete"
+              ],
+              "href": "https://www.espn.com/tennis/player/_/id/2615/jasmine-paolini",
+              "text": "Player Card",
+              "shortText": "Player Card",
+              "isExternal": false,
+              "isPremium": false,
+              "isHidden": false
+             }
+            ]
            }
           ]
          },
@@ -50044,17 +50154,17 @@
        "date": "2026-10-06T04:05Z",
        "startDate": "2026-10-06T04:05Z",
        "timeValid": true,
-       "recent": true,
+       "recent": false,
        "status": {
         "period": 2,
         "type": {
-         "id": "2",
-         "name": "STATUS_IN_PROGRESS",
-         "state": "in",
-         "completed": false,
-         "description": "In Progress",
-         "detail": "2nd Set",
-         "shortDetail": "2nd"
+         "id": "3",
+         "name": "STATUS_FINAL",
+         "state": "post",
+         "completed": true,
+         "description": "Final",
+         "detail": "Final",
+         "shortDetail": "Final"
         }
        },
        "venue": {
@@ -50068,7 +50178,7 @@
        },
        "notes": [
         {
-         "text": "Shintaro Mochizuki (JPN) is tied with Roman Safiullin (RUS) 2-6 3-2",
+         "text": "Roman Safiullin (RUS) bt Shintaro Mochizuki (JPN) 6-2 6-3",
          "type": "event"
         }
        ],
@@ -50082,13 +50192,15 @@
          "type": "athlete",
          "order": 2,
          "homeAway": "away",
+         "winner": false,
          "linescores": [
           {
            "value": 2.0,
            "winner": false
           },
           {
-           "value": 3.0
+           "value": 3.0,
+           "winner": false
           }
          ],
          "athlete": {
@@ -50128,13 +50240,15 @@
          "type": "athlete",
          "order": 1,
          "homeAway": "home",
+         "winner": true,
          "linescores": [
           {
            "value": 6.0,
            "winner": true
           },
           {
-           "value": 2.0
+           "value": 6.0,
+           "winner": true
           }
          ],
          "athlete": {
@@ -50189,15 +50303,15 @@
        "timeValid": true,
        "recent": true,
        "status": {
-        "period": 2,
+        "period": 3,
         "type": {
          "id": "2",
          "name": "STATUS_IN_PROGRESS",
          "state": "in",
          "completed": false,
          "description": "In Progress",
-         "detail": "2nd Set",
-         "shortDetail": "2nd"
+         "detail": "3rd Set",
+         "shortDetail": "3rd"
         }
        },
        "venue": {
@@ -50211,7 +50325,7 @@
        },
        "notes": [
         {
-         "text": "Federico Cina (ITA) leads Aziz Dougaz (TUN) 6-3 2-1",
+         "text": "Aziz Dougaz (TUN) leads Federico Cina (ITA) 3-6 6-4 3-3",
          "type": "event"
         }
        ],
@@ -50231,7 +50345,11 @@
            "winner": true
           },
           {
-           "value": 2.0
+           "value": 4.0,
+           "winner": false
+          },
+          {
+           "value": 3.0
           }
          ],
          "athlete": {
@@ -50277,7 +50395,11 @@
            "winner": false
           },
           {
-           "value": 1.0
+           "value": 6.0,
+           "winner": true
+          },
+          {
+           "value": 3.0
           }
          ],
          "athlete": {
@@ -50330,17 +50452,17 @@
        "date": "2026-10-06T04:10Z",
        "startDate": "2026-10-06T04:10Z",
        "timeValid": true,
-       "recent": true,
+       "recent": false,
        "status": {
         "period": 2,
         "type": {
-         "id": "2",
-         "name": "STATUS_IN_PROGRESS",
-         "state": "in",
-         "completed": false,
-         "description": "In Progress",
-         "detail": "2nd Set",
-         "shortDetail": "2nd"
+         "id": "3",
+         "name": "STATUS_FINAL",
+         "state": "post",
+         "completed": true,
+         "description": "Final",
+         "detail": "Final",
+         "shortDetail": "Final"
         }
        },
        "venue": {
@@ -50354,7 +50476,7 @@
        },
        "notes": [
         {
-         "text": "Timofey Skatov (KAZ) is tied with Bernard Tomic (AUS) 5-7 1-0",
+         "text": "Bernard Tomic (AUS) bt Timofey Skatov (KAZ) 7-5 6-4",
          "type": "event"
         }
        ],
@@ -50368,13 +50490,15 @@
          "type": "athlete",
          "order": 2,
          "homeAway": "away",
+         "winner": false,
          "linescores": [
           {
            "value": 5.0,
            "winner": false
           },
           {
-           "value": 1.0
+           "value": 4.0,
+           "winner": false
           }
          ],
          "athlete": {
@@ -50414,13 +50538,15 @@
          "type": "athlete",
          "order": 1,
          "homeAway": "home",
+         "winner": true,
          "linescores": [
           {
            "value": 7.0,
            "winner": true
           },
           {
-           "value": 0.0
+           "value": 6.0,
+           "winner": true
           }
          ],
          "athlete": {
@@ -50475,15 +50601,15 @@
        "timeValid": true,
        "recent": true,
        "status": {
-        "period": 1,
+        "period": 3,
         "type": {
          "id": "2",
          "name": "STATUS_IN_PROGRESS",
          "state": "in",
          "completed": false,
          "description": "In Progress",
-         "detail": "1st Set",
-         "shortDetail": "1st"
+         "detail": "3rd Set",
+         "shortDetail": "3rd"
         }
        },
        "venue": {
@@ -50497,7 +50623,7 @@
        },
        "notes": [
         {
-         "text": "Liam Draxl (CAN) leads Nikoloz Basilashvili (GEO) 5-5",
+         "text": "Liam Draxl (CAN) leads Nikoloz Basilashvili (GEO) 7-5 5-7 0-0",
          "type": "event"
         }
        ],
@@ -50513,7 +50639,15 @@
          "homeAway": "away",
          "linescores": [
           {
-           "value": 5.0
+           "value": 5.0,
+           "winner": false
+          },
+          {
+           "value": 7.0,
+           "winner": true
+          },
+          {
+           "value": 0.0
           }
          ],
          "athlete": {
@@ -50555,7 +50689,15 @@
          "homeAway": "home",
          "linescores": [
           {
-           "value": 5.0
+           "value": 7.0,
+           "winner": true
+          },
+          {
+           "value": 5.0,
+           "winner": false
+          },
+          {
+           "value": 0.0
           }
          ],
          "athlete": {
@@ -50605,20 +50747,20 @@
       {
        "id": "186317",
        "uid": "s:850~l:851~e:315-2026~c:186317",
-       "date": "2026-10-06T05:30Z",
-       "startDate": "2026-10-06T05:30Z",
+       "date": "2026-10-06T05:40Z",
+       "startDate": "2026-10-06T05:40Z",
        "timeValid": true,
        "recent": true,
        "status": {
         "period": 1,
         "type": {
-         "id": "1",
-         "name": "STATUS_SCHEDULED",
-         "state": "pre",
+         "id": "2",
+         "name": "STATUS_IN_PROGRESS",
+         "state": "in",
          "completed": false,
-         "description": "Scheduled",
-         "detail": "Tue, October 5th at 1:30 AM EDT",
-         "shortDetail": "10/6 - 1:30 AM EDT"
+         "description": "In Progress",
+         "detail": "1st Set",
+         "shortDetail": "1st"
         }
        },
        "venue": {
@@ -50630,7 +50772,12 @@
          "periods": 5
         }
        },
-       "notes": [],
+       "notes": [
+        {
+         "text": "Ilia Simakin (RUS) leads Rigele Te (CHN) 4-3",
+         "type": "event"
+        }
+       ],
        "geoBroadcasts": [],
        "broadcasts": [],
        "broadcast": "",
@@ -50641,6 +50788,11 @@
          "type": "athlete",
          "order": 2,
          "homeAway": "away",
+         "linescores": [
+          {
+           "value": 4.0
+          }
+         ],
          "athlete": {
           "guid": "148c09f8-153f-3dfb-a2d4-a85f405572aa",
           "displayName": "Ilia Simakin",
@@ -50678,6 +50830,11 @@
          "type": "athlete",
          "order": 1,
          "homeAway": "home",
+         "linescores": [
+          {
+           "value": 3.0
+          }
+         ],
          "athlete": {
           "guid": "39a181a0-08d6-6ab9-7d57-f1c824444c58",
           "displayName": "Te Rigele",
@@ -50725,20 +50882,20 @@
       {
        "id": "186321",
        "uid": "s:850~l:851~e:315-2026~c:186321",
-       "date": "2026-10-06T05:30Z",
-       "startDate": "2026-10-06T05:30Z",
+       "date": "2026-10-06T05:55Z",
+       "startDate": "2026-10-06T05:55Z",
        "timeValid": true,
        "recent": true,
        "status": {
         "period": 1,
         "type": {
-         "id": "1",
-         "name": "STATUS_SCHEDULED",
-         "state": "pre",
+         "id": "2",
+         "name": "STATUS_IN_PROGRESS",
+         "state": "in",
          "completed": false,
-         "description": "Scheduled",
-         "detail": "Tue, October 5th at 1:30 AM EDT",
-         "shortDetail": "10/6 - 1:30 AM EDT"
+         "description": "In Progress",
+         "detail": "1st Set",
+         "shortDetail": "1st"
         }
        },
        "venue": {
@@ -50750,7 +50907,12 @@
          "periods": 5
         }
        },
-       "notes": [],
+       "notes": [
+        {
+         "text": "Michael Zheng (USA) leads Nicolas Mejia (COL) 1-1",
+         "type": "event"
+        }
+       ],
        "geoBroadcasts": [],
        "broadcasts": [],
        "broadcast": "",
@@ -50761,6 +50923,11 @@
          "type": "athlete",
          "order": 2,
          "homeAway": "away",
+         "linescores": [
+          {
+           "value": 1.0
+          }
+         ],
          "athlete": {
           "guid": "96f728d3-8c8c-2972-ca1d-2d1d22b0f4b8",
           "displayName": "Nicolas Mejia",
@@ -50798,6 +50965,11 @@
          "type": "athlete",
          "order": 1,
          "homeAway": "home",
+         "linescores": [
+          {
+           "value": 1.0
+          }
+         ],
          "athlete": {
           "guid": "9591c3a9-0364-301e-9310-d5977e6444db",
           "displayName": "Michael Zheng",
@@ -50845,8 +51017,8 @@
       {
        "id": "186324",
        "uid": "s:850~l:851~e:315-2026~c:186324",
-       "date": "2026-10-06T05:30Z",
-       "startDate": "2026-10-06T05:30Z",
+       "date": "2026-10-06T06:10Z",
+       "startDate": "2026-10-06T06:10Z",
        "timeValid": true,
        "recent": true,
        "status": {
@@ -50857,8 +51029,8 @@
          "state": "pre",
          "completed": false,
          "description": "Scheduled",
-         "detail": "Tue, October 5th at 1:30 AM EDT",
-         "shortDetail": "10/6 - 1:30 AM EDT"
+         "detail": "Tue, October 5th at 2:10 AM EDT",
+         "shortDetail": "10/6 - 2:10 AM EDT"
         }
        },
        "venue": {
@@ -50965,8 +51137,8 @@
       {
        "id": "186325",
        "uid": "s:850~l:851~e:315-2026~c:186325",
-       "date": "2026-10-06T05:30Z",
-       "startDate": "2026-10-06T05:30Z",
+       "date": "2026-10-06T06:20Z",
+       "startDate": "2026-10-06T06:20Z",
        "timeValid": true,
        "recent": true,
        "status": {
@@ -50977,8 +51149,8 @@
          "state": "pre",
          "completed": false,
          "description": "Scheduled",
-         "detail": "Tue, October 5th at 1:30 AM EDT",
-         "shortDetail": "10/6 - 1:30 AM EDT"
+         "detail": "Tue, October 5th at 2:20 AM EDT",
+         "shortDetail": "10/6 - 2:20 AM EDT"
         }
        },
        "venue": {
@@ -51059,246 +51231,6 @@
              "athlete"
             ],
             "href": "https://www.espn.com/tennis/player/_/id/7509/kyrian-jacquet",
-            "text": "Player Card",
-            "shortText": "Player Card",
-            "isExternal": false,
-            "isPremium": false,
-            "isHidden": false
-           }
-          ]
-         },
-         "statistics": []
-        }
-       ],
-       "tournamentId": 315,
-       "type": {
-        "id": "1",
-        "text": "Men's Singles",
-        "slug": "mens-singles"
-       },
-       "round": {
-        "id": "14",
-        "displayName": "Qualifying Final"
-       },
-       "wasSuspended": false
-      },
-      {
-       "id": "186322",
-       "uid": "s:850~l:851~e:315-2026~c:186322",
-       "date": "2026-10-06T07:00Z",
-       "startDate": "2026-10-06T07:00Z",
-       "timeValid": true,
-       "recent": false,
-       "status": {
-        "period": 1,
-        "type": {
-         "id": "1",
-         "name": "STATUS_SCHEDULED",
-         "state": "pre",
-         "completed": false,
-         "description": "Scheduled",
-         "detail": "Tue, October 6th at 3:00 AM EDT",
-         "shortDetail": "10/6 - 3:00 AM EDT"
-        }
-       },
-       "venue": {
-        "fullName": "Shanghai, China PR",
-        "court": "Court 4"
-       },
-       "format": {
-        "regulation": {
-         "periods": 5
-        }
-       },
-       "notes": [],
-       "geoBroadcasts": [],
-       "broadcasts": [],
-       "broadcast": "",
-       "competitors": [
-        {
-         "id": "2009",
-         "uid": "s:850~l:851~a:2009",
-         "type": "athlete",
-         "order": 2,
-         "homeAway": "away",
-         "athlete": {
-          "guid": "80b8a616-5ccc-8eb7-82de-b2ca215a2f50",
-          "displayName": "Kimmer Coppejans",
-          "shortName": "K. Coppejans",
-          "fullName": "Kimmer Coppejans",
-          "flag": {
-           "href": "https://a.espncdn.com/i/teamlogos/countries/500/bel.png",
-           "alt": "Belgium",
-           "rel": [
-            "country-flag"
-           ]
-          },
-          "links": [
-           {
-            "language": "en-US",
-            "rel": [
-             "playercard",
-             "desktop",
-             "athlete"
-            ],
-            "href": "https://www.espn.com/tennis/player/_/id/2009/kimmer-coppejans",
-            "text": "Player Card",
-            "shortText": "Player Card",
-            "isExternal": false,
-            "isPremium": false,
-            "isHidden": false
-           }
-          ]
-         },
-         "statistics": []
-        },
-        {
-         "id": "4030",
-         "uid": "s:850~l:851~a:4030",
-         "type": "athlete",
-         "order": 1,
-         "homeAway": "home",
-         "athlete": {
-          "guid": "ed90f943-db78-39b5-8a36-5d92effc26f3",
-          "displayName": "Dane Sweeny",
-          "shortName": "D. Sweeny",
-          "fullName": "Dane Sweeny",
-          "flag": {
-           "href": "https://a.espncdn.com/i/teamlogos/countries/500/aus.png",
-           "alt": "Australia",
-           "rel": [
-            "country-flag"
-           ]
-          },
-          "links": [
-           {
-            "language": "en-US",
-            "rel": [
-             "playercard",
-             "desktop",
-             "athlete"
-            ],
-            "href": "https://www.espn.com/tennis/player/_/id/4030/dane-sweeny",
-            "text": "Player Card",
-            "shortText": "Player Card",
-            "isExternal": false,
-            "isPremium": false,
-            "isHidden": false
-           }
-          ]
-         },
-         "statistics": []
-        }
-       ],
-       "tournamentId": 315,
-       "type": {
-        "id": "1",
-        "text": "Men's Singles",
-        "slug": "mens-singles"
-       },
-       "round": {
-        "id": "14",
-        "displayName": "Qualifying Final"
-       },
-       "wasSuspended": false
-      },
-      {
-       "id": "186323",
-       "uid": "s:850~l:851~e:315-2026~c:186323",
-       "date": "2026-10-06T07:00Z",
-       "startDate": "2026-10-06T07:00Z",
-       "timeValid": true,
-       "recent": false,
-       "status": {
-        "period": 1,
-        "type": {
-         "id": "1",
-         "name": "STATUS_SCHEDULED",
-         "state": "pre",
-         "completed": false,
-         "description": "Scheduled",
-         "detail": "Tue, October 6th at 3:00 AM EDT",
-         "shortDetail": "10/6 - 3:00 AM EDT"
-        }
-       },
-       "venue": {
-        "fullName": "Shanghai, China PR",
-        "court": "Grandstand 2"
-       },
-       "format": {
-        "regulation": {
-         "periods": 5
-        }
-       },
-       "notes": [],
-       "geoBroadcasts": [],
-       "broadcasts": [],
-       "broadcast": "",
-       "competitors": [
-        {
-         "id": "3471",
-         "uid": "s:850~l:851~a:3471",
-         "type": "athlete",
-         "order": 2,
-         "homeAway": "away",
-         "athlete": {
-          "guid": "e1a2cbb8-23df-f669-91d6-43fbb0e35296",
-          "displayName": "Aleksandar Vukic",
-          "shortName": "A. Vukic",
-          "fullName": "Aleksandar Vukic",
-          "flag": {
-           "href": "https://a.espncdn.com/i/teamlogos/countries/500/aus.png",
-           "alt": "Australia",
-           "rel": [
-            "country-flag"
-           ]
-          },
-          "links": [
-           {
-            "language": "en-US",
-            "rel": [
-             "playercard",
-             "desktop",
-             "athlete"
-            ],
-            "href": "https://www.espn.com/tennis/player/_/id/3471/aleksandar-vukic",
-            "text": "Player Card",
-            "shortText": "Player Card",
-            "isExternal": false,
-            "isPremium": false,
-            "isHidden": false
-           }
-          ]
-         },
-         "statistics": []
-        },
-        {
-         "id": "3572",
-         "uid": "s:850~l:851~a:3572",
-         "type": "athlete",
-         "order": 1,
-         "homeAway": "home",
-         "athlete": {
-          "guid": "168db340-8306-16fa-587b-115443c3fb84",
-          "displayName": "Pavel Kotov",
-          "shortName": "P. Kotov",
-          "fullName": "Pavel Kotov",
-          "flag": {
-           "href": "https://a.espncdn.com/i/teamlogos/countries/500/rus.png",
-           "alt": "Russia",
-           "rel": [
-            "country-flag"
-           ]
-          },
-          "links": [
-           {
-            "language": "en-US",
-            "rel": [
-             "playercard",
-             "desktop",
-             "athlete"
-            ],
-            "href": "https://www.espn.com/tennis/player/_/id/3572/pavel-kotov",
             "text": "Player Card",
             "shortText": "Player Card",
             "isExternal": false,
@@ -51419,6 +51351,246 @@
              "athlete"
             ],
             "href": "https://www.espn.com/tennis/player/_/id/10153/mattia-bellucci",
+            "text": "Player Card",
+            "shortText": "Player Card",
+            "isExternal": false,
+            "isPremium": false,
+            "isHidden": false
+           }
+          ]
+         },
+         "statistics": []
+        }
+       ],
+       "tournamentId": 315,
+       "type": {
+        "id": "1",
+        "text": "Men's Singles",
+        "slug": "mens-singles"
+       },
+       "round": {
+        "id": "14",
+        "displayName": "Qualifying Final"
+       },
+       "wasSuspended": false
+      },
+      {
+       "id": "186322",
+       "uid": "s:850~l:851~e:315-2026~c:186322",
+       "date": "2026-10-06T07:30Z",
+       "startDate": "2026-10-06T07:30Z",
+       "timeValid": true,
+       "recent": false,
+       "status": {
+        "period": 1,
+        "type": {
+         "id": "1",
+         "name": "STATUS_SCHEDULED",
+         "state": "pre",
+         "completed": false,
+         "description": "Scheduled",
+         "detail": "Tue, October 6th at 3:30 AM EDT",
+         "shortDetail": "10/6 - 3:30 AM EDT"
+        }
+       },
+       "venue": {
+        "fullName": "Shanghai, China PR",
+        "court": "Court 4"
+       },
+       "format": {
+        "regulation": {
+         "periods": 5
+        }
+       },
+       "notes": [],
+       "geoBroadcasts": [],
+       "broadcasts": [],
+       "broadcast": "",
+       "competitors": [
+        {
+         "id": "2009",
+         "uid": "s:850~l:851~a:2009",
+         "type": "athlete",
+         "order": 2,
+         "homeAway": "away",
+         "athlete": {
+          "guid": "80b8a616-5ccc-8eb7-82de-b2ca215a2f50",
+          "displayName": "Kimmer Coppejans",
+          "shortName": "K. Coppejans",
+          "fullName": "Kimmer Coppejans",
+          "flag": {
+           "href": "https://a.espncdn.com/i/teamlogos/countries/500/bel.png",
+           "alt": "Belgium",
+           "rel": [
+            "country-flag"
+           ]
+          },
+          "links": [
+           {
+            "language": "en-US",
+            "rel": [
+             "playercard",
+             "desktop",
+             "athlete"
+            ],
+            "href": "https://www.espn.com/tennis/player/_/id/2009/kimmer-coppejans",
+            "text": "Player Card",
+            "shortText": "Player Card",
+            "isExternal": false,
+            "isPremium": false,
+            "isHidden": false
+           }
+          ]
+         },
+         "statistics": []
+        },
+        {
+         "id": "4030",
+         "uid": "s:850~l:851~a:4030",
+         "type": "athlete",
+         "order": 1,
+         "homeAway": "home",
+         "athlete": {
+          "guid": "ed90f943-db78-39b5-8a36-5d92effc26f3",
+          "displayName": "Dane Sweeny",
+          "shortName": "D. Sweeny",
+          "fullName": "Dane Sweeny",
+          "flag": {
+           "href": "https://a.espncdn.com/i/teamlogos/countries/500/aus.png",
+           "alt": "Australia",
+           "rel": [
+            "country-flag"
+           ]
+          },
+          "links": [
+           {
+            "language": "en-US",
+            "rel": [
+             "playercard",
+             "desktop",
+             "athlete"
+            ],
+            "href": "https://www.espn.com/tennis/player/_/id/4030/dane-sweeny",
+            "text": "Player Card",
+            "shortText": "Player Card",
+            "isExternal": false,
+            "isPremium": false,
+            "isHidden": false
+           }
+          ]
+         },
+         "statistics": []
+        }
+       ],
+       "tournamentId": 315,
+       "type": {
+        "id": "1",
+        "text": "Men's Singles",
+        "slug": "mens-singles"
+       },
+       "round": {
+        "id": "14",
+        "displayName": "Qualifying Final"
+       },
+       "wasSuspended": false
+      },
+      {
+       "id": "186323",
+       "uid": "s:850~l:851~e:315-2026~c:186323",
+       "date": "2026-10-06T07:30Z",
+       "startDate": "2026-10-06T07:30Z",
+       "timeValid": true,
+       "recent": false,
+       "status": {
+        "period": 1,
+        "type": {
+         "id": "1",
+         "name": "STATUS_SCHEDULED",
+         "state": "pre",
+         "completed": false,
+         "description": "Scheduled",
+         "detail": "Tue, October 6th at 3:30 AM EDT",
+         "shortDetail": "10/6 - 3:30 AM EDT"
+        }
+       },
+       "venue": {
+        "fullName": "Shanghai, China PR",
+        "court": "Grandstand 2"
+       },
+       "format": {
+        "regulation": {
+         "periods": 5
+        }
+       },
+       "notes": [],
+       "geoBroadcasts": [],
+       "broadcasts": [],
+       "broadcast": "",
+       "competitors": [
+        {
+         "id": "3471",
+         "uid": "s:850~l:851~a:3471",
+         "type": "athlete",
+         "order": 2,
+         "homeAway": "away",
+         "athlete": {
+          "guid": "e1a2cbb8-23df-f669-91d6-43fbb0e35296",
+          "displayName": "Aleksandar Vukic",
+          "shortName": "A. Vukic",
+          "fullName": "Aleksandar Vukic",
+          "flag": {
+           "href": "https://a.espncdn.com/i/teamlogos/countries/500/aus.png",
+           "alt": "Australia",
+           "rel": [
+            "country-flag"
+           ]
+          },
+          "links": [
+           {
+            "language": "en-US",
+            "rel": [
+             "playercard",
+             "desktop",
+             "athlete"
+            ],
+            "href": "https://www.espn.com/tennis/player/_/id/3471/aleksandar-vukic",
+            "text": "Player Card",
+            "shortText": "Player Card",
+            "isExternal": false,
+            "isPremium": false,
+            "isHidden": false
+           }
+          ]
+         },
+         "statistics": []
+        },
+        {
+         "id": "3572",
+         "uid": "s:850~l:851~a:3572",
+         "type": "athlete",
+         "order": 1,
+         "homeAway": "home",
+         "athlete": {
+          "guid": "168db340-8306-16fa-587b-115443c3fb84",
+          "displayName": "Pavel Kotov",
+          "shortName": "P. Kotov",
+          "fullName": "Pavel Kotov",
+          "flag": {
+           "href": "https://a.espncdn.com/i/teamlogos/countries/500/rus.png",
+           "alt": "Russia",
+           "rel": [
+            "country-flag"
+           ]
+          },
+          "links": [
+           {
+            "language": "en-US",
+            "rel": [
+             "playercard",
+             "desktop",
+             "athlete"
+            ],
+            "href": "https://www.espn.com/tennis/player/_/id/3572/pavel-kotov",
             "text": "Player Card",
             "shortText": "Player Card",
             "isExternal": false,
