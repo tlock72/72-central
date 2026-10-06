@@ -108,6 +108,7 @@ def fetch(roster, events, now, matches=()):
                         city = ((c.get("venue") or {}).get("fullName") or "").split(",")[0].strip() or ev.get("shortName") or ev.get("name") or ""
                         rnd = ((c.get("round") or {}).get("displayName") or "")
                         m = {"apiId": key, "src": "espn", "date": day_uk, "time": when.strftime("%H:%M") if c.get("timeValid", True) else "",
+                             "timeAt": now.strftime("%Y-%m-%dT%H:%M:%SZ"),
                              "tournament": city, "category": category(city, women, day_uk, events, known),
                              "round": ROUNDS.get(rnd.lower(), rnd), "p1": short(full[0]), "p1Id": ids[0],
                              "p2": short(full[1]), "p2Id": ids[1], "status": "scheduled", "score": "", "points": None,

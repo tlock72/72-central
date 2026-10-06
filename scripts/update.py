@@ -140,7 +140,7 @@ def flip(m):
 
 def poll(aid, m):
     """Look up one of today's matches: finished/cancelled, 'live' only if the feed says it is under way,
-    the match with its new start time if the feed has moved it, or None if nothing has changed."""
+    the match with its start time (moved or not) and when the feed confirmed it, or None if the feed gave nothing."""
     d = api(f"/matches/{aid}")
     d = d.get("data", d) if isinstance(d, dict) else {}
     if (d.get("status") or "").lower() in ("live", "in_progress", "inprogress", "started", "playing"):
@@ -148,9 +148,10 @@ def poll(aid, m):
     done = settle(aid, m, d)
     if done is None and d.get("scheduled_time"):
         date, t = uk(d["scheduled_time"])
-        if date and (date, t) != (m.get("date"), m.get("time")):
-            print(f"start time moved: {m.get('p1')} v {m.get('p2')} now {date} {t}")
-            return dict(m, date=date, time=t)
+        if date:
+            if (date, t) != (m.get("date"), m.get("time")):
+                print(f"start time moved: {m.get('p1')} v {m.get('p2')} now {date} {t}")
+            return dict(m, date=date, time=t, timeAt=NOW.strftime("%Y-%m-%dT%H:%M:%SZ"))
     return done
 
 
@@ -247,7 +248,8 @@ def main():
         date, t = uk(m.get("scheduled_time") or m.get("live_at"))
         sc = m.get("score")
         return {
-            "apiId": m["id"], "date": date, "time": t, "tournament": m.get("tournament") or "",
+            "apiId": m["id"], "date": date, "time": t, "timeAt": NOW.strftime("%Y-%m-%dT%H:%M:%SZ"),
+            "tournament": m.get("tournament") or "",
             "category": category(m), "round": ROUND.get(m.get("round_code") or "", m.get("round_code") or ""),
             "p1": short(p1.get("name")), "p1Id": id2rid.get(p1.get("id")),
             "p2": short(p2.get("name")), "p2Id": id2rid.get(p2.get("id")),
