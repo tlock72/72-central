@@ -392,6 +392,56 @@ select.sq-in option{background:var(--navy-2);color:var(--white)}
 .sq-more:hover{background:var(--gold-dim)}
 .sq-more[hidden]{display:none}
 .sq-empty{padding:30px 20px;text-align:center;color:var(--muted);font-size:14px}
+/* Scouting Corner: prospects followed from Tennis Europe to ITF juniors to ATP/WTA (corner.json, scripts/prospects.py) */
+.cn-add{border:1px solid var(--line);border-radius:18px;padding:16px 18px;margin:0 0 18px;background:linear-gradient(180deg,var(--navy-2),rgba(17,27,63,.55))}
+.cn-add h3{font-family:var(--display);font-weight:500;text-transform:uppercase;letter-spacing:.16em;font-size:12px;color:var(--gold);margin:0 0 10px}
+.cn-add form{display:flex;flex-wrap:wrap;gap:8px}
+.cn-add .sq-in{flex:1 1 150px}
+.cn-add #cnName{flex:2 1 220px}
+.cn-add .sq-in.sm{flex:0 1 140px}
+.cn-add button{font-family:var(--display);text-transform:uppercase;letter-spacing:.14em;font-size:12px;font-weight:600;color:var(--navy);background:var(--gold);border-radius:999px;padding:0 22px;height:38px}
+.cn-msg{margin:8px 0 0;font-size:12px;color:var(--muted);min-height:16px}
+.cn-msg.err{color:var(--down)}
+.cn-list{display:grid;gap:12px}
+.cn{border:1px solid var(--line-2);border-radius:18px;background:linear-gradient(180deg,var(--navy-2),rgba(17,27,63,.55));overflow:hidden}
+.cn-h{display:flex;flex-wrap:wrap;align-items:baseline;gap:4px 12px;padding:14px 20px 10px}
+.cn-h .nm{font-family:var(--display);font-weight:600;font-size:20px;color:var(--white);letter-spacing:.02em}
+.cn-h .mt{font-size:12px;color:var(--muted);letter-spacing:.06em}
+.cn-h .wl{margin-left:auto;font-size:12px;color:var(--muted)}
+.cn-h .wl b{color:var(--text);font-family:var(--display);font-size:15px;font-weight:500}
+.cn-path{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:6px;padding:0 20px 12px}
+.cn-st{border:1px solid var(--line-2);border-radius:10px;padding:7px 10px;font-size:11px;color:var(--muted-2);text-decoration:none;min-width:0}
+.cn-st b{display:block;font-family:var(--display);font-weight:500;letter-spacing:.1em;text-transform:uppercase;font-size:10px;color:var(--muted)}
+.cn-st span{display:block;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;margin-top:2px}
+.cn-st.ok{border-color:var(--line);color:var(--text)}
+.cn-st.ok b{color:var(--gold)}
+.cn-st.bad{border-color:rgba(232,144,143,.5);color:#F3C1C0}
+a.cn-st.ok:hover{border-color:var(--gold)}
+.cn .sq-row{grid-template-columns:minmax(0,1fr) 64px 64px repeat(3,74px);padding:9px 20px}
+.cn .sq-row .lv{font-size:12px;color:var(--text);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.cn .sq-row .lv small{display:block;font-size:10px;color:var(--muted-2);letter-spacing:.06em}
+.cn .sq-row.h span{font-family:var(--display);text-transform:uppercase;letter-spacing:.14em;font-size:10px;color:var(--muted);text-align:right}
+.cn .sq-row.h span:first-child{text-align:left}
+.cn-more{display:block;width:100%;padding:10px 20px;font-family:var(--display);text-transform:uppercase;letter-spacing:.14em;font-size:11px;color:var(--gold);text-align:left;border-top:1px solid var(--line-2)}
+.cn-more:hover{background:var(--gold-dim)}
+.cn-res{padding:4px 20px 14px;border-top:1px solid var(--line-2)}
+.cn-res[hidden]{display:none}
+.cn-tn{margin:12px 0 4px;font-size:12px;color:var(--text);font-weight:600}
+.cn-tn a{color:inherit;text-decoration:none}.cn-tn a:hover{color:var(--gold)}
+.cn-tn small{font-weight:400;color:var(--muted-2);margin-left:6px;letter-spacing:.04em}
+.cn-m{display:grid;grid-template-columns:52px 22px minmax(0,1fr) auto;gap:8px;font-size:12px;color:var(--muted);padding:2px 0}
+.cn-m .r{font-weight:700}.cn-m .r.W{color:var(--up)}.cn-m .r.L{color:var(--down)}
+.cn-m .s{font-variant-numeric:tabular-nums;color:var(--text);text-align:right}
+.cn-wait{opacity:.7}
+.cn-note{font-size:11px;color:#F3C1C0;padding:0 20px 10px}
+@media (max-width:640px){
+  .cn-h{padding:12px 12px 8px}.cn-h .nm{font-size:17px}
+  .cn-path{padding:0 12px 10px;gap:4px}.cn-st{padding:6px 7px;font-size:10px}.cn-st b{font-size:9px;letter-spacing:.04em}
+  .cn .sq-row{grid-template-columns:minmax(0,1fr) 40px 40px repeat(3,42px);padding:8px 12px}
+  .cn .sq-row.h span{font-size:9px;letter-spacing:.04em}
+  .cn-res,.cn-more{padding-inline:12px}
+  .cn-m{grid-template-columns:40px 18px minmax(0,1fr) auto;font-size:11px}
+}
 .stat .v.nm{font-size:22px;line-height:1.15}
 @media (max-width:640px){
   .sq-row{grid-template-columns:40px minmax(0,1fr) 42px repeat(3,46px);gap:6px;padding:10px 12px}
@@ -503,7 +553,6 @@ body.on-home header nav{display:none}
 .hp-live span{font-size:14px}
 .hp-live span em{font-style:normal;color:var(--muted);margin-left:6px}
 .hp-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:18px}
-.hp-wide{grid-column:1/-1}
 .hp-tile{position:relative;display:flex;flex-direction:column;min-height:250px;padding:28px 28px 24px;border-radius:22px;overflow:hidden;isolation:isolate;text-decoration:none;color:inherit;
   border:1px solid var(--line-2);background:linear-gradient(170deg,var(--navy-2),rgba(17,27,63,.6));transition:transform .25s ease,border-color .25s ease,box-shadow .25s ease}
 .hp-tile::before{content:"";position:absolute;inset:0;z-index:-1;background:radial-gradient(460px 240px at 110% -20%,rgba(208,165,121,.18),transparent 60%);transition:opacity .3s}
@@ -541,9 +590,9 @@ nav .sh,.nm-s{display:none}
   .brand img{height:28px}
   .p-find{margin-bottom:10px;padding:8px 14px;font-size:16px}
   .champ{font-size:11px;padding:7px 12px;margin:8px 0 0}
-  /* five tabs don't fit beside the logo on a phone: the menu gets its own full-width row under it */
+  /* six tabs don't fit beside the logo on a phone: the menu gets its own full-width row under it */
   header .bar{flex-wrap:wrap;justify-content:center;row-gap:8px}
-  nav{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:2px;padding:3px;border-radius:999px;width:100%}
+  nav{display:grid;grid-template-columns:repeat(6,minmax(0,1fr));gap:2px;padding:3px;border-radius:999px;width:100%}
   nav a{text-align:center;overflow:hidden;text-overflow:ellipsis;padding:7px 2px;font-size:10px;letter-spacing:0;white-space:nowrap}
   nav .n72{display:none}
   #champs{margin-top:8px}
@@ -616,7 +665,7 @@ nav .sh,.nm-s{display:none}
   .pc .nums b{font-size:13px;display:inline}
   .pc .nums span{display:inline;font-size:8px;letter-spacing:.06em;margin:0 0 0 4px}
   /* home: everything on one screen */
-  /* home fills the screen below the header; the four tiles share the leftover space */
+  /* home fills the screen below the header; the six tiles (three rows of two) share the leftover space */
   #page-home:not([hidden]){display:flex;flex-direction:column;min-height:calc(100svh - 37px);padding-bottom:12px}
   #page-home > *{flex:none}
   .hp-hero .eyebrow{display:none}
@@ -637,15 +686,7 @@ nav .sh,.nm-s{display:none}
   .hp-stat b small{display:block;font-size:11.5px;margin:3px 0 0;line-height:1.25}
   .hp-stat > div > span{font-size:11px;margin-top:5px;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
   .hp-tile .hp-stat > div{min-width:0;width:100%}
-  /* Tour Schedule tile: a slim full-width strip under the four tiles, so home still fits on one screen */
-  #page-home > .hp-grid{grid-template-rows:1fr 1fr auto;grid-auto-rows:auto}
-  .hp-wide{display:grid;grid-template-columns:auto minmax(0,1fr);align-items:center;column-gap:10px;padding:10px 54px 10px 14px}
-  .hp-wide h2{margin:0;padding-right:0}
-  .hp-wide .hp-stat{padding-top:0;grid-column:2;grid-row:1}
-  .hp-wide .hp-stat b{font-size:20px;display:inline}
-  .hp-wide .hp-stat b small{display:inline;font-size:11px;margin-left:5px}
-  .hp-wide .hp-stat > div > span{display:none}
-  .hp-wide .hp-go{top:50%;transform:translateY(-50%)}
+  #page-home > .hp-grid{grid-template-rows:repeat(3,1fr)}
   #hpT2{font-size:24px;display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}
   .hp-sep{display:none}
   .hp-ld{min-width:0}
@@ -701,6 +742,7 @@ html.name-only .gate-box h2,html.name-only .gate-digits{display:none}
       <a href="#players" data-tab="players"><span class="n72">72 </span>Players</a>
       <a href="#scouting" data-tab="scouting"><span class="lg">Age Filtered World Rankings</span><span class="sh">By Age</span></a>
       <a href="#schedule" data-tab="schedule"><span class="lg">Tour Schedule</span><span class="sh">Events</span></a>
+      <a href="#corner" data-tab="corner"><span class="lg">Scouting Corner</span><span class="sh">Scout</span></a>
     </nav>
   </div>
 </header>
@@ -736,10 +778,15 @@ html.name-only .gate-box h2,html.name-only .gate-digits{display:none}
         <p>72's scouting radar: every ranked ATP and WTA player aged 21 or under, with their ranking moves over 1 week, 3 months and 12 months, to spot the next 72 signing early.</p>
         <div class="hp-stat"><div><b id="hpT4">—</b><span id="hpS4">Loading the scouting list…</span></div><span class="hp-go" aria-hidden="true">→</span></div>
       </a>
-      <a class="hp-tile hp-wide" href="#schedule">
+      <a class="hp-tile" href="#schedule">
         <h2>Tour Schedule</h2>
         <p>Every ATP, WTA, Challenger, ITF, ITF junior and Tennis Europe event to the end of the year, and where 72 players are entered.</p>
         <div class="hp-stat"><div><b id="hpT5">—</b><span id="hpS5">Loading the schedule…</span></div><span class="hp-go" aria-hidden="true">→</span></div>
+      </a>
+      <a class="hp-tile" href="#corner">
+        <h2>Scouting Corner</h2>
+        <p>Our watch list of prospects, followed from Tennis Europe to ITF juniors to the ATP and WTA: every ranking, its moves, and the last 12 months of results.</p>
+        <div class="hp-stat"><div><b id="hpT6">—</b><span id="hpS6">Loading the watch list…</span></div><span class="hp-go" aria-hidden="true">→</span></div>
       </a>
     </div>
     <p class="hp-foot">For SeventyTwo Sports Group staff only.</p>
@@ -875,6 +922,34 @@ html.name-only .gate-box h2,html.name-only .gate-digits{display:none}
     <button class="sq-more" id="sqMore" hidden>Show all</button>
     <p class="src" id="sqSrc"></p>
   </div>
+  <div id="page-corner" hidden>
+    <div class="hero">
+      <div>
+        <div class="eyebrow">SeventyTwo Sports Group</div>
+        <h1>Scouting Corner</h1>
+        <p class="sub">Players we're watching, each followed through every stage: Tennis Europe, ITF juniors, then the ITF pro tour, ATP and WTA. Every ranking they hold with its 1 week, 3 month and 12 month move, and their results from the last 12 months. A stage marked <b>Check</b> fits more than one player, so it isn't linked until someone confirms who it is.</p>
+      </div>
+    </div>
+    <div class="cn-add">
+      <h3>Add a prospect</h3>
+      <form id="cnForm" autocomplete="off">
+        <input class="sq-in" id="cnName" placeholder="Full name, e.g. Laurens Drijver" aria-label="Full name" maxlength="60" required>
+        <select class="sq-in sm" id="cnG" aria-label="Boy or girl" required><option value="">Boy/girl</option><option value="M">Boy / man</option><option value="F">Girl / woman</option></select>
+        <input class="sq-in sm" id="cnNat" placeholder="Nation: GBR" aria-label="Nation, 3 letters" maxlength="3">
+        <input class="sq-in sm" id="cnBorn" placeholder="Born: 2011" aria-label="Birth year" inputmode="numeric" maxlength="4">
+        <button type="submit">Add</button>
+      </form>
+      <p class="cn-msg" id="cnMsg">Nation and birth year are optional, but they make sure we link the right player.</p>
+    </div>
+    <div class="sq-filters">
+      <div class="sq-line">
+        <div class="chips" role="group" aria-label="Show"><button class="chip cng on" data-g="">Everyone</button><button class="chip cng" data-g="M">Boys / men</button><button class="chip cng" data-g="F">Girls / women</button></div>
+        <input class="sq-in" id="cnQ" type="search" placeholder="Search prospect" aria-label="Search prospect">
+      </div>
+    </div>
+    <div class="cn-list" id="cnList"><div class="sq-empty">Loading the watch list…</div></div>
+    <p class="src" id="cnSrc"></p>
+  </div>
   <dialog class="prof" id="prof" aria-label="Player profile"></dialog>
 </main>
 
@@ -955,7 +1030,7 @@ let logoSpins = 0;
 window.spinLogo = () => { LOGO.src = "data:image/svg+xml;base64," + btoa(LOGO_SVG.replace("</svg>", "<!--" + (++logoSpins) + "--></svg>")); };
 function route(){
   const hash = location.hash;
-  const tab = hash === "#rankings" ? "rankings" : hash === "#scouting" ? "scouting" : hash === "#schedule" ? "schedule" : hash === "#scores" ? "scores" : hash.startsWith("#players") ? "players" : "home";
+  const tab = hash === "#rankings" ? "rankings" : hash === "#scouting" ? "scouting" : hash === "#schedule" ? "schedule" : hash === "#corner" ? "corner" : hash === "#scores" ? "scores" : hash.startsWith("#players") ? "players" : "home";
   $("#page-home").hidden = tab !== "home";
   document.body.classList.toggle("on-home", tab === "home");
   $("#page-scores").hidden = tab !== "scores";
@@ -963,6 +1038,7 @@ function route(){
   $("#page-players").hidden = tab !== "players";
   $("#page-scouting").hidden = tab !== "scouting";
   $("#page-schedule").hidden = tab !== "schedule";
+  $("#page-corner").hidden = tab !== "corner";
   const pid = hash.startsWith("#players/") ? hash.slice(9) : null;
   if (pid && profById[pid]) openProfile(pid);
   else if ($("#prof").open) $("#prof").close();
@@ -1869,6 +1945,107 @@ async function loadScouting(){
   try { const r = await fetch("scouting.json?t=" + Date.now(), { cache: "no-store" }); if (r.ok) SCOUT = await r.json(); else if (!SCOUT) SCOUT = {}; } catch (e) { if (!SCOUT) SCOUT = {}; }
   renderScouting(); renderRankings(); renderHome();
 }
+/* ---------- Scouting Corner (corner.json, rebuilt by scripts/prospects.py) ----------
+   Each prospect is one person linked across Tennis Europe, ITF juniors and ATP/WTA. Names typed into the
+   "Add a prospect" box go to Tobey's Google Sheet (scripts/visit_log.gs); GitHub reads that list and looks
+   them up, and until then they show here as "Looking up…". */
+const CORNER_URL = "https://script.google.com/macros/s/AKfycbwzEb0YNoDmZaaJ5fQg05ubEe_lowMLiGoYaXuclycqQikOngLQEmENPN5KoL_KJXu1kA/exec";  // same as LOG_URL
+let CORNER = null, CN_SHEET = [];
+const CN = { g: "", q: "", open: new Set() };
+const cnKey = s => String(s || "").split("|")[0].normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLowerCase().replace(/[^a-z]/g, "");
+const CN_SRC = { te: "Tennis Europe", "itf-jr": "ITF Juniors", "itf-pro": "ITF pro events & Grand Slams" };
+// names added on this device: shown as "Looking up…" for up to 3 days (the Sheet's list covers everyone else's)
+function cnLocal(){ try { return JSON.parse(localStorage.getItem("72c-prospects") || "[]").filter(x => Date.now() - (x.at || 0) < 3 * 864e5); } catch (e) { return []; } }
+function cnStage(label, l, txt, url){
+  // one stage of the pathway: linked (with its rank), not found yet, or more than one player fits (Check)
+  const st = l?.status;
+  const body = st === "linked" ? txt || "Linked" : st === "unsure" ? "Check: more than one fits" : st === "none" ? "Not found yet" : "Not checked yet";
+  const tip = st === "linked" ? `Linked by ${l.how || "id"}` : st === "unsure" ? l.note || "" : "";
+  const cls = st === "linked" ? "ok" : st === "unsure" ? "bad" : "";
+  return url && st === "linked" ? `<a class="cn-st ${cls}" href="${esc(url)}" target="_blank" rel="noopener" title="${esc(tip)}"><b>${label}</b><span>${esc(body)}</span></a>`
+    : `<div class="cn-st ${cls}" title="${esc(tip)}"><b>${label}</b><span>${esc(body)}</span></div>`;
+}
+function cnRow(level, sub, rank, high, w, m3, m12){
+  const mv = v => v === undefined ? `<div class="ch same">—</div>` : sqCell(rank, v);
+  return `<div class="sq-row"><div class="lv">${esc(level)}${sub ? `<small>${esc(sub)}</small>` : ""}</div><div class="by">${rank ?? "—"}</div><div class="by">${high ?? "—"}</div>${mv(w)}${mv(m3)}${mv(m12)}</div>`;
+}
+function cnCard(k, p){
+  const L = p.links || {}, tourName = p.g === "F" ? "WTA" : "ATP";
+  const te = (p.te || [])[0], jr = p.itfJr, pro = p.pro;
+  const path = cnStage("Tennis Europe", L.te, te ? `No. ${te.rank} ${te.cat}` : "", L.te?.id ? `https://te.tournamentsoftware.com/player-profile/${L.te.id}` : "")
+    + cnStage("ITF Juniors", L.itf, jr?.rank ? `No. ${jr.rank}` : jr?.high ? `Best ${jr.high}` : L.itf?.status === "linked" ? "ITF profile" : "", L.itf?.id ? `https://www.itftennis.com/en/players/${cnKey(p.name) && p.name.normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLowerCase().replace(/[^a-z]+/g, "-").replace(/^-|-$/g, "")}/${L.itf.id}/${(L.itf.nat || "").toLowerCase()}/` : "")
+    + cnStage(tourName, L.pro?.status ? L.pro : null, pro ? `No. ${pro.rank}` : "", L.pro?.url);
+  const rows = [];
+  for (const r of p.te || []) rows.push(cnRow("Tennis Europe", r.cat, r.rank, r.high, r.w, r.m3, r.m12));
+  if (jr && (jr.rank || jr.high)) rows.push(cnRow("ITF Juniors", jr.date ? "as of " + jr.date : "", jr.rank, jr.high, jr.w, jr.m3, jr.m12));
+  if (pro) rows.push(cnRow(tourName, pro.week ? "week of " + sqFmt(pro.week) : "", pro.rank, pro.high, pro.w, pro.m3, pro.m12));
+  else if (p.itfPro?.rank) rows.push(cnRow(tourName, "as of " + (p.itfPro.date || ""), p.itfPro.rank, p.itfPro.high));
+  const res = p.results || [];
+  const won = res.filter(r => r.res === "W").length, lost = res.filter(r => r.res === "L").length;
+  // results grouped by tournament, newest first
+  const groups = [];
+  for (const r of res) {
+    const g = groups.find(x => x.src === r.src && x.t === r.t && x.start === r.start);
+    if (g) g.m.push(r); else groups.push({ src: r.src, t: r.t, start: r.start, end: r.end, cat: r.cat, link: r.link, m: [r] });
+  }
+  const open = CN.open.has(k);
+  const resHtml = groups.map(g => `<div class="cn-tn">${g.link ? `<a href="${esc(g.link)}" target="_blank" rel="noopener">${esc(g.t)}</a>` : esc(g.t)}<small>${esc(sqFmt(g.end))} · ${esc(g.cat)} · ${esc(CN_SRC[g.src] || g.src)}</small></div>`
+    + g.m.map(m => `<div class="cn-m"><span>${esc(m.r)}</span><span class="r ${m.res}">${m.res || "–"}</span><span>${esc(m.o)}${m.on ? ` (${esc(m.on)})` : ""}</span><span class="s">${esc(m.s)}</span></div>`).join("")).join("");
+  const meta = [p.nat, p.born ? "born " + p.born : "", p.src === "site" && p.by ? "added by " + p.by : ""].filter(Boolean).join(" · ");
+  const unsure = ["itf", "te"].filter(s => L[s]?.status === "unsure").map(s => `${s === "te" ? "Tennis Europe" : "ITF"}: ${L[s].note || "more than one player fits"}`);
+  return `<div class="cn"><div class="cn-h"><span class="nm">${esc(p.name)}</span><span class="mt">${esc(meta)}</span>${res.length ? `<span class="wl">Last 12 months <b>${won}-${lost}</b></span>` : ""}</div>
+    <div class="cn-path">${path}</div>
+    ${unsure.length ? `<div class="cn-note">${unsure.map(esc).join("<br>")}. Add the right id in prospects.json.</div>` : ""}
+    ${rows.length ? `<div class="sq-row h"><span>Ranking</span><span>Rank</span><span>Best</span><span>1 wk</span><span>3 mo</span><span>12 mo</span></div>${rows.join("")}` : ""}
+    ${res.length ? `<button class="cn-more" data-k="${esc(k)}">${open ? "Hide" : "Show"} the last 12 months (${res.length} match${res.length === 1 ? "" : "es"})</button><div class="cn-res"${open ? "" : " hidden"}>${resHtml}</div>` : ""}</div>`;
+}
+function renderCorner(){
+  if (!$("#page-corner")) return;
+  const P = CORNER?.players || {};
+  document.querySelectorAll(".cng").forEach(b => b.classList.toggle("on", b.dataset.g === CN.g));
+  // names added on the site that GitHub hasn't looked up yet
+  const waiting = [...CN_SHEET, ...cnLocal()].filter((x, i, a) => x.name && !P[cnKey(x.name)] && a.findIndex(y => cnKey(y.name) === cnKey(x.name)) === i);
+  const q = cnKey(CN.q);
+  const keep = (name, g) => (!CN.g || g === CN.g) && (!q || cnKey(name).includes(q));
+  const cards = Object.entries(P).filter(([k, p]) => keep(p.name, p.g))
+    .sort((a, b) => (a[1].pro?.rank || 1e4) - (b[1].pro?.rank || 1e4) || (a[1].itfJr?.rank || 1e4) - (b[1].itfJr?.rank || 1e4) || a[1].name.localeCompare(b[1].name))
+    .map(([k, p]) => cnCard(k, p));
+  const wait = waiting.filter(x => keep(x.name, x.g)).map(x => `<div class="cn cn-wait"><div class="cn-h"><span class="nm">${esc(x.name)}</span><span class="mt">Looking up… usually within 30 minutes${x.by ? " · added by " + esc(x.by) : ""}</span></div></div>`);
+  $("#cnList").innerHTML = [...wait, ...cards].join("") || `<div class="sq-empty">${CORNER ? (Object.keys(P).length ? "No prospect matches." : "No prospects yet. Add the first one above.") : "Loading the watch list…"}</div>`;
+  $("#cnSrc").textContent = CORNER?.checked ? `Sources: Tennis Europe (internal use only), the ITF and the official ATP/WTA rankings. Last updated ${new Date(CORNER.checked).toLocaleString("en-GB", { day:"numeric", month:"short", hour:"2-digit", minute:"2-digit", timeZone:"Europe/London" })} UK.` : "";
+}
+$("#cnList").addEventListener("click", e => {
+  const b = e.target.closest(".cn-more"); if (!b) return;
+  CN.open.has(b.dataset.k) ? CN.open.delete(b.dataset.k) : CN.open.add(b.dataset.k);
+  renderCorner();
+});
+document.querySelectorAll(".cng").forEach(b => b.addEventListener("click", () => { CN.g = b.dataset.g; renderCorner(); }));
+$("#cnQ").addEventListener("input", e => { CN.q = e.target.value; renderCorner(); });
+$("#cnForm").addEventListener("submit", e => {
+  e.preventDefault();
+  const msg = $("#cnMsg"), name = $("#cnName").value.trim().replace(/\s+/g, " "), g = $("#cnG").value;
+  const nat = $("#cnNat").value.trim().toUpperCase(), born = $("#cnBorn").value.trim();
+  const bad = t => { msg.textContent = t; msg.classList.add("err"); };
+  msg.classList.remove("err");
+  if (!/^[\p{L}][\p{L} .'\-]{2,59}$/u.test(name) || !name.includes(" ")) return bad("Please type their first name and surname.");
+  if (!g) return bad("Please choose boy or girl.");
+  if (nat && !/^[A-Z]{3}$/.test(nat)) return bad("Nation is a 3-letter code, e.g. GBR, ESP, USA.");
+  if (born && !/^(19|20)\d\d$/.test(born)) return bad("Birth year is 4 digits, e.g. 2011.");
+  if (ROSTER.some(r => cnKey(r.first + r.last) === cnKey(name))) return bad(`${name} is already a 72 player.`);
+  if ((CORNER?.players || {})[cnKey(name)] || [...CN_SHEET, ...cnLocal()].some(x => cnKey(x.name) === cnKey(name))) return bad(`${name} is already on the watch list.`);
+  let by = ""; try { by = localStorage.getItem("72c-name") || ""; } catch (err) {}
+  try { fetch(CORNER_URL, { method: "POST", mode: "no-cors", body: JSON.stringify({ kind: "prospect", name, g, nat, born, by }) }).catch(() => {}); } catch (err) {}
+  try { localStorage.setItem("72c-prospects", JSON.stringify([...cnLocal(), { name, g, by, at: Date.now() }].slice(-30))); } catch (err) {}
+  msg.textContent = `Added ${name}. We're looking them up now; their rankings and results appear here within about 30 minutes.`;
+  $("#cnForm").reset();
+  renderCorner();
+});
+async function loadCorner(){
+  try { const r = await fetch("corner.json?t=" + Date.now(), { cache: "no-store" }); if (r.ok) CORNER = await r.json(); else if (!CORNER) CORNER = { players: {} }; } catch (e) { if (!CORNER) CORNER = { players: {} }; }
+  // names added on the site but not looked up yet (the Sheet's list; skipped quietly if it can't be read)
+  try { const r = await fetch(CORNER_URL + "?kind=prospects"); if (r.ok) CN_SHEET = (await r.json()).prospects || []; } catch (e) {}
+  renderCorner(); renderHome();
+}
 /* ---------- Home portal ---------- */
 // home greeting: "Welcome to 72 Central" the first time, then a greeting that changes each visit
 let greetMsg = "";
@@ -1944,6 +2121,15 @@ function renderHome(){
     $("#hpT5").innerHTML = `${now.ppl}<small>72 player${now.ppl === 1 ? "" : "s"} playing this week</small>`;
     $("#hpS5").textContent = `${now.ev} event${now.ev === 1 ? "" : "s"} this week · next week: ${next.ppl} player${next.ppl === 1 ? "" : "s"} in ${next.ev} event${next.ev === 1 ? "" : "s"}`;
   } else if (SCHED) { $("#hpT5").textContent = "—"; $("#hpS5").textContent = "Schedule not available yet"; }
+  // 06 Scouting Corner: how many we're watching, and who climbed most this week
+  if (CORNER) {
+    const ps = Object.values(CORNER.players || {});
+    $("#hpT6").innerHTML = `${ps.length}<small>prospect${ps.length === 1 ? "" : "s"} on the watch list</small>`;
+    const climbs = ps.flatMap(p => [[p.pro?.rank, p.pro?.w], [p.itfJr?.rank, p.itfJr?.w], ...(p.te || []).map(r => [r.rank, r.w])]
+      .filter(([r, w]) => r && w > r).map(([r, w]) => ({ n: p.name, up: w - r, r })));
+    const best = climbs.sort((a, b) => b.up - a.up)[0];
+    $("#hpS6").innerHTML = best ? `Biggest climb this week: <strong>${esc(best.n)}</strong> up ${best.up} to No.${best.r}` : ps.length ? "Rankings, moves and 12 months of results for each" : "Add the first prospect";
+  }
 }
 /* ---------- one spelling per 72 player, and no duplicate fixtures ----------
    The feeds spell some names differently (e.g. "Schwaerzler Joel" v "Schwärzler"), so every 72 player is shown
@@ -2107,6 +2293,8 @@ loadScouting();
 setInterval(() => { if (!document.hidden) loadScouting(); }, 30 * 60 * 1000);
 loadSchedule();
 setInterval(() => { if (!document.hidden) loadSchedule(); }, 60 * 60 * 1000);
+loadCorner();
+setInterval(() => { if (!document.hidden) loadCorner(); }, 10 * 60 * 1000);
 setInterval(() => { if (!document.hidden) load(); }, 60 * 1000);
 document.addEventListener("visibilitychange", () => { if (!document.hidden) load(); });
 // live ATP/WTA scores from ESPN: once a minute, and straight away when the page or Competition Zone is opened
@@ -2153,7 +2341,7 @@ setInterval(() => { if (!document.hidden) renderScores(); }, 5 * 60 * 1000);
   // (scripts/visit_log.gs, set up as in VISIT_LOG.md). Off while LOG_URL is empty.
   // Only time with the tab on screen counts; 30 minutes away starts a new visit.
   const LOG_URL = "https://script.google.com/macros/s/AKfycbwzEb0YNoDmZaaJ5fQg05ubEe_lowMLiGoYaXuclycqQikOngLQEmENPN5KoL_KJXu1kA/exec";
-  const PAGES = { home: "Home", scores: "Scores", rankings: "Rankings", players: "Players", scouting: "By Age", schedule: "Schedule" };
+  const PAGES = { home: "Home", scores: "Scores", rankings: "Rankings", players: "Players", scouting: "By Age", schedule: "Schedule", corner: "Scouting Corner" };
   let visit = null, awayAt = 0;
   const pageNow = () => PAGES[location.hash.slice(1).split("/")[0]] || "Home";
   function newVisit(){ visit = { id: Date.now().toString(36) + Math.random().toString(36).slice(2, 8), start: Date.now(), secs: 0, since: document.hidden ? 0 : Date.now(), pages: [pageNow()] }; awayAt = Date.now(); }
