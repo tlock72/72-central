@@ -1,5 +1,9 @@
 """
-72 Central - ITF junior matches (runs inside the 'Update scores' workflow, about twice a day, no Claude).
+72 Central - ITF junior matches (runs inside the 'Update scores' workflow, no Claude).
+
+Full check of every junior about twice a day. In between, a quick check every hour (07:00-23:00 UK)
+re-reads only the juniors who have a match today (or an earlier one) still not shown as finished,
+so results appear within about an hour. Juniors whose request fails keep their previous matches.
 
 For each 72 junior with an ITF profile (itf.json) it reads their latest ITF junior singles
 activity (draws and results) and, for any event running now, that event's order of play,
@@ -15,7 +19,7 @@ from datetime import datetime, timedelta, timezone
 from zoneinfo import ZoneInfo
 
 BASE = "https://www.itftennis.com/tennis/api"
-UA = "72HubRankings/1.0 (+https://github.com/tlock72/72-central; twice a day, one request every few seconds)"
+UA = "72HubRankings/1.0 (+https://github.com/tlock72/72-central; a few times a day, one request every few seconds)"
 PAUSE = 5
 UK = ZoneInfo("Europe/London")
 NOW = datetime.now(timezone.utc)
@@ -109,20 +113,34 @@ def main():
         out = json.load(open("itfm.json"))
     except (FileNotFoundError, json.JSONDecodeError):
         out = {}
-    last = out.get("tried") or out.get("checked")
+    def ago(k):
+        v = out.get(k)
+        return NOW - datetime.fromisoformat(v.replace("Z", "+00:00")) if v else timedelta(days=99)
     force = os.environ.get("SOURCE") == "manual"
-    if last and not force and NOW - datetime.fromisoformat(last.replace("Z", "+00:00")) < timedelta(hours=11):
-        print("ITF matches checked", last, "- next check later"); return
+    previous = {m["matchId"]: m for m in out.get("matches") or []}
+    # juniors with a match today or earlier that isn't shown as finished yet
+    waiting = {m.get("p1Id") or m.get("p2Id") for m in previous.values()
+               if m["status"] != "finished" and m["date"] <= T.isoformat()}
     if not force and NOW.astimezone(UK).hour < 7:
         return
-    out["tried"] = NOW.strftime("%Y-%m-%dT%H:%M:%SZ")
+    if not force and ago("blocked") < timedelta(hours=3):
+        print("ITF bot check was hit recently - next check later"); return
+    if force or ago("tried") >= timedelta(hours=11):
+        only = None   # full check
+    elif waiting and ago("quick") >= timedelta(minutes=55):
+        only = waiting
+        out["quick"] = NOW.strftime("%Y-%m-%dT%H:%M:%SZ")
+        print("quick check for", ", ".join(sorted(waiting)))
+    else:
+        print("ITF matches checked", out.get("tried"), "- next check later"); return
+    if only is None:
+        out["tried"] = NOW.strftime("%Y-%m-%dT%H:%M:%SZ")
     itf = json.load(open("itf.json"))
-    previous = {m["matchId"]: m for m in out.get("matches") or []}
-    found, cache, blocked = {}, {}, False
+    found, cache, blocked, done = {}, {}, False, set()
 
     for rid, rec in itf.get("players", {}).items():
         pid = rec.get("itfId")
-        if not pid or rec.get("noItf"):
+        if not pid or rec.get("noItf") or (only is not None and rid not in only):
             continue
         try:
             act = get("/PlayerApi/GetPlayerActivity", circuitCode="JT", matchTypeCode="S", playerId=pid, skip=0, take=3)
@@ -131,6 +149,7 @@ def main():
         except Exception as e:
             print("activity failed", rid, e); continue
         me = rid
+        done.add(rid)
         for t in act.get("items") or []:
             start, end = dates_of(t.get("dates"))
             if not start or end < T - timedelta(days=2) or start > T + timedelta(days=2):
@@ -191,8 +210,10 @@ def main():
         if blocked:
             break
 
-    if blocked:
-        # keep what we had; try again in a few hours
+    if blocked or not done:
+        # keep what we had; try again later
+        if blocked:
+            out["blocked"] = NOW.strftime("%Y-%m-%dT%H:%M:%SZ")
         with open("itfm.json", "w") as f:
             json.dump(out, f, ensure_ascii=False, separators=(",", ":"))
         return
@@ -200,10 +221,15 @@ def main():
     keep_from = (T - timedelta(days=7)).isoformat()
     merged = dict(found)
     for mid, m in previous.items():
-        if mid not in merged and m["status"] == "finished" and m["date"] >= keep_from:
-            merged[mid] = m   # recent results stay for the 48-hour list and the congratulations banner
+        if mid in merged or (m["status"] == "finished" and m["date"] < keep_from):
+            continue
+        if m["status"] == "finished" or (m.get("p1Id") or m.get("p2Id")) not in done:
+            # recent results stay for the 48-hour list and the congratulations banner;
+            # juniors not re-read this time (quick check, or their request failed) keep their matches
+            merged[mid] = m
     out["matches"] = sorted(merged.values(), key=lambda m: (m["date"], m["tournament"]))
-    out["checked"] = NOW.strftime("%Y-%m-%dT%H:%M:%SZ")
+    if only is None:
+        out["checked"] = NOW.strftime("%Y-%m-%dT%H:%M:%SZ")
     with open("itfm.json", "w") as f:
         json.dump(out, f, ensure_ascii=False, separators=(",", ":"))
     print(f"done: {len(out['matches'])} ITF junior matches")
