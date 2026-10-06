@@ -401,10 +401,17 @@ select.sq-in option{background:var(--navy-2);color:var(--white)}
 .cn-add{border:1px solid var(--line);border-radius:18px;padding:16px 18px;margin:0 0 18px;background:linear-gradient(180deg,var(--navy-2),rgba(17,27,63,.55))}
 .cn-add h3{font-family:var(--display);font-weight:500;text-transform:uppercase;letter-spacing:.16em;font-size:12px;color:var(--gold);margin:0 0 10px}
 .cn-add h3 button{font:inherit;letter-spacing:inherit;text-transform:inherit;color:inherit;cursor:default;padding:0;height:auto;background:none;border-radius:0}
-.cn-add form{display:flex;flex-wrap:wrap;gap:8px}
+.cn-add form{display:flex;flex-wrap:wrap;align-items:flex-start;gap:8px}
 .cn-add .sq-in{flex:1 1 150px}
 .cn-add #cnName{flex:2 1 220px}
 .cn-add .sq-in.sm{flex:0 1 140px}
+/* nation + birth year sit together, with an "Optional" bracket underneath pointing at both */
+.cn-opt{flex:0 1 338px;min-width:0;display:flex;flex-direction:column}
+.cn-opt-in{display:flex;gap:8px}
+.cn-optl{display:flex;align-items:center;gap:8px;margin-top:4px;padding:0 14px;font-family:var(--display);font-size:10px;letter-spacing:.14em;text-transform:uppercase;color:var(--muted);line-height:12px}
+.cn-optl::before,.cn-optl::after{content:"";flex:1;height:6px;margin-bottom:6px;border:1px solid var(--muted-2);border-top:0}
+.cn-optl::before{border-right:0;border-bottom-left-radius:4px}
+.cn-optl::after{border-left:0;border-bottom-right-radius:4px}
 .cn-nat{position:relative;flex:0 1 190px;min-width:0;display:flex}
 .cn-add .cn-nat .sq-in{flex:1 1 auto}
 .cn-natl{position:absolute;z-index:20;top:42px;left:0;right:0;min-width:200px;max-height:240px;overflow-y:auto;margin:0;padding:6px;list-style:none;background:var(--navy-2);border:1px solid var(--gold);border-radius:14px;box-shadow:0 10px 30px rgba(0,0,0,.4)}
@@ -776,7 +783,9 @@ nav .sh,.nm-s{display:none}
   .cn-add:not(.open)>:not(h3){display:none!important}
   .cn-add>:not(h3){margin-inline:14px}
   .cn-add form{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:6px}
-  .cn-add #cnName{grid-column:1/-1}
+  .cn-add #cnName,.cn-add #cnG,.cn-opt,.cn-add button[type=submit]{grid-column:1/-1}
+  .cn-opt-in{gap:6px}
+  .cn-opt-in>*{flex:1 1 0!important}
   .cn-add button[type=submit]{height:34px;font-size:11px}
   .cn-natl{top:38px}
   .cn-msg{font-size:11px;margin:6px 14px 12px}
@@ -1100,11 +1109,13 @@ main.ptr-go,footer.ptr-go{transition:transform .35s cubic-bezier(.2,.8,.3,1)}
       <form id="cnForm" autocomplete="off">
         <input class="sq-in" id="cnName" placeholder="Full name, e.g. Jurgen Klopp" aria-label="Full name" maxlength="60" required>
         <select class="sq-in sm" id="cnG" aria-label="Male or female" required><option value="">Male/female</option><option value="M">Male</option><option value="F">Female</option></select>
+        <div class="cn-opt"><div class="cn-opt-in">
         <div class="cn-nat"><input class="sq-in" id="cnNat" placeholder="Nation" aria-label="Nation" role="combobox" aria-autocomplete="list" aria-expanded="false" aria-controls="cnNatList" maxlength="40"><ul class="cn-natl" id="cnNatList" role="listbox" hidden></ul></div>
         <input class="sq-in sm" id="cnBorn" placeholder="Birth year" aria-label="Birth year" inputmode="numeric" maxlength="4">
+        </div><span class="cn-optl">Optional</span></div>
         <button type="submit">Add</button>
       </form>
-      <p class="cn-msg" id="cnMsg">Nation and birth year are optional, but they make sure we link the right player.</p>
+      <p class="cn-msg" id="cnMsg">Adding nation and birth year makes sure we link the right player.</p>
       <div class="cn-ok" id="cnOk" hidden>
         <p id="cnOkTxt"></p>
         <label><input type="checkbox" id="cnOkHide"> Don't show this again on this device</label>
