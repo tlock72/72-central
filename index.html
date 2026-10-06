@@ -614,13 +614,14 @@ nav .sh,.nm-s{display:none}
   .brand img{height:28px}
   .p-find{margin-bottom:10px;padding:8px 14px;font-size:16px}
   .champ{font-size:11px;padding:7px 12px;margin:8px 0 0}
-  /* six tabs don't fit beside the logo on a phone: the menu gets its own full-width row under it */
+  /* six tabs don't fit beside the logo on a phone: the menu sits under it as two rows of three (72 Scores, 72 Rankings, Roster / Filtered Rankings, Schedule, Scouting) */
   header .bar{flex-wrap:wrap;justify-content:center;row-gap:8px}
-  nav{display:grid;grid-template-columns:repeat(6,minmax(0,1fr));gap:2px;padding:3px;border-radius:999px;width:100%}
-  nav a{text-align:center;overflow:hidden;text-overflow:ellipsis;padding:7px 2px;font-size:10px;letter-spacing:0;white-space:nowrap}
-  nav .n72{display:none}
+  nav{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:3px;padding:4px;border-radius:20px;width:100%}
+  nav a{text-align:center;overflow:hidden;text-overflow:ellipsis;padding:7px 2px;font-size:11px;letter-spacing:.04em;white-space:nowrap}
+  nav a[data-tab=players] .n72{display:none}
   #champs{margin-top:8px}
   nav .lg{display:none} nav .sh{display:inline}
+  nav a[data-tab=scouting] .lg{display:inline} nav a[data-tab=scouting] .sh{display:none}
   body.on-home header .bar{justify-content:center}
   .hero{padding-block:14px 10px;gap:10px}
   .hero h1{font-size:30px}
@@ -721,7 +722,7 @@ nav .sh,.nm-s{display:none}
   .hp-ld .nmx{font-size:11px;margin-top:2px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 }
 @media (max-width:360px){
-  nav a{padding:6px 1px;font-size:9px}
+  nav a{padding:6px 1px;font-size:10px;letter-spacing:.02em}
   .pname{font-size:9.5px}
 }
 @media (prefers-reduced-motion:reduce){*{transition:none!important;animation:none!important}}
@@ -957,7 +958,7 @@ html.name-only .gate-box h2,html.name-only .gate-digits{display:none}
     <div class="cn-add">
       <h3>Add a prospect</h3>
       <form id="cnForm" autocomplete="off">
-        <input class="sq-in" id="cnName" placeholder="Full name, e.g. Laurens Drijver" aria-label="Full name" maxlength="60" required>
+        <input class="sq-in" id="cnName" placeholder="Full name, e.g. Jurgen Klopp" aria-label="Full name" maxlength="60" required>
         <select class="sq-in sm" id="cnG" aria-label="Male or female" required><option value="">Male/female</option><option value="M">Male</option><option value="F">Female</option></select>
         <div class="cn-nat"><input class="sq-in" id="cnNat" placeholder="Nation" aria-label="Nation" role="combobox" aria-autocomplete="list" aria-expanded="false" aria-controls="cnNatList" maxlength="40"><ul class="cn-natl" id="cnNatList" role="listbox" hidden></ul></div>
         <input class="sq-in sm" id="cnBorn" placeholder="Birth year" aria-label="Birth year" inputmode="numeric" maxlength="4">
@@ -968,6 +969,10 @@ html.name-only .gate-box h2,html.name-only .gate-digits{display:none}
         <p id="cnOkTxt"></p>
         <label><input type="checkbox" id="cnOkHide"> Don't show this again on this device</label>
         <div class="bt"><button type="button" id="cnOkYes">Confirm</button><button type="button" class="no" id="cnOkNo">Cancel</button></div>
+      </div>
+      <div class="cn-ok" id="cnFix" hidden>
+        <p id="cnFixTxt"></p>
+        <div class="bt" id="cnFixBt"></div>
       </div>
     </div>
     <div class="sq-filters">
@@ -2031,14 +2036,14 @@ function cnCard(k, p){
   const open = CN.open.has(k);
   const resHtml = groups.map(g => `<div class="cn-tn">${g.link ? `<a href="${esc(g.link)}" target="_blank" rel="noopener">${esc(g.t)}</a>` : esc(g.t)}<small>${esc(sqFmt(g.end))} · ${esc(g.cat)} · ${esc(CN_SRC[g.src] || g.src)}</small></div>`
     + g.m.map(m => `<div class="cn-m"><span>${esc(m.r)}</span><span class="r ${m.res}">${m.res || "–"}</span><span>${esc(m.o)}${m.on ? ` (${esc(m.on)})` : ""}</span><span class="s">${esc(m.s)}</span></div>`).join("")).join("");
-  const meta = [p.nat, p.born ? "born " + p.born : "", p.src === "site" && p.by ? "added by " + p.by : ""].filter(Boolean).join(" · ");
+  const meta = [p.nat, p.born ? "born " + p.born : "", p.src === "site" && p.by ? "added by " + p.by : "", p.typed ? `typed as "${p.typed}", spelling corrected from the ITF` : ""].filter(Boolean).join(" · ");
   const unsure = ["itf", "te"].filter(s => L[s]?.status === "unsure").map(s => `${s === "te" ? "Tennis Europe" : "ITF"}: ${L[s].note || "more than one player fits"}`);
   return `<div class="cn"><div class="cn-h"><span class="nm">${esc(p.name)}</span><span class="mt">${esc(meta)}</span>${res.length ? `<span class="wl">Last 12 months <b>${won}-${lost}</b></span>` : ""}</div>
     <div class="cn-path">${path}</div>
     ${unsure.length ? `<div class="cn-note">${unsure.map(esc).join("<br>")}. Add the right id in prospects.json.</div>` : ""}
     ${rows.length ? `<div class="sq-row h"><span>Ranking</span><span>Rank</span><span>Best</span><span>1 wk</span><span>3 mo</span><span>12 mo</span></div>${rows.join("")}` : ""}
     ${res.length ? `<button class="cn-more" data-k="${esc(k)}">${open ? "Hide" : "Show"} the last 12 months (${res.length} match${res.length === 1 ? "" : "es"})</button><div class="cn-res"${open ? "" : " hidden"}>${resHtml}</div>` : ""}
-    ${cnRemoval(k, p.name)}</div>`;
+    ${cnRemoval(k, p.typed || p.name)}</div>`;
 }
 // "Request removal": anyone can ask; Tobey gets an email and nothing is removed until he approves it
 function cnRemoval(k, name){
@@ -2052,7 +2057,8 @@ function cnRemoval(k, name){
 // approved removals, and names taken off the Sheet, disappear at once (GitHub's next run takes them out of corner.json)
 function cnShown(){
   const gone = new Set(CN_REMOVED.map(cnKey)), onSheet = new Set(CN_SHEET.map(x => cnKey(x.name)));
-  return Object.fromEntries(Object.entries(CORNER?.players || {}).filter(([k, p]) => !gone.has(cnKey(p.name)) && !(CN_SHEET_OK && p.src === "site" && !onSheet.has(cnKey(p.name)))));
+  // p.typed: the name as typed on the Sheet, when GitHub corrected its spelling from the ITF
+  return Object.fromEntries(Object.entries(CORNER?.players || {}).filter(([k, p]) => !gone.has(cnKey(p.typed || p.name)) && !(CN_SHEET_OK && p.src === "site" && !onSheet.has(cnKey(p.typed || p.name)))));
 }
 const cnOrd = r => r || 1e6, cnTeBest = p => Math.min(...(p.te || []).map(t => t.rank || 1e6), 1e6);
 function renderCorner(){
@@ -2133,18 +2139,72 @@ $("#cnNat").addEventListener("keydown", e => {
   else if (e.key === "Escape" || e.key === "Tab") { if (e.key === "Tab" && open && cnNatUI.at >= 0 && $("#cnNat").value.trim()) cnNatPick(cnNatUI.at); cnNatHide(); }
 });
 $("#cnNatList").addEventListener("mousedown", e => { const li = e.target.closest("li[data-i]"); if (li) { e.preventDefault(); cnNatPick(+li.dataset.i); } });
+/* Names typed into "Add a prospect" are tidied (capitals) and checked against every player the site knows
+   (official ATP/WTA rankings in scouting.json, the watch list): a name one letter out from one of them gets a
+   "Did you mean ...?" and the person picks. GitHub then checks the spelling again against the ITF (prospects.py). */
+const CN_PART = new Set(["de", "del", "della", "der", "den", "di", "da", "das", "do", "dos", "du", "van", "von", "ten", "ter", "le", "la", "y"]);
+// "keegan rice" -> "Keegan Rice", "MARCEL LATAK" -> "Marcel Latak"; "McDonald" / "DiMarco" typed that way stay. Same rules as tidy() in prospects.py.
+function cnTidy(t){
+  const w = t.trim().split(/\s+/), cap = x => { x = x.charAt(0).toUpperCase() + x.slice(1).toLowerCase(); return x.startsWith("Mc") && x.length > 3 ? x.slice(0, 2) + x.charAt(2).toUpperCase() + x.slice(3) : x; };
+  return w.map((x, i) => /^\p{Lu}.*\p{Lu}/u.test(x) && x !== x.toUpperCase() ? x
+    : x === x.toLowerCase() && CN_PART.has(x) && i > 0 && i < w.length - 1 ? x
+    : x.split("-").map(h => h.split("'").map(cap).join("'")).join("-")).join(" ");
+}
+const cnSorted = t => cnFold(t).replace(/-/g, " ").replace(/[^a-z ]/g, "").split(/\s+/).filter(Boolean).sort().join(" ");
+function cnDist(a, b){
+  a = cnSorted(a); b = cnSorted(b);
+  let row = Array.from({ length: b.length + 1 }, (_, j) => j);
+  for (let i = 1; i <= a.length; i++) {
+    let prev = row[0]; row[0] = i;
+    for (let j = 1; j <= b.length; j++) { const t = row[j]; row[j] = Math.min(row[j] + 1, row[j - 1] + 1, prev + (a[i - 1] !== b[j - 1])); prev = t; }
+  }
+  return row[b.length];
+}
+// known players of that gender (and nation, if picked) whose name is the same (other accents) or one letter out (two for long names)
+function cnNear(name, g, nat){
+  const known = [...((SCOUT?.[g === "F" ? "wta" : "atp"] || {}).players || []).map(r => ({ n: r[1], nat: r[2], w: `${g === "F" ? "WTA" : "ATP"} No. ${r[0]}` })),
+    ...Object.values(CORNER?.players || {}).filter(p => p.g === g).map(p => ({ n: p.name, nat: p.nat, w: "on the watch list" }))];
+  const max = cnKey(name).length > 10 ? 2 : 1, seen = new Set(), same = [], near = [];
+  for (const x of known) {
+    if (!x.n || (nat && x.nat && x.nat !== nat) || seen.has(cnSorted(x.n))) continue;
+    seen.add(cnSorted(x.n));
+    const d = cnDist(name, x.n);
+    if (d === 0) { if (x.n !== name) same.push(x); } else if (d <= max) near.push(x);
+  }
+  return { same, near: near.slice(0, 3) };
+}
 $("#cnForm").addEventListener("submit", e => {
   e.preventDefault();
-  const msg = $("#cnMsg"), name = $("#cnName").value.trim().replace(/\s+/g, " "), g = $("#cnG").value;
+  const msg = $("#cnMsg"), name = cnTidy($("#cnName").value.replace(/\s+/g, " ")), g = $("#cnG").value;
   const natTxt = $("#cnNat").value.trim(), nat = natTxt ? cnNatCode(natTxt) : "", born = $("#cnBorn").value.trim();
   const bad = t => { msg.textContent = t; msg.classList.add("err"); };
   msg.classList.remove("err");
+  $("#cnFix").hidden = true;
   if (!/^[\p{L}][\p{L} .'\-]{2,59}$/u.test(name) || !name.includes(" ")) return bad("Please type their first name and surname.");
   if (!g) return bad("Please choose male or female.");
   if (natTxt && !nat) return bad("Please pick the nation from the list (start typing, e.g. Spain or ESP).");
   if (born && !/^(19|20)\d\d$/.test(born)) return bad("Birth year is 4 digits, e.g. 2011.");
+  $("#cnName").value = name;
+  const { same, near } = cnNear(name, g, nat);
+  // the same name with its proper accents (only one way of writing it): used as is
+  if (same.length === 1 && !near.length) { $("#cnName").value = same[0].n; return cnAdd(same[0].n, g, nat, born); }
+  if (!same.length && !near.length) return cnAdd(name, g, nat, born);
+  // close to someone we know: ask which one they meant
+  const opts = [...same, ...near];
+  $("#cnFixTxt").innerHTML = `Check the spelling: <b>${esc(name)}</b> is very close to ${opts.map(x => `<b>${esc(x.n)}</b> (${esc([x.nat, x.w].filter(Boolean).join(", "))})`).join(" and ")}. Did you mean ${opts.length > 1 ? "one of them" : "them"}?`;
+  $("#cnFixBt").innerHTML = opts.map((x, i) => `<button type="button" data-i="${i}">Use ${esc(x.n)}</button>`).join("") + `<button type="button" class="no" data-i="-1">Keep ${esc(name)}</button>`;
+  $("#cnFixBt").onclick = ev => {
+    const b = ev.target.closest("button[data-i]"); if (!b) return;
+    const pick = +b.dataset.i < 0 ? name : opts[+b.dataset.i].n;
+    $("#cnFix").hidden = true; $("#cnName").value = pick;
+    cnAdd(pick, g, nat, born);
+  };
+  $("#cnFix").hidden = false;
+});
+function cnAdd(name, g, nat, born){
+  const msg = $("#cnMsg"), bad = t => { msg.textContent = t; msg.classList.add("err"); };
   if (ROSTER.some(r => cnKey(r.first + r.last) === cnKey(name))) return bad(`${name} is already a 72 player.`);
-  if (cnShown()[cnKey(name)] || [...CN_SHEET, ...cnLocal()].some(x => cnKey(x.name) === cnKey(name))) return bad(`${name} is already on the watch list.`);
+  if (Object.entries(cnShown()).some(([k, p]) => k === cnKey(name) || cnKey(p.name) === cnKey(name)) || [...CN_SHEET, ...cnLocal()].some(x => cnKey(x.name) === cnKey(name))) return bad(`${name} is already on the watch list.`);
   let by = ""; try { by = localStorage.getItem("72c-name") || ""; } catch (err) {}
   // one-time check: everyone sees who added a prospect ("Don't show this again" remembers it on this device)
   let seen = false; try { seen = localStorage.getItem("72c-addok") === "1"; } catch (err) {}
@@ -2161,7 +2221,7 @@ $("#cnForm").addEventListener("submit", e => {
     return;
   }
   cnSend(name, g, nat, born, by);
-});
+}
 function cnSend(name, g, nat, born, by){
   const msg = $("#cnMsg");
   try { fetch(CORNER_URL, { method: "POST", mode: "no-cors", body: JSON.stringify({ kind: "prospect", name, g, nat, born, by }) }).catch(() => {}); } catch (err) {}
