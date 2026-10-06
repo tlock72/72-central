@@ -17,6 +17,7 @@ One request every few seconds. If the ITF site answers with its bot check the sc
 import json, os, re, time, urllib.parse, urllib.request
 from datetime import datetime, timedelta, timezone
 from zoneinfo import ZoneInfo
+from espn import seed  # a seed (1, 2...) only when the feed gives a plain number
 
 BASE = "https://www.itftennis.com/tennis/api"
 UA = "72HubRankings/1.0 (+https://github.com/tlock72/72-central; a few times a day, one request every few seconds)"
@@ -176,6 +177,8 @@ def main():
                     o = oop.get(mid) or {}
                     rc = (m.get("resultCode") or "").upper()
                     status_code = (m.get("resultStatusCode") or "").upper()
+                    myseed, oseed = seed(ev), seed(opp)   # our player's seed in this draw, the opponent's
+                    seeds = {k: v for k, v in (("me", myseed), ("opp", oseed)) if v}
                     base = {"matchId": mid, "source": "itf", "tournament": name, "category": f"ITF Juniors · {t.get('tourCode') or ''}".strip(" ·"),
                             "link": "https://www.itftennis.com" + (t.get("tournamentLink") or ""), "time": ""}
                     if rc in ("W", "L"):
@@ -190,6 +193,7 @@ def main():
                             rnd += " (walkover)"
                         # winner listed first, as with every other result on the site
                         sides = dict(p1="", p1Id=me, p2=oname, p2Id=None) if won else dict(p1=oname, p1Id=None, p2="", p2Id=me)
+                        sides.update({("p1Seed" if (k == "me") == won else "p2Seed"): v for k, v in seeds.items()})
                         found[mid] = dict(base, date=date, round=rnd, status="finished", score=sc, winner=1, **sides)
                         court = o.get("court") or (previous.get(mid) or {}).get("court")
                         if court:
@@ -204,7 +208,8 @@ def main():
                         else:
                             continue
                         found[mid] = dict(base, date=date, round=rnd, status="scheduled", score="", winner=None,
-                                          p1="", p1Id=me, p2=oname, p2Id=None, slot=slot)
+                                          p1="", p1Id=me, p2=oname, p2Id=None, slot=slot,
+                                          **{("p1Seed" if k == "me" else "p2Seed"): v for k, v in seeds.items()})
                         if o.get("court"):
                             found[mid]["court"] = o["court"]
         if blocked:

@@ -135,7 +135,9 @@ def flip(m):
     ret = sc.endswith(" ret.")
     core = sc[:-5] if ret else sc
     core = ", ".join("-".join(reversed(x.split("-"))) for x in core.split(", ")) if core else ""
-    return dict(m, p1=m["p2"], p2=m["p1"], p1Id=m["p2Id"], p2Id=m["p1Id"], winner=1, score=core + (" ret." if ret else ""))
+    out = dict(m, p1=m["p2"], p2=m["p1"], p1Id=m["p2Id"], p2Id=m["p1Id"], winner=1, score=core + (" ret." if ret else ""),
+               p1Seed=m.get("p2Seed"), p2Seed=m.get("p1Seed"))
+    return {k: v for k, v in out.items() if not (k.endswith("Seed") and v is None)}
 
 
 def poll(aid, m):
@@ -257,6 +259,8 @@ def main():
             "points": (sc or {}).get("points") if status == "live" else None,
             "server": (sc or {}).get("server") if status == "live" else None,
             "winner": winner_from(sc) if status == "finished" else None,
+            # seeds (1, 2...) only when the feed gives a plain number, on the player or as p1_seed / p2_seed
+            **{f"p{i}Seed": n for i, p in ((1, p1), (2, p2)) if (n := espn.seed(p, {"seed": m.get(f"p{i}_seed")}))},
         }
 
     old = {m["apiId"]: m for m in data["matches"] if m.get("apiId")}

@@ -128,6 +128,10 @@ def parse(page, rid, names):
             if side is None or not players[1 - side] or players[1 - side][0].lower() == "bye":
                 continue
             opp = short(players[1 - side][0])
+            # seeds show as "[1]" next to the name on Tennis Europe; numbers only (not [WC], [Q]...)
+            seeds = [re.search(r"\[(\d{1,2})\]", r.get_text(" ", strip=True)) for r in rows]
+            seeds = [int(x[1]) if x and 1 <= int(x[1]) <= 64 else None for x in seeds]
+            me_s, opp_s = seeds[side], seeds[1 - side]
             foot = [x.get_text(" ", strip=True) for x in el.select(".match__footer-list-item .nav-link__value")]
             dm = re.search(r"(\d{2})/(\d{2})/(\d{4})(?:\s+(\d{1,2}:\d{2}))?", " ".join(foot))
             date = datetime(int(dm[3]), int(dm[2]), int(dm[1])).date() if dm else None
@@ -154,7 +158,9 @@ def parse(page, rid, names):
                     score += " ret."
                 if "walkover" in text:
                     base["round"] += " (walkover)"
-                sides = dict(p1="", p1Id=rid, p2=opp, p2Id=None) if won else dict(p1=opp, p1Id=None, p2="", p2Id=rid)
+                sides = dict(p1="", p1Id=rid, p2=opp, p2Id=None, p1Seed=me_s, p2Seed=opp_s) if won \
+                    else dict(p1=opp, p1Id=None, p2="", p2Id=rid, p1Seed=opp_s, p2Seed=me_s)
+                sides = {k: v for k, v in sides.items() if v is not None or not k.endswith("Seed")}
                 out.append(dict(base, date=date.isoformat(), status="finished", score=score, winner=1, **sides,
                                 **({"court": court} if court else {})))
             else:
@@ -169,7 +175,8 @@ def parse(page, rid, names):
                     continue  # never got a result: leave it out
                 slot = ", ".join(x for x in [court, dm[4] if dm and dm[4] else ""] if x)
                 out.append(dict(base, date=date.isoformat(), status="scheduled", score="", winner=None,
-                                p1="", p1Id=rid, p2=opp, p2Id=None, slot=slot))
+                                p1="", p1Id=rid, p2=opp, p2Id=None, slot=slot,
+                                **{k: v for k, v in (("p1Seed", me_s), ("p2Seed", opp_s)) if v}))
     return out
 
 
