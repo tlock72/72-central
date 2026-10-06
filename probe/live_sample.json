@@ -1,0 +1,153 @@
+{
+ "id": "184348",
+ "uid": "s:850~l:851~e:959-2026~c:184348",
+ "date": "2026-10-06T10:15Z",
+ "startDate": "2026-10-06T10:15Z",
+ "timeValid": true,
+ "recent": true,
+ "status": {
+  "period": 2,
+  "type": {
+   "id": "2",
+   "name": "STATUS_IN_PROGRESS",
+   "state": "in",
+   "completed": false,
+   "description": "In Progress",
+   "detail": "2nd Set",
+   "shortDetail": "2nd"
+  }
+ },
+ "venue": {
+  "fullName": "Beijing, China PR",
+  "court": "Lotus"
+ },
+ "format": {
+  "regulation": {
+   "periods": 5
+  }
+ },
+ "notes": [
+  {
+   "text": "Sinja Kraus (AUT) is tied with (26) Nikola Bartunkova (CZE) 0-6 3-1",
+   "type": "event"
+  }
+ ],
+ "geoBroadcasts": [],
+ "broadcasts": [],
+ "broadcast": "",
+ "competitors": [
+  {
+   "id": "7804",
+   "uid": "s:850~l:851~a:7804",
+   "type": "athlete",
+   "order": 2,
+   "homeAway": "away",
+   "possession": true,
+   "curatedRank": {
+    "current": 26
+   },
+   "linescores": [
+    {
+     "value": 6.0,
+     "winner": true
+    },
+    {
+     "value": 1.0
+    }
+   ],
+   "athlete": {
+    "guid": "29e41112-c193-395f-b9bc-c248bfdbf9ab",
+    "displayName": "Nikola Bartunkova",
+    "shortName": "N. Bartunkova",
+    "fullName": "Nikola Bartunkova",
+    "flag": {
+     "href": "https://a.espncdn.com/i/teamlogos/countries/500/cze.png",
+     "alt": "Czechia",
+     "rel": [
+      "country-flag"
+     ]
+    },
+    "links": [
+     {
+      "language": "en-US",
+      "rel": [
+       "playercard",
+       "desktop",
+       "athlete"
+      ],
+      "href": "https://www.espn.com/tennis/player/_/id/7804/nikola-bartunkova",
+      "text": "Player Card",
+      "shortText": "Player Card",
+      "isExternal": false,
+      "isPremium": false,
+      "isHidden": false
+     }
+    ]
+   },
+   "statistics": []
+  },
+  {
+   "id": "7797",
+   "uid": "s:850~l:851~a:7797",
+   "type": "athlete",
+   "order": 1,
+   "homeAway": "home",
+   "possession": false,
+   "linescores": [
+    {
+     "value": 0.0,
+     "winner": false
+    },
+    {
+     "value": 3.0
+    }
+   ],
+   "athlete": {
+    "guid": "e6642736-511e-3338-a95b-e8b576051d74",
+    "displayName": "Sinja Kraus",
+    "shortName": "S. Kraus",
+    "fullName": "Sinja Kraus",
+    "flag": {
+     "href": "https://a.espncdn.com/i/teamlogos/countries/500/aut.png",
+     "alt": "Austria",
+     "rel": [
+      "country-flag"
+     ]
+    },
+    "links": [
+     {
+      "language": "en-US",
+      "rel": [
+       "playercard",
+       "desktop",
+       "athlete"
+      ],
+      "href": "https://www.espn.com/tennis/player/_/id/7797/sinja-kraus",
+      "text": "Player Card",
+      "shortText": "Player Card",
+      "isExternal": false,
+      "isPremium": false,
+      "isHidden": false
+     }
+    ]
+   },
+   "statistics": []
+  }
+ ],
+ "situation": {
+  "onFirst": false,
+  "onSecond": false,
+  "onThird": false
+ },
+ "tournamentId": 959,
+ "type": {
+  "id": "2",
+  "text": "Women's Singles",
+  "slug": "womens-singles"
+ },
+ "round": {
+  "id": "4",
+  "displayName": "Round 4"
+ },
+ "wasSuspended": false
+}

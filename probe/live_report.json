@@ -1,0 +1,520 @@
+{
+ "ran": "2026-10-06T11:30:03+00:00",
+ "minutes": 20.0,
+ "polls": 59,
+ "errors": [],
+ "matches": {
+  "184348": {
+   "match": "Nikola Bartunkova v Sinja Kraus",
+   "ours": [],
+   "times": [
+    "11:09:52",
+    "11:11:55",
+    "11:13:57",
+    "11:17:00",
+    "11:17:41",
+    "11:19:03",
+    "11:21:26",
+    "11:25:57",
+    "11:26:58",
+    "11:29:42"
+   ],
+   "changes": 9,
+   "medianGapSeconds": 123
+  },
+  "186323": {
+   "match": "Aleksandar Vukic v Pavel Kotov",
+   "ours": [],
+   "times": [
+    "11:09:52",
+    "11:12:56",
+    "11:15:59",
+    "11:20:45",
+    "11:23:55",
+    "11:26:18"
+   ],
+   "changes": 5,
+   "medianGapSeconds": 184
+  },
+  "185290": {
+   "match": "Tamara Korpatsch v Lu Jia-Jing",
+   "ours": [],
+   "times": [
+    "11:09:52",
+    "11:10:33",
+    "11:12:35",
+    "11:14:38",
+    "11:15:39",
+    "11:21:05",
+    "11:23:35",
+    "11:26:18",
+    "11:27:39",
+    "11:29:42"
+   ],
+   "changes": 9,
+   "medianGapSeconds": 123
+  },
+  "185228": {
+   "match": "Alicia Dudeney v Antonia Ruzic",
+   "ours": [
+    "dudeney"
+   ],
+   "times": [
+    "11:09:52",
+    "11:22:33",
+    "11:23:14",
+    "11:26:38",
+    "11:28:20"
+   ],
+   "changes": 4,
+   "medianGapSeconds": 204
+  },
+  "185221": {
+   "match": "Viktoria Hruncakova v Aysegul Mert",
+   "ours": [],
+   "times": [
+    "11:09:52",
+    "11:18:22",
+    "11:19:03",
+    "11:20:45",
+    "11:22:33",
+    "11:25:37",
+    "11:26:18"
+   ],
+   "changes": 6,
+   "medianGapSeconds": 108
+  },
+  "185240": {
+   "match": "Oksana Selekhmeteva v Lola Radivojevic",
+   "ours": [],
+   "times": [
+    "11:09:52",
+    "11:16:40",
+    "11:21:05",
+    "11:21:46",
+    "11:23:55",
+    "11:26:18",
+    "11:29:22"
+   ],
+   "changes": 6,
+   "medianGapSeconds": 184
+  },
+  "183468": {
+   "match": "Alex de Minaur v Novak Djokovic",
+   "ours": [
+    "deminaur"
+   ],
+   "times": [
+    "11:14:38",
+    "11:15:19",
+    "11:18:22",
+    "11:19:23",
+    "11:26:18",
+    "11:26:38",
+    "11:29:01",
+    "11:29:42"
+   ],
+   "changes": 7,
+   "medianGapSeconds": 61
+  }
+ },
+ "log": [
+  {
+   "t": "11:09:52",
+   "id": "184348",
+   "match": "Nikola Bartunkova v Sinja Kraus",
+   "ours": [],
+   "sig": "6,1{\"possession\": true} | 0,3{\"possession\": false} [2nd Set] {\"situation\": {\"onFirst\": false, \"onSecond\": false, \"onThird\": false}}"
+  },
+  {
+   "t": "11:09:52",
+   "id": "186323",
+   "match": "Aleksandar Vukic v Pavel Kotov",
+   "ours": [],
+   "sig": "3,1 | 6,2 [2nd Set] "
+  },
+  {
+   "t": "11:09:52",
+   "id": "185290",
+   "match": "Tamara Korpatsch v Lu Jia-Jing",
+   "ours": [],
+   "sig": "6,3{\"possession\": true} | 2,1{\"possession\": false} [2nd Set] {\"situation\": {\"onFirst\": false, \"onSecond\": false, \"onThird\": false}}"
+  },
+  {
+   "t": "11:09:52",
+   "id": "185228",
+   "match": "Alicia Dudeney v Antonia Ruzic",
+   "ours": [
+    "dudeney"
+   ],
+   "sig": "3,6,1{\"possession\": true} | 6,3,0{\"possession\": false} [3rd Set] {\"situation\": {\"onFirst\": false, \"onSecond\": false, \"onThird\": false}}"
+  },
+  {
+   "t": "11:09:52",
+   "id": "185221",
+   "match": "Viktoria Hruncakova v Aysegul Mert",
+   "ours": [],
+   "sig": "6,0{\"possession\": true} | 2,1{\"possession\": false} [2nd Set] {\"situation\": {\"onFirst\": false, \"onSecond\": false, \"onThird\": false}}"
+  },
+  {
+   "t": "11:09:52",
+   "id": "185240",
+   "match": "Oksana Selekhmeteva v Lola Radivojevic",
+   "ours": [],
+   "sig": "3 | 2 [1st Set] "
+  },
+  {
+   "t": "11:10:33",
+   "id": "185290",
+   "match": "Tamara Korpatsch v Lu Jia-Jing",
+   "ours": [],
+   "sig": "6,3 | 2,2 [2nd Set] "
+  },
+  {
+   "t": "11:11:55",
+   "id": "184348",
+   "match": "Nikola Bartunkova v Sinja Kraus",
+   "ours": [],
+   "sig": "6,2 | 0,3 [2nd Set] "
+  },
+  {
+   "t": "11:12:35",
+   "id": "185290",
+   "match": "Tamara Korpatsch v Lu Jia-Jing",
+   "ours": [],
+   "sig": "6,3{\"possession\": false} | 2,2{\"possession\": true} [2nd Set] {\"situation\": {\"onFirst\": false, \"onSecond\": false, \"onThird\": false}}"
+  },
+  {
+   "t": "11:12:56",
+   "id": "186323",
+   "match": "Aleksandar Vukic v Pavel Kotov",
+   "ours": [],
+   "sig": "3,1 | 6,3 [2nd Set] "
+  },
+  {
+   "t": "11:13:57",
+   "id": "184348",
+   "match": "Nikola Bartunkova v Sinja Kraus",
+   "ours": [],
+   "sig": "6,2{\"possession\": false} | 0,3{\"possession\": true} [2nd Set] {\"situation\": {\"onFirst\": false, \"onSecond\": false, \"onThird\": false}}"
+  },
+  {
+   "t": "11:14:38",
+   "id": "183468",
+   "match": "Alex de Minaur v Novak Djokovic",
+   "ours": [
+    "deminaur"
+   ],
+   "sig": " |  [1st Set] "
+  },
+  {
+   "t": "11:14:38",
+   "id": "185290",
+   "match": "Tamara Korpatsch v Lu Jia-Jing",
+   "ours": [],
+   "sig": "6,3 | 2,3 [2nd Set] "
+  },
+  {
+   "t": "11:15:19",
+   "id": "183468",
+   "match": "Alex de Minaur v Novak Djokovic",
+   "ours": [
+    "deminaur"
+   ],
+   "sig": "0{\"possession\": false} | 0{\"possession\": true} [1st Set] {\"situation\": {\"onFirst\": false, \"onSecond\": false, \"onThird\": false}}"
+  },
+  {
+   "t": "11:15:39",
+   "id": "185290",
+   "match": "Tamara Korpatsch v Lu Jia-Jing",
+   "ours": [],
+   "sig": "6,3{\"possession\": true} | 2,3{\"possession\": false} [2nd Set] {\"situation\": {\"onFirst\": false, \"onSecond\": false, \"onThird\": false}}"
+  },
+  {
+   "t": "11:15:59",
+   "id": "186323",
+   "match": "Aleksandar Vukic v Pavel Kotov",
+   "ours": [],
+   "sig": "3,1 | 6,4 [2nd Set] "
+  },
+  {
+   "t": "11:16:40",
+   "id": "185240",
+   "match": "Oksana Selekhmeteva v Lola Radivojevic",
+   "ours": [],
+   "sig": "3{\"possession\": false} | 2{\"possession\": true} [1st Set] {\"situation\": {\"onFirst\": false, \"onSecond\": false, \"onThird\": false}}"
+  },
+  {
+   "t": "11:17:00",
+   "id": "184348",
+   "match": "Nikola Bartunkova v Sinja Kraus",
+   "ours": [],
+   "sig": "6,2 | 0,4 [2nd Set] "
+  },
+  {
+   "t": "11:17:41",
+   "id": "184348",
+   "match": "Nikola Bartunkova v Sinja Kraus",
+   "ours": [],
+   "sig": "6,2{\"possession\": true} | 0,4{\"possession\": false} [2nd Set] {\"situation\": {\"onFirst\": false, \"onSecond\": false, \"onThird\": false}}"
+  },
+  {
+   "t": "11:18:22",
+   "id": "183468",
+   "match": "Alex de Minaur v Novak Djokovic",
+   "ours": [
+    "deminaur"
+   ],
+   "sig": "0 | 1 [1st Set] "
+  },
+  {
+   "t": "11:18:22",
+   "id": "185221",
+   "match": "Viktoria Hruncakova v Aysegul Mert",
+   "ours": [],
+   "sig": "6,0 | 2,2 [2nd Set] "
+  },
+  {
+   "t": "11:19:03",
+   "id": "184348",
+   "match": "Nikola Bartunkova v Sinja Kraus",
+   "ours": [],
+   "sig": "6,3 | 0,4 [2nd Set] "
+  },
+  {
+   "t": "11:19:03",
+   "id": "185221",
+   "match": "Viktoria Hruncakova v Aysegul Mert",
+   "ours": [],
+   "sig": "6,0{\"possession\": false} | 2,2{\"possession\": true} [2nd Set] {\"situation\": {\"onFirst\": false, \"onSecond\": false, \"onThird\": false}}"
+  },
+  {
+   "t": "11:19:23",
+   "id": "183468",
+   "match": "Alex de Minaur v Novak Djokovic",
+   "ours": [
+    "deminaur"
+   ],
+   "sig": "0{\"possession\": true} | 1{\"possession\": false} [1st Set] {\"situation\": {\"onFirst\": false, \"onSecond\": false, \"onThird\": false}}"
+  },
+  {
+   "t": "11:20:45",
+   "id": "186323",
+   "match": "Aleksandar Vukic v Pavel Kotov",
+   "ours": [],
+   "sig": "3,2 | 6,4 [2nd Set] "
+  },
+  {
+   "t": "11:20:45",
+   "id": "185221",
+   "match": "Viktoria Hruncakova v Aysegul Mert",
+   "ours": [],
+   "sig": "6,0 | 2,3 [2nd Set] "
+  },
+  {
+   "t": "11:21:05",
+   "id": "185290",
+   "match": "Tamara Korpatsch v Lu Jia-Jing",
+   "ours": [],
+   "sig": "6,4 | 2,3 [2nd Set] "
+  },
+  {
+   "t": "11:21:05",
+   "id": "185240",
+   "match": "Oksana Selekhmeteva v Lola Radivojevic",
+   "ours": [],
+   "sig": "3 | 3 [1st Set] "
+  },
+  {
+   "t": "11:21:26",
+   "id": "184348",
+   "match": "Nikola Bartunkova v Sinja Kraus",
+   "ours": [],
+   "sig": "6,3{\"possession\": false} | 0,4{\"possession\": true} [2nd Set] {\"situation\": {\"onFirst\": false, \"onSecond\": false, \"onThird\": false}}"
+  },
+  {
+   "t": "11:21:46",
+   "id": "185240",
+   "match": "Oksana Selekhmeteva v Lola Radivojevic",
+   "ours": [],
+   "sig": "3{\"possession\": true} | 3{\"possession\": false} [1st Set] {\"situation\": {\"onFirst\": false, \"onSecond\": false, \"onThird\": false}}"
+  },
+  {
+   "t": "11:22:33",
+   "id": "185228",
+   "match": "Alicia Dudeney v Antonia Ruzic",
+   "ours": [
+    "dudeney"
+   ],
+   "sig": "3,6,2 | 6,3,0 [3rd Set] "
+  },
+  {
+   "t": "11:22:33",
+   "id": "185221",
+   "match": "Viktoria Hruncakova v Aysegul Mert",
+   "ours": [],
+   "sig": "6,0{\"possession\": true} | 2,3{\"possession\": false} [2nd Set] {\"situation\": {\"onFirst\": false, \"onSecond\": false, \"onThird\": false}}"
+  },
+  {
+   "t": "11:23:14",
+   "id": "185228",
+   "match": "Alicia Dudeney v Antonia Ruzic",
+   "ours": [
+    "dudeney"
+   ],
+   "sig": "3,6,2{\"possession\": false} | 6,3,0{\"possession\": true} [3rd Set] {\"situation\": {\"onFirst\": false, \"onSecond\": false, \"onThird\": false}}"
+  },
+  {
+   "t": "11:23:35",
+   "id": "185290",
+   "match": "Tamara Korpatsch v Lu Jia-Jing",
+   "ours": [],
+   "sig": "6,4{\"possession\": false} | 2,3{\"possession\": true} [2nd Set] {\"situation\": {\"onFirst\": false, \"onSecond\": false, \"onThird\": false}}"
+  },
+  {
+   "t": "11:23:55",
+   "id": "186323",
+   "match": "Aleksandar Vukic v Pavel Kotov",
+   "ours": [],
+   "sig": "3,2 | 6,5 [2nd Set] "
+  },
+  {
+   "t": "11:23:55",
+   "id": "185240",
+   "match": "Oksana Selekhmeteva v Lola Radivojevic",
+   "ours": [],
+   "sig": "4 | 3 [1st Set] "
+  },
+  {
+   "t": "11:25:37",
+   "id": "185221",
+   "match": "Viktoria Hruncakova v Aysegul Mert",
+   "ours": [],
+   "sig": "6,1 | 2,3 [2nd Set] "
+  },
+  {
+   "t": "11:25:57",
+   "id": "184348",
+   "match": "Nikola Bartunkova v Sinja Kraus",
+   "ours": [],
+   "sig": "6,3 | 0,5 [2nd Set] "
+  },
+  {
+   "t": "11:26:18",
+   "id": "183468",
+   "match": "Alex de Minaur v Novak Djokovic",
+   "ours": [
+    "deminaur"
+   ],
+   "sig": "1 | 1 [1st Set] "
+  },
+  {
+   "t": "11:26:18",
+   "id": "186323",
+   "match": "Aleksandar Vukic v Pavel Kotov",
+   "ours": [],
+   "sig": "3,3 | 6,5 [2nd Set] "
+  },
+  {
+   "t": "11:26:18",
+   "id": "185290",
+   "match": "Tamara Korpatsch v Lu Jia-Jing",
+   "ours": [],
+   "sig": "6,4 | 2,4 [2nd Set] "
+  },
+  {
+   "t": "11:26:18",
+   "id": "185221",
+   "match": "Viktoria Hruncakova v Aysegul Mert",
+   "ours": [],
+   "sig": "6,1{\"possession\": false} | 2,3{\"possession\": true} [2nd Set] {\"situation\": {\"onFirst\": false, \"onSecond\": false, \"onThird\": false}}"
+  },
+  {
+   "t": "11:26:18",
+   "id": "185240",
+   "match": "Oksana Selekhmeteva v Lola Radivojevic",
+   "ours": [],
+   "sig": "4{\"possession\": false} | 3{\"possession\": true} [1st Set] {\"situation\": {\"onFirst\": false, \"onSecond\": false, \"onThird\": false}}"
+  },
+  {
+   "t": "11:26:38",
+   "id": "183468",
+   "match": "Alex de Minaur v Novak Djokovic",
+   "ours": [
+    "deminaur"
+   ],
+   "sig": "1{\"possession\": false} | 1{\"possession\": true} [1st Set] {\"situation\": {\"onFirst\": false, \"onSecond\": false, \"onThird\": false}}"
+  },
+  {
+   "t": "11:26:38",
+   "id": "185228",
+   "match": "Alicia Dudeney v Antonia Ruzic",
+   "ours": [
+    "dudeney"
+   ],
+   "sig": "3,6,2 | 6,3,1 [3rd Set] "
+  },
+  {
+   "t": "11:26:58",
+   "id": "184348",
+   "match": "Nikola Bartunkova v Sinja Kraus",
+   "ours": [],
+   "sig": "6,3{\"possession\": true} | 0,5{\"possession\": false} [2nd Set] {\"situation\": {\"onFirst\": false, \"onSecond\": false, \"onThird\": false}}"
+  },
+  {
+   "t": "11:27:39",
+   "id": "185290",
+   "match": "Tamara Korpatsch v Lu Jia-Jing",
+   "ours": [],
+   "sig": "6,4{\"possession\": true} | 2,4{\"possession\": false} [2nd Set] {\"situation\": {\"onFirst\": false, \"onSecond\": false, \"onThird\": false}}"
+  },
+  {
+   "t": "11:28:20",
+   "id": "185228",
+   "match": "Alicia Dudeney v Antonia Ruzic",
+   "ours": [
+    "dudeney"
+   ],
+   "sig": "3,6,2{\"possession\": true} | 6,3,1{\"possession\": false} [3rd Set] {\"situation\": {\"onFirst\": false, \"onSecond\": false, \"onThird\": false}}"
+  },
+  {
+   "t": "11:29:01",
+   "id": "183468",
+   "match": "Alex de Minaur v Novak Djokovic",
+   "ours": [
+    "deminaur"
+   ],
+   "sig": "1 | 2 [1st Set] "
+  },
+  {
+   "t": "11:29:22",
+   "id": "185240",
+   "match": "Oksana Selekhmeteva v Lola Radivojevic",
+   "ours": [],
+   "sig": "4 | 4 [1st Set] "
+  },
+  {
+   "t": "11:29:42",
+   "id": "183468",
+   "match": "Alex de Minaur v Novak Djokovic",
+   "ours": [
+    "deminaur"
+   ],
+   "sig": "1{\"possession\": true} | 2{\"possession\": false} [1st Set] {\"situation\": {\"onFirst\": false, \"onSecond\": false, \"onThird\": false}}"
+  },
+  {
+   "t": "11:29:42",
+   "id": "184348",
+   "match": "Nikola Bartunkova v Sinja Kraus",
+   "ours": [],
+   "sig": "6,4 | 0,5 [2nd Set] "
+  },
+  {
+   "t": "11:29:42",
+   "id": "185290",
+   "match": "Tamara Korpatsch v Lu Jia-Jing",
+   "ours": [],
+   "sig": "6,5 | 2,4 [2nd Set] "
+  }
+ ]
+}
