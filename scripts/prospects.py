@@ -308,7 +308,9 @@ def te_past(pub, player, names):
         return None
     for tbl in soup.find_all("table"):
         trs = tbl.find_all("tr")
-        cells = [[c.get_text(" ", strip=True).lower() for c in tr.find_all(["th", "td"])] for tr in trs]
+        # "Rank" spans two columns, so each heading counts once per column it covers
+        cells = [[t for c in tr.find_all(["th", "td"]) for t in [c.get_text(" ", strip=True).lower()] + [""] * (int(c.get("colspan") or 1) - 1)]
+                 for tr in trs]
         hi = next((i for i, c in enumerate(cells) if "category" in c and "rank" in c), None)
         if hi is None:
             continue
