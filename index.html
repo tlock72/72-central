@@ -462,6 +462,9 @@ a.cn-st.ok:hover{border-color:var(--gold)}
 .cn .ch.note .sh{display:none}
 .cn-more{flex:1 1 auto;display:block;padding:10px 20px;font-family:var(--display);text-transform:uppercase;letter-spacing:.14em;font-size:11px;color:var(--gold);text-align:left}
 .cn-more:hover{background:var(--gold-dim)}
+/* drop-down arrow: points down when closed, flips up when the matches are showing */
+.cn-more .ar{display:inline-grid;place-items:center;width:18px;height:18px;margin-right:8px;border:1px solid var(--gold);border-radius:50%;font-size:11px;line-height:1;letter-spacing:0;vertical-align:-3px;transition:transform .2s}
+.cn-more.on .ar{transform:rotate(180deg)}
 .cn-res{padding:4px 20px 14px;border-top:1px solid var(--line-2)}
 .cn-res[hidden]{display:none}
 .cn-tn{margin:12px 0 4px;font-size:12px;color:var(--text);font-weight:600}
@@ -2426,7 +2429,7 @@ function cnCard(k, p){
     <div class="cn-path">${path}</div>
     ${unsure.length ? `<div class="cn-note">${unsure.map(esc).join("<br>")}. Add the right id in prospects.json.</div>` : ""}
     ${rows.length ? `<div class="sq-row h"><span>Ranking</span><span>Rank</span><span>Best</span><span>1 wk</span><span>3 mo</span><span>12 mo</span></div>${rows.join("")}` : ""}
-    <div class="cn-acts">${res.length ? `<button class="cn-more" data-k="${esc(k)}">${open ? "Hide" : "Show"} the last 12 months <span class="n">(${res.length} match${res.length === 1 ? "" : "es"})</span></button>` : ""}${cnRemoval(k, p.typed || p.name)}</div>
+    <div class="cn-acts">${res.length ? `<button class="cn-more${open ? " on" : ""}" data-k="${esc(k)}" aria-expanded="${open}"><span class="ar" aria-hidden="true">▾</span>${open ? "Hide" : "Show"} the last 12 months <span class="n">(${res.length} match${res.length === 1 ? "" : "es"})</span></button>` : ""}${cnRemoval(k, p.typed || p.name)}</div>
     ${res.length ? `<div class="cn-res"${open ? "" : " hidden"}>${resHtml}</div>` : ""}</div>`;
 }
 // "Request removal": anyone can ask; Tobey gets an email and nothing is removed until he approves it
