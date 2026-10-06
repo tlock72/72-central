@@ -968,6 +968,22 @@ main.ptr-go,footer.ptr-go{transition:transform .35s cubic-bezier(.2,.8,.3,1)}
 @keyframes ptrAce{0%{transform:none}25%{transform:translate(-12px,2px) scale(1.1)}100%{transform:translate(70vw,-6px) rotate(900deg) scale(.6);opacity:0}}
 @keyframes ptrOut{0%{transform:none}30%{transform:translateY(-10px)}100%{transform:translateY(14px) rotate(-200deg) scale(.7);opacity:0}}
 @media (prefers-reduced-motion:reduce){#ptr .ptr-ball,#ptr .ptr-ball img{animation:none!important}}
+/* Phone: slimmer search boxes and menus (Scouting Corner, Roster, Filtered Rankings), matching the Tour Schedule ones */
+@media (max-width:640px){
+  #cnQ,#sqQ{height:28px;font-size:12px;padding:0 12px}
+  .p-find{width:62%;height:28px;padding:0 12px;font-size:11.5px;margin-bottom:10px}
+  .sq-line.sq-search>#sqC{flex:0 0 auto;max-width:150px;height:28px;padding:0 24px 0 11px;font:10px var(--display);letter-spacing:.07em;text-transform:uppercase;color:var(--muted);text-overflow:ellipsis;background-position:calc(100% - 14px) 11px,calc(100% - 9px) 11px}
+  /* Add a prospect, once opened */
+  .cn-add form{gap:5px}
+  .cn-add form .sq-in{height:28px;font-size:11.5px;padding:0 11px}
+  .cn-add form select.sq-in{padding-right:24px;background-position:calc(100% - 14px) 11px,calc(100% - 9px) 11px}
+  .cn-add button[type=submit]{justify-self:end;height:26px;padding:0 20px;font-size:10px;letter-spacing:.1em}
+  .cn-optl{font-size:8.5px;margin-top:2px}
+  .cn-msg{font-size:10.5px}
+  .cn-ok{font-size:11px}
+  .cn-add .cn-ok button{height:26px;font-size:10px;padding:0 14px}
+  .cn-natl{top:31px}
+}
 </style>
 </head>
 <body>
