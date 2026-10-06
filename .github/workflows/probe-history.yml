@@ -1,0 +1,13 @@
+name: Check ranking history sources (one-off)
+on:
+  workflow_dispatch: {}
+  push:
+    branches: [claude/determined-bell-kuz5zo]
+    paths: [scripts/probe_history.py, .github/workflows/probe-history.yml]
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v6
+      - run: pip install beautifulsoup4
+      - run: python3 scripts/probe_history.py
