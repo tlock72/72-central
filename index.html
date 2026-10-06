@@ -3,6 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<script>/* iPhone/iPad: stop the page zooming in when a search box or menu is tapped (boxes are under 16px). iOS still allows pinch zoom with this; other phones would lose it, so they are left alone */if(/iPhone|iPad|iPod/.test(navigator.userAgent)||(navigator.platform==="MacIntel"&&navigator.maxTouchPoints>1))document.querySelector('meta[name="viewport"]').content+=", maximum-scale=1";</script>
 <title>72 Central</title>
 <link rel="icon" type="image/png" sizes="64x64" href="tab-icon.png?v=3">
 <!-- installable app: "Add to Home Screen" uses this icon and opens full-screen (manifest.json) -->
@@ -770,6 +771,12 @@ nav .sh,.nm-s{display:none}
   .sq-line .sq-mode{justify-self:start}
   .sq-line .chips{flex-wrap:nowrap;overflow-x:auto;scrollbar-width:none;-webkit-mask-image:linear-gradient(to right,#000 88%,transparent);mask-image:linear-gradient(to right,#000 88%,transparent);padding-right:24px}
   .sq-line .chips::-webkit-scrollbar{display:none}
+  .sq-line .chips{touch-action:pan-x pan-y;overscroll-behavior-x:contain;-webkit-overflow-scrolling:touch}
+  /* Tour Schedule: "Any 72 player" as a small pill like the buttons, and a slimmer search box */
+  #schPLine{grid-template-columns:50px auto minmax(0,1fr)}
+  #schPLine>.chips{grid-column:2;-webkit-mask-image:none;mask-image:none;padding-right:0}
+  #schP{grid-column:3;grid-row:1;justify-self:start;width:100%;max-width:150px;text-overflow:ellipsis;height:27px;padding:0 24px 0 11px;font:10px var(--display);letter-spacing:.07em;text-transform:uppercase;color:var(--muted);background-position:calc(100% - 14px) 11px,calc(100% - 9px) 11px}
+  #schQ{height:30px;font-size:12px;padding:0 12px}
   .sq-line .chip{flex:none}
   .sq-line.sq-search{display:flex;padding-top:0}
   .sq-line.sq-search>*{flex:1 1 0}
@@ -1111,7 +1118,7 @@ main.ptr-go,footer.ptr-go{transition:transform .35s cubic-bezier(.2,.8,.3,1)}
     <div class="sq-filters">
       <div class="sq-line"><span class="sq-lbl">Tour</span><div class="chips" id="schTours" role="group" aria-label="Tour"></div></div>
       <div class="sq-line" id="schLvlLine" hidden><span class="sq-lbl">Level</span><div class="chips" id="schLvls" role="group" aria-label="Level"></div></div>
-      <div class="sq-line"><span class="sq-lbl">Players</span><div class="chips" role="group" aria-label="Players"><button class="chip sch72 on" data-e="all">All events</button><button class="chip sch72" data-e="72">72 entered</button></div><select class="sq-in" id="schP" aria-label="72 player"></select></div>
+      <div class="sq-line" id="schPLine"><span class="sq-lbl">Players</span><div class="chips" role="group" aria-label="Players"><button class="chip sch72 on" data-e="all">All events</button><button class="chip sch72" data-e="72">72 entered</button></div><select class="sq-in" id="schP" aria-label="72 player"></select></div>
       <div class="sq-line sq-search"><input class="sq-in" id="schQ" type="search" placeholder="Search tournament or place" aria-label="Search tournament or place"></div>
     </div>
     <div class="sch-key" id="schKey"></div>
@@ -2141,7 +2148,10 @@ function schWeeks(e){
 const schLvl = e => e.cat.replace(/^Category /, "Cat ");
 function renderSchedule(){
   if (!$("#page-schedule")) return;
+  // keep the sliding rows where the finger left them (redrawing would jump them back to the start)
+  const sx = [$("#schTours").scrollLeft, $("#schLvls").scrollLeft];
   $("#schTours").innerHTML = SCH_TOURS.map(([k, l]) => `<button class="chip scht${SCH.tour === k ? " on" : ""}" data-t="${k}">${l}</button>`).join("");
+  $("#schTours").scrollLeft = sx[0];
   document.querySelectorAll(".sch72").forEach(b => b.classList.toggle("on", (b.dataset.e === "72") === SCH.e72));
   if (!SCHED) return;
   const evs = SCHED.events || [];
@@ -2155,6 +2165,7 @@ function renderSchedule(){
   if (SCH.lvl !== "all" && !lv.includes(SCH.lvl)) SCH.lvl = "all";
   $("#schLvlLine").hidden = lv.length < 2;
   $("#schLvls").innerHTML = [["all", "All"], ...lv.map(l => [l, l])].map(([k, l]) => `<button class="chip schl${SCH.lvl === k ? " on" : ""}" data-l="${esc(k)}">${esc(l)}</button>`).join("");
+  $("#schLvls").scrollLeft = sx[1];
   $("#schKey").innerHTML = SCH_GROUPS.map((t, i) => `<span class="sg${i + 1}"><i></i>${t}</span>`).join("");
   const q = sqKey(SCH.q);
   const rows = evs.filter(e => (SCH.tour === "all" || e.tour === SCH.tour) && (SCH.lvl === "all" || schLvl(e) === SCH.lvl)
@@ -2746,9 +2757,11 @@ window.addEventListener("hashchange", () => setTimeout(espnLive, 300));
     setTimeout(() => { box.className = ""; img.style.transform = ""; page.forEach(el => el.classList.remove("ptr-go")); }, 400); };
   // somewhere that scrolls by itself (a table, a list) gets the drag first
   const innerScrolled = el => { for (; el && el !== document.body; el = el.parentElement) if (el.scrollTop > 0) return true; return false; };
+  // a row that slides sideways (the filter buttons) is left to the finger, so a slightly downward swipe doesn't freeze it
+  const sideScroller = el => { for (; el && el !== document.body; el = el.parentElement) if (el.scrollWidth > el.clientWidth + 1 && /auto|scroll/.test(getComputedStyle(el).overflowX)) return true; return false; };
   addEventListener("touchstart", e => {
     y0 = null;
-    if (busy || e.touches.length !== 1 || window.scrollY > 0 || document.documentElement.classList.contains("locked") || $("#prof").open || innerScrolled(e.target)) return;
+    if (busy || e.touches.length !== 1 || window.scrollY > 0 || document.documentElement.classList.contains("locked") || $("#prof").open || innerScrolled(e.target) || sideScroller(e.target)) return;
     y0 = e.touches[0].clientY; x0 = e.touches[0].clientX; pull = 0;
   }, { passive: true });
   addEventListener("touchmove", e => {
