@@ -1,4 +1,4 @@
-name: Check Tenipo (one-off, test branch only)
+name: Check live-score site (one-off, test branch only)
 on:
   workflow_dispatch: {}
   push:
@@ -10,3 +10,5 @@ jobs:
     steps:
       - uses: actions/checkout@v6
       - run: python3 scripts/tenipo_check.py
+        env:
+          SITE: https://www.tennislive.net

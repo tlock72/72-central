@@ -1,22 +1,24 @@
-"""One-off test: could Tenipo (tenipo.com) give us live Challenger scores?
+"""One-off test: could a live-score site (Tenipo, tennislive.net...) give us live Challenger scores?
+The site is set with the SITE environment variable.
 
 Read-only, a handful of requests, nothing saved. It answers three questions:
   1) Can its live feed be read at all (from GitHub)?
   2) Would a browser on our site be allowed to read it (Access-Control-Allow-Origin)?
   3) What do its robots.txt and terms say?
 """
+import os
 import re
 import urllib.error
 import urllib.parse
 import urllib.request
 
-SITE = "https://tenipo.com"
+SITE = os.environ.get("SITE", "https://tenipo.com").rstrip("/")
 UA = "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/130 Safari/537.36"
 OUR_SITE = "https://tlock72.github.io"
 
 # roster surnames, to see whether 72 players appear in the feed
 src = open("scripts/update.py", encoding="utf-8").read()
-SURNAMES = sorted({n.split()[-1] for n in re.findall(r'\("([^"]+)", "(?:atp|wta)"\)', src)})
+SURNAMES = sorted({n.split()[-1] for n in re.findall(r'\("([^"]+)", "(?:atp|wta)"\)', src) if len(n.split()[-1]) >= 4})
 
 
 def get(url, origin=False):
@@ -53,6 +55,9 @@ st, h, home = show("home", SITE + "/", origin=True)
 t = re.search(r"<title>(.*?)</title>", home, re.S | re.I)
 print("title:", t.group(1).strip() if t else "-")
 print("mentions 'Challenger':", "challenger" in home.lower())
+low = home.lower()
+print("72 players named on the page:", [s for s in SURNAMES if re.search(r"\b" + re.escape(s.lower()) + r"\b", low)])
+print("score-like text on the page itself:", re.findall(r"\b[0-7]-[0-7]\b", home)[:15])
 
 print("=" * 70, "\n3) Terms / legal pages")
 links = set(re.findall(r'href="([^"]+)"', home))
@@ -73,16 +78,18 @@ print("scripts:", scripts[:20])
 js = home
 for s in scripts:
     u = urllib.parse.urljoin(SITE + "/", s)
-    if "tenipo" in urllib.parse.urlparse(u).netloc:
+    if urllib.parse.urlparse(SITE).netloc.replace("www.", "") in urllib.parse.urlparse(u).netloc:
         st, h, body = get(u)
         js += "\n" + body
+DOM = urllib.parse.urlparse(SITE).netloc.replace("www.", "")
 cands = set()
-for m in re.findall(r'["\']((?:https?://[^"\'\s]*tenipo[^"\'\s]*|/)[^"\'\s<>]*\.(?:xml|json|php|txt)[^"\'\s<>]*)["\']', js, re.I):
+for m in re.findall(r'["\']((?:https?://[^"\'\s/]+)?/[^"\'\s<>]*\.(?:xml|json|php|txt)[^"\'\s<>]*)["\']', js, re.I):
     cands.add(m)
-for m in re.findall(r'["\']((?:https?://[^"\'\s]*tenipo[^"\'\s]*)?/[^"\'\s<>]*(?:live|feed|ajax|xml|api|score)[^"\'\s<>]*)["\']', js, re.I):
+for m in re.findall(r'["\']((?:https?://[^"\'\s/]+)?/[^"\'\s<>]*(?:live|feed|ajax|xml|api|score)[^"\'\s<>]*)["\']', js, re.I):
     if not re.search(r"\.(css|png|jpg|svg|gif|webp|ico|woff2?)(\?|$)", m, re.I):
         cands.add(m)
-for g in ("/live", "/livescore", "/live-scores", "/challenger"):
+cands = {c for c in cands if c.startswith("/") or DOM in urllib.parse.urlparse(c).netloc}
+for g in ("/live", "/livescore", "/live-scores", "/challenger", "/atp-challenger/"):
     cands.add(g)
 print(f"{len(cands)} candidate URLs:", sorted(cands)[:40])
 
@@ -91,7 +98,7 @@ for c in sorted(cands)[:25]:
     u = urllib.parse.urljoin(SITE + "/", c)
     st, h, body = show("candidate", u, origin=True)
     low = body.lower()
-    found = [s for s in SURNAMES if s.lower() in low]
+    found = [s for s in SURNAMES if re.search(r"\b" + re.escape(s.lower()) + r"\b", low)]
     print(f"  contains 'challenger': {'challenger' in low} | score-like: {bool(re.search(r'[0-7]-[0-7]|[0-7]:[0-7]', body))} "
           f"| 72 players: {found[:10]}")
     print("  start:", re.sub(r"\s+", " ", body[:300]))
@@ -99,7 +106,8 @@ for c in sorted(cands)[:25]:
         best.append((u, hdr(h, "access-control-allow-origin")))
 
 print("=" * 70, "\nSUMMARY")
-print("robots.txt read:", bool(robots), "| disallows all:", bool(re.search(r"Disallow:\s*/\s*$", robots, re.M)))
+print("robots.txt read:", bool(robots), "| blocks ordinary visitors (User-agent: *):",
+      bool(re.search(r"User-agent:\s*\*\s*\n(?:(?!User-agent).*\n)*?\s*Disallow:\s*/\s*$", robots + "\n", re.M | re.I)))
 print("home page readable:", bool(home))
 print("feeds with Challenger / 72 data:", best or "none found")
 print("browser on our site allowed:", any(a in ("*", OUR_SITE) for _, a in best))
