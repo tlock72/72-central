@@ -31,6 +31,7 @@ from zoneinfo import ZoneInfo
 
 sys.path.insert(0, os.path.dirname(__file__))
 from update import ROSTER  # roster id -> (name, "atp" / "wta")
+import espn  # ESPN's free scoreboard: published ATP/WTA draws
 
 UK = ZoneInfo("Europe/London")
 NOW = datetime.now(timezone.utc)
@@ -565,6 +566,42 @@ def draw_entries(events):
             e72[:] = [x for x in e72 if x["id"] != rid] + [{"id": rid, "how": "In the draw"}]
 
 
+def espn_draws(events):
+    """ATP / WTA / WTA 125 events whose draw ESPN has published: every 72 player placed in it is shown, including
+    those whose first opponent isn't known yet (a bye, or a qualifier to come). Qualifying-only players say so."""
+    names = {(t, " ".join(sorted(espn.fold(n)))): rid for rid, (n, t) in ROSTER.items()}
+    found = 0
+    for league in ("atp", "wta"):
+        for d in (0, 6):
+            js = json.loads(get(f"{espn.SITE}/{league}/scoreboard?dates={(T + timedelta(days=d)).strftime('%Y%m%d')}"))
+            for ev in js.get("events") or []:
+                for g in ev.get("groupings") or []:
+                    slug = (g.get("grouping") or {}).get("slug") or ""
+                    if slug not in ("mens-singles", "womens-singles"):
+                        continue
+                    women, ours = slug.startswith("womens"), {}
+                    city = ""
+                    for c in g.get("competitions") or []:
+                        city = city or ((c.get("venue") or {}).get("fullName") or "").split(",")[0]
+                        qual = "qualif" in ((c.get("round") or {}).get("displayName") or "").lower()
+                        for p in c.get("competitors") or []:
+                            rid = names.get(("wta" if women else "atp", " ".join(sorted(espn.fold((p.get("athlete") or {}).get("displayName"))))))
+                            if rid:
+                                ours[rid] = ours.get(rid, True) and qual  # True only while every match is in qualifying
+                    start = (ev.get("date") or "")[:10]
+                    want = set(espn.fold(city))
+                    hits = [e for e in events if (e["tour"] == ("wta" if women else "atp") or (women and e["tour"] == "itfw" and "125" in e["cat"]))
+                            and want and want <= set(espn.fold(f'{e["place"]} {e["name"]}'))
+                            and (date.fromisoformat(e["start"]) - timedelta(days=4)).isoformat() <= start <= (date.fromisoformat(e["end"]) + timedelta(days=3)).isoformat()]
+                    if len(hits) != 1 or not in_window(hits[0]["start"], hits[0]["end"]):
+                        continue
+                    e72 = hits[0].setdefault("e72", [])
+                    for rid, qual in ours.items():
+                        e72[:] = [x for x in e72 if x["id"] != rid] + [{"id": rid, "how": "Qualifying draw" if qual else "In the draw"}]
+                        found += 1
+    print(f"ESPN draws: {found} places for 72 players")
+
+
 def main():
     prev = load(OUT, {})
     old = {}
@@ -662,6 +699,11 @@ def main():
         for e in atp_window:
             e["e72"] = [p for p in prev_e72.get(ev_key(e)) or [] if p["how"] != "In the draw"]
     draw_entries(events)
+    try:
+        espn_draws(events)
+    except Exception as x:
+        print("ESPN draws failed (entries from the other sources still show):", x)
+        errors["espn-draws"] = {"at": NOW.isoformat(timespec="seconds"), "msg": str(x)[:200]}
 
     for e in events:
         for k in ("wtaId", "year", "itfKey", "circuit", "teId"):

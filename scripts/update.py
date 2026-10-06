@@ -12,6 +12,7 @@ data.json back. Free plan = 100 requests/day, so calls are kept small:
   - first run only:       1 call per player (find their API ids -> players.json)
 """
 import json, os, sys, time, urllib.parse, urllib.request, urllib.error
+import espn  # ESPN's free scoreboard: the main source for ATP and WTA matches (no key, no daily limit)
 from datetime import date, datetime, timedelta, timezone
 from zoneinfo import ZoneInfo
 
@@ -259,6 +260,36 @@ def main():
     old = {m["apiId"]: m for m in data["matches"] if m.get("apiId")}
     new = {}
 
+    # 1b) ATP and WTA matches (tour events, their qualifying and WTA 125s) come from ESPN, which is free and has no
+    #     daily limit. The Live Tennis API is then only needed for Challengers, ITF events and juniors, and spends
+    #     no lookups on a match ESPN already has. If ESPN can't be read, the Live Tennis API covers everything as before.
+    try:
+        fresh = espn.fetch(ROSTER, load("schedule.json", {}).get("events") or [], NOW, data["matches"])
+        new.update(fresh)
+        data.pop("espnError", None)
+        print(f"ESPN: {len(fresh)} ATP/WTA matches of ours")
+    except Exception as e:
+        fresh = None
+        print("ESPN scoreboard failed, the Live Tennis API covers ATP/WTA this run:", e)
+        data["espnError"] = {"at": NOW.strftime("%Y-%m-%dT%H:%M:%SZ"), "msg": str(e)[:200]}
+
+    def ours(m):
+        return {x for x in (m.get("p1Id"), m.get("p2Id")) if x}
+
+    def opp(m):
+        """The opponent's name words (no initials), to tell whether two feeds list the same match."""
+        rid = m.get("p1Id") or m.get("p2Id")
+        return {w for w in espn.fold(m["p2"] if m.get("p1Id") == rid else m["p1"]) if len(w) > 1}
+
+    def same(a, b, days=1):
+        if not (ours(a) & ours(b)) or not (opp(a) & opp(b)) or not a.get("date") or not b.get("date"):
+            return False
+        return abs((date.fromisoformat(a["date"]) - date.fromisoformat(b["date"])).days) <= days
+
+    def on_espn(m):
+        """A Live Tennis API match that ESPN also has this run: no feed calls are spent on it."""
+        return fresh is not None and any(same(m, e) for e in fresh.values())
+
     # How long since a check last ran. The hourly and 2-hourly checks go by this, not by the clock minute:
     # GitHub often starts its scheduled runs 20-45 minutes late, and the backup timer's run then skips
     # (site updated under 20 minutes ago), so a "first half of the hour only" rule could miss them all day.
@@ -301,6 +332,9 @@ def main():
     for aid, m in old.items():
         if aid in new or m["status"] in ("cancelled",):
             continue
+        if isinstance(aid, str) or on_espn(m):
+            new[aid] = m  # ESPN matches are never looked up on the Live Tennis API
+            continue
         gone_live = m["status"] == "live" and live_run
         left_upcoming = m["status"] == "scheduled" and fetched_upcoming and m["date"] <= today_s
         if m["status"] == "scheduled" and fetched_upcoming and m["date"] > today_s:
@@ -322,6 +356,8 @@ def main():
             break
         if m["status"] not in ("scheduled", "live") or not m.get("date") or m["date"] >= today_s or m.get("checked") == today_s:
             continue
+        if isinstance(aid, str) or on_espn(m):
+            continue
         settled += 1
         try:
             done = settle(aid, m)
@@ -340,6 +376,8 @@ def main():
                 break
             if m.get("date") != today_s or m["status"] not in ("scheduled", "live") or m.get("polled") == uk_now.strftime("%H"):
                 continue
+            if isinstance(aid, str) or on_espn(m):
+                continue
             if m["status"] == "scheduled" and (not m.get("time") or m["time"] > now_hm):
                 continue
             if m["status"] == "live" and aid not in fresh_live and aid in old and old[aid]["status"] == "live":
@@ -353,11 +391,42 @@ def main():
                 got = dict(got, seenLive=NOW.strftime("%Y-%m-%dT%H:%M:%SZ"))
             new[aid] = dict(got or m, polled=uk_now.strftime("%H")) if not got or got["status"] in ("live", "scheduled") else got
 
-    # 5) Merge: keep hand-entered matches (no apiId) unless the API now has the same match
+    # 4d) One copy per match. Where ESPN and the Live Tennis API both list a match, ESPN's is kept. If both have a
+    #     final result and they disagree on who won, no result is shown: the match stays "result pending" and an
+    #     alert goes out (never pick one feed's word over the other's).
+    conflicts = []
+    rank = {"finished": 2, "live": 1}
+
+    def won(m, rid):
+        return m.get("winner") == 1 and m.get("p1Id") == rid  # finished matches always list the winner first
+
+    for aid, m in list(new.items()):
+        if isinstance(aid, str):
+            continue
+        twin = next((k for k, e in new.items() if isinstance(k, str) and same(m, e)), None)
+        if not twin:
+            continue
+        e, rid = new[twin], next(iter(ours(m) & ours(new[twin])))
+        if m["status"] == e["status"] == "finished" and won(m, rid) != won(e, rid):
+            conflicts.append(f'{e["p1"]} v {e["p2"]} ({e["tournament"]}, {e["date"]})')
+            new[twin] = dict(e, status="scheduled", score="", winner=None)
+        elif fresh is None and rank.get(m["status"], 0) > rank.get(e["status"], 0):
+            del new[twin]  # ESPN couldn't be read this run: keep whichever copy is further on
+            continue
+        del new[aid]
+    if conflicts:
+        data["conflicts"] = {"date": today_s, "matches": conflicts}
+        print("ESPN and the Live Tennis API disagree on the winner, result left blank:", conflicts)
+    elif (data.get("conflicts") or {}).get("date") != today_s:
+        data.pop("conflicts", None)
+
+    # 5) Merge: keep hand-entered matches (no apiId) unless a feed now has the same match (same 72 player and
+    #    opponent within 2 days, so a match moved to another day isn't listed twice)
     def key(m):
         return (m["date"], tuple(sorted(norm(m["p1"]).split()[-1:] + norm(m["p2"]).split()[-1:])))
     api_keys = {key(m) for m in new.values()}
-    manual = [m for m in data["matches"] if not m.get("apiId") and key(m) not in api_keys]
+    manual = [m for m in data["matches"] if not m.get("apiId") and key(m) not in api_keys
+              and not any(same(m, x, days=2) for x in new.values())]
     cutoff = (NOW - timedelta(days=7)).astimezone(UK).strftime("%Y-%m-%d")
     today = uk_now.strftime("%Y-%m-%d")
     merged = []
