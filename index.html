@@ -122,6 +122,12 @@ section.block{margin-bottom:38px}
 .rstats{display:flex;flex-wrap:wrap;gap:6px;padding:10px 16px 0}
 .rstats span{padding:2px 9px;border:1px solid var(--line-2);border-radius:999px;font-size:11px;color:var(--muted);white-space:nowrap}
 .rstats b{font-weight:600;color:var(--text)}
+/* in progress but play stopped (rain, light...): amber edge and tag, pulse paused */
+.match.delayed{border-color:rgba(240,190,90,.75)}
+.when.delayed{color:#F0BE5A}
+.when.delayed .pulse{background:#F0BE5A;animation:none}
+.dtag{display:inline-block;margin-left:6px;padding:1px 6px;border:1px solid rgba(240,190,90,.6);border-radius:4px;font-size:10px;letter-spacing:.1em}
+.note.delay{color:#F0BE5A}
 /* finals (coming up or today only): gold frame, gold header band, "Final" pill */
 .match.final{border-color:rgba(208,165,121,.7);box-shadow:0 0 0 1px rgba(208,165,121,.25),0 16px 44px -22px rgba(208,165,121,.55)}
 .match.final .m-top{background:linear-gradient(120deg,rgba(230,201,165,.22),rgba(208,165,121,.08) 60%,transparent);border-bottom-color:rgba(208,165,121,.35)}
@@ -975,7 +981,7 @@ const shortName = n => { const w = String(n || "").trim().split(/\s+/); return w
 // in progress (no live scoreboard) only if the feed confirmed it in the last 90 minutes; otherwise "result pending"
 const isLive = m => !!(m.status === "live" && m.seenLive && Date.now() - new Date(m.seenLive) < 90 * 60e3);
 // a finished match's stats from one player's side, all worked out from the score (nothing guessed):
-// games won-lost, how the match went, tie-breaks; a match tie-break in place of a final set isn't counted as games
+// how the match went, tie-breaks won-lost, a match tie-break in place of a final set
 function resultStats(m, side){
   const ret = /ret\.?\s*$/.test(m.score || "");
   const sets = String(m.score || "").replace(/\s*ret\.?\s*$/, "").split(",").map(s => s.trim().match(/^(\d+)-(\d+)/)).filter(Boolean)
@@ -983,10 +989,9 @@ function resultStats(m, side){
   if (!sets.length) return [];
   const mtb = sets.length >= 3 && Math.max(...sets[sets.length - 1]) >= 10;
   const games = mtb ? sets.slice(0, -1) : sets;
-  const g = games.reduce((t, s) => [t[0] + s[0], t[1] + s[1]], [0, 0]);
   const won = m.winner === side, setsLost = sets.filter(s => s[0] < s[1]).length;
   const tbs = games.filter(s => Math.max(...s) === 7 && Math.min(...s) === 6);
-  const out = [`Games <b>${g[0]}–${g[1]}</b>`];
+  const out = [];
   if (ret) out.push(won ? "Opponent retired" : "Retired");
   else if (won && !setsLost) out.push("Straight sets");
   else if (won && sets[0][0] < sets[0][1]) out.push("Came from a set down");
@@ -1014,7 +1019,9 @@ function card(m){
   const pending = !fin && !live && (m.date < ukDate() || m.status === "live");
   // a 72 win or loss (only when exactly one side is a 72 player and the winner is known)
   const wl = fin && m.winner && ours(m.p1Id) !== ours(m.p2Id) ? (ours(m.winner === 1 ? m.p1Id : m.p2Id) ? "win72" : "loss72") : "";
-  const when = live ? `<span class="when today"><span class="pulse"></span>In progress</span>`
+  const delayed = live && !!m.delay;
+  const when = delayed ? `<span class="when delayed"><span class="pulse"></span>In progress<span class="dtag">Delayed</span></span>`
+    : live ? `<span class="when today"><span class="pulse"></span>In progress</span>`
     : fin ? `<span class="when fin"><span class="rtag">${wl === "win72" ? "72 win" : wl === "loss72" ? "72 loss" : "Result"}</span>${esc(dayLabel(m.date))}</span>`
     : pending ? `<span class="when fin">${esc(dayLabel(m.date))} · result pending</span>`
     : `<span class="when ${today ? "today" : ""}">${esc(dayLabel(m.date))}</span>`;
@@ -1024,7 +1031,11 @@ function card(m){
       : `<div class="times"><span>Approx. start</span>${m.time ? `<b>${esc(m.time)} UK</b><b>${esc(esTime(m.date, m.time))} Spain</b>` : "<b>Time TBC</b>"}${asOf(m.timeAt)}</div>`) : "";
   // result tiles: the court played on (when the feed gave one) plus stats from the 72 player's side (the winner's if both or neither are 72)
   const focus = wl === "loss72" ? 3 - m.winner : m.winner || 1;
-  const rs = fin ? [m.court ? `Played on <b>${esc(m.court)}</b>` : "", ...resultStats(m, focus)].filter(Boolean) : [];
+  // finish time: only recorded when a check saw the match unfinished shortly before, so it's "by" that time (UK)
+  const end = fin && m.endAt && !isNaN(new Date(m.endAt)) ? new Date(m.endAt) : null;
+  const endTxt = end ? (ukDate(end) === m.date ? "" : end.toLocaleDateString("en-GB", { timeZone:"Europe/London", day:"numeric", month:"short" }) + " ")
+    + end.toLocaleTimeString("en-GB", { timeZone:"Europe/London", hour:"2-digit", minute:"2-digit", hourCycle:"h23" }) : "";
+  const rs = fin ? [m.court ? `Played on <b>${esc(m.court)}</b>` : "", endTxt ? `Finished by <b>${esc(endTxt)} UK</b>` : "", ...resultStats(m, focus)].filter(Boolean) : [];
   const stats = rs.length ? `<div class="rstats">${rs.map(x => `<span>${x}</span>`).join("")}</div>` : "";
   const p = byId[m.p1Id] || byId[m.p2Id];
   const link = safeUrl(p?.sofa);
@@ -1033,10 +1044,11 @@ function card(m){
   const btn = itfLink ? `<a class="live-btn" href="${esc(itfLink)}" target="_blank" rel="noopener"><span class="dot"></span>ITF draw &amp; results</a>`
     : teLink ? `<a class="live-btn" href="${esc(teLink)}" target="_blank" rel="noopener"><span class="dot"></span>Tennis Europe draw</a>`
     : !fin && link ? `<a class="live-btn" href="${esc(link)}" target="_blank" rel="noopener"><span class="dot"></span>${pending ? "Check result" : "Check live score"}</a>` : "";
-  return `<article class="match ${(today && !fin) || live ? "today" : ""} ${live ? "is-live" : ""} ${final ? "final" : ""} ${fin ? "done " + wl : ""}">
+  return `<article class="match ${(today && !fin) || live ? "today" : ""} ${live ? "is-live" : ""} ${delayed ? "delayed" : ""} ${final ? "final" : ""} ${fin ? "done " + wl : ""}">
     <div class="m-top"><span class="t">${esc(m.tournament)}${final ? `<span class="fpill">🏆 ${esc(m.round)}</span>` : `<span class="r">${esc(m.round || "")}</span>`}</span>${when}</div>
     ${times}${stats}
     <div class="m-body">${row(1)}${row(2)}</div>
+    ${delayed ? `<div class="note delay">Play is stopped for now${/^(delayed|in progress)$/i.test(m.delay) ? "" : ` (${esc(m.delay)})`}. The score is where play stopped; it updates when they're back on court.</div>` : ""}
     ${m.note ? `<div class="note">${esc(m.note)}</div>` : ""}
     ${(m.source === "itf" || m.source === "te") && !fin ? `<div class="note gen">Live score not available for this match. The result appears here after the next ${m.source === "itf" ? "ITF" : "Tennis Europe"} check.</div>` : ""}
     <div class="m-foot"><span>${esc(m.category || "")}</span>${btn}</div>
@@ -1988,13 +2000,18 @@ function applyLive(st){
     if (same === swap) continue;
     const sc = swap ? flipScore(x.score) : x.score, won = x.won && (swap ? 3 - x.won : x.won);
     if (x.court) m.court = x.court;
-    if (x.state === "in" && fresh) Object.assign(m, { status: "live", score: sc, seenLive: new Date(liveAt).toISOString(), espnLive: true });
+    // play stopped mid-match (rain, light, suspended overnight) stays in progress, marked as delayed
+    const stopped = /suspend|delay|interrupt|rain|halt/i.test(`${x.name} ${x.detail}`);
+    if ((x.state === "in" || (x.state === "post" && !won && stopped && sc)) && fresh)
+      Object.assign(m, { status: "live", score: sc, seenLive: new Date(liveAt).toISOString(), espnLive: true, delay: stopped ? x.detail || "Delayed" : "" });
     else if (x.state === "post" && won) {
       const wo = /walkover/i.test(x.detail), ret = !wo && sc && /retire|default/i.test(x.detail);
       const out = wo ? "" : won === 2 ? flipScore(sc) : sc;  // the site lists the winner first, with the score from their side
       if (wo) m.round = `${m.round || ""} (walkover)`.trim();
       if (won === 2) Object.assign(m, { p1: m.p2, p2: m.p1, p1Id: m.p2Id, p2Id: m.p1Id });
-      Object.assign(m, { status: "finished", winner: 1, score: out + (ret ? " ret." : ""), espnLive: false });
+      // seen in progress a minute ago and finished now: that's when it finished
+      if (!m.endAt && m.status === "live" && m.espnLive) m.endAt = new Date(liveAt).toISOString();
+      Object.assign(m, { status: "finished", winner: 1, score: out + (ret ? " ret." : ""), espnLive: false, delay: "" });
     } else if (x.state === "post" && /cancel/i.test(x.detail)) m.status = "cancelled";
     else if (x.state === "pre" && m.status === "scheduled" && x.at && !isNaN(new Date(x.at))) {
       // not started yet: if ESPN has moved the start time (delays, rain), show the new one straight away
@@ -2022,7 +2039,7 @@ async function espnLive(){
         const cs = (c.competitors || []).slice().sort((a, b) => (a.order || 0) - (b.order || 0));
         if (cs.length !== 2) continue;
         const st = c.status?.type || {}, won = cs.map((p, i) => p.winner ? i + 1 : 0).filter(Boolean);
-        LIVE[key] = { state: st.state, detail: st.detail || st.description || "", score: espnScore(cs[0], cs[1]), at: c.date, timeValid: c.timeValid !== false,
+        LIVE[key] = { state: st.state, name: st.name || "", detail: st.detail || st.description || "", score: espnScore(cs[0], cs[1]), at: c.date, timeValid: c.timeValid !== false,
           n1: cs[0].athlete?.displayName, n2: cs[1].athlete?.displayName, won: won.length === 1 ? won[0] : null, court: String(c.venue?.court || "").trim() };
       }
     }

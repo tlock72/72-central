@@ -106,6 +106,8 @@ def fetch(roster, events, now, matches=()):
                             continue
                         st = (c.get("status") or {}).get("type") or {}
                         state, detail = st.get("state"), (st.get("detail") or st.get("description") or "")
+                        # play stopped mid-match (rain, light, suspended overnight): still in progress, marked as delayed
+                        stopped = re.search(r"suspend|delay|interrupt|rain|halt", f'{st.get("name") or ""} {detail}', re.I)
                         city = ((c.get("venue") or {}).get("fullName") or "").split(",")[0].strip() or ev.get("shortName") or ev.get("name") or ""
                         rnd = ((c.get("round") or {}).get("displayName") or "")
                         m = {"apiId": key, "src": "espn", "date": day_uk, "time": when.strftime("%H:%M") if c.get("timeValid", True) else "",
@@ -118,8 +120,10 @@ def fetch(roster, events, now, matches=()):
                         if court:
                             m["court"] = court
                         won = [i + 1 for i, p in enumerate(cs) if p.get("winner")]
-                        if state == "in":
+                        if state == "in" or (state == "post" and not won and stopped and score(*cs)):
                             m.update(status="live", score=score(*cs))
+                            if stopped:
+                                m["delay"] = detail or "Delayed"
                         elif state == "post" and len(won) == 1:
                             sc = "" if re.search(r"walkover", detail, re.I) else score(*cs)
                             if re.search(r"retire|default", detail, re.I) and sc:
