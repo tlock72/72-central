@@ -58,6 +58,8 @@ h1 .n{color:var(--gold)}
 .sec-h h2 .dt{color:var(--gold);margin-left:10px;font-size:13px;letter-spacing:.12em}
 .sec-h .count{font-family:var(--display);font-size:12px;color:var(--navy);background:var(--gold);border-radius:999px;padding:2px 9px;font-weight:600}
 .sec-h .rule{flex:1;height:1px;background:var(--line)}
+.live-note{margin:-6px 0 14px;font-size:12px;color:var(--muted);line-height:1.5}
+.live-note.err{color:#F3C1C0}
 .sec-d{margin:-4px 0 16px;font-size:12px;color:var(--muted);line-height:1.5;max-width:720px}
 .r-group{grid-column:1/-1;font-family:var(--display);letter-spacing:.16em;text-transform:uppercase;font-size:12px;color:var(--gold);margin-top:8px}
 .pl .rk-n{color:var(--gold);font-family:var(--display);font-weight:500;margin-right:4px}
@@ -681,7 +683,8 @@ html.name-only .gate-box h2,html.name-only .gate-digits{display:none}
 
     <section class="block">
       <div class="sec-h"><h2>Today's matches<span id="todayLbl" class="dt"></span></h2><span class="count" id="cToday">0</span><span class="rule"></span></div>
-      <p class="sec-d">Every 72 match scheduled for today (UK date). Matches show <b>In progress</b> once they start and the final score once they finish (checked about every hour). ITF junior and Tennis Europe matches have no live scoring, so their results appear after the next check. For point-by-point scores, check SofaScore.</p>
+      <p class="sec-d">Every 72 match scheduled for today (UK date). Matches show <b>In progress</b> once they start and the final score once they finish. ATP and WTA tour matches (and WTA 125s) update live from ESPN every minute while this page is open; Challengers and ITF are checked about every hour. ITF junior and Tennis Europe matches have no live scoring, so their results appear after the next check. For point-by-point scores, check SofaScore.</p>
+      <div class="live-note" id="liveNote" hidden></div>
       <div class="grid" id="gToday"></div>
     </section>
     <section class="block">
@@ -927,7 +930,7 @@ function card(m){
     const won = fin && m.winner === side;
     return `<div class="row ${ours(id) ? "ours" : ""} ${lost ? "lost" : ""}">
       <span class="pname"><span class="nm">${esc(name)}</span><span class="nm-s">${esc(shortName(name))}</span>${ours(id) ? '<span class="badge72">72</span>' : ""}${won ? '<span class="tick" aria-label="winner">✓</span>' : ""}</span>
-      <span class="sets">${fin ? scoreCells(m.score, side) : ""}</span>
+      <span class="sets">${fin ? scoreCells(m.score, side) : live && m.espnLive ? scoreCells(m.score, side, true) : ""}</span>
     </div>`;
   };
   const pending = !fin && !live && (m.date < ukDate() || m.status === "live");
@@ -1834,6 +1837,83 @@ function tier(m){
   return 70;
 }
 const byTier = (a, b) => tier(a) - tier(b);
+/* ---------- live ATP/WTA scores straight from ESPN ----------
+   While the home page or Competition Zone is open, the browser reads ESPN's free public scoreboard once a minute
+   (no key, no cost, nothing is saved to the site) and updates the ATP/WTA matches that came from ESPN in data.json
+   (apiId "e…"). Same rules as scripts/espn.py: a match only counts as finished when ESPN marks it final with a winner.
+   If ESPN can't be read, the page keeps showing the regular (about hourly) data and says so. */
+const ESPN = "https://site.api.espn.com/apis/site/v2/sports/tennis";
+let LIVE = {}, liveAt = 0, liveErr = false;
+const espnFold = s => String(s || "").toLowerCase().replace(/ß/g, "ss").normalize("NFD").replace(/[̀-ͯ]/g, "")
+  .replace(/([a-z])(ae|oe|ue)/g, (x, a, b) => a + b[0]).match(/[a-z]+/g) || [];
+// "J. Schwärzler" (site) is the same person as "Joel Schwaerzler" (ESPN): every word but the initial must appear
+const samePlayer = (site, full) => { const f = espnFold(full), w = espnFold(site).filter(x => x.length > 1); return w.length > 0 && w.every(x => f.includes(x)); };
+const flipScore = sc => sc.split(", ").map(x => x.replace(/^(\d+)-(\d+)/, "$2-$1")).join(", ");
+function espnScore(a, b){
+  return (a.linescores || []).map((x, i) => {
+    const y = (b.linescores || [])[i]; if (!y) return "";
+    const tbs = [x.tiebreak, y.tiebreak].filter(t => t != null && t !== "").map(Number);
+    return `${Math.trunc(x.value || 0)}-${Math.trunc(y.value || 0)}${tbs.length ? `(${Math.min(...tbs)})` : ""}`;
+  }).filter(Boolean).join(", ");
+}
+// the ESPN matches worth watching: today's (from 30 minutes before the listed start) and unfinished ones from yesterday
+function liveWatch(){
+  const today = ukDate(), yday = ukDate(new Date(Date.now() - 864e5));
+  const soon = new Date(Date.now() + 30 * 60e3).toLocaleTimeString("en-GB", { timeZone:"Europe/London", hour:"2-digit", minute:"2-digit", hourCycle:"h23" });
+  return (STATE?.matches || []).filter(m => /^e\d+$/.test(m.apiId || "") && (m.status === "scheduled" || m.status === "live")
+    && (m.date === today ? !m.time || m.time <= soon || soon < "00:30" : m.date === yday));
+}
+function applyLive(st){
+  const fresh = Date.now() - liveAt < 3 * 60e3;  // live scores older than 3 minutes aren't shown as live
+  for (const m of st?.matches || []) {
+    const x = LIVE[m.apiId];
+    if (!x || m.status === "finished" || m.status === "cancelled") continue;
+    // line ESPN's players up with the site's; if neither way fits, leave the match alone
+    const same = samePlayer(m.p1, x.n1) && samePlayer(m.p2, x.n2), swap = samePlayer(m.p1, x.n2) && samePlayer(m.p2, x.n1);
+    if (same === swap) continue;
+    const sc = swap ? flipScore(x.score) : x.score, won = x.won && (swap ? 3 - x.won : x.won);
+    if (x.state === "in" && fresh) Object.assign(m, { status: "live", score: sc, seenLive: new Date(liveAt).toISOString(), espnLive: true });
+    else if (x.state === "post" && won) {
+      const wo = /walkover/i.test(x.detail), ret = !wo && sc && /retire|default/i.test(x.detail);
+      const out = wo ? "" : won === 2 ? flipScore(sc) : sc;  // the site lists the winner first, with the score from their side
+      if (wo) m.round = `${m.round || ""} (walkover)`.trim();
+      if (won === 2) Object.assign(m, { p1: m.p2, p2: m.p1, p1Id: m.p2Id, p2Id: m.p1Id });
+      Object.assign(m, { status: "finished", winner: 1, score: out + (ret ? " ret." : ""), espnLive: false });
+    } else if (x.state === "post" && /cancel/i.test(x.detail)) m.status = "cancelled";
+  }
+}
+async function espnLive(){
+  if (document.hidden || !STATE || !["", "#", "#home", "#scores"].includes(location.hash)) return;
+  const watch = liveWatch(), note = $("#liveNote");
+  if (!watch.length) { note.hidden = true; return; }
+  const keys = new Set(watch.map(m => m.apiId));
+  const leagues = new Set(watch.map(m => (byId[m.p1Id] || byId[m.p2Id])?.tour === "WTA" ? "wta" : "atp"));
+  try {
+    for (const lg of leagues) {
+      // each day's scoreboard holds every match of the events running that day, yesterday's included
+      const r = await fetch(`${ESPN}/${lg}/scoreboard?dates=${ukDate().replace(/-/g, "")}`, { cache: "no-store", signal: AbortSignal.timeout(15000) });
+      if (!r.ok) throw new Error(r.status);
+      const js = await r.json();
+      for (const ev of js.events || []) for (const g of ev.groupings || []) for (const c of g.competitions || []) {
+        const key = `e${c.id}`; if (!keys.has(key)) continue;
+        const cs = (c.competitors || []).slice().sort((a, b) => (a.order || 0) - (b.order || 0));
+        if (cs.length !== 2) continue;
+        const st = c.status?.type || {}, won = cs.map((p, i) => p.winner ? i + 1 : 0).filter(Boolean);
+        LIVE[key] = { state: st.state, detail: st.detail || st.description || "", score: espnScore(cs[0], cs[1]),
+          n1: cs[0].athlete?.displayName, n2: cs[1].athlete?.displayName, won: won.length === 1 ? won[0] : null };
+      }
+    }
+    liveAt = Date.now(); liveErr = false;
+  } catch (e) { liveErr = true; }
+  applyLive(STATE);
+  renderScores(); renderHome();
+  const t = liveAt ? new Date(liveAt).toLocaleTimeString("en-GB", { timeZone:"Europe/London", hour:"2-digit", minute:"2-digit", second:"2-digit" }) : "";
+  note.hidden = false;
+  note.classList.toggle("err", liveErr);
+  note.innerHTML = liveErr
+    ? `Live ATP and WTA scores can't be read from ESPN right now${t ? ` (last read ${t} UK)` : ""}, so the scores below update about every hour. Check SofaScore for live scores.`
+    : `<span class="pulse"></span>Live ATP and WTA scores from ESPN, updated every minute · last checked ${t} UK`;
+}
 /* ---------- boot ---------- */
 route();
 render();
@@ -1847,7 +1927,9 @@ async function load(){
     try { const ri = await fetch("itf.json?t=" + Date.now(), { cache: "no-store" }); if (ri.ok) ITF = await ri.json(); } catch (e) {}
     try { const rl = await fetch("titles.json?t=" + Date.now(), { cache: "no-store" }); if (rl.ok) TITLES = await rl.json(); } catch (e) {}
     normalizeMatches(STATE);
+    applyLive(STATE);
     render();
+    if (!liveAt && !liveErr) espnLive();  // first load: read live scores straight away
   } catch (e) {
     if (!STATE) { STATE = { matches: [] }; render(); $("#checked").textContent = "Couldn't load the schedule. Reload the page."; }
   }
@@ -1859,6 +1941,10 @@ loadSchedule();
 setInterval(() => { if (!document.hidden) loadSchedule(); }, 60 * 60 * 1000);
 setInterval(() => { if (!document.hidden) load(); }, 60 * 1000);
 document.addEventListener("visibilitychange", () => { if (!document.hidden) load(); });
+// live ATP/WTA scores from ESPN: once a minute, and straight away when the page or Competition Zone is opened
+setInterval(espnLive, 60 * 1000);
+document.addEventListener("visibilitychange", () => setTimeout(espnLive, 1500));
+window.addEventListener("hashchange", () => setTimeout(espnLive, 300));
 // keep "Today / Tomorrow" labels correct if the page stays open past midnight
 setInterval(() => { if (!document.hidden) renderScores(); }, 5 * 60 * 1000);
 </script>
