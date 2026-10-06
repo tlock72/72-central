@@ -3,6 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<script>/* iPhone/iPad: stop the page zooming in when a search box or menu is tapped (boxes are under 16px). iOS still allows pinch zoom with this; other phones would lose it, so they are left alone */if(/iPhone|iPad|iPod/.test(navigator.userAgent)||(navigator.platform==="MacIntel"&&navigator.maxTouchPoints>1))document.querySelector('meta[name="viewport"]').content+=", maximum-scale=1";</script>
 <title>72 Central</title>
 <link rel="icon" type="image/png" sizes="64x64" href="tab-icon.png?v=3">
 <!-- installable app: "Add to Home Screen" uses this icon and opens full-screen (manifest.json) -->
@@ -231,18 +232,21 @@ footer .wrap{display:flex;justify-content:space-between;gap:12px;flex-wrap:wrap}
   border:1px solid var(--line-2);background:linear-gradient(160deg,var(--navy-3) 0%,var(--navy-2) 45%,#0A1029 100%);transition:transform .25s ease,border-color .25s ease,box-shadow .25s ease}
 .pc::before{content:"";position:absolute;inset:0;z-index:-1;background:radial-gradient(420px 220px at 110% -10%,rgba(208,165,121,.20),transparent 60%)}
 .pc:hover{transform:translateY(-4px);border-color:var(--line);box-shadow:0 18px 40px rgba(0,0,0,.35)}
-.pc .bg{position:absolute;inset:0;z-index:-3;background:center 18%/cover no-repeat;opacity:.5;filter:blur(2.5px) saturate(.8);transform:scale(1.08);transition:opacity .4s ease,filter .4s ease,transform .6s ease}
-.pc .shade{position:absolute;inset:0;z-index:-2;background:linear-gradient(180deg,rgba(12,20,49,.30) 0%,rgba(12,20,49,.62) 38%,rgba(10,16,41,.94) 70%,#0A1029 100%)}
-.pc:hover .bg{opacity:.72;filter:blur(0) saturate(1);transform:scale(1.03)}
+.pc{min-height:420px}
+/* the photo box has the photos' own shape (380x434), so the whole picture shows: nothing squashed or cut off */
+.pc .bg{position:absolute;inset:0 0 auto 0;aspect-ratio:380/434;z-index:-3;background:center top/cover no-repeat;
+  opacity:.5;filter:blur(2.5px) saturate(.6);transform:scale(1.03);transform-origin:center top;transition:opacity .4s ease,filter .4s ease,transform .6s ease}
+.pc .shade{position:absolute;inset:0;z-index:-2;background:linear-gradient(180deg,transparent 0%,transparent 42%,rgba(10,16,41,.88) 66%,#0A1029 82%)}
+.pc:hover .bg{opacity:1;filter:none;transform:none}
 .pc .mono{position:absolute;right:-8px;bottom:-30px;z-index:-1;font-family:var(--display);font-weight:700;font-size:190px;line-height:1;letter-spacing:-.04em;
   color:transparent;-webkit-text-stroke:1.5px rgba(208,165,121,.17);user-select:none;pointer-events:none}
 .pc .top{display:flex;justify-content:space-between;align-items:center}
 .pc .tr{font-family:var(--display);font-size:11px;letter-spacing:.2em;color:var(--navy);background:var(--gold);padding:3px 9px;border-radius:4px;font-weight:600}
 .pc .cc{font-family:var(--display);font-size:12px;letter-spacing:.2em;color:var(--muted)}
-.pc .fn{font-family:var(--display);text-transform:uppercase;letter-spacing:.24em;font-size:13px;color:var(--text);margin-top:34px}
+.pc .fn{font-family:var(--display);text-transform:uppercase;letter-spacing:.24em;font-size:13px;color:var(--text);margin-top:auto}
 .pc .ln{font-family:var(--display);text-transform:uppercase;font-weight:600;font-size:34px;line-height:1.02;color:var(--gold);letter-spacing:.01em;margin-top:2px;overflow-wrap:anywhere}
 .pc .meta{font-size:12px;color:var(--muted);margin-top:10px}
-.pc .nums{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-top:auto;padding-top:22px;border-top:1px solid var(--line);}
+.pc .nums{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-top:16px;padding-top:16px;border-top:1px solid var(--line);}
 .pc .nums div{min-width:0}
 .pc .nums b{display:block;font-family:var(--display);font-size:28px;font-weight:600;color:var(--white);line-height:1;font-variant-numeric:tabular-nums}
 .pc .nums span{display:block;font-size:10px;letter-spacing:.14em;text-transform:uppercase;color:var(--muted-2);margin-top:6px}
@@ -257,12 +261,13 @@ dialog.prof[open]{animation:pop .28s ease}
 .ph{position:relative;padding:38px 40px 30px;overflow:hidden;isolation:isolate;border-bottom:1px solid var(--line);
   background:radial-gradient(700px 300px at 100% 0%,rgba(208,165,121,.22),transparent 60%),linear-gradient(160deg,var(--navy-3),#0B1230)}
 .ph .mono{position:absolute;right:20px;top:-40px;z-index:-1;font-family:var(--display);font-weight:700;font-size:300px;line-height:1;color:transparent;-webkit-text-stroke:2px rgba(208,165,121,.16);user-select:none}
-.ph .pimg{position:absolute;right:0;top:0;height:100%;width:46%;object-fit:cover;object-position:center 20%;z-index:-1;
-  -webkit-mask-image:linear-gradient(to left,#000 45%,transparent);mask-image:linear-gradient(to left,#000 45%,transparent)}
-.ph .pblur{position:absolute;inset:-30px;z-index:-2;background:center/cover no-repeat;filter:blur(40px) saturate(1.1);opacity:.28}
+/* the whole photo (photos are 380x434), framed on the right; the name and facts keep clear of it */
+.ph .pimg{position:absolute;right:76px;top:30px;height:clamp(220px,30vw,300px);aspect-ratio:380/434;object-fit:cover;z-index:0;
+  border-radius:16px;box-shadow:0 18px 44px rgba(0,0,0,.5)}
+.ph:has(.pimg){min-height:calc(clamp(220px,30vw,300px) + 60px);padding-right:calc(clamp(220px,30vw,300px) * 380 / 434 + 106px)}
+.ph .pblur{position:absolute;inset:-30px;z-index:-2;background:center/cover no-repeat;filter:blur(40px) saturate(1.1);opacity:.4}
 .ph .pimg~.mono{display:none}
 .ph{min-height:230px}
-  .ph .pimg[src="svitolina.webp"]{object-position:center top;transform:scale(1.2);transform-origin:25% 0}
 .ph .x{z-index:2;position:absolute;top:18px;right:18px;width:38px;height:38px;border-radius:50%;border:1px solid var(--line);color:var(--gold);font-size:18px;line-height:1;display:grid;place-items:center;background:rgba(12,20,49,.6)}
 .ph .x:hover{background:var(--gold-dim)}
 .ph .fn{font-family:var(--display);text-transform:uppercase;letter-spacing:.3em;font-size:15px;color:var(--text)}
@@ -270,7 +275,9 @@ dialog.prof[open]{animation:pop .28s ease}
 .ph .facts{display:flex;flex-wrap:wrap;gap:8px 26px;margin-top:20px;font-size:13px;color:var(--muted)}
 .ph .facts b{color:var(--white);font-weight:600}
 .pb{padding:30px 40px 40px;display:grid;grid-template-columns:minmax(0,1fr);gap:30px}
-dialog.prof{overflow-x:hidden}
+dialog.prof{overflow-x:hidden;overflow-y:auto;overscroll-behavior:contain}
+/* phones: while a profile is open the page behind is pinned in place, so a swipe only ever scrolls the profile (openProfile/profLock) */
+html.prof-lock body{position:fixed;left:0;right:0;width:100%;overflow:hidden}
 .big{display:grid;grid-template-columns:repeat(4,1fr);gap:12px}
 .big.b3{grid-template-columns:repeat(3,1fr)}
 .big div{border:1px solid var(--line-2);border-radius:16px;padding:18px;background:rgba(255,255,255,.025)}
@@ -336,9 +343,7 @@ blockquote.q cite{display:block;margin-top:12px;font-style:normal;font-family:va
 @media (max-width:640px){
   .ph{padding:30px 22px 24px}.pb{padding:24px 22px 30px}
   .big,.big.b3{grid-template-columns:repeat(2,1fr)}.big b{font-size:32px}.big.b3>div:last-child{grid-column:1/-1}
-  .pc{min-height:290px}.pc .fn{margin-top:22px}
   .pc .ln{font-size:30px}
-  .ph .pimg{width:100%;opacity:.4;-webkit-mask-image:linear-gradient(to top,transparent,#000 70%);mask-image:linear-gradient(to top,transparent,#000 70%)}
   .pnav .live-btn{order:-1;width:100%;justify-content:center}
 }
 
@@ -699,12 +704,13 @@ nav .sh,.nm-s{display:none}
   .r-group{font-size:10.5px;margin-top:4px}
   /* players page: 3 small photo cards per row, filter chips stay in view */
   .pgrid{grid-template-columns:repeat(3,minmax(0,1fr));gap:8px}
-  .pc{min-height:150px;padding:8px;border-radius:12px}
-  .pc .bg{opacity:.8;filter:none;transform:none;background-position:center 15%}
-  .pc .shade{background:linear-gradient(180deg,transparent 0%,transparent 40%,rgba(10,16,41,.92) 78%,#0A1029 100%)}
+  /* the photo box has the photos' own shape (380x434), so the whole picture shows with nothing cut off */
+  .pc{min-height:172px;padding:8px;border-radius:12px}
+  .pc .bg{inset:0 0 auto 0;aspect-ratio:380/434;opacity:.9;filter:none;transform:none;background-position:center top}
+  .pc .shade{background:linear-gradient(180deg,transparent 0%,transparent 50%,rgba(10,16,41,.92) 80%,#0A1029 100%)}
   .pc .mono,.pc .meta,.pc .go,.pc .cc{display:none}
   .pc .tr{font-size:7.5px;letter-spacing:.08em;padding:2px 5px}
-  .pc .fn{margin-top:auto;font-size:9px;letter-spacing:.1em;padding-top:60px}
+  .pc .fn{margin-top:auto;font-size:9px;letter-spacing:.1em;padding-top:70px}
   .pc .ln{font-size:13px;overflow-wrap:normal;word-break:break-word}
   .pc .nums{grid-template-columns:1fr;padding-top:4px;margin-top:4px;gap:0;border-top:0}
   .pc .nums div:not(:first-child){display:none}
@@ -767,6 +773,12 @@ nav .sh,.nm-s{display:none}
   .sq-line .sq-mode{justify-self:start}
   .sq-line .chips{flex-wrap:nowrap;overflow-x:auto;scrollbar-width:none;-webkit-mask-image:linear-gradient(to right,#000 88%,transparent);mask-image:linear-gradient(to right,#000 88%,transparent);padding-right:24px}
   .sq-line .chips::-webkit-scrollbar{display:none}
+  .sq-line .chips{touch-action:pan-x pan-y;overscroll-behavior-x:contain;-webkit-overflow-scrolling:touch}
+  /* Tour Schedule: "Any 72 player" as a small pill like the buttons, and a slimmer search box */
+  #schPLine{grid-template-columns:50px auto minmax(0,1fr)}
+  #schPLine>.chips{grid-column:2;-webkit-mask-image:none;mask-image:none;padding-right:0}
+  #schP{grid-column:3;grid-row:1;justify-self:start;width:100%;max-width:150px;text-overflow:ellipsis;height:27px;padding:0 24px 0 11px;font:10px var(--display);letter-spacing:.07em;text-transform:uppercase;color:var(--muted);background-position:calc(100% - 14px) 11px,calc(100% - 9px) 11px}
+  #schQ{height:30px;font-size:12px;padding:0 12px}
   .sq-line .chip{flex:none}
   .sq-line.sq-search{display:flex;padding-top:0}
   .sq-line.sq-search>*{flex:1 1 0}
@@ -855,7 +867,12 @@ nav .sh,.nm-s{display:none}
   .p-find{max-width:none;padding:7px 13px;font-size:14px}
   .chip{font-size:10px;letter-spacing:.07em;padding:6px 11px}
   dialog.prof{width:calc(100vw - 20px);max-height:calc(100vh - 24px);border-radius:18px}
-  .ph{min-height:0;padding:18px 16px 16px}
+  dialog.prof{max-height:calc(100dvh - 24px)}
+  .ph,.ph:has(.pimg){min-height:0;padding:18px 16px 16px}
+  /* phones: the whole photo (zoomed right out, nothing cropped) sits in its own space above the name, over a blurred copy of itself */
+  .ph .pimg{position:relative;inset:auto;display:block;z-index:0;width:auto;height:min(310px,44vh);aspect-ratio:380/434;max-width:100%;margin:6px auto 16px;
+    object-fit:contain;opacity:1;border-radius:14px;box-shadow:0 14px 34px rgba(0,0,0,.5);-webkit-mask-image:none;mask-image:none}
+  .ph .pblur{opacity:.5}
   .ph .x{top:12px;right:12px;width:32px;height:32px;font-size:15px}
   .ph .fn{font-size:11px;letter-spacing:.24em}
   .ph .ln{font-size:36px}
@@ -1103,7 +1120,7 @@ main.ptr-go,footer.ptr-go{transition:transform .35s cubic-bezier(.2,.8,.3,1)}
     <div class="sq-filters">
       <div class="sq-line"><span class="sq-lbl">Tour</span><div class="chips" id="schTours" role="group" aria-label="Tour"></div></div>
       <div class="sq-line" id="schLvlLine" hidden><span class="sq-lbl">Level</span><div class="chips" id="schLvls" role="group" aria-label="Level"></div></div>
-      <div class="sq-line"><span class="sq-lbl">Players</span><div class="chips" role="group" aria-label="Players"><button class="chip sch72 on" data-e="all">All events</button><button class="chip sch72" data-e="72">72 entered</button></div><select class="sq-in" id="schP" aria-label="72 player"></select></div>
+      <div class="sq-line" id="schPLine"><span class="sq-lbl">Players</span><div class="chips" role="group" aria-label="Players"><button class="chip sch72 on" data-e="all">All events</button><button class="chip sch72" data-e="72">72 entered</button></div><select class="sq-in" id="schP" aria-label="72 player"></select></div>
       <div class="sq-line sq-search"><input class="sq-in" id="schQ" type="search" placeholder="Search tournament or place" aria-label="Search tournament or place"></div>
     </div>
     <div class="sch-key" id="schKey"></div>
@@ -1285,7 +1302,7 @@ function route(){
   $("#page-corner").hidden = tab !== "corner";
   const pid = hash.startsWith("#players/") ? hash.slice(9) : null;
   if (pid && profById[pid]) openProfile(pid);
-  else if ($("#prof").open) $("#prof").close();
+  else if ($("#prof").open) { profLock(false); $("#prof").close(); }
   document.querySelectorAll("nav a").forEach(a => a.classList.toggle("active", a.dataset.tab === tab));
   // the champions banner sits at the top of both the home page and Competition Zone
   if (tab === "home" || tab === "scores") { $("#page-" + tab).prepend($("#champs")); fitChamps(); }
@@ -2097,7 +2114,7 @@ function openProfile(id){
       <div class="pnav"><button data-go="${prev.x.id}">← ${esc(prev.p.last)}</button>${safeUrl(p.sofa) ? `<a class="live-btn" href="${esc(safeUrl(p.sofa))}" target="_blank" rel="noopener"><span class="dot"></span>SofaScore profile</a>` : ""}<button data-go="${next.x.id}">${esc(next.p.last)} →</button></div>
     </div>`;
   const d = $("#prof");
-  if (!d.open) d.showModal();
+  if (!d.open) { profLock(true); d.showModal(); }
   d.scrollTop = 0;
   if (location.hash !== "#players/" + id) history.replaceState(null, "", "#players/" + id);
 }
@@ -2110,7 +2127,16 @@ document.addEventListener("click", e => {
   const go = e.target.closest("[data-go]"); if (go) return openProfile(go.dataset.go);
   if (e.target.closest("[data-close]") || e.target.id === "prof") $("#prof").close();
 });
-$("#prof").addEventListener("close", () => { if (location.hash.startsWith("#players/")) history.replaceState(null, "", "#players"); });
+// phones: pin the page behind an open profile (iPhones otherwise scroll it instead of the profile) and put it back where it was on close
+let profY = null;
+function profLock(on){
+  if (on && profY === null && matchMedia("(max-width:640px), (pointer:coarse)").matches) {
+    profY = window.scrollY; document.body.style.top = -profY + "px"; document.documentElement.classList.add("prof-lock");
+  } else if (!on && profY !== null) {
+    document.documentElement.classList.remove("prof-lock"); document.body.style.top = ""; window.scrollTo(0, profY); profY = null;
+  }
+}
+$("#prof").addEventListener("close", () => { profLock(false); if (location.hash.startsWith("#players/")) history.replaceState(null, "", "#players"); });
 
 function render(){ renderScores(); renderRankings(); renderPlayers(); renderHome(); }
 
@@ -2270,7 +2296,10 @@ function schWeeks(e){
 const schLvl = e => e.cat.replace(/^Category /, "Cat ");
 function renderSchedule(){
   if (!$("#page-schedule")) return;
+  // keep the sliding rows where the finger left them (redrawing would jump them back to the start)
+  const sx = [$("#schTours").scrollLeft, $("#schLvls").scrollLeft];
   $("#schTours").innerHTML = SCH_TOURS.map(([k, l]) => `<button class="chip scht${SCH.tour === k ? " on" : ""}" data-t="${k}">${l}</button>`).join("");
+  $("#schTours").scrollLeft = sx[0];
   document.querySelectorAll(".sch72").forEach(b => b.classList.toggle("on", (b.dataset.e === "72") === SCH.e72));
   if (!SCHED) return;
   const evs = SCHED.events || [];
@@ -2284,6 +2313,7 @@ function renderSchedule(){
   if (SCH.lvl !== "all" && !lv.includes(SCH.lvl)) SCH.lvl = "all";
   $("#schLvlLine").hidden = lv.length < 2;
   $("#schLvls").innerHTML = [["all", "All"], ...lv.map(l => [l, l])].map(([k, l]) => `<button class="chip schl${SCH.lvl === k ? " on" : ""}" data-l="${esc(k)}">${esc(l)}</button>`).join("");
+  $("#schLvls").scrollLeft = sx[1];
   $("#schKey").innerHTML = SCH_GROUPS.map((t, i) => `<span class="sg${i + 1}"><i></i>${t}</span>`).join("");
   const q = sqKey(SCH.q);
   const rows = evs.filter(e => (SCH.tour === "all" || e.tour === SCH.tour) && (SCH.lvl === "all" || schLvl(e) === SCH.lvl)
@@ -2875,9 +2905,11 @@ window.addEventListener("hashchange", () => setTimeout(espnLive, 300));
     setTimeout(() => { box.className = ""; img.style.transform = ""; page.forEach(el => el.classList.remove("ptr-go")); }, 400); };
   // somewhere that scrolls by itself (a table, a list) gets the drag first
   const innerScrolled = el => { for (; el && el !== document.body; el = el.parentElement) if (el.scrollTop > 0) return true; return false; };
+  // a row that slides sideways (the filter buttons) is left to the finger, so a slightly downward swipe doesn't freeze it
+  const sideScroller = el => { for (; el && el !== document.body; el = el.parentElement) if (el.scrollWidth > el.clientWidth + 1 && /auto|scroll/.test(getComputedStyle(el).overflowX)) return true; return false; };
   addEventListener("touchstart", e => {
     y0 = null;
-    if (busy || e.touches.length !== 1 || window.scrollY > 0 || document.documentElement.classList.contains("locked") || $("#prof").open || innerScrolled(e.target)) return;
+    if (busy || e.touches.length !== 1 || window.scrollY > 0 || document.documentElement.classList.contains("locked") || $("#prof").open || innerScrolled(e.target) || sideScroller(e.target)) return;
     y0 = e.touches[0].clientY; x0 = e.touches[0].clientX; pull = 0;
   }, { passive: true });
   addEventListener("touchmove", e => {
