@@ -438,6 +438,13 @@ a.cn-st.ok:hover{border-color:var(--gold)}
 .cn-m .r{font-weight:700}.cn-m .r.W{color:var(--up)}.cn-m .r.L{color:var(--down)}
 .cn-m .s{font-variant-numeric:tabular-nums;color:var(--text);text-align:right}
 .cn-wait{opacity:.7}
+.cn-ft{display:flex;flex-wrap:wrap;align-items:center;justify-content:flex-end;gap:8px;padding:8px 20px 10px;border-top:1px solid var(--line-2);font-size:12px;color:var(--muted)}
+.cn-ft .rm{font-size:11px;color:var(--muted-2);text-decoration:underline;text-underline-offset:2px}
+.cn-ft .rm:hover{color:var(--down)}
+.cn-ft .sq-in{flex:1 1 200px;height:34px}
+.cn-ft .go{font-family:var(--display);text-transform:uppercase;letter-spacing:.12em;font-size:11px;font-weight:600;color:var(--navy);background:var(--gold);border-radius:999px;padding:0 16px;height:34px}
+.cn-ft .no{font-size:11px;color:var(--muted);border:1px solid var(--line);border-radius:999px;padding:0 14px;height:34px}
+.cn-ft .asked{font-size:11px;color:var(--muted-2);font-style:italic}
 .cn-note{font-size:11px;color:#F3C1C0;padding:0 20px 10px}
 @media (max-width:640px){
   .cn-h{padding:12px 12px 8px}.cn-h .nm{font-size:17px}
@@ -1966,12 +1973,16 @@ async function loadScouting(){
    "Add a prospect" box go to Tobey's Google Sheet (scripts/visit_log.gs); GitHub reads that list and looks
    them up, and until then they show here as "Looking up…". */
 const CORNER_URL = "https://script.google.com/macros/s/AKfycbwzEb0YNoDmZaaJ5fQg05ubEe_lowMLiGoYaXuclycqQikOngLQEmENPN5KoL_KJXu1kA/exec";  // same as LOG_URL
-let CORNER = null, CN_SHEET = [];
-const CN = { g: "", q: "", open: new Set() };
+let CORNER = null, CN_SHEET = [], CN_SHEET_OK = false, CN_REMOVED = [], CN_ASKED = [];
+const CN = { g: "", q: "", open: new Set(), rm: "" };
 const cnKey = s => String(s || "").split("|")[0].normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLowerCase().replace(/[^a-z]/g, "");
 const CN_SRC = { te: "Tennis Europe", "itf-jr": "ITF Juniors", "itf-pro": "Pro: ATP/WTA, Challenger, ITF" };
 // names added on this device: shown as "Looking up…" for up to 3 days (the Sheet's list covers everyone else's)
-function cnLocal(){ try { return JSON.parse(localStorage.getItem("72c-prospects") || "[]").filter(x => Date.now() - (x.at || 0) < 3 * 864e5); } catch (e) { return []; } }
+// Once the Sheet's list has been read, it is the truth: a name typed here only shows for 10 minutes if it isn't on it
+// (so a name taken off the Sheet doesn't come back as "Looking up…").
+function cnLocal(){ try { return JSON.parse(localStorage.getItem("72c-prospects") || "[]").filter(x => Date.now() - (x.at || 0) < (CN_SHEET_OK ? 6e5 : 3 * 864e5)); } catch (e) { return []; } }
+// removal requests sent from this device (shown as "Removal requested" until the Sheet lists them, for up to a day)
+function cnAsked(){ try { return JSON.parse(localStorage.getItem("72c-removals") || "[]").filter(x => Date.now() - (x.at || 0) < 864e5); } catch (e) { return []; } }
 function cnStage(label, l, txt, url){
   // one stage of the pathway: linked (with its rank), not found yet, or more than one player fits (Check)
   const st = l?.status;
@@ -2013,14 +2024,29 @@ function cnCard(k, p){
     <div class="cn-path">${path}</div>
     ${unsure.length ? `<div class="cn-note">${unsure.map(esc).join("<br>")}. Add the right id in prospects.json.</div>` : ""}
     ${rows.length ? `<div class="sq-row h"><span>Ranking</span><span>Rank</span><span>Best</span><span>1 wk</span><span>3 mo</span><span>12 mo</span></div>${rows.join("")}` : ""}
-    ${res.length ? `<button class="cn-more" data-k="${esc(k)}">${open ? "Hide" : "Show"} the last 12 months (${res.length} match${res.length === 1 ? "" : "es"})</button><div class="cn-res"${open ? "" : " hidden"}>${resHtml}</div>` : ""}</div>`;
+    ${res.length ? `<button class="cn-more" data-k="${esc(k)}">${open ? "Hide" : "Show"} the last 12 months (${res.length} match${res.length === 1 ? "" : "es"})</button><div class="cn-res"${open ? "" : " hidden"}>${resHtml}</div>` : ""}
+    ${cnRemoval(k, p.name)}</div>`;
+}
+// "Request removal": anyone can ask; Tobey gets an email and nothing is removed until he approves it
+function cnRemoval(k, name){
+  if ([...CN_ASKED, ...cnAsked().map(x => x.name)].some(n => cnKey(n) === cnKey(name)))
+    return `<div class="cn-ft"><span class="asked">Removal requested · waiting for Tobey's approval</span></div>`;
+  if (CN.rm !== k) return `<div class="cn-ft"><button class="rm" data-rm="${esc(k)}">Request removal</button></div>`;
+  return `<form class="cn-ft cn-rmf" data-k="${esc(k)}" data-n="${esc(name)}"><span>Ask Tobey to remove <b>${esc(name)}</b>?</span>
+    <input class="sq-in" name="why" maxlength="300" placeholder="Reason (optional)" aria-label="Reason for removal">
+    <button class="go" type="submit">Send request</button><button class="no" type="button" data-rmx="1">Cancel</button></form>`;
+}
+// approved removals, and names taken off the Sheet, disappear at once (GitHub's next run takes them out of corner.json)
+function cnShown(){
+  const gone = new Set(CN_REMOVED.map(cnKey)), onSheet = new Set(CN_SHEET.map(x => cnKey(x.name)));
+  return Object.fromEntries(Object.entries(CORNER?.players || {}).filter(([k, p]) => !gone.has(cnKey(p.name)) && !(CN_SHEET_OK && p.src === "site" && !onSheet.has(cnKey(p.name)))));
 }
 function renderCorner(){
   if (!$("#page-corner")) return;
-  const P = CORNER?.players || {};
+  const P = cnShown(), gone = new Set(CN_REMOVED.map(cnKey));
   document.querySelectorAll(".cng").forEach(b => b.classList.toggle("on", b.dataset.g === CN.g));
   // names added on the site that GitHub hasn't looked up yet
-  const waiting = [...CN_SHEET, ...cnLocal()].filter((x, i, a) => x.name && !P[cnKey(x.name)] && a.findIndex(y => cnKey(y.name) === cnKey(x.name)) === i);
+  const waiting = [...CN_SHEET, ...cnLocal()].filter((x, i, a) => x.name && !P[cnKey(x.name)] && !gone.has(cnKey(x.name)) && a.findIndex(y => cnKey(y.name) === cnKey(x.name)) === i);
   const q = cnKey(CN.q);
   const keep = (name, g) => (!CN.g || g === CN.g) && (!q || cnKey(name).includes(q));
   const cards = Object.entries(P).filter(([k, p]) => keep(p.name, p.g))
@@ -2031,8 +2057,21 @@ function renderCorner(){
   $("#cnSrc").textContent = CORNER?.checked ? `Sources: Tennis Europe (internal use only), the ITF and the official ATP/WTA rankings. Last updated ${new Date(CORNER.checked).toLocaleString("en-GB", { day:"numeric", month:"short", hour:"2-digit", minute:"2-digit", timeZone:"Europe/London" })} UK.` : "";
 }
 $("#cnList").addEventListener("click", e => {
+  const r = e.target.closest("[data-rm]");
+  if (r) { CN.rm = r.dataset.rm; renderCorner(); document.querySelector(".cn-rmf input")?.focus(); return; }
+  if (e.target.closest("[data-rmx]")) { CN.rm = ""; renderCorner(); return; }
   const b = e.target.closest(".cn-more"); if (!b) return;
   CN.open.has(b.dataset.k) ? CN.open.delete(b.dataset.k) : CN.open.add(b.dataset.k);
+  renderCorner();
+});
+$("#cnList").addEventListener("submit", e => {
+  const f = e.target.closest(".cn-rmf"); if (!f) return;
+  e.preventDefault();
+  const name = f.dataset.n, reason = f.elements.why.value.trim();
+  let by = ""; try { by = localStorage.getItem("72c-name") || ""; } catch (err) {}
+  try { fetch(CORNER_URL, { method: "POST", mode: "no-cors", body: JSON.stringify({ kind: "removal", name, reason, by }) }).catch(() => {}); } catch (err) {}
+  try { localStorage.setItem("72c-removals", JSON.stringify([...cnAsked(), { name, at: Date.now() }].slice(-30))); } catch (err) {}
+  CN.rm = "";
   renderCorner();
 });
 document.querySelectorAll(".cng").forEach(b => b.addEventListener("click", () => { CN.g = b.dataset.g; renderCorner(); }));
@@ -2048,7 +2087,7 @@ $("#cnForm").addEventListener("submit", e => {
   if (nat && !/^[A-Z]{3}$/.test(nat)) return bad("Nation is a 3-letter code, e.g. GBR, ESP, USA.");
   if (born && !/^(19|20)\d\d$/.test(born)) return bad("Birth year is 4 digits, e.g. 2011.");
   if (ROSTER.some(r => cnKey(r.first + r.last) === cnKey(name))) return bad(`${name} is already a 72 player.`);
-  if ((CORNER?.players || {})[cnKey(name)] || [...CN_SHEET, ...cnLocal()].some(x => cnKey(x.name) === cnKey(name))) return bad(`${name} is already on the watch list.`);
+  if (cnShown()[cnKey(name)] || [...CN_SHEET, ...cnLocal()].some(x => cnKey(x.name) === cnKey(name))) return bad(`${name} is already on the watch list.`);
   let by = ""; try { by = localStorage.getItem("72c-name") || ""; } catch (err) {}
   // one-time check: everyone sees who added a prospect ("Don't show this again" remembers it on this device)
   let seen = false; try { seen = localStorage.getItem("72c-addok") === "1"; } catch (err) {}
@@ -2077,7 +2116,10 @@ function cnSend(name, g, nat, born, by){
 async function loadCorner(){
   try { const r = await fetch("corner.json?t=" + Date.now(), { cache: "no-store" }); if (r.ok) CORNER = await r.json(); else if (!CORNER) CORNER = { players: {} }; } catch (e) { if (!CORNER) CORNER = { players: {} }; }
   // names added on the site but not looked up yet (the Sheet's list; skipped quietly if it can't be read)
-  try { const r = await fetch(CORNER_URL + "?kind=prospects"); if (r.ok) CN_SHEET = (await r.json()).prospects || []; } catch (e) {}
+  try {
+    const r = await fetch(CORNER_URL + "?kind=prospects");
+    if (r.ok) { const j = await r.json(); CN_SHEET = j.prospects || []; CN_REMOVED = j.removed || []; CN_ASKED = j.asked || []; CN_SHEET_OK = Array.isArray(j.prospects); }
+  } catch (e) {}
   renderCorner(); renderHome();
 }
 /* ---------- Home portal ---------- */
@@ -2157,7 +2199,7 @@ function renderHome(){
   } else if (SCHED) { $("#hpT5").textContent = "—"; $("#hpS5").textContent = "Schedule not available yet"; }
   // 06 Scouting Corner: how many we're watching, and who climbed most this week
   if (CORNER) {
-    const ps = Object.values(CORNER.players || {});
+    const ps = Object.values(cnShown());
     $("#hpT6").innerHTML = `${ps.length}<small>prospect${ps.length === 1 ? "" : "s"} on the watch list</small>`;
     const climbs = ps.flatMap(p => [[p.pro?.rank, p.pro?.w], [p.itfJr?.rank, p.itfJr?.w], ...(p.te || []).map(r => [r.rank, r.w])]
       .filter(([r, w]) => r && w > r).map(([r, w]) => ({ n: p.name, up: w - r, r })));
