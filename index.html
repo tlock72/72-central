@@ -580,7 +580,7 @@ body.on-home header nav{display:none}
   .hp-stat b{font-size:36px}
 }
 /* Phone layout: compact header, home on one screen, 3 match cards per row, compact roster */
-nav .sh,nav .ros,.nm-s{display:none}
+nav .sh,.nm-s{display:none}
 @media (max-width:1180px) and (min-width:641px){nav .lg{display:none} nav .sh{display:inline}}
 /* small tablets: a slightly smaller logo and tighter tabs so the logo keeps clear space without the menu running off the screen */
 @media (max-width:760px) and (min-width:641px){.bar{gap:20px}.brand img{height:32px}nav a{padding:10px 6px}}
@@ -599,8 +599,6 @@ nav .sh,nav .ros,.nm-s{display:none}
   nav .n72{display:none}
   #champs{margin-top:8px}
   nav .lg{display:none} nav .sh{display:inline}
-  /* "72 Players" won't fit on a phone (the 72s are dropped there), so that tab says Roster */
-  nav .plyr{display:none} nav .ros{display:inline}
   body.on-home header .bar{justify-content:center}
   .hero{padding-block:14px 10px;gap:10px}
   .hero h1{font-size:30px}
@@ -743,7 +741,7 @@ html.name-only .gate-box h2,html.name-only .gate-digits{display:none}
     <nav>
       <a href="#scores" data-tab="scores"><span class="lg"><span class="n72">72 </span>Competition Zone</span><span class="sh"><span class="n72">72 </span>Scores</span></a>
       <a href="#rankings" data-tab="rankings"><span class="n72">72 </span>Rankings</a>
-      <a href="#players" data-tab="players"><span class="plyr"><span class="n72">72 </span>Players</span><span class="ros">Roster</span></a>
+      <a href="#players" data-tab="players"><span class="n72">72 </span>Roster</a>
       <a href="#scouting" data-tab="scouting"><span class="lg">Filtered Rankings</span><span class="sh">Filtered</span></a>
       <a href="#schedule" data-tab="schedule"><span class="lg">Tour Schedule</span><span class="sh">Schedule</span></a>
       <a href="#corner" data-tab="corner"><span class="lg">Scouting Corner</span><span class="sh">Scouting</span></a>
@@ -772,7 +770,7 @@ html.name-only .gate-box h2,html.name-only .gate-digits{display:none}
         <div class="hp-stat"><div><b id="hpT2">—</b><span id="hpS2">Loading rankings…</span></div><span class="hp-go" aria-hidden="true">→</span></div>
       </a>
       <a class="hp-tile" href="#players">
-        <h2>72 Players</h2>
+        <h2>72 Roster</h2>
         <p>Profiles for the whole roster: titles, partners, social following and results.</p>
         <div class="hp-faces" id="hpFaces"></div>
         <div class="hp-stat"><div><b id="hpT3">—</b><span id="hpS3"></span></div><span class="hp-go" aria-hidden="true">→</span></div>
@@ -863,7 +861,7 @@ html.name-only .gate-box h2,html.name-only .gate-digits{display:none}
     <div class="hero">
       <div>
         <div class="eyebrow">SeventyTwo Sports Group</div>
-        <h1><span class="n">72</span> Players</h1>
+        <h1><span class="n">72</span> Roster</h1>
         <p class="sub">The 2026 tennis roster. Under-18s appear under ATP or WTA and in Next Gen. Tap a player for their full profile.</p>
       </div>
       <div class="chips" role="group" aria-label="Filter by tour"><button class="chip on" data-f="ALL">All</button><button class="chip" data-f="ATP">ATP</button><button class="chip" data-f="WTA">WTA</button><button class="chip" data-f="NEXT">Next Gen</button></div>
@@ -2345,7 +2343,7 @@ setInterval(() => { if (!document.hidden) renderScores(); }, 5 * 60 * 1000);
   // (scripts/visit_log.gs, set up as in VISIT_LOG.md). Off while LOG_URL is empty.
   // Only time with the tab on screen counts; 30 minutes away starts a new visit.
   const LOG_URL = "https://script.google.com/macros/s/AKfycbwzEb0YNoDmZaaJ5fQg05ubEe_lowMLiGoYaXuclycqQikOngLQEmENPN5KoL_KJXu1kA/exec";
-  const PAGES = { home: "Home", scores: "Scores", rankings: "Rankings", players: "Players", scouting: "By Age", schedule: "Schedule", corner: "Scouting Corner" };
+  const PAGES = { home: "Home", scores: "Scores", rankings: "Rankings", players: "Roster", scouting: "Filtered Rankings", schedule: "Schedule", corner: "Scouting Corner" };
   let visit = null, awayAt = 0;
   const pageNow = () => PAGES[location.hash.slice(1).split("/")[0]] || "Home";
   function newVisit(){ visit = { id: Date.now().toString(36) + Math.random().toString(36).slice(2, 8), start: Date.now(), secs: 0, since: document.hidden ? 0 : Date.now(), pages: [pageNow()] }; awayAt = Date.now(); }
