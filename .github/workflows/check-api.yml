@@ -6,6 +6,4 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v6
-      - run: python3 scripts/discover.py
-        env:
-          LIVETENNIS_API_KEY: ${{ secrets.LIVETENNIS_API_KEY }}
+      - run: pip install -q beautifulsoup4 && FORCE=1 python3 scripts/prospects.py && python3 -c "import json;print(json.dumps(json.load(open('corner.json')),ensure_ascii=False,indent=1))"
