@@ -269,7 +269,9 @@ dialog.prof[open]{animation:pop .28s ease}
 .ph .facts{display:flex;flex-wrap:wrap;gap:8px 26px;margin-top:20px;font-size:13px;color:var(--muted)}
 .ph .facts b{color:var(--white);font-weight:600}
 .pb{padding:30px 40px 40px;display:grid;grid-template-columns:minmax(0,1fr);gap:30px}
-dialog.prof{overflow-x:hidden}
+dialog.prof{overflow-x:hidden;overflow-y:auto;overscroll-behavior:contain}
+/* phones: while a profile is open the page behind is pinned in place, so a swipe only ever scrolls the profile (openProfile/profLock) */
+html.prof-lock body{position:fixed;left:0;right:0;width:100%;overflow:hidden}
 .big{display:grid;grid-template-columns:repeat(4,1fr);gap:12px}
 .big.b3{grid-template-columns:repeat(3,1fr)}
 .big div{border:1px solid var(--line-2);border-radius:16px;padding:18px;background:rgba(255,255,255,.025)}
@@ -697,12 +699,13 @@ nav .sh,.nm-s{display:none}
   .r-group{font-size:10.5px;margin-top:4px}
   /* players page: 3 small photo cards per row, filter chips stay in view */
   .pgrid{grid-template-columns:repeat(3,minmax(0,1fr));gap:8px}
-  .pc{min-height:150px;padding:8px;border-radius:12px}
-  .pc .bg{opacity:.8;filter:none;transform:none;background-position:center 15%}
-  .pc .shade{background:linear-gradient(180deg,transparent 0%,transparent 40%,rgba(10,16,41,.92) 78%,#0A1029 100%)}
+  /* the photo box has the photos' own shape (380x434), so the whole picture shows with nothing cut off */
+  .pc{min-height:172px;padding:8px;border-radius:12px}
+  .pc .bg{inset:0 0 auto 0;aspect-ratio:380/434;opacity:.9;filter:none;transform:none;background-position:center top}
+  .pc .shade{background:linear-gradient(180deg,transparent 0%,transparent 50%,rgba(10,16,41,.92) 80%,#0A1029 100%)}
   .pc .mono,.pc .meta,.pc .go,.pc .cc{display:none}
   .pc .tr{font-size:7.5px;letter-spacing:.08em;padding:2px 5px}
-  .pc .fn{margin-top:auto;font-size:9px;letter-spacing:.1em;padding-top:60px}
+  .pc .fn{margin-top:auto;font-size:9px;letter-spacing:.1em;padding-top:70px}
   .pc .ln{font-size:13px;overflow-wrap:normal;word-break:break-word}
   .pc .nums{grid-template-columns:1fr;padding-top:4px;margin-top:4px;gap:0;border-top:0}
   .pc .nums div:not(:first-child){display:none}
@@ -853,7 +856,13 @@ nav .sh,.nm-s{display:none}
   .p-find{max-width:none;padding:7px 13px;font-size:14px}
   .chip{font-size:10px;letter-spacing:.07em;padding:6px 11px}
   dialog.prof{width:calc(100vw - 20px);max-height:calc(100vh - 24px);border-radius:18px}
+  dialog.prof{max-height:calc(100dvh - 24px)}
   .ph{min-height:0;padding:18px 16px 16px}
+  /* phones: the whole photo (zoomed right out, nothing cropped) sits in its own space above the name, over a blurred copy of itself */
+  .ph .pimg{position:relative;display:block;z-index:0;width:auto;height:min(310px,44vh);aspect-ratio:380/434;max-width:100%;margin:6px auto 16px;
+    object-fit:contain;opacity:1;border-radius:14px;box-shadow:0 14px 34px rgba(0,0,0,.5);-webkit-mask-image:none;mask-image:none}
+  .ph .pimg[src]{transform:none}
+  .ph .pblur{opacity:.5}
   .ph .x{top:12px;right:12px;width:32px;height:32px;font-size:15px}
   .ph .fn{font-size:11px;letter-spacing:.24em}
   .ph .ln{font-size:36px}
@@ -1274,7 +1283,7 @@ function route(){
   $("#page-corner").hidden = tab !== "corner";
   const pid = hash.startsWith("#players/") ? hash.slice(9) : null;
   if (pid && profById[pid]) openProfile(pid);
-  else if ($("#prof").open) $("#prof").close();
+  else if ($("#prof").open) { profLock(false); $("#prof").close(); }
   document.querySelectorAll("nav a").forEach(a => a.classList.toggle("active", a.dataset.tab === tab));
   // the champions banner sits at the top of both the home page and Competition Zone
   if (tab === "home" || tab === "scores") { $("#page-" + tab).prepend($("#champs")); fitChamps(); }
@@ -1949,7 +1958,7 @@ function openProfile(id){
       <div class="pnav"><button data-go="${prev.x.id}">← ${esc(prev.p.last)}</button>${safeUrl(p.sofa) ? `<a class="live-btn" href="${esc(safeUrl(p.sofa))}" target="_blank" rel="noopener"><span class="dot"></span>SofaScore profile</a>` : ""}<button data-go="${next.x.id}">${esc(next.p.last)} →</button></div>
     </div>`;
   const d = $("#prof");
-  if (!d.open) d.showModal();
+  if (!d.open) { profLock(true); d.showModal(); }
   d.scrollTop = 0;
   if (location.hash !== "#players/" + id) history.replaceState(null, "", "#players/" + id);
 }
@@ -1962,7 +1971,16 @@ document.addEventListener("click", e => {
   const go = e.target.closest("[data-go]"); if (go) return openProfile(go.dataset.go);
   if (e.target.closest("[data-close]") || e.target.id === "prof") $("#prof").close();
 });
-$("#prof").addEventListener("close", () => { if (location.hash.startsWith("#players/")) history.replaceState(null, "", "#players"); });
+// phones: pin the page behind an open profile (iPhones otherwise scroll it instead of the profile) and put it back where it was on close
+let profY = null;
+function profLock(on){
+  if (on && profY === null && matchMedia("(max-width:640px), (pointer:coarse)").matches) {
+    profY = window.scrollY; document.body.style.top = -profY + "px"; document.documentElement.classList.add("prof-lock");
+  } else if (!on && profY !== null) {
+    document.documentElement.classList.remove("prof-lock"); document.body.style.top = ""; window.scrollTo(0, profY); profY = null;
+  }
+}
+$("#prof").addEventListener("close", () => { profLock(false); if (location.hash.startsWith("#players/")) history.replaceState(null, "", "#players"); });
 
 function render(){ renderScores(); renderRankings(); renderPlayers(); renderHome(); }
 
