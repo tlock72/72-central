@@ -28,10 +28,6 @@ from zoneinfo import ZoneInfo
 
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 import te_matches as TE  # Tennis Europe: cookie consent, page fetch and match parsing
-_tef = TE.fetch
-def _trace(path, data=None):
-    print("  TE", path, flush=True); return _tef(path, data)
-TE.fetch = _trace  # TEMP trace
 
 LIST, OUT = "prospects.json", "corner.json"
 # the same Google Apps Script as the visit log (index.html LOG_URL); '?kind=prospects' lists the names added on the site
@@ -90,7 +86,6 @@ def load(f, default):
 
 # ---------- ITF ----------
 def itf(path, **params):
-    print("  ITF", path, params, flush=True)
     time.sleep(PAUSE)
     req = urllib.request.Request(f"{ITF}{path}?{urllib.parse.urlencode(params)}", headers={"User-Agent": UA, "Accept": "application/json"})
     with urllib.request.urlopen(req, timeout=30) as r:

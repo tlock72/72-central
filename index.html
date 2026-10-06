@@ -1953,7 +1953,7 @@ const CORNER_URL = "https://script.google.com/macros/s/AKfycbwzEb0YNoDmZaaJ5fQg0
 let CORNER = null, CN_SHEET = [];
 const CN = { g: "", q: "", open: new Set() };
 const cnKey = s => String(s || "").split("|")[0].normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLowerCase().replace(/[^a-z]/g, "");
-const CN_SRC = { te: "Tennis Europe", "itf-jr": "ITF Juniors", "itf-pro": "ITF pro events & Grand Slams" };
+const CN_SRC = { te: "Tennis Europe", "itf-jr": "ITF Juniors", "itf-pro": "Pro: ATP/WTA, Challenger, ITF" };
 // names added on this device: shown as "Looking up…" for up to 3 days (the Sheet's list covers everyone else's)
 function cnLocal(){ try { return JSON.parse(localStorage.getItem("72c-prospects") || "[]").filter(x => Date.now() - (x.at || 0) < 3 * 864e5); } catch (e) { return []; } }
 function cnStage(label, l, txt, url){
@@ -1971,7 +1971,7 @@ function cnRow(level, sub, rank, high, w, m3, m12){
 }
 function cnCard(k, p){
   const L = p.links || {}, tourName = p.g === "F" ? "WTA" : "ATP";
-  const te = (p.te || [])[0], jr = p.itfJr, pro = p.pro;
+  const te = [...(p.te || [])].sort((a, b) => a.rank - b.rank)[0], jr = p.itfJr, pro = p.pro;  // best Tennis Europe category
   const path = cnStage("Tennis Europe", L.te, te ? `No. ${te.rank} ${te.cat}` : "", L.te?.id ? `https://te.tournamentsoftware.com/player-profile/${L.te.id}` : "")
     + cnStage("ITF Juniors", L.itf, jr?.rank ? `No. ${jr.rank}` : jr?.high ? `Best ${jr.high}` : L.itf?.status === "linked" ? "ITF profile" : "", L.itf?.id ? `https://www.itftennis.com/en/players/${cnKey(p.name) && p.name.normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLowerCase().replace(/[^a-z]+/g, "-").replace(/^-|-$/g, "")}/${L.itf.id}/${(L.itf.nat || "").toLowerCase()}/` : "")
     + cnStage(tourName, L.pro?.status ? L.pro : null, pro ? `No. ${pro.rank}` : "", L.pro?.url);

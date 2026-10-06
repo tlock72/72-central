@@ -42,7 +42,8 @@ without Claude, and uses no Live Tennis API calls.
   The ATP/WTA moves come from the official weekly rankings. Tennis Europe and ITF junior moves are worked out from
   the history kept here, so they show "—" until that history goes back far enough (1 week, 3 months, 12 months
   after a player is added).
-- Results from the last 12 months: Tennis Europe, ITF juniors, and ITF pro events (M/W15 to M/W100) and Grand Slams. ATP Tour and Challenger match results aren't in yet.
+- Results from the last 12 months: Tennis Europe, ITF juniors, and pro matches from the ITF's records (which include
+  ATP/WTA Tour events, Challengers, WTA 125s, ITF M/W15-M/W100 and Grand Slams, qualifying too).
 - Everyone is refreshed once a day from 05:00 UK (new names straight away), one request every few seconds. If the
   ITF or Tennis Europe shows its bot check, that site is left alone for 3 hours and the previous data stays.
 - Tennis Europe data is used with permission, for internal use only.
