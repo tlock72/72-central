@@ -8,7 +8,7 @@ It is hosted on GitHub Pages at tlock72.github.io/72-central and protected by a 
 - **No Claude dependency.** All updates must run without Claude in case the subscription lapses.
 - **Accuracy over completeness.** Bosses use the site, so never guess a score or ranking. Leave it blank and alert instead.
 - **Live Tennis API free plan: 100 calls a day.** `update.py` caps each run at 45 (`MAX_CALLS`). A normal day uses about 45–50, and a busy Monday up to about 85. Runs started by hand always run (only timer runs skip if the site updated in the last 20 minutes), so they burn calls.
-- **Tennis Europe data:** used with permission from Gregor Kusic (Tennis Europe), internal use only. Keep `robots.txt` blocking indexing.
+- **Tennis Europe data:** used with permission from Tennis Europe, internal use only. Keep `robots.txt` blocking indexing.
 - Tobey edits in the GitHub web editor, so keep changes small and explain them in plain English.
 
 ## Files
