@@ -1,0 +1,12 @@
+name: Check Tenipo (one-off)
+on:
+  workflow_dispatch: {}
+  push:
+    branches: [claude/quirky-archimedes-gtqnwb]
+    paths: [scripts/tenipo_check.py, .github/workflows/check-tenipo.yml]
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v6
+      - run: python3 scripts/tenipo_check.py
