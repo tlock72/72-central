@@ -8,9 +8,10 @@ or Scouting HQ that could not be refreshed, a part of the update that failed, up
 stopped, or the website not publishing - and posts it to an open GitHub issue called
 "72 Central: missing info" (GitHub emails the repository owner). Each problem is only reported once.
 """
-import json, os, subprocess
+import json, os, subprocess, sys, unicodedata
 from datetime import datetime, timedelta, timezone
 from zoneinfo import ZoneInfo
+sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 
 UK = ZoneInfo("Europe/London")
 NOW = datetime.now(timezone.utc)
@@ -85,6 +86,31 @@ def gaps():
                    "(the ITF site blocked or failed the check, or a final couldn't be read). Their saved titles are still counted.")
     if ti.get("checked") and ti["checked"] < ago(3):
         out.append(f"ITF World Tennis Tour titles haven't been checked since {ti['checked']}.")
+    # 4c) career highs that don't fit the official rankings or the typed profile (itf_titles.py leaves them blank)
+    for rid, b in sorted((ti.get("best") or {}).items()):
+        if b.get("issue"):
+            out.append(b["issue"])
+    # 4d) current ATP/WTA ranking: the live-score feed (data.json) against the official weekly list (scouting.json)
+    dj, so = load("data.json"), load("scouting.json")
+    try:
+        from update import ROSTER
+    except Exception:
+        ROSTER = {}
+    for tour in ("atp", "wta"):
+        week = (so.get(tour) or {}).get("week")
+        if not week or (dj.get("rankingsTourWeek") or {}).get(tour) != week:
+            continue  # only compare the same ranking week
+        rows = (so.get(tour) or {}).get("players") or []
+        key = lambda n: "".join(c for c in unicodedata.normalize("NFKD", n).lower() if c.isalpha() and c.isascii())
+        for rid, (name, t) in ROSTER.items():
+            have = ((dj.get("rankings") or {}).get(rid) or {}).get("rank")
+            if t != tour or not have:
+                continue
+            k = key(name.split("|")[0])
+            hit = [r for r in rows if key(r[1]) == k] or [r for r in rows if key(r[1]).startswith(k) or k.startswith(key(r[1]))]
+            if len(hit) == 1 and hit[0][0] != have:
+                out.append(f"Current ranking for {name.split('|')[0]}: the site shows {tour.upper()} No. {have}, but the official "
+                           f"{tour.upper()} list for the week of {week} says No. {hit[0][0]}.")
     # 5) ATP/WTA rankings
     d = load("data.json")
     if d.get("quotaHit") and ukday(d["quotaHit"]) == TODAY:
