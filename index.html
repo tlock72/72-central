@@ -41,8 +41,8 @@ button{font:inherit;color:inherit;background:none;border:0;cursor:pointer}
 .wrap{max-width:1180px;margin:0 auto;padding-inline:24px}
 
 header{position:sticky;top:env(safe-area-inset-top,0px);z-index:10;background:rgba(12,20,49,.9);backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);border-bottom:1px solid var(--line)}
-.bar{display:flex;align-items:center;justify-content:space-between;gap:20px;padding-block:18px}
-.brand{display:flex;align-items:center;gap:18px;text-decoration:none;min-width:0}
+.bar{display:flex;align-items:center;justify-content:space-between;gap:32px;padding-block:18px}
+.brand{display:flex;align-items:center;gap:18px;text-decoration:none;flex:none}
 .brand img{height:40px;width:auto;display:block}
 .brand .tag{font-family:var(--display);font-weight:500;letter-spacing:.22em;font-size:11px;color:var(--muted);text-transform:uppercase;padding-left:18px;border-left:1px solid var(--line);white-space:nowrap}
 nav{display:flex;gap:6px;background:rgba(255,255,255,.04);border:1px solid var(--line-2);padding:5px;border-radius:999px}
@@ -504,7 +504,7 @@ a.cn-st.ok:hover{border-color:var(--gold)}
 .rk-pick{display:none;margin:0 0 12px}
 @media (max-width:860px){.rk-pick{display:flex}.tours.pick:not(.second)>.tour:nth-child(2),.tours.pick.second>.tour:first-child{display:none}}
 @media (max-width:640px){
-  /* small tiles on phones (72 Rankings, ITF juniors, Age Filtered World Rankings) */
+  /* small tiles on phones (72 Rankings, ITF juniors, Filtered Rankings) */
   .stats{gap:6px;margin-bottom:14px}
   .stat{padding:8px 10px;border-radius:10px}
   .stat .k{font-size:9px;letter-spacing:.08em}
@@ -582,6 +582,8 @@ body.on-home header nav{display:none}
 /* Phone layout: compact header, home on one screen, 3 match cards per row, compact roster */
 nav .sh,.nm-s{display:none}
 @media (max-width:1180px) and (min-width:641px){nav .lg{display:none} nav .sh{display:inline}}
+/* small tablets: a slightly smaller logo and tighter tabs so the logo keeps clear space without the menu running off the screen */
+@media (max-width:760px) and (min-width:641px){.bar{gap:20px}.brand img{height:32px}nav a{padding:10px 8px}}
 .p-find{display:block;width:100%;max-width:360px;margin:0 0 18px;padding:10px 16px;border-radius:999px;border:1px solid var(--line);background:var(--navy-2);color:var(--white);font:inherit;font-size:14px;outline:none}
 .p-find:focus{border-color:var(--gold)}
 @media (max-width:640px){
@@ -740,7 +742,7 @@ html.name-only .gate-box h2,html.name-only .gate-digits{display:none}
       <a href="#scores" data-tab="scores"><span class="lg"><span class="n72">72 </span>Competition Zone</span><span class="sh">Scores</span></a>
       <a href="#rankings" data-tab="rankings"><span class="n72">72 </span>Rankings</a>
       <a href="#players" data-tab="players"><span class="n72">72 </span>Players</a>
-      <a href="#scouting" data-tab="scouting"><span class="lg">Age Filtered World Rankings</span><span class="sh">By Age</span></a>
+      <a href="#scouting" data-tab="scouting"><span class="lg">Filtered Rankings</span><span class="sh">Filtered</span></a>
       <a href="#schedule" data-tab="schedule"><span class="lg">Tour Schedule</span><span class="sh">Events</span></a>
       <a href="#corner" data-tab="corner"><span class="lg">Scouting Corner</span><span class="sh">Scout</span></a>
     </nav>
@@ -774,7 +776,7 @@ html.name-only .gate-box h2,html.name-only .gate-digits{display:none}
         <div class="hp-stat"><div><b id="hpT3">—</b><span id="hpS3"></span></div><span class="hp-go" aria-hidden="true">→</span></div>
       </a>
       <a class="hp-tile" href="#scouting">
-        <h2>Age Filtered World Rankings</h2>
+        <h2>Filtered Rankings</h2>
         <p>72's scouting radar: every ranked ATP and WTA player aged 21 or under, with their ranking moves over 1 week, 3 months and 12 months, to spot the next 72 signing early.</p>
         <div class="hp-stat"><div><b id="hpT4">—</b><span id="hpS4">Loading the scouting list…</span></div><span class="hp-go" aria-hidden="true">→</span></div>
       </a>
@@ -890,7 +892,7 @@ html.name-only .gate-box h2,html.name-only .gate-digits{display:none}
     <div class="hero">
       <div>
         <div class="eyebrow">SeventyTwo Sports Group</div>
-        <h1>Age Filtered World Rankings</h1>
+        <h1>Filtered Rankings</h1>
         <p class="sub" id="sqSub">72's scouting radar. Every ranked ATP and WTA singles player, filtered by age group or birth year and by ranking, with ranking moves over the last week, 3 months and 12 months, so we can spot rising talent early and see how 72 players (marked <span class="sq-72">72</span>) compare with their age group.</p>
       </div>
       <div class="chips" role="group" aria-label="Choose tour"><button class="chip sqt on" data-t="atp">ATP</button><button class="chip sqt" data-t="wta">WTA</button></div>
@@ -1047,7 +1049,7 @@ function route(){
   if (tab === "home" || tab === "scores") { $("#page-" + tab).prepend($("#champs")); fitChamps(); }
   if (tab === "home") renderHome();
   if (tab === "home" && window._tab && window._tab !== "home") spinLogo();
-  // coming to Age Filtered World Rankings from another tab always starts on Everyone, all ages, all rankings
+  // coming to Filtered Rankings from another tab always starts on Everyone, all ages, all rankings
   if (tab === "scouting" && window._tab !== "scouting") {
     Object.assign(SQ, { o72: false, by: "age", ag: "all", age: 0, yr: 0, rk: "all", top: 0, q: "", c: "", all: false });
     $("#sqQ").value = ""; $("#sqC").value = "";
@@ -1309,7 +1311,7 @@ function renderRankings(){
   const rows = tour => ROSTER.filter(p => p.tour === tour).map(p => ({ p, d: r.players[p.id] || {} })).filter(x => x.d.rank).sort((a,b) => (a.d.rank ?? 1e9) - (b.d.rank ?? 1e9));
   // players who have held an ATP/WTA ranking (a career high is on file) but are not ranked now go at the bottom
   const former = tour => ROSTER.filter(p => p.tour === tour && !(r.players[p.id] || {}).rank && profById[p.id]?.high).map(p => ({ p, d: { note: `Not currently ranked · career high #${profById[p.id].high}` } }));
-  // 1 wk / 3 mo / 12 mo moves from the official weekly rankings in scouting.json (same list as Age Filtered World Rankings)
+  // 1 wk / 3 mo / 12 mo moves from the official weekly rankings in scouting.json (same list as Filtered Rankings)
   const trendOf = p => { const T = SCOUT && SCOUT[p.tour.toLowerCase()]; if (!T?.players) return null;
     const k = rkKey(p.first + p.last); let x = T.players.find(q => rkKey(q[1]) === k);
     if (!x) { const h = T.players.filter(q => { const n = rkKey(q[1]); return n.startsWith(k) || k.startsWith(n); }); if (h.length === 1) x = h[0]; } // e.g. "Leyre Romero Gormaz"
