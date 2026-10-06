@@ -508,8 +508,7 @@ body.on-home header nav{display:none}
   border:1px solid var(--line-2);background:linear-gradient(170deg,var(--navy-2),rgba(17,27,63,.6));transition:transform .25s ease,border-color .25s ease,box-shadow .25s ease}
 .hp-tile::before{content:"";position:absolute;inset:0;z-index:-1;background:radial-gradient(460px 240px at 110% -20%,rgba(208,165,121,.18),transparent 60%);transition:opacity .3s}
 .hp-tile:hover{transform:translateY(-4px);border-color:var(--gold);box-shadow:0 20px 44px rgba(0,0,0,.38)}
-.hp-tile .no{font-family:var(--display);font-size:13px;letter-spacing:.24em;color:var(--gold)}
-.hp-tile h2{font-family:var(--display);font-weight:600;text-transform:uppercase;letter-spacing:.06em;font-size:30px;color:var(--white);margin:8px 0 6px;line-height:1.05}
+.hp-tile h2{font-family:var(--display);font-weight:600;text-transform:uppercase;letter-spacing:.06em;font-size:30px;color:var(--white);margin:0 0 6px;line-height:1.05}
 .hp-tile p{margin:0;font-size:13px;color:var(--muted);line-height:1.55;max-width:420px}
 .hp-stat{margin-top:auto;padding-top:24px;display:flex;align-items:flex-end;justify-content:space-between;gap:14px}
 .hp-stat b{display:block;font-family:var(--display);font-weight:600;font-size:44px;line-height:1;color:var(--white);font-variant-numeric:tabular-nums}
@@ -630,8 +629,7 @@ nav .sh,.nm-s{display:none}
   .hp-pill{font-size:9px;padding:4px 9px;letter-spacing:.08em}
   #page-home > .hp-grid{grid-template-columns:repeat(2,minmax(0,1fr));grid-auto-rows:1fr;gap:10px;flex:1}
   .hp-tile{min-height:0;padding:14px 14px 12px;border-radius:18px}
-  .hp-tile .no{font-size:11px}
-  .hp-tile h2{font-size:16px;margin:4px 0 0;letter-spacing:.03em}
+  .hp-tile h2{font-size:16px;margin:0;letter-spacing:.03em}
   .hp-tile p,.hp-faces,.hp-foot{display:none}
   .hp-go{position:absolute;top:12px;right:12px;width:30px;height:30px;font-size:15px}
   .hp-stat{padding-top:6px}
@@ -643,7 +641,6 @@ nav .sh,.nm-s{display:none}
   #page-home > .hp-grid{grid-template-rows:1fr 1fr auto;grid-auto-rows:auto}
   .hp-wide{display:grid;grid-template-columns:auto minmax(0,1fr);align-items:center;column-gap:10px;padding:10px 54px 10px 14px}
   .hp-wide h2{margin:0;padding-right:0}
-  .hp-wide .no{display:none}
   .hp-wide .hp-stat{padding-top:0;grid-column:2;grid-row:1}
   .hp-wide .hp-stat b{font-size:20px;display:inline}
   .hp-wide .hp-stat b small{display:inline;font-size:11px;margin-left:5px}
@@ -719,28 +716,28 @@ html.name-only .gate-box h2,html.name-only .gate-digits{display:none}
     </section>
     <div class="hp-grid">
       <a class="hp-tile" href="#scores">
-        <div class="no">01</div><h2>72 Competition Zone</h2>
+        <h2>72 Competition Zone</h2>
         <p>Today's matches, what's coming up and this week's results for every 72 player.</p>
         <div class="hp-stat"><div><b id="hpT1">—</b><span id="hpS1">Loading the schedule…</span></div><span class="hp-go" aria-hidden="true">→</span></div>
       </a>
       <a class="hp-tile" href="#rankings">
-        <div class="no">02</div><h2>72 Rankings</h2>
+        <h2>72 Rankings</h2>
         <p>Official ATP, WTA and ITF junior rankings for the roster, updated every week.</p>
         <div class="hp-stat"><div><b id="hpT2">—</b><span id="hpS2">Loading rankings…</span></div><span class="hp-go" aria-hidden="true">→</span></div>
       </a>
       <a class="hp-tile" href="#players">
-        <div class="no">03</div><h2>72 Players</h2>
+        <h2>72 Players</h2>
         <p>Profiles for the whole roster: titles, partners, social following and results.</p>
         <div class="hp-faces" id="hpFaces"></div>
         <div class="hp-stat"><div><b id="hpT3">—</b><span id="hpS3"></span></div><span class="hp-go" aria-hidden="true">→</span></div>
       </a>
       <a class="hp-tile" href="#scouting">
-        <div class="no">04</div><h2>Age Filtered World Rankings</h2>
+        <h2>Age Filtered World Rankings</h2>
         <p>72's scouting radar: every ranked ATP and WTA player aged 21 or under, with their ranking moves over 1 week, 3 months and 12 months, to spot the next 72 signing early.</p>
         <div class="hp-stat"><div><b id="hpT4">—</b><span id="hpS4">Loading the scouting list…</span></div><span class="hp-go" aria-hidden="true">→</span></div>
       </a>
       <a class="hp-tile hp-wide" href="#schedule">
-        <div class="no">05</div><h2>Tour Schedule</h2>
+        <h2>Tour Schedule</h2>
         <p>Every ATP, WTA, Challenger, ITF, ITF junior and Tennis Europe event to the end of the year, and where 72 players are entered.</p>
         <div class="hp-stat"><div><b id="hpT5">—</b><span id="hpS5">Loading the schedule…</span></div><span class="hp-go" aria-hidden="true">→</span></div>
       </a>
