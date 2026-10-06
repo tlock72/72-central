@@ -580,7 +580,7 @@ body.on-home header nav{display:none}
   .hp-stat b{font-size:36px}
 }
 /* Phone layout: compact header, home on one screen, 3 match cards per row, compact roster */
-nav .sh,.nm-s{display:none}
+nav .sh,nav .ros,.nm-s{display:none}
 @media (max-width:1180px) and (min-width:641px){nav .lg{display:none} nav .sh{display:inline}}
 /* small tablets: a slightly smaller logo and tighter tabs so the logo keeps clear space without the menu running off the screen */
 @media (max-width:760px) and (min-width:641px){.bar{gap:20px}.brand img{height:32px}nav a{padding:10px 6px}}
@@ -599,6 +599,8 @@ nav .sh,.nm-s{display:none}
   nav .n72{display:none}
   #champs{margin-top:8px}
   nav .lg{display:none} nav .sh{display:inline}
+  /* "72 Players" won't fit on a phone (the 72s are dropped there), so that tab says Roster */
+  nav .plyr{display:none} nav .ros{display:inline}
   body.on-home header .bar{justify-content:center}
   .hero{padding-block:14px 10px;gap:10px}
   .hero h1{font-size:30px}
@@ -741,7 +743,7 @@ html.name-only .gate-box h2,html.name-only .gate-digits{display:none}
     <nav>
       <a href="#scores" data-tab="scores"><span class="lg"><span class="n72">72 </span>Competition Zone</span><span class="sh"><span class="n72">72 </span>Scores</span></a>
       <a href="#rankings" data-tab="rankings"><span class="n72">72 </span>Rankings</a>
-      <a href="#players" data-tab="players"><span class="n72">72 </span>Players</a>
+      <a href="#players" data-tab="players"><span class="plyr"><span class="n72">72 </span>Players</span><span class="ros">Roster</span></a>
       <a href="#scouting" data-tab="scouting"><span class="lg">Filtered Rankings</span><span class="sh">Filtered</span></a>
       <a href="#schedule" data-tab="schedule"><span class="lg">Tour Schedule</span><span class="sh">Schedule</span></a>
       <a href="#corner" data-tab="corner"><span class="lg">Scouting Corner</span><span class="sh">Scouting</span></a>
