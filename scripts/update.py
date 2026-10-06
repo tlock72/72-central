@@ -440,6 +440,20 @@ def main():
         if m["status"] == "scheduled" and m["date"] and m["date"] < (uk_now - timedelta(days=2)).strftime("%Y-%m-%d"):
             continue  # result never arrived; shown as 'result pending' for 2 days, then dropped
         merged.append(m)
+
+    # 5b) When a match finished ("Finished by 14:43 UK" on its result tile). Only recorded when the previous run,
+    #     at most 45 minutes earlier, still had it unfinished, so the time is never more than one run out.
+    #     (Live Tennis API matches need a live sighting at that run, since they aren't re-read every run.)
+    prev_run = data.get("lastChecked")
+    recent = prev_run and NOW - datetime.fromisoformat(prev_run.replace("Z", "+00:00")) <= timedelta(minutes=45)
+    for i, m in enumerate(merged):
+        was = old.get(m.get("apiId")) if m.get("apiId") else None
+        if m["status"] != "finished" or m.get("endAt") or not was:
+            continue
+        if was.get("endAt"):
+            merged[i] = dict(m, endAt=was["endAt"])
+        elif recent and was["status"] in ("scheduled", "live") and (isinstance(m["apiId"], str) or was.get("seenLive") == prev_run):
+            merged[i] = dict(m, endAt=NOW.strftime("%Y-%m-%dT%H:%M:%SZ"))
     data["matches"] = merged
 
     # roster-strip overrides only for players with nothing in the list
