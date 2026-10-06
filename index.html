@@ -3,6 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<script>/* iPhone/iPad: stop the page zooming in when a search box or menu is tapped (boxes are under 16px). iOS still allows pinch zoom with this; other phones would lose it, so they are left alone */if(/iPhone|iPad|iPod/.test(navigator.userAgent)||(navigator.platform==="MacIntel"&&navigator.maxTouchPoints>1))document.querySelector('meta[name="viewport"]').content+=", maximum-scale=1";</script>
 <title>72 Central</title>
 <link rel="icon" type="image/png" sizes="64x64" href="tab-icon.png?v=3">
 <!-- installable app: "Add to Home Screen" uses this icon and opens full-screen (manifest.json) -->
