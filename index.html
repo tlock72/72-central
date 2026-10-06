@@ -541,7 +541,6 @@ nav .sh,.nm-s{display:none}
   .brand{flex:none}
   .brand img{height:15px}
   .p-find{margin-bottom:10px;padding:8px 14px;font-size:16px}
-  .badge72{display:none!important}
   .champ{font-size:11px;padding:7px 12px;margin:8px 0 0}
   /* five tabs don't fit beside the logo on a phone: the menu gets its own full-width row under it */
   header .bar{flex-wrap:wrap;justify-content:center;row-gap:8px}
@@ -1021,26 +1020,6 @@ const isLive = m => !!(m.status === "live" && m.seenLive && Date.now() - new Dat
 // what kind of event a match is, for "we can't pull live scores for ..." (blank for ATP/WTA, which ESPN covers)
 const eventKind = m => m.source === "te" ? "Tennis Europe" : m.source === "itf" ? "ITF junior"
   : /challenger/i.test(m.category || "") ? "Challenger" : /^(ITF|[MW]\d)/i.test(m.category || "") ? "ITF" : "";
-// a finished match's stats from one player's side, all worked out from the score (nothing guessed):
-// how the match went, tie-breaks won-lost, a match tie-break in place of a final set
-function resultStats(m, side){
-  const ret = /ret\.?\s*$/.test(m.score || "");
-  const sets = String(m.score || "").replace(/\s*ret\.?\s*$/, "").split(",").map(s => s.trim().match(/^(\d+)-(\d+)/)).filter(Boolean)
-    .map(x => side === 1 ? [+x[1], +x[2]] : [+x[2], +x[1]]);
-  if (!sets.length) return [];
-  const mtb = sets.length >= 3 && Math.max(...sets[sets.length - 1]) >= 10;
-  const games = mtb ? sets.slice(0, -1) : sets;
-  const won = m.winner === side, setsLost = sets.filter(s => s[0] < s[1]).length;
-  const tbs = games.filter(s => Math.max(...s) === 7 && Math.min(...s) === 6);
-  const out = [];
-  if (ret) out.push(won ? "Opponent retired" : "Retired");
-  else if (won && !setsLost) out.push("Straight sets");
-  else if (won && sets[0][0] < sets[0][1]) out.push("Came from a set down");
-  else if (!won && setsLost < sets.length) out.push(`Won a set`);
-  if (tbs.length) out.push(`Tie-breaks <b>${tbs.filter(s => s[0] > s[1]).length}–${tbs.filter(s => s[0] < s[1]).length}</b>`);
-  if (mtb) out.push(`Match tie-break <b>${sets[sets.length - 1].join("–")}</b>`);
-  return out;
-}
 function card(m){
   const today = m.date === ukDate();
   const fin = m.status === "finished";
@@ -1072,13 +1051,12 @@ function card(m){
     ? (m.source === "itf" || m.source === "te"
       ? `<div class="times"><span>Order of play</span><b>${m.slot ? esc(m.slot) + " (local time)" : "Time TBC"}</b></div>`
       : `<div class="times"><span>Approx. start</span>${m.time ? `<b>${esc(m.time)} UK</b><b>${esc(esTime(m.date, m.time))} Spain</b>` : "<b>Time TBC</b>"}${asOf(m.timeAt)}</div>`) : "";
-  // result tiles: the court played on (when the feed gave one) plus stats from the 72 player's side (the winner's if both or neither are 72)
-  const focus = wl === "loss72" ? 3 - m.winner : m.winner || 1;
+  // result tiles: the court played on (when the feed gave one) and the finish time
   // finish time: only recorded when a check saw the match unfinished shortly before, so it's "by" that time (UK)
   const end = fin && m.endAt && !isNaN(new Date(m.endAt)) ? new Date(m.endAt) : null;
   const endTxt = end ? (ukDate(end) === m.date ? "" : end.toLocaleDateString("en-GB", { timeZone:"Europe/London", day:"numeric", month:"short" }) + " ")
     + end.toLocaleTimeString("en-GB", { timeZone:"Europe/London", hour:"2-digit", minute:"2-digit", hourCycle:"h23" }) : "";
-  const rs = fin ? [m.court ? `Played on <b>${esc(m.court)}</b>` : "", endTxt ? `Finished by <b>${esc(endTxt)} UK</b>` : "", ...resultStats(m, focus)].filter(Boolean) : [];
+  const rs = fin ? [m.court ? `Played on <b>${esc(m.court)}</b>` : "", endTxt ? `Finished by <b>${esc(endTxt)} UK</b>` : ""].filter(Boolean) : [];
   const stats = rs.length ? `<div class="rstats">${rs.map(x => `<span>${x}</span>`).join("")}</div>` : "";
   const p = byId[m.p1Id] || byId[m.p2Id];
   const link = safeUrl(p?.sofa);
