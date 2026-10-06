@@ -397,6 +397,7 @@ select.sq-in option{background:var(--navy-2);color:var(--white)}
 /* Scouting Corner: prospects followed from Tennis Europe to ITF juniors to ATP/WTA (corner.json, scripts/prospects.py) */
 .cn-add{border:1px solid var(--line);border-radius:18px;padding:16px 18px;margin:0 0 18px;background:linear-gradient(180deg,var(--navy-2),rgba(17,27,63,.55))}
 .cn-add h3{font-family:var(--display);font-weight:500;text-transform:uppercase;letter-spacing:.16em;font-size:12px;color:var(--gold);margin:0 0 10px}
+.cn-add h3 button{font:inherit;letter-spacing:inherit;text-transform:inherit;color:inherit;cursor:default;padding:0;height:auto;background:none;border-radius:0}
 .cn-add form{display:flex;flex-wrap:wrap;gap:8px}
 .cn-add .sq-in{flex:1 1 150px}
 .cn-add #cnName{flex:2 1 220px}
@@ -439,7 +440,12 @@ a.cn-st.ok:hover{border-color:var(--gold)}
 @media (min-width:641px){.cn .sq-row .ch.note{text-align:left;font-size:11px;line-height:1.4;color:var(--muted);background:var(--navy-3);border:1px solid var(--line);border-radius:10px;padding:6px 11px}}
 .cn .sq-row.h span{font-family:var(--display);text-transform:uppercase;letter-spacing:.14em;font-size:10px;color:var(--muted);text-align:right}
 .cn .sq-row.h span:first-child{text-align:left}
-.cn-more{display:block;width:100%;padding:10px 20px;font-family:var(--display);text-transform:uppercase;letter-spacing:.14em;font-size:11px;color:var(--gold);text-align:left;border-top:1px solid var(--line-2)}
+/* card foot: "Show the last 12 months" on the left, "Request removal" on the right, one row */
+.cn-acts{display:flex;flex-wrap:wrap;align-items:center;border-top:1px solid var(--line-2)}
+.cn-acts .cn-ft{border-top:0;margin-left:auto}
+.cn-acts .cn-rmf{flex:1 1 100%;border-top:1px solid var(--line-2)}
+.cn .ch.note .sh{display:none}
+.cn-more{flex:1 1 auto;display:block;padding:10px 20px;font-family:var(--display);text-transform:uppercase;letter-spacing:.14em;font-size:11px;color:var(--gold);text-align:left}
 .cn-more:hover{background:var(--gold-dim)}
 .cn-res{padding:4px 20px 14px;border-top:1px solid var(--line-2)}
 .cn-res[hidden]{display:none}
@@ -723,6 +729,111 @@ nav .sh,.nm-s{display:none}
   .hp-ld .lb{font-size:10px;letter-spacing:.02em;margin-bottom:2px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
   .hp-ld .nmx{font-size:11px;margin-top:2px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 }
+/* Phone: compact Scouting Corner, Tour Schedule, 72 Rankings and Filtered Rankings (smaller buttons and text, less scrolling) */
+@media (max-width:640px){
+  /* headings: smaller, and the ATP/WTA buttons sit beside the title */
+  #page-rankings .hero,#page-scouting .hero,#page-schedule .hero,#page-corner .hero{padding-block:12px 8px}
+  #page-rankings .hero h1,#page-scouting .hero h1,#page-schedule .hero h1,#page-corner .hero h1{font-size:24px}
+  #page-schedule .hero .sub,#page-scouting .hero .sub{display:none}
+  #page-rankings .hero .sub,#page-corner .hero .sub{font-size:11px;line-height:1.45;margin-top:4px}
+  #page-rankings .hero,#page-scouting .hero{display:grid;grid-template-columns:minmax(0,1fr) auto;align-items:center;gap:0 10px}
+  #page-rankings .hero>div:first-child,#page-scouting .hero>div:first-child{display:contents}
+  #page-rankings .hero .sub{grid-column:1/-1;grid-row:2}
+  /* buttons and boxes */
+  .chips{gap:5px}
+  .chip,.sq-line .chip{font-size:10px;letter-spacing:.07em;padding:6px 11px}
+  .sq-in{height:34px;padding:0 13px}
+  select.sq-in{background-position:calc(100% - 15px) 14px,calc(100% - 10px) 14px;padding-right:26px}
+  .sq-mode{padding:2px}.sq-mode button{font-size:10px;padding:4px 9px}
+  /* filters: label on the left, each row of buttons on one line that scrolls sideways */
+  .sq-filters{gap:7px;margin-bottom:12px}
+  .sq-line{display:grid;grid-template-columns:50px minmax(0,1fr);gap:6px 6px;align-items:center}
+  .sq-line>*{grid-column:2;min-width:0}
+  .sq-line[hidden]{display:none}
+  .sq-line>.sq-lbl{grid-column:1;grid-row:1;font-size:9px;letter-spacing:.1em}
+  .sq-line .sq-mode{justify-self:start}
+  .sq-line .chips{flex-wrap:nowrap;overflow-x:auto;scrollbar-width:none;-webkit-mask-image:linear-gradient(to right,#000 88%,transparent);mask-image:linear-gradient(to right,#000 88%,transparent);padding-right:24px}
+  .sq-line .chips::-webkit-scrollbar{display:none}
+  .sq-line .chip{flex:none}
+  .sq-line.sq-search{display:flex;padding-top:0}
+  .sq-line.sq-search>*{flex:1 1 0}
+  .sq-in.sq-num{width:110px;justify-self:start}
+  #page-corner .sq-line{display:flex}
+  #page-corner .sq-line .chips{flex:none;-webkit-mask-image:none;mask-image:none;padding-right:0}
+  #page-corner .sq-line .sq-in{flex:1 1 0}
+  .stale{margin:8px 0 6px;padding:9px 12px;font-size:12px}
+  .src{font-size:11px;margin-top:12px}
+  /* Scouting Corner */
+  .cn-add{padding:0;margin-bottom:10px;border-radius:14px}
+  .cn-add h3{margin:0;font-size:11px}
+  .cn-add h3 button{display:flex;align-items:center;justify-content:space-between;width:100%;padding:11px 14px;cursor:pointer}
+  .cn-add h3 button::after{content:"+";font-size:18px;line-height:1;font-weight:400;transition:transform .2s}
+  .cn-add.open h3 button::after{transform:rotate(45deg)}
+  .cn-add:not(.open)>:not(h3){display:none!important}
+  .cn-add>:not(h3){margin-inline:14px}
+  .cn-add form{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:6px}
+  .cn-add #cnName{grid-column:1/-1}
+  .cn-add button[type=submit]{height:34px;font-size:11px}
+  .cn-natl{top:38px}
+  .cn-msg{font-size:11px;margin:6px 14px 12px}
+  .cn-ok{padding:10px 12px;font-size:12px;margin-bottom:12px}
+  .cn-list{gap:8px}
+  .cn{border-radius:14px}
+  .cn-h{padding:10px 12px 7px;gap:2px 8px}
+  .cn-h .nm{font-size:16px}
+  .cn-h .mt{font-size:11px;letter-spacing:.03em}
+  .cn-h .wl{font-size:11px}.cn-h .wl b{font-size:13px}
+  .cn-path{padding:0 12px 8px}
+  .cn-st{padding:5px 7px;border-radius:8px}
+  .cn .sq-row{padding:6px 12px}
+  .cn .sq-row.h{padding-block:6px}
+  .cn .sq-row .lv{font-size:11px}.cn .sq-row .lv small{font-size:9px}
+  .cn .sq-row .by{font-size:13px}.cn .sq-row .ch{font-size:12px}
+  .cn .ch.note .lg{display:none}.cn .ch.note .sh{display:inline}
+  .cn .sq-row .ch.note{text-align:center}
+  .cn-more{padding:8px 12px;font-size:10px;letter-spacing:.08em}
+  .cn-more .n{display:none}
+  .cn-ft{padding:8px 12px;gap:6px}
+  .cn-ft .rm{font-size:10px}
+  .cn-ft .sq-in{flex-basis:100%}
+  .cn-ft .go,.cn-ft .no{height:30px;font-size:10px}
+  .cn-note{padding:0 12px 8px}
+  .cn-tn{margin-top:9px;font-size:11px}
+  .cn-res{padding-bottom:10px}
+  /* Tour Schedule */
+  .sch-key{margin:0 0 12px;font-size:9.5px;gap:3px 9px}
+  .sch-key i{width:8px;height:8px;border-radius:2px}
+  .sch-wk{margin-bottom:14px}
+  .sch-wk h3{font-size:12px;letter-spacing:.1em;margin-bottom:6px;padding-bottom:4px}
+  .sch-wk h3 small{font-size:10px}
+  .sch-cut{margin:2px 0 14px;font-size:11px}
+  .ev{margin-bottom:4px;border-radius:10px;border-left-width:3px;gap:2px 8px}
+  .sg1{--fs:16px;--pad:10px}.sg2{--fs:15px;--pad:9px}.sg3{--fs:14px;--pad:8px}.sg4{--fs:13.5px;--pad:7px}
+  .sg5{--fs:13px;--pad:6px}.sg6,.sg7,.sg8{--fs:12.5px;--pad:5px}
+  .ev .mt{font-size:10.5px}
+  .ev .cat{font-size:9px;padding:2px 6px}
+  .ev .e72{gap:4px;margin-top:2px}
+  .ev .e72 b{font-size:10px;padding:1px 7px}
+  .ev .nl{font-size:10px;margin-top:1px}
+  /* 72 Rankings and Filtered Rankings */
+  .rk-facts .fact:nth-child(1) .s,.rk-facts .fact:nth-child(3) .s{display:none}
+  .rk-facts .fact:nth-child(4){grid-column:1/-1}
+  .rk-pick{margin-bottom:8px}
+  .tour{border-radius:14px}
+  .tour-h{padding:9px 12px}
+  .tour-h h3{font-size:14px;letter-spacing:.1em}
+  .tour-h .k{font-size:10px}
+  .rk.t6{padding:8px 12px}
+  .rk .who .ct{font-size:10px;letter-spacing:.06em;margin-top:1px}
+  .rk-sep{padding:7px 12px;font-size:9px}
+  .stat .k{line-height:1.35}
+  .sq-tbl{border-radius:14px}
+  .sq-row{grid-template-columns:34px minmax(0,1fr) 36px repeat(3,40px);gap:5px;padding:8px 12px}
+  .sq-row.h button{font-size:9px}
+  .sq-row.h{padding-block:8px}
+  .sq-row .ct{font-size:10px;letter-spacing:.06em;margin-top:1px}
+  .sq-more{margin-top:10px;padding:8px 18px;font-size:11px}
+}
 @media (max-width:360px){
   nav a{padding:6px 1px;font-size:10px;letter-spacing:.02em}
   .pname{font-size:9.5px}
@@ -980,7 +1091,7 @@ main.ptr-go,footer.ptr-go{transition:transform .35s cubic-bezier(.2,.8,.3,1)}
       </div>
     </div>
     <div class="cn-add">
-      <h3>Add a prospect</h3>
+      <h3><button type="button" id="cnAddT" aria-expanded="false">Add a prospect</button></h3>
       <form id="cnForm" autocomplete="off">
         <input class="sq-in" id="cnName" placeholder="Full name, e.g. Jurgen Klopp" aria-label="Full name" maxlength="60" required>
         <select class="sq-in sm" id="cnG" aria-label="Male or female" required><option value="">Male/female</option><option value="M">Male</option><option value="F">Female</option></select>
@@ -2040,7 +2151,7 @@ function cnRow(level, sub, rank, high, w, m3, m12, note){
   let i = 3;
   while (note && i > 0 && vals[i - 1] === -1) i--;
   const gap = 3 - i, txt = [, "Not yet", "No past ITF data, filling in weekly", note][gap];  // shorter as the space shrinks; full note on hover
-  const moves = vals.slice(0, i).map(mv).join("") + (gap ? `<div class="ch note" style="grid-column:span ${gap}" title="${esc(note)}">${esc(txt)}</div>` : "");
+  const moves = vals.slice(0, i).map(mv).join("") + (gap ? `<div class="ch note" style="grid-column:span ${gap}" title="${esc(note)}"><span class="lg">${esc(txt)}</span><span class="sh">Fills in weekly</span></div>` : "");
   return `<div class="sq-row"><div class="lv">${esc(level)}${sub ? `<small>${esc(sub)}</small>` : ""}</div><div class="by">${rank ?? "—"}</div><div class="by">${high ?? "—"}</div>${moves}</div>`;
 }
 function cnCard(k, p){
@@ -2073,8 +2184,8 @@ function cnCard(k, p){
     <div class="cn-path">${path}</div>
     ${unsure.length ? `<div class="cn-note">${unsure.map(esc).join("<br>")}. Add the right id in prospects.json.</div>` : ""}
     ${rows.length ? `<div class="sq-row h"><span>Ranking</span><span>Rank</span><span>Best</span><span>1 wk</span><span>3 mo</span><span>12 mo</span></div>${rows.join("")}` : ""}
-    ${res.length ? `<button class="cn-more" data-k="${esc(k)}">${open ? "Hide" : "Show"} the last 12 months (${res.length} match${res.length === 1 ? "" : "es"})</button><div class="cn-res"${open ? "" : " hidden"}>${resHtml}</div>` : ""}
-    ${cnRemoval(k, p.typed || p.name)}</div>`;
+    <div class="cn-acts">${res.length ? `<button class="cn-more" data-k="${esc(k)}">${open ? "Hide" : "Show"} the last 12 months <span class="n">(${res.length} match${res.length === 1 ? "" : "es"})</span></button>` : ""}${cnRemoval(k, p.typed || p.name)}</div>
+    ${res.length ? `<div class="cn-res"${open ? "" : " hidden"}>${resHtml}</div>` : ""}</div>`;
 }
 // "Request removal": anyone can ask; Tobey gets an email and nothing is removed until he approves it
 function cnRemoval(k, name){
@@ -2204,6 +2315,7 @@ function cnNear(name, g, nat){
   }
   return { same, near: near.slice(0, 3) };
 }
+$("#cnAddT").addEventListener("click", () => { const box = $(".cn-add"), on = box.classList.toggle("open"); $("#cnAddT").setAttribute("aria-expanded", on); if (on && matchMedia("(max-width:640px)").matches) $("#cnName").focus(); });
 $("#cnForm").addEventListener("submit", e => {
   e.preventDefault();
   const msg = $("#cnMsg"), name = cnTidy($("#cnName").value.replace(/\s+/g, " ")), g = $("#cnG").value;
