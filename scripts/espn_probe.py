@@ -88,68 +88,69 @@ def describe(c, league, path):
             "players": ps, "ours": [r for r in (who(p["name"]) for p in ps) if r]}
 
 
-# 1) Which league names answer (Challenger / ITF slugs are guesses; ESPN only documents atp and wta)
-for slug in ("atp", "wta", "atp-challenger", "challenger", "itf", "itf-men", "itf-women", "wta-125"):
-    code, js, secs, size = get(f"{SITE}/{slug}/scoreboard")
-    n = sum(1 for _ in comps(js)) if js else 0
-    report["leagues"][slug] = {"http": code, "seconds": secs, "bytes": size, "matches": n}
-    if js and slug in ("atp", "wta"):
-        with open(f"{OUT}/raw_{slug}_today.json", "w") as f:
-            json.dump(js, f, indent=1)
+if __name__ == "__main__":  # the checks below only run when this file is run directly
+    # 1) Which league names answer (Challenger / ITF slugs are guesses; ESPN only documents atp and wta)
+    for slug in ("atp", "wta", "atp-challenger", "challenger", "itf", "itf-men", "itf-women", "wta-125"):
+        code, js, secs, size = get(f"{SITE}/{slug}/scoreboard")
+        n = sum(1 for _ in comps(js)) if js else 0
+        report["leagues"][slug] = {"http": code, "seconds": secs, "bytes": size, "matches": n}
+        if js and slug in ("atp", "wta"):
+            with open(f"{OUT}/raw_{slug}_today.json", "w") as f:
+                json.dump(js, f, indent=1)
 
-# 2) Day by day, 10 days back to 3 ahead, for ATP and WTA
-seen = {}
-for slug in ("atp", "wta"):
-    for d in range(-10, 4):
-        day = (NOW + timedelta(days=d)).strftime("%Y%m%d")
-        code, js, secs, size = get(f"{SITE}/{slug}/scoreboard?dates={day}")
-        ms = [describe(c, slug, p) for c, p in comps(js)] if js else []
-        evs = sorted({m["event"].split(" / ")[0] for m in ms})
-        report["days"][f"{slug} {day}"] = {"http": code, "seconds": secs, "matches": len(ms), "events": evs[:12],
-                                           "rounds": sorted({str(m["round"]) for m in ms})[:15]}
-        for m in ms:
-            if m["ours"]:
-                k = (slug, m["date"], tuple(sorted(p["name"] for p in m["players"])))
-                seen[k] = m
-        time.sleep(1)
-report["ours"] = sorted(seen.values(), key=lambda m: (m["date"] or ""))
+    # 2) Day by day, 10 days back to 3 ahead, for ATP and WTA
+    seen = {}
+    for slug in ("atp", "wta"):
+        for d in range(-10, 4):
+            day = (NOW + timedelta(days=d)).strftime("%Y%m%d")
+            code, js, secs, size = get(f"{SITE}/{slug}/scoreboard?dates={day}")
+            ms = [describe(c, slug, p) for c, p in comps(js)] if js else []
+            evs = sorted({m["event"].split(" / ")[0] for m in ms})
+            report["days"][f"{slug} {day}"] = {"http": code, "seconds": secs, "matches": len(ms), "events": evs[:12],
+                                               "rounds": sorted({str(m["round"]) for m in ms})[:15]}
+            for m in ms:
+                if m["ours"]:
+                    k = (slug, m["date"], tuple(sorted(p["name"] for p in m["players"])))
+                    seen[k] = m
+            time.sleep(1)
+    report["ours"] = sorted(seen.values(), key=lambda m: (m["date"] or ""))
 
-# 3) Compare with what the current feed recorded in data.json (ATP and WTA tour-level matches)
-data = json.load(open("data.json"))
-def surname(s):
-    return key((s or "").split()[-1]) if s else ""
-for m in data.get("matches", []):
-    cat = m.get("category") or ""
-    if not re.match(r"(ATP|WTA|Grand)", cat):
-        continue
-    want = {surname(m["p1"]), surname(m["p2"])}
-    hit = None
-    for e in seen.values():
-        names = {surname(p["name"]) for p in e["players"]}
-        if want <= names and (e["date"] or "")[:10] >= (datetime.fromisoformat(m["date"]) - timedelta(days=1)).strftime("%Y-%m-%d") \
-                and (e["date"] or "")[:10] <= (datetime.fromisoformat(m["date"]) + timedelta(days=1)).strftime("%Y-%m-%d"):
-            hit = e
-            break
-    row = {"date": m["date"], "event": m["tournament"], "cat": cat, "match": f'{m["p1"]} v {m["p2"]}', "ours": m["score"], "oursStatus": m["status"]}
-    if hit:
-        w = next((p for p in hit["players"] if p["winner"]), None)
-        l = next((p for p in hit["players"] if p is not w), None) if w else None
-        espn = ", ".join(f"{a}-{b}" for a, b in zip(w["sets"], l["sets"])) if w and l else " / ".join(",".join(p["sets"]) for p in hit["players"])
-        row.update(espn=espn, espnWinner=w["name"] if w else None, espnState=hit["state"], espnDetail=hit["detail"], espnRound=hit["round"])
-    else:
-        row["espn"] = "NOT FOUND"
-    report["compare"].append(row)
+    # 3) Compare with what the current feed recorded in data.json (ATP and WTA tour-level matches)
+    data = json.load(open("data.json"))
+    def surname(s):
+        return key((s or "").split()[-1]) if s else ""
+    for m in data.get("matches", []):
+        cat = m.get("category") or ""
+        if not re.match(r"(ATP|WTA|Grand)", cat):
+            continue
+        want = {surname(m["p1"]), surname(m["p2"])}
+        hit = None
+        for e in seen.values():
+            names = {surname(p["name"]) for p in e["players"]}
+            if want <= names and (e["date"] or "")[:10] >= (datetime.fromisoformat(m["date"]) - timedelta(days=1)).strftime("%Y-%m-%d") \
+                    and (e["date"] or "")[:10] <= (datetime.fromisoformat(m["date"]) + timedelta(days=1)).strftime("%Y-%m-%d"):
+                hit = e
+                break
+        row = {"date": m["date"], "event": m["tournament"], "cat": cat, "match": f'{m["p1"]} v {m["p2"]}', "ours": m["score"], "oursStatus": m["status"]}
+        if hit:
+            w = next((p for p in hit["players"] if p["winner"]), None)
+            l = next((p for p in hit["players"] if p is not w), None) if w else None
+            espn = ", ".join(f"{a}-{b}" for a, b in zip(w["sets"], l["sets"])) if w and l else " / ".join(",".join(p["sets"]) for p in hit["players"])
+            row.update(espn=espn, espnWinner=w["name"] if w else None, espnState=hit["state"], espnDetail=hit["detail"], espnRound=hit["round"])
+        else:
+            row["espn"] = "NOT FOUND"
+        report["compare"].append(row)
 
-with open(f"{OUT}/espn_report.json", "w") as f:
-    json.dump(report, f, indent=1, ensure_ascii=False)
+    with open(f"{OUT}/espn_report.json", "w") as f:
+        json.dump(report, f, indent=1, ensure_ascii=False)
 
-# short readable summary in the job log
-print("LEAGUES", json.dumps(report["leagues"]))
-for k, v in report["days"].items():
-    print("DAY", k, v["http"], v["matches"], "matches", v["events"][:6], v["rounds"][:8])
-print("OUR MATCHES FOUND ON ESPN:", len(report["ours"]))
-for m in report["ours"]:
-    print("  ", m["league"], (m["date"] or "")[:16], m["event"][:40], m["round"], m["state"], "|", " v ".join(f'{p["name"]} {",".join(p["sets"])}{" W" if p["winner"] else ""}' for p in m["players"]))
-print("COMPARE WITH data.json:")
-for r in report["compare"]:
-    print("  ", r["date"], r["event"], r["match"], "| ours:", r["ours"], r["oursStatus"], "| espn:", r.get("espn"), r.get("espnState") or "", r.get("espnRound") or "")
+    # short readable summary in the job log
+    print("LEAGUES", json.dumps(report["leagues"]))
+    for k, v in report["days"].items():
+        print("DAY", k, v["http"], v["matches"], "matches", v["events"][:6], v["rounds"][:8])
+    print("OUR MATCHES FOUND ON ESPN:", len(report["ours"]))
+    for m in report["ours"]:
+        print("  ", m["league"], (m["date"] or "")[:16], m["event"][:40], m["round"], m["state"], "|", " v ".join(f'{p["name"]} {",".join(p["sets"])}{" W" if p["winner"] else ""}' for p in m["players"]))
+    print("COMPARE WITH data.json:")
+    for r in report["compare"]:
+        print("  ", r["date"], r["event"], r["match"], "| ours:", r["ours"], r["oursStatus"], "| espn:", r.get("espn"), r.get("espnState") or "", r.get("espnRound") or "")
