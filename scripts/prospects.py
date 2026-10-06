@@ -288,22 +288,33 @@ def te_find(p, nat):
 
 
 def te_ranking(pid):
+    """The Tennis Europe Ranking table on the profile (not the Race to Monte-Carlo table below it).
+    Also returns the link to the player's own page in that ranking (used for past weeks), or None."""
     from bs4 import BeautifulSoup
-    soup = BeautifulSoup(TE.fetch(f"/player-profile/{pid}/ranking"), "html.parser")
+    page = TE.fetch(f"/player-profile/{pid}/ranking")
+    soup = BeautifulSoup(page, "html.parser")
+    links = sorted(set(re.findall(r'href="/ranking/player\.aspx\?id=(\d+)&(?:amp;)?player=(\d+)"', page)))
     week = None
     for tbl in soup.find_all("table"):
-        title = tbl.find_previous(["h2", "h3", "h4", "h5", "caption"])
         trs = tbl.find_all("tr")
-        if not title or not trs or "tennis europe ranking" not in title.get_text(" ", strip=True).lower():
+        cells = [[c.get_text(" ", strip=True).lower() for c in tr.find_all(["th", "td"])] for tr in trs]
+        hi = next((i for i, c in enumerate(cells) if "rank" in c), None)
+        if hi is None:
             continue
-        heads = [c.get_text(" ", strip=True).lower() for c in trs[0].find_all(["th", "td"])]
-        if "rank" not in heads:
+        # the table's own title: a heading inside it, or the rows above the column names, else the heading before it
+        inner = tbl.find(["caption", "h2", "h3", "h4", "h5"])
+        title = (inner.get_text(" ", strip=True) if inner else "") or " ".join(" ".join(c) for c in cells[:hi])
+        if not title:
+            prev = tbl.find_previous(["h2", "h3", "h4", "h5", "caption"])
+            title = prev.get_text(" ", strip=True) if prev else ""
+        if "tennis europe ranking" not in title.lower() or "race" in title.lower():
             continue
-        wk = re.search(r"\b(\d{1,2})-(\d{4})\b", title.get_text(" ", strip=True))
+        heads = cells[hi]
+        wk = re.search(r"\b(\d{1,2})-(\d{4})\b", title)
         if wk:
             week = date.fromisocalendar(int(wk[2]), int(wk[1]), 1).isoformat()
         rows = []
-        for tr in trs[1:]:
+        for tr in trs[hi + 1:]:
             cells = [c.get_text(" ", strip=True) for c in tr.find_all(["th", "td"])]
             if len(cells) != len(heads):
                 continue
@@ -317,8 +328,110 @@ def te_ranking(pid):
                          "high": int(best[1]) if best else num("best"),
                          "highWeek": date.fromisocalendar(int(best[3]), int(best[2]), 1).isoformat() if best else None,
                          "pts": num("total points") or num("points")})
-        return [r for r in rows if r["rank"]]
-    return []
+        return [r for r in rows if r["rank"]], links
+    return [], links
+
+
+# ---------- Tennis Europe: past ranking weeks (for the 1 week / 3 month / 12 month moves) ----------
+TE_RID = 79  # the Tennis Europe Ranking (157 is the Race to Monte-Carlo)
+_te_weeks = None
+
+
+def te_label_monday(w, y):
+    """'41-2026' -> Monday 2026-10-05 (Tennis Europe also has a week 53 at some year ends)."""
+    return date.fromisocalendar(y, 52, 1) + timedelta(days=7) if w == 53 else date.fromisocalendar(y, w, 1)
+
+
+def te_weeks():
+    """{publication id: Monday} for every Tennis Europe Ranking week, read once a run."""
+    global _te_weeks
+    if _te_weeks is None:
+        page = TE.fetch(f"/ranking/ranking.aspx?rid={TE_RID}")
+        title = re.search(r"<title>(.*?)</title>", page, re.S | re.I)
+        sel = re.search(r"<select[^>]*dlPublication.*?</select>", page, re.S)
+        if not title or "tennis europe ranking" not in title[1].lower() or not sel:
+            _te_weeks = {}  # not tried again this run
+            raise ValueError("Tennis Europe ranking week list not found")
+        _te_weeks = {}
+        for v, w, y in re.findall(r'value="(\d+)"[^>]*>\s*(\d{1,2})-(\d{4})\s*<', sel[0]):
+            try:
+                _te_weeks[v] = te_label_monday(int(w), int(y))
+            except ValueError:
+                pass
+    return _te_weeks
+
+
+def te_past(pub, player, names):
+    """The player's Tennis Europe ranks in one past week: (Monday, {category: rank}), or None if the page
+    isn't clearly that player in the Tennis Europe Ranking of that week (then nothing is saved)."""
+    from bs4 import BeautifulSoup
+    page = TE.fetch(f"/ranking/player.aspx?id={pub}&player={player}")
+    title = re.search(r"<title>(.*?)</title>", page, re.S | re.I)
+    if not title or "tennis europe ranking" not in title[1].lower() or "race" in title[1].lower():
+        return None
+    soup = BeautifulSoup(page, "html.parser")
+    text = soup.get_text(" ", strip=True)
+    who = re.search(r"Ranking of (.+?) Category Rank", text)
+    if not who or not any(same_name(who[1], n) for n in names.split("|")):
+        return None
+    # the week must agree two ways: the week list and the page's own "Last updated" date
+    upd = re.search(r"Last updated:\s*(\d{1,2} \w+ \d{4})", text)
+    lab = re.search(r"\((\d{1,2})-(\d{4})\)", text)
+    try:
+        d = datetime.strptime(upd[1], "%d %B %Y").date()
+        monday = te_label_monday(int(lab[1]), int(lab[2]))
+    except (TypeError, ValueError):
+        return None
+    if (d - timedelta(days=d.weekday())) != monday or te_weeks().get(str(pub)) != monday:
+        return None
+    for tbl in soup.find_all("table"):
+        trs = tbl.find_all("tr")
+        # "Rank" spans two columns, so each heading counts once per column it covers
+        cells = [[t for c in tr.find_all(["th", "td"]) for t in [c.get_text(" ", strip=True).lower()] + [""] * (int(c.get("colspan") or 1) - 1)]
+                 for tr in trs]
+        hi = next((i for i, c in enumerate(cells) if "category" in c and "rank" in c), None)
+        if hi is None:
+            continue
+        heads, ranks = cells[hi], {}
+        for tr in trs[hi + 1:]:
+            vals = [c.get_text(" ", strip=True) for c in tr.find_all(["th", "td"])]
+            if len(vals) == len(heads):
+                row = dict(zip(heads, vals))
+                m = re.match(r"\d+", row.get("rank") or "")
+                if m:
+                    ranks[row["category"].replace("&amp;", "&")] = int(m[0])
+        return (monday.isoformat(), ranks) if ranks else None  # an empty table is never taken as "not ranked"
+    return None
+
+
+def te_backfill(H, ranks, links, names):
+    """Fills in the past weeks the moves need (1 week, 3 and 12 months before the current week) from
+    Tennis Europe's own week-by-week ranking pages. Each week is read once; one it can't read clearly stays blank."""
+    weeks = {r["week"] for r in ranks if r.get("week")}
+    if not weeks or not links:
+        return
+    pubs = te_weeks()
+    player = next((pl for pub, pl in links if pub in pubs), None)
+    if not player:
+        return
+    tried = H.setdefault("teTried", [])
+    for w in weeks:
+        w0 = date.fromisoformat(w)
+        for days in (7, 91, 364):
+            want = w0 - timedelta(days=days)
+            have = any(abs((date.fromisoformat(x) - want).days) <= 3 for r in ranks for x in H.get("te:" + r["cat"]) or {})
+            pub = next((p for p, m in pubs.items() if abs((m - want).days) <= 3), None)
+            if have or not pub or pub in tried or out_of_time():
+                continue
+            got = te_past(pub, player, names)
+            tried.append(pub)
+            if not got:
+                print("  Tennis Europe week", want, "not clear, left blank")
+                continue
+            monday, past = got
+            for r in ranks:  # a current category missing from that week's ranking = not ranked then
+                H.setdefault("te:" + r["cat"], {})[monday] = past.get(r["cat"])
+    del tried[:-60]
 
 
 def te_results(pid, names):
@@ -543,10 +656,16 @@ def main():
                         lt["note"] = note
                 L["te"] = lt
                 if lt.get("status") == "linked":
-                    ranks = te_ranking(lt["id"])
+                    ranks, links = te_ranking(lt["id"])
                     rec["te"] = ranks
                     for r in ranks:
                         remember(H.setdefault("te:" + r["cat"], {}), r["week"], r["rank"])
+                    try:
+                        te_backfill(H, ranks, links, "|".join(p["names"]))
+                    except TE.Stop:
+                        raise
+                    except Exception as e:
+                        print("  Tennis Europe past weeks failed:", e)
                     res["te"] = te_results(lt["id"], "|".join(p["names"]))
             except TE.Stop as e:
                 print(" ", e, "- Tennis Europe left alone for 3 hours")
