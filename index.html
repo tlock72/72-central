@@ -2421,7 +2421,7 @@ function cnCard(k, p){
   // most important first: ATP/WTA, then ITF Juniors, then Tennis Europe
   const path = cnStage(tourName, L.pro?.status ? L.pro : null, pro ? `No. ${pro.rank}` : "", L.pro?.url)
     + cnStage("ITF Juniors", L.itf, jr?.rank ? `No. ${jr.rank}` : jr?.high ? `Best ${jr.high}` : L.itf?.status === "linked" ? "ITF profile" : "", L.itf?.id ? `https://www.itftennis.com/en/players/${cnKey(p.name) && p.name.normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLowerCase().replace(/[^a-z]+/g, "-").replace(/^-|-$/g, "")}/${L.itf.id}/${(L.itf.nat || "").toLowerCase()}/` : "")
-    + cnStage("Tennis Europe", L.te, te ? `No. ${te.rank} ${te.cat}` : "", L.te?.id ? `https://te.tournamentsoftware.com/player-profile/${L.te.id}` : "");
+    + (L.te?.status === "skip" ? "" : cnStage("Tennis Europe", L.te, te ? `No. ${te.rank} ${te.cat}` : "", L.te?.id ? `https://te.tournamentsoftware.com/player-profile/${L.te.id}` : ""));  // not shown for anyone over 16
   const rows = [];
   if (pro) rows.push(cnRow(tourName, pro.week ? "week of " + sqFmt(pro.week) : "", pro.rank, pro.high, pro.w, pro.m3, pro.m12));
   else if (p.itfPro?.rank) rows.push(cnRow(tourName, "as of " + (p.itfPro.date || ""), p.itfPro.rank, p.itfPro.high));

@@ -287,6 +287,18 @@ def te_find(p, nat):
     return "linked", hits.pop(), "" if nat else "name only (no nationality known)"
 
 
+TE_MIN_BORN = 2010  # Tennis Europe is U12-U16: anyone born before this is over 16 and isn't searched there
+
+
+def te_born(pid):
+    """Year of birth from the Tennis Europe profile, only when the page labels it clearly (else None, never a guess)."""
+    page = TE.fetch(f"/player-profile/{pid}")
+    text = re.sub(r"\s+", " ", html.unescape(re.sub(r"<[^>]+>", " ", page)))
+    m = re.search(r"(?i)\b(?:year of birth|birth ?year|date of birth|born)\s*:?\s*(?:\d{1,2}[./-]\d{1,2}[./-])?((?:19|20)\d{2})\b", text)
+    y = int(m[1]) if m else None
+    return y if y and 1990 <= y <= T.year - 5 else None
+
+
 def te_ranking(pid):
     """The Tennis Europe Ranking table on the profile (not the Race to Monte-Carlo table below it).
     Also returns the link to the player's own page in that ranking (used for past weeks), or None."""
@@ -637,14 +649,16 @@ def main():
                 L["pro"] = {"status": "linked", "tour": tour, "name": row[1], "url": row[7], "how": how}
                 rec["pro"] = {"tour": tour, "rank": row[0], "week": (scout.get(tour) or {}).get("week"), "w": row[4], "m3": row[5], "m12": row[6],
                               "high": ip.get("high"), "highDate": ip.get("highDate")}
-                rec["born"] = row[3] or p.get("born")
+                rec["born"] = row[3] or p.get("born") or rec.get("born")
             else:
                 L["pro"] = {"status": "none"}
                 rec.pop("pro", None)
         rec["born"] = rec.get("born") or p.get("born")
 
-        # 3) Tennis Europe (U12-U16), checked against the ITF nationality
-        if not blocked["te"]:
+        # 3) Tennis Europe (U12-U16), checked against the ITF nationality; not searched for anyone born before 2010
+        if rec.get("born") and rec["born"] < TE_MIN_BORN:
+            pass
+        elif not blocked["te"]:
             try:
                 if not te_ok:
                     TE.consent(); te_ok = True
@@ -671,6 +685,12 @@ def main():
                     except Exception as e:
                         print("  Tennis Europe past weeks failed:", e)
                     res["te"] = te_results(lt["id"], "|".join(p["names"]))
+                    if not rec.get("born"):  # year of birth from the Tennis Europe profile when it isn't known yet
+                        y = te_born(lt["id"])
+                        if y:
+                            rec["born"], rec["bornFrom"] = y, "Tennis Europe"
+                        else:
+                            print("  Tennis Europe profile: year of birth not found")
             except TE.Stop as e:
                 print(" ", e, "- Tennis Europe left alone for 3 hours")
                 blocked["te"] = True
@@ -680,6 +700,13 @@ def main():
                 print("  Tennis Europe failed:", e); done_all = False
         else:
             done_all = False
+
+        if rec.get("born") and rec["born"] < TE_MIN_BORN:  # over 16: no Tennis Europe link, ranks or results
+            L["te"] = {"status": "skip", "how": f"born {rec['born']}, over 16"}
+            rec.pop("te", None)
+            res.pop("te", None)
+            for h in [h for h in H if h.startswith("te")]:
+                H.pop(h)
 
         # moves for the junior rankings, from the history kept here (ATP/WTA moves come from scouting.json)
         if rec.get("itfJr"):
