@@ -72,7 +72,7 @@ def slot_text(court, sched, first_time):
 
 
 def order_of_play(key, cache):
-    """matchId -> {date, slot} from the event's order of play, for the days around today."""
+    """matchId -> {date, slot, court} from the event's order of play, for the days around today."""
     if key in cache:
         return cache[key]
     out = {}
@@ -87,7 +87,8 @@ def order_of_play(key, cache):
                 sc = m.get("schedule") or ""
                 if sc.lower().startswith("starting at") and not first:
                     first = sc[11:].strip()
-                out[m.get("matchId")] = {"date": day, "slot": slot_text(court.get("courtName") or "Court", sc, first)}
+                out[m.get("matchId")] = {"date": day, "slot": slot_text(court.get("courtName") or "Court", sc, first),
+                                         "court": court.get("courtName") or ""}
     cache[key] = out
     return out
 
@@ -171,6 +172,9 @@ def main():
                         # winner listed first, as with every other result on the site
                         sides = dict(p1="", p1Id=me, p2=oname, p2Id=None) if won else dict(p1=oname, p1Id=None, p2="", p2Id=me)
                         found[mid] = dict(base, date=date, round=rnd, status="finished", score=sc, winner=1, **sides)
+                        court = o.get("court") or (previous.get(mid) or {}).get("court")
+                        if court:
+                            found[mid]["court"] = court   # shown on the result tile
                     elif not rc:
                         if o.get("date"):
                             date, slot = o["date"], o["slot"]
@@ -182,6 +186,8 @@ def main():
                             continue
                         found[mid] = dict(base, date=date, round=rnd, status="scheduled", score="", winner=None,
                                           p1="", p1Id=me, p2=oname, p2Id=None, slot=slot)
+                        if o.get("court"):
+                            found[mid]["court"] = o["court"]
         if blocked:
             break
 

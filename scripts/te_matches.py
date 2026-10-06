@@ -155,7 +155,8 @@ def parse(page, rid, names):
                 if "walkover" in text:
                     base["round"] += " (walkover)"
                 sides = dict(p1="", p1Id=rid, p2=opp, p2Id=None) if won else dict(p1=opp, p1Id=None, p2="", p2Id=rid)
-                out.append(dict(base, date=date.isoformat(), status="finished", score=score, winner=1, **sides))
+                out.append(dict(base, date=date.isoformat(), status="finished", score=score, winner=1, **sides,
+                                **({"court": court} if court else {})))
             else:
                 if not date:
                     if start and end and start <= T <= end:

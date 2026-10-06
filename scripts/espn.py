@@ -72,6 +72,7 @@ def fetch(roster, events, now, matches=()):
         c = m.get("category") or ""
         if re.match(r"(ATP|WTA) \d", c):
             known[(" ".join(fold(m.get("tournament"))), c[:3].lower())] = c
+    courts = {m["apiId"]: m["court"] for m in matches if m.get("apiId") and m.get("court")}
     names = {}
     for rid, (full, tour) in roster.items():
         names[(tour, " ".join(sorted(fold(full))))] = rid
@@ -113,6 +114,9 @@ def fetch(roster, events, now, matches=()):
                              "round": ROUNDS.get(rnd.lower(), rnd), "p1": short(full[0]), "p1Id": ids[0],
                              "p2": short(full[1]), "p2Id": ids[1], "status": "scheduled", "score": "", "points": None,
                              "server": None, "winner": None}
+                        court = str((c.get("venue") or {}).get("court") or "").strip() or courts.get(key)
+                        if court:
+                            m["court"] = court
                         won = [i + 1 for i, p in enumerate(cs) if p.get("winner")]
                         if state == "in":
                             m.update(status="live", score=score(*cs))
