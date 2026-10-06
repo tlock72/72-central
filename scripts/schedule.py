@@ -11,12 +11,12 @@ Sources (all free, no key):
   - WTA Tour and WTA 125: the WTA's own feed (api.wtatennis.com), which also has each event's player list.
   - ITF (men, women, juniors): the ITF's calendar and acceptance lists (itftennis.com). Stops at the ITF
     bot check and never tries to get past it.
-  - Tennis Europe: its tournament search on te.tournamentsoftware.com, and each 72 junior's profile, which
-    lists the tournaments they have entered (used with permission, internal use only).
+  - Tennis Europe: its tournament search on te.tournamentsoftware.com, and each event's entry / acceptance list
+    (used with permission, internal use only).
 72 entries:
   - ITF: the official acceptance list, matched by ITF player id.
   - WTA / WTA 125: the WTA player list, matched by name.
-  - Tennis Europe: the player's own Tennis Europe profile.
+  - Tennis Europe: each event's entry list (then acceptance list), matched by the junior's Tennis Europe profile id.
   - ATP / Challenger: the ATP's own site blocks GitHub, so three free sites are read: live-tennis.eu, Tick Tock
     Tennis and Spazio Tennis (see atp_entries). A player shows if any one lists him, unless one shows a withdrawal.
     Once the draw is out, data.json and ESPN's published draws show the player as "In the draw".
@@ -313,18 +313,75 @@ def te_items(body):
     return out
 
 
-def te_entries(TE, profiles):
-    """Tournament id -> 72 juniors entered, from each junior's Tennis Europe profile."""
-    found = {}
-    for rid, pid in profiles.items():
-        if ":" in rid or not pid:
+TE_SECTION = {"main": "Main draw", "qualifying": "Qualifying", "alternates": "Alternate"}
+
+
+def te_list_page(page, mine):
+    """One age group's entry / acceptance list -> (72 juniors on it, active entries). Rows are matched by the Tennis
+    Europe profile link, so no name guessing. Withdrawn players are left out. On the preliminary entry list
+    the sections can still change, so a junior there is just "Entered"."""
+    final = bool(re.search(r"<h3>\s*\S+\s+Acceptance list", page))
+    body = page[page.find("<tbody"):page.find("</table", page.find("<tbody"))] if "<tbody" in page else ""
+    found, n, section = [], 0, ""
+    for row in re.split(r"<tr[ >]", body)[1:]:
+        th = re.match(r"\s*<th[^>]*>([^<]*)</th>", row)
+        if th:
+            section = th.group(1).strip().lower()
             continue
-        body = get(f"{TE_SITE}/player-profile/{pid}/tournaments", "te", opener=TE.opener)
-        for chunk in re.split(r'(?=<h4 class="media__title)', body)[1:]:
-            a = re.search(r'/sport/tournament\?id=([0-9A-Fa-f-]+)', chunk)
-            if a:
-                found.setdefault(a.group(1).upper(), []).append({"id": rid, "how": "Entered"})
-    return found
+        pid = re.search(r"/player-profile/([0-9A-Fa-f-]{36})", row)
+        if not pid or section == "withdrawn":
+            continue
+        n += 1
+        if pid.group(1).upper() in mine:
+            draw = re.search(r"<td[^>]*>([^<]*)</td>", row)
+            how = TE_SECTION.get(section, "Entered") if final else "Entered"
+            if how == "Main draw" and draw and "(WC)" in draw.group(1):
+                how = "Wildcard"
+            found.append({"id": mine[pid.group(1).upper()], "how": how})
+    return found, n
+
+
+def te_pick(TE, url, page, field, value):
+    """Another age group on the list page: the same form a visitor sends by picking it in the "Select event" box."""
+    form = {k: html.unescape(v) for k, v in re.findall(r'<input[^>]*type="hidden"[^>]*name="([^"]*)"[^>]*value="([^"]*)"', page)}
+    form.update({"__EVENTTARGET": "ClientFunctionHandler", "__EVENTARGUMENT": "selectevent_IndexChanged", field: value})
+    return get(url, "te", data=urllib.parse.urlencode(form).encode(), opener=TE.opener,
+               headers={"Content-Type": "application/x-www-form-urlencoded"})
+
+
+def te_lists(TE, events, profiles, prev_e72):
+    """72 juniors on each Tennis Europe entry / acceptance list (published a few weeks before the event,
+    one page per age group, e.g. BS14 / GS14). An event whose lists couldn't all be read keeps yesterday's entries."""
+    mine = {pid.upper(): rid for rid, pid in profiles.items() if ":" not in rid and pid}
+    failed = []
+    for e in events:
+        if e["tour"] != "te" or not e.get("teId") or not in_window(e["start"], e["end"]):
+            continue
+        url = f"{TE_SITE}/sport/acceptancelist.aspx?id={e['teId']}"
+        try:
+            first = get(url, "te", opener=TE.opener)
+            sel = re.search(r'<select[^>]*name="([^"]*selectevent)".*?</select>', first, re.S)
+            groups = re.findall(r'<option[^>]*value="(\d+)"[^>]*>([^<]+)</option>', sel.group(0)) if sel else []
+            if not groups:
+                raise RuntimeError("no age groups on the list page")
+            found, n = [], 0
+            for i, (val, code) in enumerate(groups):
+                page = first if i == 0 else te_pick(TE, url, first, sel.group(1), val)
+                if "is not yet available" in page:
+                    continue  # this list isn't public yet
+                h3 = re.search(r"<h3>\s*(\S+)\s+(?:Acceptance|Entry) list", page)
+                if not h3 or h3.group(1) != code.strip():
+                    raise RuntimeError(f"couldn't open the {code} list")
+                f, c = te_list_page(page, mine)
+                found += [x for x in f if x["id"] not in {y["id"] for y in found}]
+                n += c
+            e["e72"] = found
+            list_state(e, n)
+        except Exception as x:
+            print("Tennis Europe list failed", e["name"], x)
+            failed.append(e["name"])
+            e["e72"] = prev_e72.get((e.get("src"), e["name"], e["start"])) or []
+    return failed
 
 
 # ---------------- ATP / Challenger: 72 entries before the draw (two free sites that must agree) ----------------
@@ -732,14 +789,10 @@ def main():
             print("entry list failed", e["name"], x)
             e["e72"] = prev_e72.get((e.get("src"), e["name"], e["start"])) or []
     if TE:
-        try:
-            byid = te_entries(TE, load("te.json", {}).get("profiles") or {})
-            for e in events:
-                if e.get("teId") in byid and in_window(e["start"], e["end"]):
-                    e["e72"] = byid[e["teId"]]
-        except Exception as x:
-            print("Tennis Europe entries failed:", x)
-            errors["te-entries"] = {"at": NOW.isoformat(timespec="seconds"), "msg": str(x)[:200]}
+        failed = te_lists(TE, events, load("te.json", {}).get("profiles") or {}, prev_e72)
+        if failed:
+            errors["te-entries"] = {"at": NOW.isoformat(timespec="seconds"),
+                                    "msg": f"{len(failed)} Tennis Europe entry list(s) couldn't be read, e.g. {failed[0]}"}
     atp_window = [e for e in events if e["tour"] in ("atp", "ch") and in_window(e["start"], e["end"])]
     try:
         byev = atp_entries(events, errors)

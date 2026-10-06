@@ -12,7 +12,7 @@ permissions:
 jobs:
   schedule:
     runs-on: ubuntu-latest
-    timeout-minutes: 45
+    timeout-minutes: 60
     steps:
       - uses: actions/checkout@v6
         with:
@@ -20,7 +20,7 @@ jobs:
       - id: schedule
         name: Tour schedule to the end of the year, and 72 entries (free sources, no Claude)
         run: pip install -q beautifulsoup4 && python3 scripts/schedule.py
-        timeout-minutes: 40
+        timeout-minutes: 55
       - name: Save changes
         run: |
           git config user.name "72 Hub updater"
