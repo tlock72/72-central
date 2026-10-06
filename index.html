@@ -1029,7 +1029,7 @@ main.ptr-go,footer.ptr-go{transition:transform .35s cubic-bezier(.2,.8,.3,1)}
 
     <section class="block">
       <div class="sec-h"><h2>Today's matches<span id="todayLbl" class="dt"></span></h2><span class="count" id="cToday">0</span><span class="rule"></span></div>
-      <p class="sec-d">Every 72 match scheduled for today (UK date): in progress first, then the next to start, then finished results, biggest tournaments first (green edge for a 72 win, red for a 72 loss). Matches show <b>In progress</b> once they start and the final score once they finish. ATP and WTA tour matches (and WTA 125s) update live from ESPN every minute while this page is open; Challengers and ITF are checked about every hour. ITF junior and Tennis Europe matches have no live scoring, so their results appear after the next check. For point-by-point scores, check SofaScore.</p>
+      <p class="sec-d">Every 72 match scheduled for today (your own date): in progress first, then the next to start, then finished results, biggest tournaments first (green edge for a 72 win, red for a 72 loss). Matches show <b>In progress</b> once they start and the final score once they finish. ATP and WTA tour matches (and WTA 125s) update live from ESPN every minute while this page is open; Challengers and ITF are checked about every hour. ITF junior and Tennis Europe matches have no live scoring, so their results appear after the next check. For point-by-point scores, check SofaScore.</p>
       <div class="live-note" id="liveNote" hidden></div>
       <div class="grid" id="gToday"></div>
     </section>
@@ -1247,8 +1247,17 @@ let STATE = null; // { lastChecked, rankingsAsOf, rankingsSource, rankings:{id:{
 
 /* ---------- dates in UK time ---------- */
 const ukDate = (d = new Date()) => new Intl.DateTimeFormat("en-CA", { timeZone: "Europe/London", year:"numeric", month:"2-digit", day:"2-digit" }).format(d);
+// the viewer's own date (device time zone): "Today", "Tomorrow" and "this week" follow it
+const myDate = (d = new Date()) => new Intl.DateTimeFormat("en-CA", { year:"numeric", month:"2-digit", day:"2-digit" }).format(d);
+// the day a match falls on for the viewer: from its UK start time, or with no time yet, its UK date moved by however
+// many days the viewer is ahead of or behind the UK right now (UK "today" = the viewer's "today")
+function md(m){
+  if (m.time) return myDate(ukMoment(m.date, m.time));
+  const off = Math.round((new Date(myDate() + "T12:00:00Z") - new Date(ukDate() + "T12:00:00Z")) / 864e5);
+  return off ? new Date(new Date(m.date + "T12:00:00Z").getTime() + off * 864e5).toISOString().slice(0, 10) : m.date;
+}
 function dayLabel(iso){
-  const today = ukDate();
+  const today = myDate();
   const t = new Date(today + "T12:00:00Z"), d = new Date(iso + "T12:00:00Z");
   const diff = Math.round((d - t) / 864e5);
   if (diff === 0) return "Today";
@@ -1444,7 +1453,7 @@ function ukMoment(date, time){
   let off = ukMin - (guess.getUTCHours() * 60 + guess.getUTCMinutes()); if (off > 720) off -= 1440; if (off < -720) off += 1440;
   return new Date(guess.getTime() - off * 60000);
 }
-// a moment as "14:05" in a zone (undefined = this device), with the day added ("Wed 02:10") when it isn't the given UK date
+// a moment as "14:05" in a zone (undefined = this device), with the day added ("Wed 02:10") when it isn't the match's day (as shown on the card)
 function clock(d, tz, date){
   const o = { hour:"2-digit", minute:"2-digit", hourCycle:"h23" }; if (tz) o.timeZone = tz;
   const t = d.toLocaleTimeString("en-GB", o);
@@ -1453,8 +1462,8 @@ function clock(d, tz, date){
 }
 // "14:05 your time" + "21:05 China" (the event's local time; UK when the event can't be placed). One line when both read the same.
 function twoTimes(d, m){
-  const mine = clock(d, undefined, m.date), z = evZone(m);
-  const there = clock(d, z ? z.tz : "Europe/London", m.date), where = z ? z.n : "UK";
+  const day = md(m), mine = clock(d, undefined, day), z = evZone(m);
+  const there = clock(d, z ? z.tz : "Europe/London", day), where = z ? z.n : "UK";
   return mine === there ? [`${mine}`, `your time, also ${where}`] : [mine, "your time", there, where];
 }
 // "Time info as of 14:05" under an approx. start: when the feed last confirmed the time (day added if not today), device time
@@ -1473,13 +1482,13 @@ const isLive = m => !!(m.status === "live" && m.seenLive && Date.now() - new Dat
 const eventKind = m => m.source === "te" ? "Tennis Europe" : m.source === "itf" ? "ITF junior"
   : /challenger/i.test(m.category || "") ? "Challenger" : /^(ITF|[MW]\d)/i.test(m.category || "") ? "ITF" : "";
 function card(m){
-  const today = m.date === ukDate();
+  const today = md(m) === myDate();
   const fin = m.status === "finished";
   const live = isLive(m);
   const isFinal = /^(final|f)\b/i.test((m.round || "").trim());
   // finals are a 72 gold tile: gold edge while coming up or live, green or red edge once finished (today or past results)
   const fdone = isFinal && fin;
-  const final = isFinal && !fin && (m.date >= ukDate() || live);
+  const final = isFinal && !fin && (md(m) >= myDate() || live);
   const ours = id => !!byId[id];
   const row = (side) => {
     const id = side === 1 ? m.p1Id : m.p2Id, name = side === 1 ? m.p1 : m.p2;
@@ -1490,15 +1499,15 @@ function card(m){
       <span class="sets">${fin ? scoreCells(m.score, side) : live && m.espnLive ? scoreCells(m.score, side, true) : ""}</span>
     </div>`;
   };
-  const pending = !fin && !live && (m.date < ukDate() || m.status === "live");
+  const pending = !fin && !live && (md(m) < myDate() || m.status === "live");
   // a 72 win or loss (only when exactly one side is a 72 player and the winner is known)
   const wl = fin && m.winner && ours(m.p1Id) !== ours(m.p2Id) ? (ours(m.winner === 1 ? m.p1Id : m.p2Id) ? "win72" : "loss72") : "";
   const delayed = live && !!m.delay;
   const when = delayed ? `<span class="when delayed"><span class="pulse"></span>In progress<span class="dtag">Delayed</span></span>`
     : live ? `<span class="when live"><span class="pulse"></span>In progress</span>`
-    : fin ? `<span class="when fin"><span class="rtag">${wl === "win72" ? "72 win" : wl === "loss72" ? "72 loss" : "Result"}</span>${esc(dayLabel(m.date))}</span>`
-    : pending ? `<span class="when fin">${esc(dayLabel(m.date))} · result pending</span>`
-    : `<span class="when ${today ? "today" : ""}">${esc(dayLabel(m.date))}</span>`;
+    : fin ? `<span class="when fin"><span class="rtag">${wl === "win72" ? "72 win" : wl === "loss72" ? "72 loss" : "Result"}</span>${esc(dayLabel(md(m)))}</span>`
+    : pending ? `<span class="when fin">${esc(dayLabel(md(m)))} · result pending</span>`
+    : `<span class="when ${today ? "today" : ""}">${esc(dayLabel(md(m)))}</span>`;
   const times = !fin && !live && !pending
     ? (m.source === "itf" || m.source === "te"
       ? `<div class="times"><span>Order of play</span><b>${m.slot ? esc(m.slot) + " (local time)" : "Time TBC"}</b></div>`
@@ -1543,7 +1552,7 @@ function renderChamps(){
   el.hidden = !wins.length;
   const txt = wins.map(({ m, id }) => {
     const p = byId[id];
-    return `<b>${esc(p.first[0])}. ${esc(p.last)}</b> won ${esc(m.tournament)}${m.category ? " " + esc(m.category.replace(/^ITF /, "")) : ""} (${esc(dayLabel(m.date))})`;
+    return `<b>${esc(p.first[0])}. ${esc(p.last)}</b> won ${esc(m.tournament)}${m.category ? " " + esc(m.category.replace(/^ITF /, "")) : ""} (${esc(dayLabel(md(m)))})`;
   }).join("<i>·</i>");
   el.innerHTML = wins.length ? `<div class="champ">🏆 <span class="k">Congratulations</span><span class="w"><span class="trk">${txt}</span></span></div>` : "";
   // ticker: "Congratulations" stays put, the wins slide back and forth on one line
@@ -1578,7 +1587,7 @@ function renderScores(){
     : STATE?.teChecked && Date.now() - new Date(STATE.teChecked) > 36 * 36e5
     ? `<b>Heads up:</b> Tennis Europe matches haven't updated since ${fmtWhen(new Date(STATE.teChecked))}. Check the Tennis Europe website for the latest draws and results.` : "");
   const ms = (STATE?.matches || []).slice();
-  const today = ukDate();
+  const today = myDate();
   const key = m => `${m.date} ${m.time || "99"}`;
   // today's matches always show as scheduled; their results only appear here the next day
   const asToday = m => m.status === "scheduled" ? m : { ...m, status: "scheduled", score: "", winner: null, note: "" };
@@ -1588,20 +1597,19 @@ function renderScores(){
     && x.date === m.date && ours(x).some(id => ours(m).includes(id)));
   // every match dated today stays in today's list all day, even once the player's next round is confirmed
   // today's order: in progress, then coming up (soonest first, no time yet last), then result pending, then finished (biggest tournament first, then latest)
-  const grp = m => m.status === "finished" ? 3 : isLive(m) ? 0 : m.status === "live" || m.date < today ? 2 : 1;
-  const tday = ms.filter(m => m.date === today || (m.status === "live" && m.date < today)).sort((a,b) => grp(a) - grp(b)
+  const grp = m => m.status === "finished" ? 3 : isLive(m) ? 0 : m.status === "live" || md(m) < today ? 2 : 1;
+  const tday = ms.filter(m => md(m) === today || (m.status === "live" && md(m) < today)).sort((a,b) => grp(a) - grp(b)
     || (grp(a) === 1 ? key(a).localeCompare(key(b)) || byTier(a, b) : grp(a) === 3 ? byTier(a, b) || key(b).localeCompare(key(a)) : byTier(a, b) || key(a).localeCompare(key(b))));
-  const next = ms.filter(m => m.date > today && m.status === "scheduled").sort((a,b) => a.date.localeCompare(b.date) || byTier(a, b) || key(a).localeCompare(key(b)));
-  // results from the previous two days (UK dates) - never today's
-  // latest results this week (Monday up to yesterday, UK dates; on a Monday, last week): each player's most recent match only,
+  const next = ms.filter(m => md(m) > today && m.status === "scheduled").sort((a,b) => md(a).localeCompare(md(b)) || byTier(a, b) || key(a).localeCompare(key(b)));
+  // latest results this week (Monday up to yesterday, the viewer's own dates; on a Monday, last week): each player's most recent match only,
   // and on the same day the one furthest into the event - e.g. a quarter-final, not the round before it too
   const ydD = new Date(new Date(today + "T12:00:00Z").getTime() - 864e5), yday = ydD.toISOString().slice(0, 10);
   const wkStart = new Date(ydD.getTime() - ((ydD.getUTCDay() + 6) % 7) * 864e5).toISOString().slice(0, 10);
   const stage = roundStage;
   const best = {};
-  for (const m of ms.filter(m => m.date <= yday && m.date >= wkStart && (m.status === "finished" || m.status === "scheduled")))
+  for (const m of ms.filter(m => md(m) <= yday && md(m) >= wkStart && (m.status === "finished" || m.status === "scheduled")))
     for (const id of ours(m)) { const b = best[id];
-      if (!b || m.date > b.date || (m.date === b.date && stage(m.round) > stage(b.round))) best[id] = m; }
+      if (!b || md(m) > md(b) || (md(m) === md(b) && stage(m.round) > stage(b.round))) best[id] = m; }
   const done = [...new Set(Object.values(best))].sort((a,b) => byTier(a, b) || key(b).localeCompare(key(a)));
   const fill = (el, arr, empty) => { $(el).innerHTML = arr.length ? arr.map(card).join("") : `<div class="empty">${empty}</div>`; };
   if (!STATE) {
@@ -1612,18 +1620,18 @@ function renderScores(){
     fill("#gNext", next, "Nothing scheduled yet. Orders of play are usually published the evening before.");
     fill("#gDone", done, "No results yet this week.");
   }
-  $("#todayLbl").textContent = new Date().toLocaleDateString("en-GB", { weekday:"long", day:"numeric", month:"long", timeZone:"Europe/London" });
+  $("#todayLbl").textContent = new Date().toLocaleDateString("en-GB", { weekday:"long", day:"numeric", month:"long" });
   $("#cToday").textContent = tday.length; $("#cNext").textContent = next.length; $("#cDone").textContent = done.length;
 
   // roster status
   const rks = mergeRanks(STATE?.rankings);
   const items = ROSTER.map(p => {
     const mine = ms.filter(m => m.p1Id === p.id || m.p2Id === p.id);
-    const up = mine.filter(m => (m.status !== "finished" || m.date === today) && m.date >= today).sort((a,b) => key(a).localeCompare(key(b)))[0];
-    const last = mine.filter(m => m.status === "finished" && m.date < today).sort((a,b) => key(b).localeCompare(key(a)))[0];
+    const up = mine.filter(m => (m.status !== "finished" || md(m) === today) && md(m) >= today).sort((a,b) => key(a).localeCompare(key(b)))[0];
+    const last = mine.filter(m => m.status === "finished" && md(m) < today).sort((a,b) => key(b).localeCompare(key(a)))[0];
     let st = "No match scheduled", on = false;
-    if (up) { const opp = up.p1Id === p.id ? up.p2 : up.p1; st = `${dayLabel(up.date)}${up.time ? " ~" + clock(ukMoment(up.date, up.time), undefined, up.date) + " your time" : ""} · vs ${opp} · ${up.tournament}`; on = up.date === today; }
-    else if (last) { const w = (last.winner === 1 && last.p1Id === p.id) || (last.winner === 2 && last.p2Id === p.id); st = `${w ? "Won" : "Lost"} ${last.round || ""} · ${last.tournament} · ${dayLabel(last.date)}`; }
+    if (up) { const opp = up.p1Id === p.id ? up.p2 : up.p1; st = `${dayLabel(md(up))}${up.time ? " ~" + clock(ukMoment(up.date, up.time), undefined, md(up)) + " your time" : ""} · vs ${opp} · ${up.tournament}`; on = md(up) === today; }
+    else if (last) { const w = (last.winner === 1 && last.p1Id === p.id) || (last.winner === 2 && last.p2Id === p.id); st = `${w ? "Won" : "Lost"} ${last.round || ""} · ${last.tournament} · ${dayLabel(md(last))}`; }
     if (STATE?.status?.[p.id]) st = STATE.status[p.id];
     const link = safeUrl(p.sofa);
     const rank = rks[p.id]?.rank ?? null;
@@ -2058,8 +2066,8 @@ function roundStage(r){ r = (r || "").replace(/\(.*\)/, "").trim().toLowerCase()
   if ((n = r.match(/^r(\d)$|^(\d)r$/))) return 10 + +(n[1] || n[2]); return 5; }
 // a player's latest result (from before today, as on the Competition Zone), furthest round first on the same day
 function latestResult(id){
-  const today = ukDate();
-  return (STATE?.matches || []).filter(m => m.status === "finished" && m.date < today && (m.p1Id === id || m.p2Id === id))
+  const today = myDate();
+  return (STATE?.matches || []).filter(m => m.status === "finished" && md(m) < today && (m.p1Id === id || m.p2Id === id))
     .sort((a, b) => b.date.localeCompare(a.date) || roundStage(b.round) - roundStage(a.round))[0] || null;
 }
 function openProfile(id){
@@ -2613,15 +2621,15 @@ function renderHome(){
   $("#hpMeta").innerHTML = STATE ? `<span class="hp-pill${fresh ? "" : " warn"}"><i></i>${lc ? `Scores updated ${lc.toLocaleTimeString("en-GB", { hour:"2-digit", minute:"2-digit" })}${fresh ? "" : ", " + lc.toLocaleDateString("en-GB", { day:"numeric", month:"short" })}` : "Scores not updated yet"}</span>`
     + (STATE.rankingsWeek || STATE.rankingsAsOf ? `<span class="hp-pill">Rankings: week of ${new Date((STATE.rankingsWeek || STATE.rankingsAsOf) + "T12:00:00Z").toLocaleDateString("en-GB", { day:"numeric", month:"short", timeZone:"UTC" })}</span>` : "") : "";
   // 01 Competition Zone
-  const ms = STATE?.matches || [], today = ukDate();
+  const ms = STATE?.matches || [], today = myDate();
   const nm = m => [m.p1, m.p2].filter(Boolean).map(esc).join(" v ");
   const live = ms.filter(m => m.status === "live");
   if (STATE) {
-    const tday = ms.filter(m => m.date === today);
-    const nxt = ms.filter(m => m.status === "scheduled" && (m.date > today || (m.date === today && m.time)))
+    const tday = ms.filter(m => md(m) === today);
+    const nxt = ms.filter(m => m.status === "scheduled" && (md(m) > today || (md(m) === today && m.time)))
       .sort((a, b) => `${a.date} ${a.time || "99"}`.localeCompare(`${b.date} ${b.time || "99"}`))[0];
     $("#hpT1").innerHTML = `${tday.length}<small>${tday.length === 1 ? "match" : "matches"} today</small>`;
-    $("#hpS1").innerHTML = live.length ? `${live.length} in progress right now` : nxt ? `Next: ${nm(nxt)} · ${dayLabel(nxt.date)}${nxt.time ? " " + esc(clock(ukMoment(nxt.date, nxt.time), undefined, nxt.date)) + " your time" : ""}` : "Nothing else scheduled yet";
+    $("#hpS1").innerHTML = live.length ? `${live.length} in progress right now` : nxt ? `Next: ${nm(nxt)} · ${dayLabel(md(nxt))}${nxt.time ? " " + esc(clock(ukMoment(nxt.date, nxt.time), undefined, md(nxt))) + " your time" : ""}` : "Nothing else scheduled yet";
   }
   // 02 Rankings: the roster's highest-ranked player
   const ranked = ROSTER.map(p => ({ p, r: playerRank(p.id) })).filter(o => o.r).sort((a, b) => a.r - b.r);
@@ -2655,7 +2663,7 @@ function renderHome(){
   } else if (SCOUT) { $("#hpT4").textContent = "—"; $("#hpS4").textContent = "Scouting list not available yet"; }
   if (SCHED?.events?.length) {
     // 72 players playing in a week: everyone on an event that runs that week (two-week events count in both)
-    const wk0 = schMonday(ukDate()), wk1 = schMonday(new Date(schDay(wk0).getTime() + 7 * 864e5).toISOString().slice(0, 10));
+    const wk0 = schMonday(myDate()), wk1 = schMonday(new Date(schDay(wk0).getTime() + 7 * 864e5).toISOString().slice(0, 10));
     const inWeek = w => { const ev = SCHED.events.filter(e => (e.e72 || []).length && schWeeks(e).includes(w)); return { ev: ev.length, ppl: new Set(ev.flatMap(e => e.e72.map(x => x.id))).size }; };
     const now = inWeek(wk0), next = inWeek(wk1);
     $("#hpT5").innerHTML = `${now.ppl}<small>72 player${now.ppl === 1 ? "" : "s"} playing this week</small>`;
