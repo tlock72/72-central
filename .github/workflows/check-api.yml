@@ -4,6 +4,9 @@ on:
 jobs:
   check:
     runs-on: ubuntu-latest
+    timeout-minutes: 15
     steps:
       - uses: actions/checkout@v6
-      - run: pip install -q beautifulsoup4 && FORCE=1 python3 scripts/prospects.py && python3 -c "import json;print(json.dumps(json.load(open('corner.json')),ensure_ascii=False,indent=1))"
+      - run: pip install -q beautifulsoup4 && FORCE=1 timeout 600 python3 -u -X faulthandler scripts/prospects.py; python3 -c "import json;print(json.dumps(json.load(open('corner.json')),ensure_ascii=False,indent=1))"
+        env:
+          PYTHONFAULTHANDLER: "1"
