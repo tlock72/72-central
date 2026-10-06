@@ -2515,8 +2515,10 @@ document.addEventListener("visibilitychange", () => { if (!document.hidden) load
 setInterval(espnLive, 60 * 1000);
 document.addEventListener("visibilitychange", () => setTimeout(espnLive, 1500));
 window.addEventListener("hashchange", () => setTimeout(espnLive, 300));
-// pull down to refresh: on a phone, dragging down from the very top reloads every part of the site.
-// The 72 ball from the logo rolls down as you pull, bounces while loading, then flies off like an ace (or drops "out" if it failed).
+// pull down to refresh: on a phone, dragging down from the very top reloads the whole site, the same as closing and
+// reopening it. That matters most in the iPhone home-screen app, which has no reload button, and it also picks up a new
+// version of the site. The 72 ball from the logo rolls down as you pull, bounces while it checks the connection, then flies
+// off like an ace and the page reloads (or it drops "out" with no signal, and the page stays as it is).
 (() => {
   const box = $("#ptr"), img = box.querySelector("img"), txt = box.querySelector(".ptr-txt"), FIRE = 80, MAX = 130;
   // the ball on its own, cut out of the logo (a plain gold ball if the logo ever changes shape)
@@ -2538,6 +2540,8 @@ window.addEventListener("hashchange", () => setTimeout(espnLive, 300));
   addEventListener("touchmove", e => {
     if (y0 === null) return;
     const dy = e.touches[0].clientY - y0, dx = Math.abs(e.touches[0].clientX - x0);
+    // a phone often reports a first move of 0 or a pixel up, so tiny wobbles don't cancel the pull
+    if (!pull && dy < 6 && dy > -10 && dx < 10) { if (dy > 0) e.preventDefault(); return; }
     if (dy <= 0 || window.scrollY > 0 || (!pull && dx > dy)) { if (pull) { pull = 0; hide(); } y0 = null; return; }
     e.preventDefault();
     box.className = "";
@@ -2552,11 +2556,13 @@ window.addEventListener("hashchange", () => setTimeout(espnLive, 300));
     pull = 0; busy = true;
     box.className = "go busy"; show(FIRE, 0); img.style.transform = ""; txt.textContent = "Refreshing…";
     const wait = new Promise(r => setTimeout(r, 900));  // long enough to see a couple of bounces
-    const [ok] = await Promise.all([load(), loadScouting(), loadSchedule(), loadCorner()]);
-    await espnLive(); await wait;
-    box.className = ok ? "ace" : "out"; txt.textContent = ok ? "Ace! Up to date" : "Out! No connection";
-    if (ok && document.body.classList.contains("on-home")) spinLogo();
-    setTimeout(() => { hide(); busy = false; }, ok ? 700 : 1500);
+    // only reload if the site can be reached, so a pull with no signal doesn't leave a blank screen
+    let ok = false;
+    try { ok = (await fetch("index.html?t=" + Date.now(), { method: "HEAD", cache: "no-store", signal: AbortSignal.timeout(10000) })).ok; } catch (e) {}
+    await wait;
+    box.className = ok ? "ace" : "out"; txt.textContent = ok ? "Ace! Refreshing" : "Out! No connection";
+    if (ok) { setTimeout(() => location.reload(), 500); return; }
+    setTimeout(() => { hide(); busy = false; }, 1500);
   });
   addEventListener("touchcancel", () => { if (pull) hide(); y0 = null; pull = 0; });
 })();
