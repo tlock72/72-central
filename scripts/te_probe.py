@@ -22,38 +22,28 @@ def show(path, label):
     return b
 
 
-for e in sorted(evs, key=lambda e: e["start"])[:4]:
-    tid = e["link"].split("id=")[-1]
-    print("\n==", e["name"], e["start"], e["cat"], tid)
-    b = show(f"/sport/tournament?id={tid}", "tournament page")
-    for l in sorted(set(re.findall(r'href="([^"]+)"', b))):
-        if tid.lower() in l.lower() or re.search(r"player|entr|accept|draw|event", l, re.I):
-            print("    link:", l)
-    for p in (f"/tournament/{tid}/players", f"/sport/players.aspx?id={tid}", f"/tournament/{tid}/events",
-              f"/sport/tournament/players?id={tid}"):
-        pb = show(p, p)
-        if pb:
-            names = re.findall(r'href="(/(?:tournament/[^"]*/)?player[^"]*)"[^>]*>(.*?)</a>', pb, re.S)
-            print("    sample player links:", [(h, re.sub("<[^>]+>", "", n).strip()) for h, n in names[:6]])
-            m = re.search(r"<main.*?</main>", pb, re.S)
-            txt = re.sub(r"\s+", " ", re.sub("<[^>]+>", " ", m.group(0) if m else pb))
-            print("    text:", txt[:1500])
+def text(b):
+    m = re.search(r'<div class="page-content-start.*', b, re.S)
+    b = re.sub(r"<script.*?</script>", " ", m.group(0) if m else b, flags=re.S)
+    return re.sub(r"\s+", " ", re.sub("<[^>]+>", " ", b))
 
-print("\n== 72 junior profiles: tournaments listed (look for future dates)")
-for rid, pid in json.load(open("te.json"))["profiles"].items():
-    if ":" in rid:
-        continue
+
+evs = sorted(evs, key=lambda e: e["start"])
+pick = evs[:3] + evs[len(evs) // 2:len(evs) // 2 + 2] + evs[-2:]
+for e in pick:
+    tid = e["link"].split("id=")[-1]
+    print("\n==", e["name"], e["start"], e["cat"], e.get("ages"), tid)
     try:
-        b = TE.fetch(f"/player-profile/{pid}/tournaments")
+        b = TE.fetch(f"/sport/acceptancelist.aspx?id={tid}")
     except Exception as x:
-        print(rid, "FAILED", x)
+        print("  FAILED", x)
         continue
-    rows = []
-    for chunk in re.split(r'(?=<h4 class="media__title)', b)[1:]:
-        a = re.search(r'title="([^"]*)"', chunk)
-        d = re.findall(r'<time datetime="(\d{4}-\d{2}-\d{2})', chunk)
-        rows.append((d[:1], a.group(1) if a else "?"))
-    print(rid, rows[:4])
-    tabs = sorted(set(l for l in re.findall(r'href="([^"]+)"', b) if pid.lower() in l.lower()))
-    if rid == "qi":
-        print("  profile tabs:", tabs)
+    print("  chars", len(b), "profile links", len(re.findall(r"/player-profile/", b)), "player links", len(re.findall(r'href="[^"]*player[^"]*"', b, re.I)))
+    print("  sample links:", sorted(set(re.findall(r'href="([^"]*(?:player|accept|event)[^"]*)"', b, re.I)))[:15])
+    print("  ajax:", sorted(set(re.findall(r"['\"](/[^'\"]*(?:Accept|accept|Players|Entr)[^'\"]*)['\"]", b)))[:15])
+    t = text(b)
+    i = t.find("Acceptance list")
+    print("  text:", t[max(0, i - 100):i + 2500])
+    if e is pick[0]:
+        i = b.find("Acceptance")
+        print("  RAW:", b[b.find("<table") if "<table" in b else i: (b.find("<table") if "<table" in b else i) + 3000])
