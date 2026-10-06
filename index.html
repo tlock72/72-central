@@ -1915,6 +1915,12 @@ function applyLive(st){
       if (won === 2) Object.assign(m, { p1: m.p2, p2: m.p1, p1Id: m.p2Id, p2Id: m.p1Id });
       Object.assign(m, { status: "finished", winner: 1, score: out + (ret ? " ret." : ""), espnLive: false });
     } else if (x.state === "post" && /cancel/i.test(x.detail)) m.status = "cancelled";
+    else if (x.state === "pre" && m.status === "scheduled" && x.at && !isNaN(new Date(x.at))) {
+      // not started yet: if ESPN has moved the start time (delays, rain), show the new one straight away
+      const at = new Date(x.at);
+      m.date = ukDate(at);
+      m.time = x.timeValid ? at.toLocaleTimeString("en-GB", { timeZone:"Europe/London", hour:"2-digit", minute:"2-digit", hourCycle:"h23" }) : "";
+    }
   }
 }
 async function espnLive(){
@@ -1934,7 +1940,7 @@ async function espnLive(){
         const cs = (c.competitors || []).slice().sort((a, b) => (a.order || 0) - (b.order || 0));
         if (cs.length !== 2) continue;
         const st = c.status?.type || {}, won = cs.map((p, i) => p.winner ? i + 1 : 0).filter(Boolean);
-        LIVE[key] = { state: st.state, detail: st.detail || st.description || "", score: espnScore(cs[0], cs[1]),
+        LIVE[key] = { state: st.state, detail: st.detail || st.description || "", score: espnScore(cs[0], cs[1]), at: c.date, timeValid: c.timeValid !== false,
           n1: cs[0].athlete?.displayName, n2: cs[1].athlete?.displayName, won: won.length === 1 ? won[0] : null };
       }
     }
