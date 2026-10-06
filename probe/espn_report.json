@@ -1,0 +1,2450 @@
+{
+ "ran": "2026-10-06T05:00:55+00:00",
+ "leagues": {
+  "atp": {
+   "http": 200,
+   "seconds": 0.22,
+   "bytes": 906847,
+   "matches": 446
+  },
+  "wta": {
+   "http": 200,
+   "seconds": 0.06,
+   "bytes": 738810,
+   "matches": 343
+  },
+  "atp-challenger": {
+   "http": 400,
+   "seconds": 0.1,
+   "bytes": 0,
+   "matches": 0
+  },
+  "challenger": {
+   "http": 400,
+   "seconds": 0.11,
+   "bytes": 0,
+   "matches": 0
+  },
+  "itf": {
+   "http": 400,
+   "seconds": 0.09,
+   "bytes": 0,
+   "matches": 0
+  },
+  "itf-men": {
+   "http": 400,
+   "seconds": 0.09,
+   "bytes": 0,
+   "matches": 0
+  },
+  "itf-women": {
+   "http": 400,
+   "seconds": 0.13,
+   "bytes": 0,
+   "matches": 0
+  },
+  "wta-125": {
+   "http": 400,
+   "seconds": 0.12,
+   "bytes": 0,
+   "matches": 0
+  }
+ },
+ "days": {
+  "atp 20260926": {
+   "http": 200,
+   "seconds": 0.13,
+   "matches": 108,
+   "events": [
+    "AITO Hangzhou Open",
+    "Chengdu Open"
+   ],
+   "rounds": [
+    "Final",
+    "Qualifying 1st Round",
+    "Qualifying Final",
+    "Quarterfinal",
+    "Round 1",
+    "Round 2",
+    "Semifinal"
+   ]
+  },
+  "atp 20260927": {
+   "http": 200,
+   "seconds": 0.16,
+   "matches": 392,
+   "events": [
+    "AITO Hangzhou Open",
+    "Chengdu Open",
+    "China Open",
+    "Kinoshita Group Japan Open Tennis Championships"
+   ],
+   "rounds": [
+    "Final",
+    "Qualifying 1st Round",
+    "Qualifying Final",
+    "Quarterfinal",
+    "Round 1",
+    "Round 2",
+    "Round 3",
+    "Round 4",
+    "Semifinal"
+   ]
+  },
+  "atp 20260928": {
+   "http": 200,
+   "seconds": 0.16,
+   "matches": 392,
+   "events": [
+    "AITO Hangzhou Open",
+    "Chengdu Open",
+    "China Open",
+    "Kinoshita Group Japan Open Tennis Championships"
+   ],
+   "rounds": [
+    "Final",
+    "Qualifying 1st Round",
+    "Qualifying Final",
+    "Quarterfinal",
+    "Round 1",
+    "Round 2",
+    "Round 3",
+    "Round 4",
+    "Semifinal"
+   ]
+  },
+  "atp 20260929": {
+   "http": 200,
+   "seconds": 0.12,
+   "matches": 392,
+   "events": [
+    "AITO Hangzhou Open",
+    "Chengdu Open",
+    "China Open",
+    "Kinoshita Group Japan Open Tennis Championships"
+   ],
+   "rounds": [
+    "Final",
+    "Qualifying 1st Round",
+    "Qualifying Final",
+    "Quarterfinal",
+    "Round 1",
+    "Round 2",
+    "Round 3",
+    "Round 4",
+    "Semifinal"
+   ]
+  },
+  "atp 20260930": {
+   "http": 200,
+   "seconds": 0.29,
+   "matches": 284,
+   "events": [
+    "China Open",
+    "Kinoshita Group Japan Open Tennis Championships"
+   ],
+   "rounds": [
+    "Final",
+    "Qualifying 1st Round",
+    "Qualifying Final",
+    "Quarterfinal",
+    "Round 1",
+    "Round 2",
+    "Round 3",
+    "Round 4",
+    "Semifinal"
+   ]
+  },
+  "atp 20261001": {
+   "http": 200,
+   "seconds": 0.1,
+   "matches": 284,
+   "events": [
+    "China Open",
+    "Kinoshita Group Japan Open Tennis Championships"
+   ],
+   "rounds": [
+    "Final",
+    "Qualifying 1st Round",
+    "Qualifying Final",
+    "Quarterfinal",
+    "Round 1",
+    "Round 2",
+    "Round 3",
+    "Round 4",
+    "Semifinal"
+   ]
+  },
+  "atp 20261002": {
+   "http": 200,
+   "seconds": 0.09,
+   "matches": 284,
+   "events": [
+    "China Open",
+    "Kinoshita Group Japan Open Tennis Championships"
+   ],
+   "rounds": [
+    "Final",
+    "Qualifying 1st Round",
+    "Qualifying Final",
+    "Quarterfinal",
+    "Round 1",
+    "Round 2",
+    "Round 3",
+    "Round 4",
+    "Semifinal"
+   ]
+  },
+  "atp 20261003": {
+   "http": 200,
+   "seconds": 0.09,
+   "matches": 284,
+   "events": [
+    "China Open",
+    "Kinoshita Group Japan Open Tennis Championships"
+   ],
+   "rounds": [
+    "Final",
+    "Qualifying 1st Round",
+    "Qualifying Final",
+    "Quarterfinal",
+    "Round 1",
+    "Round 2",
+    "Round 3",
+    "Round 4",
+    "Semifinal"
+   ]
+  },
+  "atp 20261004": {
+   "http": 200,
+   "seconds": 0.13,
+   "matches": 284,
+   "events": [
+    "China Open",
+    "Kinoshita Group Japan Open Tennis Championships"
+   ],
+   "rounds": [
+    "Final",
+    "Qualifying 1st Round",
+    "Qualifying Final",
+    "Quarterfinal",
+    "Round 1",
+    "Round 2",
+    "Round 3",
+    "Round 4",
+    "Semifinal"
+   ]
+  },
+  "atp 20261005": {
+   "http": 200,
+   "seconds": 0.11,
+   "matches": 446,
+   "events": [
+    "China Open",
+    "Kinoshita Group Japan Open Tennis Championships",
+    "Rolex Shanghai Masters"
+   ],
+   "rounds": [
+    "Final",
+    "Qualifying 1st Round",
+    "Qualifying Final",
+    "Quarterfinal",
+    "Round 1",
+    "Round 2",
+    "Round 3",
+    "Round 4",
+    "Semifinal"
+   ]
+  },
+  "atp 20261006": {
+   "http": 200,
+   "seconds": 0.21,
+   "matches": 446,
+   "events": [
+    "China Open",
+    "Kinoshita Group Japan Open Tennis Championships",
+    "Rolex Shanghai Masters"
+   ],
+   "rounds": [
+    "Final",
+    "Qualifying 1st Round",
+    "Qualifying Final",
+    "Quarterfinal",
+    "Round 1",
+    "Round 2",
+    "Round 3",
+    "Round 4",
+    "Semifinal"
+   ]
+  },
+  "atp 20261007": {
+   "http": 200,
+   "seconds": 0.1,
+   "matches": 385,
+   "events": [
+    "China Open",
+    "Rolex Shanghai Masters"
+   ],
+   "rounds": [
+    "Final",
+    "Qualifying 1st Round",
+    "Qualifying Final",
+    "Quarterfinal",
+    "Round 1",
+    "Round 2",
+    "Round 3",
+    "Round 4",
+    "Semifinal"
+   ]
+  },
+  "atp 20261008": {
+   "http": 200,
+   "seconds": 0.2,
+   "matches": 385,
+   "events": [
+    "China Open",
+    "Rolex Shanghai Masters"
+   ],
+   "rounds": [
+    "Final",
+    "Qualifying 1st Round",
+    "Qualifying Final",
+    "Quarterfinal",
+    "Round 1",
+    "Round 2",
+    "Round 3",
+    "Round 4",
+    "Semifinal"
+   ]
+  },
+  "atp 20261009": {
+   "http": 200,
+   "seconds": 0.12,
+   "matches": 385,
+   "events": [
+    "China Open",
+    "Rolex Shanghai Masters"
+   ],
+   "rounds": [
+    "Final",
+    "Qualifying 1st Round",
+    "Qualifying Final",
+    "Quarterfinal",
+    "Round 1",
+    "Round 2",
+    "Round 3",
+    "Round 4",
+    "Semifinal"
+   ]
+  },
+  "wta 20260926": {
+   "http": 200,
+   "seconds": 0.2,
+   "matches": 397,
+   "events": [
+    "Adana Open",
+    "Delta Motors Tolentino Open",
+    "Eupago Porto Open",
+    "Jingshan Tennis Open",
+    "Korea Open",
+    "Singapore Tennis Open presented by BNP Paribas",
+    "Turk Telekom Ankara Open"
+   ],
+   "rounds": [
+    "Final",
+    "Qualifying 1st Round",
+    "Qualifying Final",
+    "Quarterfinal",
+    "Round 1",
+    "Round 2",
+    "Semifinal"
+   ]
+  },
+  "wta 20260927": {
+   "http": 200,
+   "seconds": 0.15,
+   "matches": 620,
+   "events": [
+    "Adana Open",
+    "China Open",
+    "Delta Motors Tolentino Open",
+    "Eupago Porto Open",
+    "Jingshan Tennis Open",
+    "Korea Open",
+    "Singapore Tennis Open presented by BNP Paribas",
+    "Turk Telekom Ankara Open"
+   ],
+   "rounds": [
+    "Final",
+    "Qualifying 1st Round",
+    "Qualifying Final",
+    "Quarterfinal",
+    "Round 1",
+    "Round 2",
+    "Round 3",
+    "Round 4",
+    "Semifinal"
+   ]
+  },
+  "wta 20260928": {
+   "http": 200,
+   "seconds": 0.11,
+   "matches": 337,
+   "events": [
+    "Adana Open",
+    "China Open",
+    "Jingshan Tennis Open"
+   ],
+   "rounds": [
+    "Final",
+    "Qualifying 1st Round",
+    "Qualifying Final",
+    "Quarterfinal",
+    "Round 1",
+    "Round 2",
+    "Round 3",
+    "Round 4",
+    "Semifinal"
+   ]
+  },
+  "wta 20260929": {
+   "http": 200,
+   "seconds": 0.14,
+   "matches": 337,
+   "events": [
+    "Adana Open",
+    "China Open",
+    "Jingshan Tennis Open"
+   ],
+   "rounds": [
+    "Final",
+    "Qualifying 1st Round",
+    "Qualifying Final",
+    "Quarterfinal",
+    "Round 1",
+    "Round 2",
+    "Round 3",
+    "Round 4",
+    "Semifinal"
+   ]
+  },
+  "wta 20260930": {
+   "http": 200,
+   "seconds": 0.14,
+   "matches": 337,
+   "events": [
+    "Adana Open",
+    "China Open",
+    "Jingshan Tennis Open"
+   ],
+   "rounds": [
+    "Final",
+    "Qualifying 1st Round",
+    "Qualifying Final",
+    "Quarterfinal",
+    "Round 1",
+    "Round 2",
+    "Round 3",
+    "Round 4",
+    "Semifinal"
+   ]
+  },
+  "wta 20261001": {
+   "http": 200,
+   "seconds": 0.13,
+   "matches": 337,
+   "events": [
+    "Adana Open",
+    "China Open",
+    "Jingshan Tennis Open"
+   ],
+   "rounds": [
+    "Final",
+    "Qualifying 1st Round",
+    "Qualifying Final",
+    "Quarterfinal",
+    "Round 1",
+    "Round 2",
+    "Round 3",
+    "Round 4",
+    "Semifinal"
+   ]
+  },
+  "wta 20261002": {
+   "http": 200,
+   "seconds": 0.1,
+   "matches": 337,
+   "events": [
+    "Adana Open",
+    "China Open",
+    "Jingshan Tennis Open"
+   ],
+   "rounds": [
+    "Final",
+    "Qualifying 1st Round",
+    "Qualifying Final",
+    "Quarterfinal",
+    "Round 1",
+    "Round 2",
+    "Round 3",
+    "Round 4",
+    "Semifinal"
+   ]
+  },
+  "wta 20261003": {
+   "http": 200,
+   "seconds": 0.29,
+   "matches": 395,
+   "events": [
+    "Adana Open",
+    "China Open",
+    "Jingshan Tennis Open",
+    "Suzhou Open"
+   ],
+   "rounds": [
+    "Final",
+    "Qualifying 1st Round",
+    "Qualifying Final",
+    "Quarterfinal",
+    "Round 1",
+    "Round 2",
+    "Round 3",
+    "Round 4",
+    "Semifinal"
+   ]
+  },
+  "wta 20261004": {
+   "http": 200,
+   "seconds": 0.1,
+   "matches": 457,
+   "events": [
+    "Adana Open",
+    "China Open",
+    "Jingshan Tennis Open",
+    "Samsun Open",
+    "Suzhou Open"
+   ],
+   "rounds": [
+    "Final",
+    "Qualifying 1st Round",
+    "Qualifying Final",
+    "Quarterfinal",
+    "Round 1",
+    "Round 2",
+    "Round 3",
+    "Round 4",
+    "Semifinal"
+   ]
+  },
+  "wta 20261005": {
+   "http": 200,
+   "seconds": 0.1,
+   "matches": 343,
+   "events": [
+    "China Open",
+    "Samsun Open",
+    "Suzhou Open"
+   ],
+   "rounds": [
+    "Final",
+    "Qualifying 1st Round",
+    "Qualifying Final",
+    "Quarterfinal",
+    "Round 1",
+    "Round 2",
+    "Round 3",
+    "Round 4",
+    "Semifinal"
+   ]
+  },
+  "wta 20261006": {
+   "http": 200,
+   "seconds": 0.1,
+   "matches": 343,
+   "events": [
+    "China Open",
+    "Samsun Open",
+    "Suzhou Open"
+   ],
+   "rounds": [
+    "Final",
+    "Qualifying 1st Round",
+    "Qualifying Final",
+    "Quarterfinal",
+    "Round 1",
+    "Round 2",
+    "Round 3",
+    "Round 4",
+    "Semifinal"
+   ]
+  },
+  "wta 20261007": {
+   "http": 200,
+   "seconds": 0.1,
+   "matches": 343,
+   "events": [
+    "China Open",
+    "Samsun Open",
+    "Suzhou Open"
+   ],
+   "rounds": [
+    "Final",
+    "Qualifying 1st Round",
+    "Qualifying Final",
+    "Quarterfinal",
+    "Round 1",
+    "Round 2",
+    "Round 3",
+    "Round 4",
+    "Semifinal"
+   ]
+  },
+  "wta 20261008": {
+   "http": 200,
+   "seconds": 0.12,
+   "matches": 343,
+   "events": [
+    "China Open",
+    "Samsun Open",
+    "Suzhou Open"
+   ],
+   "rounds": [
+    "Final",
+    "Qualifying 1st Round",
+    "Qualifying Final",
+    "Quarterfinal",
+    "Round 1",
+    "Round 2",
+    "Round 3",
+    "Round 4",
+    "Semifinal"
+   ]
+  },
+  "wta 20261009": {
+   "http": 200,
+   "seconds": 0.1,
+   "matches": 343,
+   "events": [
+    "China Open",
+    "Samsun Open",
+    "Suzhou Open"
+   ],
+   "rounds": [
+    "Final",
+    "Qualifying 1st Round",
+    "Qualifying Final",
+    "Quarterfinal",
+    "Round 1",
+    "Round 2",
+    "Round 3",
+    "Round 4",
+    "Semifinal"
+   ]
+  }
+ },
+ "ours": [
+  {
+   "league": "wta",
+   "event": "Singapore Tennis Open presented by BNP Paribas",
+   "date": "2026-09-21T03:05Z",
+   "round": "Round 1",
+   "state": "post",
+   "detail": "Final",
+   "completed": true,
+   "players": [
+    {
+     "name": "Aliaksandra Sasnovich",
+     "winner": true,
+     "sets": [
+      "7",
+      "6"
+     ],
+     "order": 2
+    },
+    {
+     "name": "Daria Kasatkina",
+     "winner": false,
+     "sets": [
+      "5",
+      "0"
+     ],
+     "order": 1
+    }
+   ],
+   "ours": [
+    "kasatkina"
+   ]
+  },
+  {
+   "league": "wta",
+   "event": "Korea Open",
+   "date": "2026-09-21T04:35Z",
+   "round": "Round 1",
+   "state": "post",
+   "detail": "Final",
+   "completed": true,
+   "players": [
+    {
+     "name": "Mananchaya Sawangkaew",
+     "winner": false,
+     "sets": [
+      "4",
+      "2"
+     ],
+     "order": 2
+    },
+    {
+     "name": "Alina Korneeva",
+     "winner": true,
+     "sets": [
+      "6",
+      "6"
+     ],
+     "order": 1
+    }
+   ],
+   "ours": [
+    "sawangkaew"
+   ]
+  },
+  {
+   "league": "wta",
+   "event": "Delta Motors Tolentino Open",
+   "date": "2026-09-21T13:10Z",
+   "round": "Round 1",
+   "state": "post",
+   "detail": "Final",
+   "completed": true,
+   "players": [
+    {
+     "name": "Arantxa Rus",
+     "winner": false,
+     "sets": [
+      "6",
+      "0",
+      "3"
+     ],
+     "order": 2
+    },
+    {
+     "name": "Mia Ristic",
+     "winner": true,
+     "sets": [
+      "4",
+      "6",
+      "6"
+     ],
+     "order": 1
+    }
+   ],
+   "ours": [
+    "ristic"
+   ]
+  },
+  {
+   "league": "wta",
+   "event": "Delta Motors Tolentino Open",
+   "date": "2026-09-21T13:35Z",
+   "round": "Round 1",
+   "state": "post",
+   "detail": "Final",
+   "completed": true,
+   "players": [
+    {
+     "name": "Leyre Romero Gormaz",
+     "winner": true,
+     "sets": [
+      "6(4)",
+      "6",
+      "7(7)"
+     ],
+     "order": 2
+    },
+    {
+     "name": "Polona Hercog",
+     "winner": false,
+     "sets": [
+      "7(7)",
+      "1",
+      "6(3)"
+     ],
+     "order": 1
+    }
+   ],
+   "ours": [
+    "romero"
+   ]
+  },
+  {
+   "league": "wta",
+   "event": "Delta Motors Tolentino Open",
+   "date": "2026-09-23T12:40Z",
+   "round": "Round 2",
+   "state": "post",
+   "detail": "Final",
+   "completed": true,
+   "players": [
+    {
+     "name": "Leyre Romero Gormaz",
+     "winner": false,
+     "sets": [
+      "6",
+      "4",
+      "1"
+     ],
+     "order": 2
+    },
+    {
+     "name": "Jessica Pieri",
+     "winner": true,
+     "sets": [
+      "3",
+      "6",
+      "6"
+     ],
+     "order": 1
+    }
+   ],
+   "ours": [
+    "romero"
+   ]
+  },
+  {
+   "league": "wta",
+   "event": "Delta Motors Tolentino Open",
+   "date": "2026-09-23T18:05Z",
+   "round": "Round 2",
+   "state": "post",
+   "detail": "Final",
+   "completed": true,
+   "players": [
+    {
+     "name": "Mia Ristic",
+     "winner": true,
+     "sets": [
+      "6",
+      "3",
+      "6"
+     ],
+     "order": 2
+    },
+    {
+     "name": "Noemi Basiletti",
+     "winner": false,
+     "sets": [
+      "3",
+      "6",
+      "3"
+     ],
+     "order": 1
+    }
+   ],
+   "ours": [
+    "ristic"
+   ]
+  },
+  {
+   "league": "atp",
+   "event": "AITO Hangzhou Open",
+   "date": "2026-09-25T10:35Z",
+   "round": "Round 2",
+   "state": "post",
+   "detail": "Final",
+   "completed": true,
+   "players": [
+    {
+     "name": "Andrey Rublev",
+     "winner": true,
+     "sets": [
+      "6",
+      "6"
+     ],
+     "order": 2
+    },
+    {
+     "name": "Rinky Hijikata",
+     "winner": false,
+     "sets": [
+      "3",
+      "3"
+     ],
+     "order": 1
+    }
+   ],
+   "ours": [
+    "rublev"
+   ]
+  },
+  {
+   "league": "wta",
+   "event": "Delta Motors Tolentino Open",
+   "date": "2026-09-25T12:10Z",
+   "round": "Quarterfinal",
+   "state": "post",
+   "detail": "Final",
+   "completed": true,
+   "players": [
+    {
+     "name": "Jessica Pieri",
+     "winner": true,
+     "sets": [
+      "6",
+      "6"
+     ],
+     "order": 2
+    },
+    {
+     "name": "Mia Ristic",
+     "winner": false,
+     "sets": [
+      "4",
+      "4"
+     ],
+     "order": 1
+    }
+   ],
+   "ours": [
+    "ristic"
+   ]
+  },
+  {
+   "league": "atp",
+   "event": "AITO Hangzhou Open",
+   "date": "2026-09-27T07:45Z",
+   "round": "Quarterfinal",
+   "state": "post",
+   "detail": "Final",
+   "completed": true,
+   "players": [
+    {
+     "name": "Andrey Rublev",
+     "winner": true,
+     "sets": [
+      "6(6)",
+      "7(7)",
+      "6"
+     ],
+     "order": 2
+    },
+    {
+     "name": "Hugo Gaston",
+     "winner": false,
+     "sets": [
+      "7(8)",
+      "6(4)",
+      "1"
+     ],
+     "order": 1
+    }
+   ],
+   "ours": [
+    "rublev"
+   ]
+  },
+  {
+   "league": "atp",
+   "event": "China Open",
+   "date": "2026-09-28T07:30Z",
+   "round": "Qualifying 1st Round",
+   "state": "post",
+   "detail": "Final",
+   "completed": true,
+   "players": [
+    {
+     "name": "Daniel Altmaier",
+     "winner": false,
+     "sets": [
+      "4",
+      "1"
+     ],
+     "order": 2
+    },
+    {
+     "name": "Cui Jie",
+     "winner": true,
+     "sets": [
+      "6",
+      "6"
+     ],
+     "order": 1
+    }
+   ],
+   "ours": [
+    "altmaier"
+   ]
+  },
+  {
+   "league": "wta",
+   "event": "China Open",
+   "date": "2026-09-28T07:30Z",
+   "round": "Qualifying 1st Round",
+   "state": "post",
+   "detail": "Final",
+   "completed": true,
+   "players": [
+    {
+     "name": "Daniel Altmaier",
+     "winner": false,
+     "sets": [
+      "4",
+      "1"
+     ],
+     "order": 2
+    },
+    {
+     "name": "Cui Jie",
+     "winner": true,
+     "sets": [
+      "6",
+      "6"
+     ],
+     "order": 1
+    }
+   ],
+   "ours": [
+    "altmaier"
+   ]
+  },
+  {
+   "league": "atp",
+   "event": "AITO Hangzhou Open",
+   "date": "2026-09-28T09:40Z",
+   "round": "Semifinal",
+   "state": "post",
+   "detail": "Final",
+   "completed": true,
+   "players": [
+    {
+     "name": "Andrey Rublev",
+     "winner": true,
+     "sets": [
+      "7(7)",
+      "6"
+     ],
+     "order": 2
+    },
+    {
+     "name": "Kyrian Jacquet",
+     "winner": false,
+     "sets": [
+      "6(0)",
+      "1"
+     ],
+     "order": 1
+    }
+   ],
+   "ours": [
+    "rublev"
+   ]
+  },
+  {
+   "league": "atp",
+   "event": "AITO Hangzhou Open",
+   "date": "2026-09-29T11:40Z",
+   "round": "Final",
+   "state": "post",
+   "detail": "Final",
+   "completed": true,
+   "players": [
+    {
+     "name": "Andrey Rublev",
+     "winner": false,
+     "sets": [
+      "5",
+      "4"
+     ],
+     "order": 2
+    },
+    {
+     "name": "Daniil Medvedev",
+     "winner": true,
+     "sets": [
+      "7",
+      "6"
+     ],
+     "order": 1
+    }
+   ],
+   "ours": [
+    "rublev"
+   ]
+  },
+  {
+   "league": "atp",
+   "event": "China Open",
+   "date": "2026-10-01T03:05Z",
+   "round": "Round 1",
+   "state": "post",
+   "detail": "Final",
+   "completed": true,
+   "players": [
+    {
+     "name": "Alina Charaeva",
+     "winner": true,
+     "sets": [
+      "5",
+      "7",
+      "6"
+     ],
+     "order": 2
+    },
+    {
+     "name": "Yuliia Starodubtseva",
+     "winner": false,
+     "sets": [
+      "7",
+      "5",
+      "2"
+     ],
+     "order": 1
+    }
+   ],
+   "ours": [
+    "starodubtseva"
+   ]
+  },
+  {
+   "league": "wta",
+   "event": "China Open",
+   "date": "2026-10-01T03:05Z",
+   "round": "Round 1",
+   "state": "post",
+   "detail": "Final",
+   "completed": true,
+   "players": [
+    {
+     "name": "Alina Charaeva",
+     "winner": true,
+     "sets": [
+      "5",
+      "7",
+      "6"
+     ],
+     "order": 2
+    },
+    {
+     "name": "Yuliia Starodubtseva",
+     "winner": false,
+     "sets": [
+      "7",
+      "5",
+      "2"
+     ],
+     "order": 1
+    }
+   ],
+   "ours": [
+    "starodubtseva"
+   ]
+  },
+  {
+   "league": "atp",
+   "event": "China Open",
+   "date": "2026-10-01T03:10Z",
+   "round": "Round 1",
+   "state": "post",
+   "detail": "Final",
+   "completed": true,
+   "players": [
+    {
+     "name": "Mariano Navone",
+     "winner": false,
+     "sets": [
+      "6(4)",
+      "2"
+     ],
+     "order": 2
+    },
+    {
+     "name": "Alex de Minaur",
+     "winner": true,
+     "sets": [
+      "7(7)",
+      "6"
+     ],
+     "order": 1
+    }
+   ],
+   "ours": [
+    "deminaur"
+   ]
+  },
+  {
+   "league": "wta",
+   "event": "China Open",
+   "date": "2026-10-01T03:10Z",
+   "round": "Round 1",
+   "state": "post",
+   "detail": "Final",
+   "completed": true,
+   "players": [
+    {
+     "name": "Mariano Navone",
+     "winner": false,
+     "sets": [
+      "6(4)",
+      "2"
+     ],
+     "order": 2
+    },
+    {
+     "name": "Alex de Minaur",
+     "winner": true,
+     "sets": [
+      "7(7)",
+      "6"
+     ],
+     "order": 1
+    }
+   ],
+   "ours": [
+    "deminaur"
+   ]
+  },
+  {
+   "league": "atp",
+   "event": "China Open",
+   "date": "2026-10-01T05:25Z",
+   "round": "Round 1",
+   "state": "post",
+   "detail": "Final",
+   "completed": true,
+   "players": [
+    {
+     "name": "Daria Kasatkina",
+     "winner": false,
+     "sets": [
+      "6",
+      "6(7)",
+      "4"
+     ],
+     "order": 2
+    },
+    {
+     "name": "Paula Badosa",
+     "winner": true,
+     "sets": [
+      "4",
+      "7(9)",
+      "6"
+     ],
+     "order": 1
+    }
+   ],
+   "ours": [
+    "kasatkina"
+   ]
+  },
+  {
+   "league": "wta",
+   "event": "China Open",
+   "date": "2026-10-01T05:25Z",
+   "round": "Round 1",
+   "state": "post",
+   "detail": "Final",
+   "completed": true,
+   "players": [
+    {
+     "name": "Daria Kasatkina",
+     "winner": false,
+     "sets": [
+      "6",
+      "6(7)",
+      "4"
+     ],
+     "order": 2
+    },
+    {
+     "name": "Paula Badosa",
+     "winner": true,
+     "sets": [
+      "4",
+      "7(9)",
+      "6"
+     ],
+     "order": 1
+    }
+   ],
+   "ours": [
+    "kasatkina"
+   ]
+  },
+  {
+   "league": "atp",
+   "event": "China Open",
+   "date": "2026-10-01T05:40Z",
+   "round": "Round 1",
+   "state": "post",
+   "detail": "Final",
+   "completed": true,
+   "players": [
+    {
+     "name": "Quentin Halys",
+     "winner": true,
+     "sets": [
+      "6",
+      "7(7)"
+     ],
+     "order": 2
+    },
+    {
+     "name": "Ignacio Buse",
+     "winner": false,
+     "sets": [
+      "1",
+      "6(3)"
+     ],
+     "order": 1
+    }
+   ],
+   "ours": [
+    "buse"
+   ]
+  },
+  {
+   "league": "wta",
+   "event": "China Open",
+   "date": "2026-10-01T05:40Z",
+   "round": "Round 1",
+   "state": "post",
+   "detail": "Final",
+   "completed": true,
+   "players": [
+    {
+     "name": "Quentin Halys",
+     "winner": true,
+     "sets": [
+      "6",
+      "7(7)"
+     ],
+     "order": 2
+    },
+    {
+     "name": "Ignacio Buse",
+     "winner": false,
+     "sets": [
+      "1",
+      "6(3)"
+     ],
+     "order": 1
+    }
+   ],
+   "ours": [
+    "buse"
+   ]
+  },
+  {
+   "league": "atp",
+   "event": "China Open",
+   "date": "2026-10-01T07:00Z",
+   "round": "Round 1",
+   "state": "post",
+   "detail": "Final",
+   "completed": true,
+   "players": [
+    {
+     "name": "Storm Hunter",
+     "winner": true,
+     "sets": [
+      "6",
+      "6"
+     ],
+     "order": 2
+    },
+    {
+     "name": "Yu Jun Lin",
+     "winner": false,
+     "sets": [
+      "2",
+      "1"
+     ],
+     "order": 1
+    }
+   ],
+   "ours": [
+    "lin"
+   ]
+  },
+  {
+   "league": "wta",
+   "event": "China Open",
+   "date": "2026-10-01T07:00Z",
+   "round": "Round 1",
+   "state": "post",
+   "detail": "Final",
+   "completed": true,
+   "players": [
+    {
+     "name": "Storm Hunter",
+     "winner": true,
+     "sets": [
+      "6",
+      "6"
+     ],
+     "order": 2
+    },
+    {
+     "name": "Yu Jun Lin",
+     "winner": false,
+     "sets": [
+      "2",
+      "1"
+     ],
+     "order": 1
+    }
+   ],
+   "ours": [
+    "lin"
+   ]
+  },
+  {
+   "league": "atp",
+   "event": "China Open",
+   "date": "2026-10-01T09:25Z",
+   "round": "Round 1",
+   "state": "post",
+   "detail": "Final",
+   "completed": true,
+   "players": [
+    {
+     "name": "Andrey Rublev",
+     "winner": true,
+     "sets": [
+      "6",
+      "5",
+      "7(8)"
+     ],
+     "order": 2
+    },
+    {
+     "name": "Tallon Griekspoor",
+     "winner": false,
+     "sets": [
+      "4",
+      "7",
+      "6(6)"
+     ],
+     "order": 1
+    }
+   ],
+   "ours": [
+    "rublev"
+   ]
+  },
+  {
+   "league": "wta",
+   "event": "China Open",
+   "date": "2026-10-01T09:25Z",
+   "round": "Round 1",
+   "state": "post",
+   "detail": "Final",
+   "completed": true,
+   "players": [
+    {
+     "name": "Andrey Rublev",
+     "winner": true,
+     "sets": [
+      "6",
+      "5",
+      "7(8)"
+     ],
+     "order": 2
+    },
+    {
+     "name": "Tallon Griekspoor",
+     "winner": false,
+     "sets": [
+      "4",
+      "7",
+      "6(6)"
+     ],
+     "order": 1
+    }
+   ],
+   "ours": [
+    "rublev"
+   ]
+  },
+  {
+   "league": "atp",
+   "event": "China Open",
+   "date": "2026-10-02T08:25Z",
+   "round": "Round 2",
+   "state": "post",
+   "detail": "Final",
+   "completed": true,
+   "players": [
+    {
+     "name": "Maddison Inglis",
+     "winner": false,
+     "sets": [
+      "3",
+      "5"
+     ],
+     "order": 2
+    },
+    {
+     "name": "Sara Bejlek",
+     "winner": true,
+     "sets": [
+      "6",
+      "7"
+     ],
+     "order": 1
+    }
+   ],
+   "ours": [
+    "bejlek"
+   ]
+  },
+  {
+   "league": "wta",
+   "event": "China Open",
+   "date": "2026-10-02T08:25Z",
+   "round": "Round 2",
+   "state": "post",
+   "detail": "Final",
+   "completed": true,
+   "players": [
+    {
+     "name": "Maddison Inglis",
+     "winner": false,
+     "sets": [
+      "3",
+      "5"
+     ],
+     "order": 2
+    },
+    {
+     "name": "Sara Bejlek",
+     "winner": true,
+     "sets": [
+      "6",
+      "7"
+     ],
+     "order": 1
+    }
+   ],
+   "ours": [
+    "bejlek"
+   ]
+  },
+  {
+   "league": "atp",
+   "event": "China Open",
+   "date": "2026-10-03T03:10Z",
+   "round": "Round 2",
+   "state": "post",
+   "detail": "Final",
+   "completed": true,
+   "players": [
+    {
+     "name": "Quentin Halys",
+     "winner": false,
+     "sets": [
+      "6",
+      "6(5)",
+      "5"
+     ],
+     "order": 2
+    },
+    {
+     "name": "Alex de Minaur",
+     "winner": true,
+     "sets": [
+      "3",
+      "7(7)",
+      "7"
+     ],
+     "order": 1
+    }
+   ],
+   "ours": [
+    "deminaur"
+   ]
+  },
+  {
+   "league": "wta",
+   "event": "China Open",
+   "date": "2026-10-03T03:10Z",
+   "round": "Round 2",
+   "state": "post",
+   "detail": "Final",
+   "completed": true,
+   "players": [
+    {
+     "name": "Quentin Halys",
+     "winner": false,
+     "sets": [
+      "6",
+      "6(5)",
+      "5"
+     ],
+     "order": 2
+    },
+    {
+     "name": "Alex de Minaur",
+     "winner": true,
+     "sets": [
+      "3",
+      "7(7)",
+      "7"
+     ],
+     "order": 1
+    }
+   ],
+   "ours": [
+    "deminaur"
+   ]
+  },
+  {
+   "league": "atp",
+   "event": "China Open",
+   "date": "2026-10-03T05:45Z",
+   "round": "Round 2",
+   "state": "post",
+   "detail": "Final",
+   "completed": true,
+   "players": [
+    {
+     "name": "Roman Safiullin",
+     "winner": false,
+     "sets": [
+      "2",
+      "6",
+      "4"
+     ],
+     "order": 2
+    },
+    {
+     "name": "Andrey Rublev",
+     "winner": true,
+     "sets": [
+      "6",
+      "3",
+      "6"
+     ],
+     "order": 1
+    }
+   ],
+   "ours": [
+    "rublev"
+   ]
+  },
+  {
+   "league": "wta",
+   "event": "China Open",
+   "date": "2026-10-03T05:45Z",
+   "round": "Round 2",
+   "state": "post",
+   "detail": "Final",
+   "completed": true,
+   "players": [
+    {
+     "name": "Roman Safiullin",
+     "winner": false,
+     "sets": [
+      "2",
+      "6",
+      "4"
+     ],
+     "order": 2
+    },
+    {
+     "name": "Andrey Rublev",
+     "winner": true,
+     "sets": [
+      "6",
+      "3",
+      "6"
+     ],
+     "order": 1
+    }
+   ],
+   "ours": [
+    "rublev"
+   ]
+  },
+  {
+   "league": "atp",
+   "event": "China Open",
+   "date": "2026-10-03T06:20Z",
+   "round": "Round 2",
+   "state": "post",
+   "detail": "Final",
+   "completed": true,
+   "players": [
+    {
+     "name": "Elina Svitolina",
+     "winner": true,
+     "sets": [
+      "1",
+      "6",
+      "6"
+     ],
+     "order": 2
+    },
+    {
+     "name": "Katerina Siniakova",
+     "winner": false,
+     "sets": [
+      "6",
+      "4",
+      "2"
+     ],
+     "order": 1
+    }
+   ],
+   "ours": [
+    "svitolina"
+   ]
+  },
+  {
+   "league": "wta",
+   "event": "China Open",
+   "date": "2026-10-03T06:20Z",
+   "round": "Round 2",
+   "state": "post",
+   "detail": "Final",
+   "completed": true,
+   "players": [
+    {
+     "name": "Elina Svitolina",
+     "winner": true,
+     "sets": [
+      "1",
+      "6",
+      "6"
+     ],
+     "order": 2
+    },
+    {
+     "name": "Katerina Siniakova",
+     "winner": false,
+     "sets": [
+      "6",
+      "4",
+      "2"
+     ],
+     "order": 1
+    }
+   ],
+   "ours": [
+    "svitolina"
+   ]
+  },
+  {
+   "league": "atp",
+   "event": "China Open",
+   "date": "2026-10-04T07:05Z",
+   "round": "Quarterfinal",
+   "state": "post",
+   "detail": "Final",
+   "completed": true,
+   "players": [
+    {
+     "name": "Andrey Rublev",
+     "winner": false,
+     "sets": [
+      "6",
+      "2",
+      "3"
+     ],
+     "order": 2
+    },
+    {
+     "name": "Alex de Minaur",
+     "winner": true,
+     "sets": [
+      "1",
+      "6",
+      "6"
+     ],
+     "order": 1
+    }
+   ],
+   "ours": [
+    "rublev",
+    "deminaur"
+   ]
+  },
+  {
+   "league": "wta",
+   "event": "China Open",
+   "date": "2026-10-04T07:05Z",
+   "round": "Quarterfinal",
+   "state": "post",
+   "detail": "Final",
+   "completed": true,
+   "players": [
+    {
+     "name": "Andrey Rublev",
+     "winner": false,
+     "sets": [
+      "6",
+      "2",
+      "3"
+     ],
+     "order": 2
+    },
+    {
+     "name": "Alex de Minaur",
+     "winner": true,
+     "sets": [
+      "1",
+      "6",
+      "6"
+     ],
+     "order": 1
+    }
+   ],
+   "ours": [
+    "rublev",
+    "deminaur"
+   ]
+  },
+  {
+   "league": "atp",
+   "event": "China Open",
+   "date": "2026-10-04T11:05Z",
+   "round": "Round 3",
+   "state": "post",
+   "detail": "Final",
+   "completed": true,
+   "players": [
+    {
+     "name": "Naomi Osaka",
+     "winner": true,
+     "sets": [
+      "7(7)",
+      "6"
+     ],
+     "order": 2
+    },
+    {
+     "name": "Sara Bejlek",
+     "winner": false,
+     "sets": [
+      "6(4)",
+      "4"
+     ],
+     "order": 1
+    }
+   ],
+   "ours": [
+    "bejlek"
+   ]
+  },
+  {
+   "league": "wta",
+   "event": "China Open",
+   "date": "2026-10-04T11:05Z",
+   "round": "Round 3",
+   "state": "post",
+   "detail": "Final",
+   "completed": true,
+   "players": [
+    {
+     "name": "Naomi Osaka",
+     "winner": true,
+     "sets": [
+      "7(7)",
+      "6"
+     ],
+     "order": 2
+    },
+    {
+     "name": "Sara Bejlek",
+     "winner": false,
+     "sets": [
+      "6(4)",
+      "4"
+     ],
+     "order": 1
+    }
+   ],
+   "ours": [
+    "bejlek"
+   ]
+  },
+  {
+   "league": "atp",
+   "event": "China Open",
+   "date": "2026-10-05T09:05Z",
+   "round": "Round 3",
+   "state": "post",
+   "detail": "Final",
+   "completed": true,
+   "players": [
+    {
+     "name": "Elina Svitolina",
+     "winner": true,
+     "sets": [
+      "6",
+      "7"
+     ],
+     "order": 2
+    },
+    {
+     "name": "Maria Sakkari",
+     "winner": false,
+     "sets": [
+      "4",
+      "5"
+     ],
+     "order": 1
+    }
+   ],
+   "ours": [
+    "svitolina"
+   ]
+  },
+  {
+   "league": "wta",
+   "event": "China Open",
+   "date": "2026-10-05T09:05Z",
+   "round": "Round 3",
+   "state": "post",
+   "detail": "Final",
+   "completed": true,
+   "players": [
+    {
+     "name": "Elina Svitolina",
+     "winner": true,
+     "sets": [
+      "6",
+      "7"
+     ],
+     "order": 2
+    },
+    {
+     "name": "Maria Sakkari",
+     "winner": false,
+     "sets": [
+      "4",
+      "5"
+     ],
+     "order": 1
+    }
+   ],
+   "ours": [
+    "svitolina"
+   ]
+  },
+  {
+   "league": "atp",
+   "event": "China Open",
+   "date": "2026-10-05T09:25Z",
+   "round": "Semifinal",
+   "state": "post",
+   "detail": "Retired",
+   "completed": true,
+   "players": [
+    {
+     "name": "Hubert Hurkacz",
+     "winner": false,
+     "sets": [
+      "4",
+      "2"
+     ],
+     "order": 2
+    },
+    {
+     "name": "Alex de Minaur",
+     "winner": true,
+     "sets": [
+      "6",
+      "3"
+     ],
+     "order": 1
+    }
+   ],
+   "ours": [
+    "deminaur"
+   ]
+  },
+  {
+   "league": "wta",
+   "event": "China Open",
+   "date": "2026-10-05T09:25Z",
+   "round": "Semifinal",
+   "state": "post",
+   "detail": "Retired",
+   "completed": true,
+   "players": [
+    {
+     "name": "Hubert Hurkacz",
+     "winner": false,
+     "sets": [
+      "4",
+      "2"
+     ],
+     "order": 2
+    },
+    {
+     "name": "Alex de Minaur",
+     "winner": true,
+     "sets": [
+      "6",
+      "3"
+     ],
+     "order": 1
+    }
+   ],
+   "ours": [
+    "deminaur"
+   ]
+  },
+  {
+   "league": "wta",
+   "event": "Suzhou Open",
+   "date": "2026-10-06T02:10Z",
+   "round": "Round 1",
+   "state": "post",
+   "detail": "Retired",
+   "completed": true,
+   "players": [
+    {
+     "name": "Linda Fruhvirtova",
+     "winner": true,
+     "sets": [
+      "6",
+      "2"
+     ],
+     "order": 2
+    },
+    {
+     "name": "Mananchaya Sawangkaew",
+     "winner": false,
+     "sets": [
+      "2",
+      "0"
+     ],
+     "order": 1
+    }
+   ],
+   "ours": [
+    "sawangkaew"
+   ]
+  },
+  {
+   "league": "wta",
+   "event": "Samsun Open",
+   "date": "2026-10-06T07:00Z",
+   "round": "Round 1",
+   "state": "pre",
+   "detail": "Tue, October 6th at 3:00 AM EDT",
+   "completed": false,
+   "players": [
+    {
+     "name": "Alicia Dudeney",
+     "winner": null,
+     "sets": [],
+     "order": 2
+    },
+    {
+     "name": "Antonia Ruzic",
+     "winner": null,
+     "sets": [],
+     "order": 1
+    }
+   ],
+   "ours": [
+    "dudeney"
+   ]
+  },
+  {
+   "league": "atp",
+   "event": "China Open",
+   "date": "2026-10-06T11:00Z",
+   "round": "Final",
+   "state": "pre",
+   "detail": "Tue, October 6th at 7:00 AM EDT",
+   "completed": false,
+   "players": [
+    {
+     "name": "Alex de Minaur",
+     "winner": null,
+     "sets": [],
+     "order": 2
+    },
+    {
+     "name": "Novak Djokovic",
+     "winner": null,
+     "sets": [],
+     "order": 1
+    }
+   ],
+   "ours": [
+    "deminaur"
+   ]
+  },
+  {
+   "league": "wta",
+   "event": "China Open",
+   "date": "2026-10-06T11:00Z",
+   "round": "Final",
+   "state": "pre",
+   "detail": "Tue, October 6th at 7:00 AM EDT",
+   "completed": false,
+   "players": [
+    {
+     "name": "Alex de Minaur",
+     "winner": null,
+     "sets": [],
+     "order": 2
+    },
+    {
+     "name": "Novak Djokovic",
+     "winner": null,
+     "sets": [],
+     "order": 1
+    }
+   ],
+   "ours": [
+    "deminaur"
+   ]
+  },
+  {
+   "league": "atp",
+   "event": "China Open",
+   "date": "2026-10-07T04:00Z",
+   "round": "Round 4",
+   "state": "pre",
+   "detail": "M/d - 'TBD'",
+   "completed": false,
+   "players": [
+    {
+     "name": "Elina Svitolina",
+     "winner": null,
+     "sets": [],
+     "order": 2
+    },
+    {
+     "name": "Ann Li",
+     "winner": null,
+     "sets": [],
+     "order": 1
+    }
+   ],
+   "ours": [
+    "svitolina"
+   ]
+  },
+  {
+   "league": "atp",
+   "event": "Rolex Shanghai Masters",
+   "date": "2026-10-07T04:00Z",
+   "round": "Round 1",
+   "state": "pre",
+   "detail": "M/d - 'TBD'",
+   "completed": false,
+   "players": [
+    {
+     "name": "Daniel Altmaier",
+     "winner": null,
+     "sets": [],
+     "order": 2
+    },
+    {
+     "name": "Holger Rune",
+     "winner": null,
+     "sets": [],
+     "order": 1
+    }
+   ],
+   "ours": [
+    "altmaier"
+   ]
+  },
+  {
+   "league": "wta",
+   "event": "China Open",
+   "date": "2026-10-07T04:00Z",
+   "round": "Round 4",
+   "state": "pre",
+   "detail": "M/d - 'TBD'",
+   "completed": false,
+   "players": [
+    {
+     "name": "Elina Svitolina",
+     "winner": null,
+     "sets": [],
+     "order": 2
+    },
+    {
+     "name": "Ann Li",
+     "winner": null,
+     "sets": [],
+     "order": 1
+    }
+   ],
+   "ours": [
+    "svitolina"
+   ]
+  },
+  {
+   "league": "atp",
+   "event": "Rolex Shanghai Masters",
+   "date": "2026-10-09T04:00Z",
+   "round": "Round 2",
+   "state": "pre",
+   "detail": "M/d - 'TBD'",
+   "completed": false,
+   "players": [
+    {
+     "name": "TBD",
+     "winner": null,
+     "sets": [],
+     "order": 2
+    },
+    {
+     "name": "Ignacio Buse",
+     "winner": null,
+     "sets": [],
+     "order": 1
+    }
+   ],
+   "ours": [
+    "buse"
+   ]
+  },
+  {
+   "league": "atp",
+   "event": "Rolex Shanghai Masters",
+   "date": "2026-10-09T04:00Z",
+   "round": "Round 2",
+   "state": "pre",
+   "detail": "M/d - 'TBD'",
+   "completed": false,
+   "players": [
+    {
+     "name": "Andrey Rublev",
+     "winner": null,
+     "sets": [],
+     "order": 2
+    },
+    {
+     "name": "TBD",
+     "winner": null,
+     "sets": [],
+     "order": 1
+    }
+   ],
+   "ours": [
+    "rublev"
+   ]
+  },
+  {
+   "league": "atp",
+   "event": "Rolex Shanghai Masters",
+   "date": "2026-10-09T04:00Z",
+   "round": "Round 2",
+   "state": "pre",
+   "detail": "M/d - 'TBD'",
+   "completed": false,
+   "players": [
+    {
+     "name": "TBD",
+     "winner": null,
+     "sets": [],
+     "order": 2
+    },
+    {
+     "name": "Alex de Minaur",
+     "winner": null,
+     "sets": [],
+     "order": 1
+    }
+   ],
+   "ours": [
+    "deminaur"
+   ]
+  }
+ ],
+ "compare": [
+  {
+   "date": "2026-10-03",
+   "event": "Beijing",
+   "cat": "ATP 500",
+   "match": "A. de Minaur v Q. Halys",
+   "ours": "3-6, 7-6(5), 7-5",
+   "oursStatus": "finished",
+   "espn": "3-6, 7(7)-6(5), 7-5",
+   "espnWinner": "Alex de Minaur",
+   "espnState": "post",
+   "espnDetail": "Final",
+   "espnRound": "Round 2"
+  },
+  {
+   "date": "2026-10-03",
+   "event": "Beijing",
+   "cat": "ATP 500",
+   "match": "A. Rublev v R. Safiullin",
+   "ours": "6-2, 3-6, 6-4",
+   "oursStatus": "finished",
+   "espn": "6-2, 3-6, 6-4",
+   "espnWinner": "Andrey Rublev",
+   "espnState": "post",
+   "espnDetail": "Final",
+   "espnRound": "Round 2"
+  },
+  {
+   "date": "2026-10-03",
+   "event": "Beijing",
+   "cat": "WTA 1000",
+   "match": "E. Svitolina v K. Siniakova",
+   "ours": "1-6, 6-4, 6-2",
+   "oursStatus": "finished",
+   "espn": "1-6, 6-4, 6-2",
+   "espnWinner": "Elina Svitolina",
+   "espnState": "post",
+   "espnDetail": "Final",
+   "espnRound": "Round 2"
+  },
+  {
+   "date": "2026-10-02",
+   "event": "Beijing",
+   "cat": "WTA 1000",
+   "match": "S. Bejlek v M. Inglis",
+   "ours": "6-3, 7-5",
+   "oursStatus": "finished",
+   "espn": "6-3, 7-5",
+   "espnWinner": "Sara Bejlek",
+   "espnState": "post",
+   "espnDetail": "Final",
+   "espnRound": "Round 2"
+  },
+  {
+   "date": "2026-10-01",
+   "event": "Beijing",
+   "cat": "ATP 500",
+   "match": "A. de Minaur v M. Navone",
+   "ours": "7-6(4), 6-2",
+   "oursStatus": "finished",
+   "espn": "7(7)-6(4), 6-2",
+   "espnWinner": "Alex de Minaur",
+   "espnState": "post",
+   "espnDetail": "Final",
+   "espnRound": "Round 1"
+  },
+  {
+   "date": "2026-10-01",
+   "event": "Beijing",
+   "cat": "ATP 500",
+   "match": "A. Rublev v T. Griekspoor",
+   "ours": "6-4, 5-7, 7-6(6)",
+   "oursStatus": "finished",
+   "espn": "6-4, 5-7, 7(8)-6(6)",
+   "espnWinner": "Andrey Rublev",
+   "espnState": "post",
+   "espnDetail": "Final",
+   "espnRound": "Round 1"
+  },
+  {
+   "date": "2026-10-01",
+   "event": "Beijing",
+   "cat": "ATP 500",
+   "match": "Q. Halys v I. Buse",
+   "ours": "6-1, 7-6(3)",
+   "oursStatus": "finished",
+   "espn": "6-1, 7(7)-6(3)",
+   "espnWinner": "Quentin Halys",
+   "espnState": "post",
+   "espnDetail": "Final",
+   "espnRound": "Round 1"
+  },
+  {
+   "date": "2026-10-01",
+   "event": "Beijing",
+   "cat": "WTA 1000",
+   "match": "P. Badosa v D. Kasatkina",
+   "ours": "4-6, 7-6(7), 6-4",
+   "oursStatus": "finished",
+   "espn": "4-6, 7(9)-6(7), 6-4",
+   "espnWinner": "Paula Badosa",
+   "espnState": "post",
+   "espnDetail": "Final",
+   "espnRound": "Round 1"
+  },
+  {
+   "date": "2026-10-01",
+   "event": "Beijing",
+   "cat": "WTA 1000",
+   "match": "A. Charaeva v Y. Starodubtseva",
+   "ours": "5-7, 7-5, 6-2",
+   "oursStatus": "finished",
+   "espn": "5-7, 7-5, 6-2",
+   "espnWinner": "Alina Charaeva",
+   "espnState": "post",
+   "espnDetail": "Final",
+   "espnRound": "Round 1"
+  },
+  {
+   "date": "2026-10-01",
+   "event": "Beijing",
+   "cat": "WTA 1000",
+   "match": "S. Hunter v Y. J. Lin",
+   "ours": "6-2, 6-1",
+   "oursStatus": "finished",
+   "espn": "6-2, 6-1",
+   "espnWinner": "Storm Hunter",
+   "espnState": "post",
+   "espnDetail": "Final",
+   "espnRound": "Round 1"
+  },
+  {
+   "date": "2026-10-05",
+   "event": "Beijing",
+   "cat": "WTA 1000",
+   "match": "E. Svitolina v M. Sakkari",
+   "ours": "6-4, 4-5",
+   "oursStatus": "live",
+   "espn": "6-4, 7-5",
+   "espnWinner": "Elina Svitolina",
+   "espnState": "post",
+   "espnDetail": "Final",
+   "espnRound": "Round 3"
+  },
+  {
+   "date": "2026-10-05",
+   "event": "Beijing",
+   "cat": "ATP 500",
+   "match": "H. Hurkacz v A. De Minaur",
+   "ours": "4-6, 1-3",
+   "oursStatus": "live",
+   "espn": "6-4, 3-2",
+   "espnWinner": "Alex de Minaur",
+   "espnState": "post",
+   "espnDetail": "Retired",
+   "espnRound": "Semifinal"
+  },
+  {
+   "date": "2026-10-04",
+   "event": "Beijing",
+   "cat": "ATP 500",
+   "match": "A. De Minaur v A. Rublev",
+   "ours": "1-6, 6-2, 6-3",
+   "oursStatus": "finished",
+   "espn": "1-6, 6-2, 6-3",
+   "espnWinner": "Alex de Minaur",
+   "espnState": "post",
+   "espnDetail": "Final",
+   "espnRound": "Quarterfinal"
+  },
+  {
+   "date": "2026-10-04",
+   "event": "Beijing",
+   "cat": "WTA 1000",
+   "match": "N. Osaka v S. Bejlek",
+   "ours": "7-6, 6-4",
+   "oursStatus": "finished",
+   "espn": "7(7)-6(4), 6-4",
+   "espnWinner": "Naomi Osaka",
+   "espnState": "post",
+   "espnDetail": "Final",
+   "espnRound": "Round 3"
+  }
+ ],
+ "notes": []
+}
