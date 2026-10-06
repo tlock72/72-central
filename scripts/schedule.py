@@ -341,6 +341,14 @@ def te_list_page(page, mine):
     return found, n
 
 
+def te_pick(TE, url, page, field, value):
+    """Another age group on the list page: the same form a visitor sends by picking it in the "Select event" box."""
+    form = {k: html.unescape(v) for k, v in re.findall(r'<input[^>]*type="hidden"[^>]*name="([^"]*)"[^>]*value="([^"]*)"', page)}
+    form.update({"__EVENTTARGET": "ClientFunctionHandler", "__EVENTARGUMENT": "selectevent_IndexChanged", field: value})
+    return get(url, "te", data=urllib.parse.urlencode(form).encode(), opener=TE.opener,
+               headers={"Content-Type": "application/x-www-form-urlencoded"})
+
+
 def te_lists(TE, events, profiles, prev_e72):
     """72 juniors on each Tennis Europe entry / acceptance list (published a few weeks before the event,
     one page per age group, e.g. BS14 / GS14). An event whose lists couldn't all be read keeps yesterday's entries."""
@@ -352,13 +360,13 @@ def te_lists(TE, events, profiles, prev_e72):
         url = f"{TE_SITE}/sport/acceptancelist.aspx?id={e['teId']}"
         try:
             first = get(url, "te", opener=TE.opener)
-            sel = re.search(r"<select[^>]*selectevent.*?</select>", first, re.S)
+            sel = re.search(r'<select[^>]*name="([^"]*selectevent)".*?</select>', first, re.S)
             groups = re.findall(r'<option[^>]*value="(\d+)"[^>]*>([^<]+)</option>', sel.group(0)) if sel else []
             if not groups:
                 raise RuntimeError("no age groups on the list page")
             found, n = [], 0
             for i, (val, code) in enumerate(groups):
-                page = first if i == 0 else get(f"{url}&event={val}", "te", opener=TE.opener)
+                page = first if i == 0 else te_pick(TE, url, first, sel.group(1), val)
                 if "is not yet available" in page:
                     continue  # this list isn't public yet
                 h3 = re.search(r"<h3>\s*(\S+)\s+(?:Acceptance|Entry) list", page)
