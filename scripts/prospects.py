@@ -546,6 +546,10 @@ def main():
         if players[k].get("src") == "site" and "sheet" in errs and key_of(players[k].get("name")) not in data["removed"]:
             continue  # the Sheet couldn't be read this time: keep the names added on the site
         del players[k]  # taken off the list
+    for k, rec in players.items():
+        # capitals tidied straight away for everyone (not only at their next refresh), unless the ITF spelling is shown
+        if k in plist and not ((rec.get("links") or {}).get("itf") or {}).get("name") and key_of(rec.get("name")) == key_of(plist[k]["name"]):
+            rec["name"] = plist[k]["name"]
     scout = load("scouting.json", {})
     checks = []
     blocked = {s: ago(data.get("blocked", {}).get(s)) < timedelta(hours=3) for s in ("itf", "te")}
