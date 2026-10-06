@@ -124,6 +124,7 @@ def gaps():
              "atp-entries": "the ATP and Challenger entries (live-tennis.eu, Tick Tock Tennis and Spazio Tennis all failed)",
              "atp-entries-livetennis": "live-tennis.eu (one of three ATP entry sources; entries the other two list still show)",
              "atp-entries-ticktock": "Tick Tock Tennis (one of three ATP entry sources; entries the other two list still show)",
+             "espn-draws": "ESPN's published ATP/WTA draws (entry lists from the other sites still show)",
              "atp-entries-spazio": "Spazio Tennis (one of three ATP entry sources; entries the other two list still show)"}
     for k, e in (sc.get("errors") or {}).items():
         if ukday(e.get("at")) == TODAY:
