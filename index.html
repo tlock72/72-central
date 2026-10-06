@@ -618,6 +618,8 @@ nav .sh,.nm-s{display:none}
 @media (max-width:760px) and (min-width:641px){.bar{gap:20px}.brand img{height:32px}nav a{padding:10px 6px}}
 .p-find{display:block;width:100%;max-width:360px;margin:0 0 18px;padding:10px 16px;border-radius:999px;border:1px solid var(--line);background:var(--navy-2);color:var(--white);font:inherit;font-size:14px;outline:none}
 .p-find:focus{border-color:var(--gold)}
+/* example text in the Find a player and Add a prospect boxes clears as soon as you click in */
+.p-find:focus::placeholder,#cnForm .sq-in:focus::placeholder{color:transparent}
 @media (max-width:640px){
   header .bar{flex-direction:row;align-items:center;gap:10px;padding-block:10px}
   .brand{flex:none}
