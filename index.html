@@ -123,6 +123,10 @@ section.block{margin-bottom:38px}
 .rstats b{font-weight:600;color:var(--text)}
 /* in progress but play stopped (rain, light...): amber edge and tag, pulse paused */
 .match.delayed{border-color:rgba(240,190,90,.75)}
+/* in progress: red text and red pulsing dot */
+.when.live{color:#F0605D}
+.when.live .pulse{background:#F0605D;animation-name:pulseRed}
+@keyframes pulseRed{0%{box-shadow:0 0 0 0 rgba(240,96,93,.6)}70%{box-shadow:0 0 0 8px rgba(240,96,93,0)}100%{box-shadow:0 0 0 0 rgba(240,96,93,0)}}
 .when.delayed{color:#F0BE5A}
 .when.delayed .pulse{background:#F0BE5A;animation:none}
 .dtag{display:inline-block;margin-left:6px;padding:1px 6px;border:1px solid rgba(240,190,90,.6);border-radius:4px;font-size:10px;letter-spacing:.1em}
@@ -1020,7 +1024,7 @@ function card(m){
   const wl = fin && m.winner && ours(m.p1Id) !== ours(m.p2Id) ? (ours(m.winner === 1 ? m.p1Id : m.p2Id) ? "win72" : "loss72") : "";
   const delayed = live && !!m.delay;
   const when = delayed ? `<span class="when delayed"><span class="pulse"></span>In progress<span class="dtag">Delayed</span></span>`
-    : live ? `<span class="when today"><span class="pulse"></span>In progress</span>`
+    : live ? `<span class="when live"><span class="pulse"></span>In progress</span>`
     : fin ? `<span class="when fin"><span class="rtag">${wl === "win72" ? "72 win" : wl === "loss72" ? "72 loss" : "Result"}</span>${esc(dayLabel(m.date))}</span>`
     : pending ? `<span class="when fin">${esc(dayLabel(m.date))} · result pending</span>`
     : `<span class="when ${today ? "today" : ""}">${esc(dayLabel(m.date))}</span>`;
