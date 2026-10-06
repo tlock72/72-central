@@ -89,6 +89,7 @@ section.block{margin-bottom:38px}
 .when.fin{color:var(--muted)}
 .times{display:flex;flex-wrap:wrap;align-items:baseline;gap:6px 14px;padding:10px 16px 0;font-size:11px;color:var(--muted);text-transform:uppercase;letter-spacing:.1em}
 .times b{font-family:var(--display);font-weight:500;font-size:15px;color:var(--gold-2);letter-spacing:.06em;text-transform:none}
+.times b i{font-family:var(--body);font-style:normal;font-size:10px;letter-spacing:.06em;text-transform:uppercase;margin-left:5px;opacity:.7}
 .times small.asof{flex-basis:100%;font-size:10px;letter-spacing:.02em;text-transform:none;opacity:.8}
 .m-body{padding:6px 0;flex:1}
 .row{display:grid;grid-template-columns:1fr auto;align-items:center;gap:10px;padding:9px 16px}
@@ -669,6 +670,7 @@ nav .sh,.nm-s{display:none}
   .times > span{display:none}
   .times b{font-size:10px}
   .times small.asof{font-size:8px}
+  .times b i{font-size:7px;margin-left:3px}
   .m-body{padding:2px 0}
   .row{gap:3px;padding:3px 6px}
   .pname{font-size:10.5px;gap:3px}
@@ -1037,14 +1039,14 @@ main.ptr-go,footer.ptr-go{transition:transform .35s cubic-bezier(.2,.8,.3,1)}
       <div>
         <div class="eyebrow">SeventyTwo Sports Group</div>
         <h1><span class="n">72</span> Competition Zone</h1>
-        <p class="sub">Every match on the 72 roster's schedule. Start times are approximate and shown in UK and Spain time. Tap <b>Check live score</b> to follow any match on SofaScore.</p>
+        <p class="sub">Every match on the 72 roster's schedule. Start times are approximate and shown in your own time, then the local time where the event is played. Tap <b>Check live score</b> to follow any match on SofaScore.</p>
       </div>
       <div class="checked"><span>Schedule last checked</span><b id="checked">Loading…</b></div>
     </div>
 
     <section class="block">
       <div class="sec-h"><h2>Today's matches<span id="todayLbl" class="dt"></span></h2><span class="count" id="cToday">0</span><span class="rule"></span></div>
-      <p class="sec-d">Every 72 match scheduled for today (UK date): in progress first, then the next to start, then finished results, biggest tournaments first (green edge for a 72 win, red for a 72 loss). Matches show <b>In progress</b> once they start and the final score once they finish. ATP and WTA tour matches (and WTA 125s) update live from ESPN every minute while this page is open; Challengers and ITF are checked about every hour. ITF junior and Tennis Europe matches have no live scoring, so their results appear after the next check. For point-by-point scores, check SofaScore.</p>
+      <p class="sec-d">Every 72 match scheduled for today (your own date): in progress first, then the next to start, then finished results, biggest tournaments first (green edge for a 72 win, red for a 72 loss). Matches show <b>In progress</b> once they start and the final score once they finish. ATP and WTA tour matches (and WTA 125s) update live from ESPN every minute while this page is open; Challengers and ITF are checked about every hour. ITF junior and Tennis Europe matches have no live scoring, so their results appear after the next check. For point-by-point scores, check SofaScore.</p>
       <div class="live-note" id="liveNote" hidden></div>
       <div class="grid" id="gToday"></div>
     </section>
@@ -1203,7 +1205,7 @@ main.ptr-go,footer.ptr-go{transition:transform .35s cubic-bezier(.2,.8,.3,1)}
   <dialog class="prof" id="prof" aria-label="Player profile"></dialog>
 </main>
 
-<footer><div class="wrap"><span>Times shown in UK and Spain time</span></div></footer>
+<footer><div class="wrap"><span>Times shown in your device's time, with match times also in the event's local time</span></div></footer>
 
 <script>
 const ROSTER = [
@@ -1262,8 +1264,17 @@ let STATE = null; // { lastChecked, rankingsAsOf, rankingsSource, rankings:{id:{
 
 /* ---------- dates in UK time ---------- */
 const ukDate = (d = new Date()) => new Intl.DateTimeFormat("en-CA", { timeZone: "Europe/London", year:"numeric", month:"2-digit", day:"2-digit" }).format(d);
+// the viewer's own date (device time zone): "Today", "Tomorrow" and "this week" follow it
+const myDate = (d = new Date()) => new Intl.DateTimeFormat("en-CA", { year:"numeric", month:"2-digit", day:"2-digit" }).format(d);
+// the day a match falls on for the viewer: from its UK start time, or with no time yet, its UK date moved by however
+// many days the viewer is ahead of or behind the UK right now (UK "today" = the viewer's "today")
+function md(m){
+  if (m.time) return myDate(ukMoment(m.date, m.time));
+  const off = Math.round((new Date(myDate() + "T12:00:00Z") - new Date(ukDate() + "T12:00:00Z")) / 864e5);
+  return off ? new Date(new Date(m.date + "T12:00:00Z").getTime() + off * 864e5).toISOString().slice(0, 10) : m.date;
+}
 function dayLabel(iso){
-  const today = ukDate();
+  const today = myDate();
   const t = new Date(today + "T12:00:00Z"), d = new Date(iso + "T12:00:00Z");
   const diff = Math.round((d - t) / 864e5);
   if (diff === 0) return "Today";
@@ -1325,22 +1336,160 @@ function scoreCells(score, side, live){
     return { mine, theirs, tb };
   }).filter(Boolean).map((x, i, arr) => `<span class="set ${(live ? (i < arr.length - 1 && x.mine > x.theirs) || (i === arr.length - 1) : x.mine > x.theirs) ? "w" : ""}">${x.mine}${x.tb}</span>`).join("");
 }
-// UK local date + time -> the same moment in Spain (Europe/Madrid)
-// "Time info as of 14:05 UK" under an approx. start: when the feed last confirmed the time (day added if not today)
-function asOf(iso){
-  const d = iso ? new Date(iso) : null;
-  if (!d || isNaN(d)) return "";
-  const t = d.toLocaleTimeString("en-GB", { timeZone:"Europe/London", hour:"2-digit", minute:"2-digit", hourCycle:"h23" });
-  const day = ukDate(d) === ukDate() ? "" : d.toLocaleDateString("en-GB", { timeZone:"Europe/London", day:"numeric", month:"short" }) + " ";
-  return `<small class="asof">Time info as of ${esc(day + t)} UK</small>`;
+/* ---------- times: the viewer's own device time, then the local time where the event is played ----------
+   Match times arrive as a UK date + "HH:MM" (UK). The event's place comes from the Tour Schedule (schedule.json, by city and
+   date) or from the tournament name itself ("Villena, Spain", "W35 Lagos (Portugal)", "M15 Ann Arbor, MI").
+   If the event's time zone can't be worked out for sure, UK time is shown instead - never a guess. */
+const tzFold = t => String(t || "").normalize("NFD").replace(/[̀-ͯ]/g, "").toLowerCase().replace(/[^a-z0-9]+/g, " ").trim();
+// nation (3-letter code or any name the sources use) -> its time zone; "*" = several zones, so the city decides (TZ_CITY)
+const TZ_NAT = {};
+("AFG Afghanistan=Asia/Kabul|ALB Albania=Europe/Tirane|ALG Algeria=Africa/Algiers|AND Andorra=Europe/Andorra|ANG Angola=Africa/Luanda|AIA Anguilla=America/Anguilla"
++ "|ARG Argentina=America/Argentina/Buenos_Aires|ARM Armenia=Asia/Yerevan|ARU Aruba=America/Aruba|AUS Australia=*|AUT Austria=Europe/Vienna|AZE Azerbaijan=Asia/Baku"
++ "|BAH Bahamas=America/Nassau|BRN Bahrain=Asia/Bahrain|BAN Bangladesh=Asia/Dhaka|BAR Barbados=America/Barbados|BLR Belarus=Europe/Minsk|BEL Belgium=Europe/Brussels"
++ "|BEN Benin=Africa/Porto-Novo|BER Bermuda=Atlantic/Bermuda|BOL Bolivia=America/La_Paz|BIH Bosnia and Herzegovina,Bosnia=Europe/Sarajevo|BOT Botswana=Africa/Gaborone"
++ "|BRA Brazil=*|BUL Bulgaria=Europe/Sofia|BUR Burkina Faso=Africa/Ouagadougou|BDI Burundi=Africa/Bujumbura|CAM Cambodia=Asia/Phnom_Penh|CMR Cameroon=Africa/Douala"
++ "|CAN Canada=*|CHI Chile=America/Santiago|CHN China,China P.R.,China PR,P.R. China=Asia/Shanghai|TPE Chinese Taipei,Taiwan=Asia/Taipei|COL Colombia=America/Bogota"
++ "|CRC Costa Rica=America/Costa_Rica|CIV Cote d'Ivoire,Ivory Coast=Africa/Abidjan|CRO Croatia=Europe/Zagreb|CUB Cuba=America/Havana|CYP Cyprus=Asia/Nicosia"
++ "|CZE Czechia,Czech Republic=Europe/Prague|DEN Denmark=Europe/Copenhagen|DJI Djibouti=Africa/Djibouti|DOM Dominican Republic=America/Santo_Domingo|ECU Ecuador=America/Guayaquil"
++ "|EGY Egypt=Africa/Cairo|ESA El Salvador=America/El_Salvador|EST Estonia=Europe/Tallinn|ETH Ethiopia=Africa/Addis_Ababa|FIJ Fiji=Pacific/Fiji|FIN Finland=Europe/Helsinki"
++ "|FRA France=Europe/Paris|GAB Gabon=Africa/Libreville|GEO Georgia=Asia/Tbilisi|GER Germany=Europe/Berlin|GHA Ghana=Africa/Accra|GBR Great Britain,United Kingdom,UK,England,Scotland,Wales=Europe/London"
++ "|GRE Greece=Europe/Athens|GUA Guatemala=America/Guatemala|HAI Haiti=America/Port-au-Prince|HON Honduras=America/Tegucigalpa|HKG Hong Kong,Hong Kong China=Asia/Hong_Kong"
++ "|HUN Hungary=Europe/Budapest|ISL Iceland=Atlantic/Reykjavik|IND India=Asia/Kolkata|INA Indonesia=*|IRI Iran=Asia/Tehran|IRQ Iraq=Asia/Baghdad|IRL Ireland=Europe/Dublin"
++ "|ISR Israel=Asia/Jerusalem|ITA Italy=Europe/Rome|JAM Jamaica=America/Jamaica|JPN Japan=Asia/Tokyo|JOR Jordan=Asia/Amman|KAZ Kazakhstan=Asia/Aqtobe|KEN Kenya=Africa/Nairobi"
++ "|KOR South Korea,Korea,Korea Rep.,Korea Republic,Korea South=Asia/Seoul|KOS Kosovo=Europe/Belgrade|KUW Kuwait=Asia/Kuwait|KGZ Kyrgyzstan=Asia/Bishkek|LAT Latvia=Europe/Riga"
++ "|LIB Lebanon=Asia/Beirut|LBA Libya=Africa/Tripoli|LIE Liechtenstein=Europe/Vaduz|LTU Lithuania=Europe/Vilnius|LUX Luxembourg=Europe/Luxembourg|MAC Macau,Macao=Asia/Macau"
++ "|MAD Madagascar=Indian/Antananarivo|MAS Malaysia=Asia/Kuala_Lumpur|MLT Malta=Europe/Malta|MRI Mauritius=Indian/Mauritius|MEX Mexico=*|MDA Moldova=Europe/Chisinau"
++ "|MON Monaco=Europe/Monaco|MGL Mongolia=Asia/Ulaanbaatar|MNE Montenegro=Europe/Podgorica|MAR Morocco=Africa/Casablanca|MOZ Mozambique=Africa/Maputo|NAM Namibia=Africa/Windhoek"
++ "|NEP Nepal=Asia/Kathmandu|NED Netherlands=Europe/Amsterdam|NZL New Zealand=Pacific/Auckland|NCA Nicaragua=America/Managua|NGR Nigeria=Africa/Lagos|MKD North Macedonia=Europe/Skopje"
++ "|NOR Norway=Europe/Oslo|OMA Oman=Asia/Muscat|PAK Pakistan=Asia/Karachi|PAN Panama=America/Panama|PAR Paraguay=America/Asuncion|PER Peru=America/Lima|PHI Philippines=Asia/Manila"
++ "|POL Poland=Europe/Warsaw|POR Portugal=*|PUR Puerto Rico=America/Puerto_Rico|QAT Qatar=Asia/Qatar|REU Reunion=Indian/Reunion|ROU Romania=Europe/Bucharest|RUS Russia=*"
++ "|RWA Rwanda=Africa/Kigali|SMR San Marino=Europe/San_Marino|KSA Saudi Arabia=Asia/Riyadh|SEN Senegal=Africa/Dakar|SRB Serbia=Europe/Belgrade|SGP Singapore=Asia/Singapore"
++ "|SVK Slovakia=Europe/Bratislava|SLO Slovenia=Europe/Ljubljana|RSA South Africa=Africa/Johannesburg|ESP Spain=*|SRI Sri Lanka=Asia/Colombo|SUD Sudan=Africa/Khartoum"
++ "|SWE Sweden=Europe/Stockholm|SUI Switzerland=Europe/Zurich|SYR Syria=Asia/Damascus|TJK Tajikistan=Asia/Dushanbe|TAN Tanzania=Africa/Dar_es_Salaam|THA Thailand=Asia/Bangkok"
++ "|TOG Togo=Africa/Lome|TTO Trinidad and Tobago=America/Port_of_Spain|TUN Tunisia=Africa/Tunis|TUR Türkiye,Turkiye,Turkey=Europe/Istanbul|TKM Turkmenistan=Asia/Ashgabat|UGA Uganda=Africa/Kampala"
++ "|UKR Ukraine=Europe/Kyiv|UAE United Arab Emirates=Asia/Dubai|USA United States,US,United States of America=*|URU Uruguay=America/Montevideo|UZB Uzbekistan=Asia/Tashkent"
++ "|VEN Venezuela=America/Caracas|VIE Vietnam,Viet Nam=Asia/Ho_Chi_Minh|ZAM Zambia=Africa/Lusaka|ZIM Zimbabwe=Africa/Harare")
+  .split("|").forEach(x => { const [k, tz] = x.split("="), c = k.slice(0, 3), names = k.slice(4).split(",");
+    for (const n of [c, ...names]) TZ_NAT[tzFold(n)] = { c, n: names[0], tz }; });
+// nations with more than one time zone: the city (or US state) decides. "" in a city's spot = the nation's usual zone covers every other city
+// (Spain: all but the Canaries; Portugal: all but the Azores; Brazil: all but the west; Mexico: all but the north-west and Cancun).
+// A city not listed in a nation with no usual zone (USA, Canada, Australia, Russia, Indonesia) shows UK time instead.
+const TZ_CITY = {
+  ESP: { "": "Europe/Madrid", "*Canary Islands": "Atlantic/Canary", "las palmas": 1, "gran canaria": 1, telde: 1, maspalomas: 1, meloneras: 1, tenerife: 1, "santa cruz de tenerife": 1,
+    "la laguna": 1, "puerto de la cruz": 1, arona: 1, adeje: 1, "costa adeje": 1, lanzarote: 1, arrecife: 1, "costa teguise": 1, fuerteventura: 1, corralejo: 1, "puerto del rosario": 1 },
+  POR: { "": "Europe/Lisbon", "*Azores": "Atlantic/Azores", "angra do heroismo": 1, "ponta delgada": 1, horta: 1, azores: 1, acores: 1 },
+  BRA: { "": "America/Sao_Paulo", "*Manaus": "America/Manaus", manaus: 1, "*Cuiaba": "America/Cuiaba", cuiaba: 1, "*Campo Grande": "America/Campo_Grande", "campo grande": 1,
+    "*Porto Velho": "America/Porto_Velho", "porto velho": 1, "*Rio Branco": "America/Rio_Branco", "rio branco": 1, "*Boa Vista": "America/Boa_Vista", "boa vista": 1 },
+  MEX: { "": "America/Mexico_City", "*Cancun": "America/Cancun", cancun: 1, "playa del carmen": 1, "puerto morelos": 1, tulum: 1, chetumal: 1, cozumel: 1,
+    "*Mazatlan": "America/Mazatlan", mazatlan: 1, "los cabos": 1, "cabo san lucas": 1, "san jose del cabo": 1, "la paz": 1, culiacan: 1,
+    "*Hermosillo": "America/Hermosillo", hermosillo: 1, "*Tijuana": "America/Tijuana", tijuana: 1, mexicali: 1, ensenada: 1, "*Ciudad Juarez": "America/Ciudad_Juarez", "ciudad juarez": 1,
+    "*Chihuahua": "America/Chihuahua", chihuahua: 1 },
+  CAN: { "*Eastern Canada": "America/Toronto", toronto: 1, montreal: 1, "quebec city": 1, quebec: 1, saguenay: 1, drummondville: 1, "trois rivieres": 1, granby: 1, gatineau: 1,
+    ottawa: 1, woodbridge: 1, "richmond hill": 1, mississauga: 1, oakville: 1, waterloo: 1, kitchener: 1, london: 1, kingston: 1, sherbrooke: 1, repentigny: 1, laval: 1, markham: 1, vaughan: 1, burlington: 1, hamilton: 1,
+    "*Western Canada": "America/Vancouver", vancouver: 1, victoria: 1, kelowna: 1, kamloops: 1, burnaby: 1, surrey: 1, "north vancouver": 1, "west vancouver": 1, "*Calgary": "America/Edmonton", calgary: 1, edmonton: 1,
+    "*Winnipeg": "America/Winnipeg", winnipeg: 1, "*Saskatoon": "America/Regina", saskatoon: 1, regina: 1, "*Halifax": "America/Halifax", halifax: 1, moncton: 1, fredericton: 1 },
+  AUS: { "*Sydney": "Australia/Sydney", sydney: 1, canberra: 1, newcastle: 1, wollongong: 1, tamworth: 1, "wagga wagga": 1, "port macquarie": 1, albury: 1, "coffs harbour": 1, orange: 1, dubbo: 1,
+    "*Melbourne": "Australia/Melbourne", melbourne: 1, traralgon: 1, bendigo: 1, mildura: 1, shepparton: 1, ballarat: 1, geelong: 1, "*Brisbane": "Australia/Brisbane", brisbane: 1,
+    "gold coast": 1, cairns: 1, townsville: 1, toowoomba: 1, mackay: 1, bundaberg: 1, "sunshine coast": 1, caloundra: 1, "*Adelaide": "Australia/Adelaide", adelaide: 1, playford: 1,
+    "mount gambier": 1, "*Perth": "Australia/Perth", perth: 1, kalgoorlie: 1, bunbury: 1, "*Darwin": "Australia/Darwin", darwin: 1, "alice springs": 1, "*Hobart": "Australia/Hobart",
+    hobart: 1, launceston: 1, burnie: 1, devonport: 1 },
+  RUS: { "*Moscow": "Europe/Moscow", moscow: 1, "saint petersburg": 1, "st petersburg": 1, kazan: 1, sochi: 1, "nizhny novgorod": 1, "*Samara": "Europe/Samara", samara: 1,
+    "*Yekaterinburg": "Asia/Yekaterinburg", yekaterinburg: 1, "*Krasnoyarsk": "Asia/Krasnoyarsk", krasnoyarsk: 1 },
+  INA: { "*Jakarta": "Asia/Jakarta", jakarta: 1, bandung: 1, surabaya: 1, yogyakarta: 1, semarang: 1, malang: 1, solo: 1, "*Bali": "Asia/Makassar", bali: 1, denpasar: 1, makassar: 1 },
+  USA: {
+    "*Eastern USA": "America/New_York", "new york": 1, orlando: 1, miami: 1, "boca raton": 1, "delray beach": 1, delray: 1, "fort lauderdale": 1, "coral gables": 1, weston: 1, naples: 1, bradenton: 1,
+    "port st lucie": 1, tampa: 1, "daytona beach": 1, zephyrhills: 1, jacksonville: 1, sarasota: 1, "palm coast": 1, "st petersburg": 1, "plantation": 1, "key biscayne": 1, "west palm beach": 1, "palm beach gardens": 1,
+    "hilton head island": 1, "hilton head": 1, charleston: 1, sumter: 1, columbia: 1, spartanburg: 1, atlanta: 1, macon: 1, savannah: 1, "rome": 1, charlotte: 1, raleigh: 1, cary: 1, winston: 1, "winston salem": 1,
+    charlottesville: 1, richmond: 1, "virginia beach": 1, washington: 1, boston: 1, "new haven": 1, ithaca: 1, rochester: 1, philadelphia: 1, pittsburgh: 1, columbus: 1, cincinnati: 1, cleveland: 1,
+    "ann arbor": 1, detroit: 1, indianapolis: 1, louisville: 1, lexington: 1, knoxville: 1, chattanooga: 1, "tallahassee": 1, "princeton": 1, "new york city": 1, "flushing meadows": 1,
+    "*Central USA": "America/Chicago", chicago: 1, champaign: 1, "sioux falls": 1, "fort worth": 1, dallas: 1, houston: 1, austin: 1, "san antonio": 1, "new braunfels": 1, harlingen: 1, waco: 1,
+    "college station": 1, norman: 1, edmond: 1, "oklahoma city": 1, tulsa: 1, stillwater: 1, lincoln: 1, omaha: 1, "kansas city": 1, wichita: 1, "st louis": 1, memphis: 1, nashville: 1, "new orleans": 1,
+    "baton rouge": 1, minneapolis: 1, milwaukee: 1, madison: 1, "des moines": 1, "little rock": 1, fayetteville: 1, birmingham: 1, tuscaloosa: 1, auburn: 1, mobile: 1, "lubbock": 1,
+    "*Mountain USA": "America/Denver", denver: 1, boulder: 1, "salt lake city": 1, albuquerque: 1, "colorado springs": 1, boise: 1, "*Arizona": "America/Phoenix", phoenix: 1, scottsdale: 1, tucson: 1, tempe: 1,
+    "*Pacific USA": "America/Los_Angeles", "las vegas": 1, "los angeles": 1, "san diego": 1, "san francisco": 1, "indian wells": 1, "palm springs": 1, bakersfield: 1, redding: 1, fresno: 1, sacramento: 1,
+    "newport beach": 1, irvine: 1, "rancho santa fe": 1, carson: 1, malibu: 1, berkeley: 1, stanford: 1, "palo alto": 1, portland: 1, seattle: 1, spokane: 1, "lake las vegas": 1, "costa mesa": 1, "*Hawaii": "Pacific/Honolulu", honolulu: 1 },
+};
+// US states (when the place or name gives one, "Las Vegas, NV")
+const TZ_US = {}; ("New_York:ct,de,dc,fl,ga,me,md,ma,mi,nh,nj,ny,nc,oh,pa,ri,sc,vt,va,wv,in,ky|Chicago:al,ar,il,ia,ks,la,mn,ms,mo,ne,nd,ok,sd,tn,tx,wi|Denver:co,id,mt,nm,ut,wy|Phoenix:az|Los_Angeles:ca,nv,or,wa|Anchorage:ak|Honolulu:hi")
+  .split("|").forEach(x => { const [z, s] = x.split(":"); for (const st of s.split(",")) TZ_US[st] = "America/" + z; });
+TZ_US.hi = "Pacific/Honolulu";
+// a city in a nation with several zones -> { tz, n } ("" if unknown); label = the area name, or the city itself
+function tzCity(c, city, state){
+  const t = TZ_CITY[c], k = tzFold(city);
+  if (c === "USA" && state && TZ_US[state]) return { tz: TZ_US[state], n: tzTidy(city) || state.toUpperCase() };
+  if (!t) return null;
+  // the exact city first, then a listed city within a longer name ("Las Palmas de Gran Canaria")
+  for (const hit of [key => key === k, key => (" " + k + " ").includes(" " + key + " ")]) {
+    let area = null;
+    for (const key of Object.keys(t)) { if (key.startsWith("*")) area = [key.slice(1), t[key]]; else if (key && hit(key)) return { tz: area[1], n: c === "ESP" || c === "POR" ? area[0] : tzTidy(city) }; }
+  }
+  return t[""] ? { tz: t[""], n: TZ_NAT[tzFold(c)].n } : null;
 }
-function esTime(date, time){
+const tzTidy = t => String(t || "").trim().toLowerCase().replace(/(^|[\s\-'(])\p{L}/gu, s => s.toUpperCase());
+// a place like "Beijing, CHN", "Las Vegas, NV, USA", "Luan, China, P.R.", "Telde (Las Palmas), Spain" -> { tz, n } or null
+function tzPlace(place){
+  const parts = String(place || "").split(",").map(s => s.trim()).filter(Boolean);
+  if (parts.length < 2) return null;
+  const city = parts[0].replace(/\s*\(.*\)\s*$/, "").replace(/\s+-\s+.*$/, "").replace(/\s+\d+$/, "");
+  const rest = parts.slice(1);
+  const nat = TZ_NAT[tzFold(rest.join(" "))] || TZ_NAT[tzFold(rest[rest.length - 1])];
+  const st = rest.map(s => s.toLowerCase()).find(s => TZ_US[s]);
+  if (!nat) return st && !TZ_NAT[tzFold(rest[rest.length - 1])] ? tzCity("USA", city, st) : null;
+  return nat.tz === "*" ? tzCity(nat.c, city, nat.c === "USA" ? st : "") : { tz: nat.tz, n: nat.n };
+}
+// which event a match belongs to: the schedule's events running then whose city is in the tournament name ("M15 Ann Arbor, MI" -> Ann Arbor)
+let tzMemo = new Map(), tzSched = null;
+function evZone(m){
+  if (tzSched !== SCHED) { tzSched = SCHED; tzMemo = new Map(); }
+  const key = m.tournament + "|" + m.date;
+  if (tzMemo.has(key)) return tzMemo.get(key);
+  const name = " " + tzFold(m.tournament) + " ", d = new Date(m.date + "T12:00:00Z");
+  // the tournament name itself may give the nation or US state: "Villena, Spain", "W35 Lagos (Portugal)", "M15 Ann Arbor, MI"
+  const own = m.tournament && /[,(]/.test(m.tournament) ? tzPlace(m.tournament.replace(/^\s*[MW]\d+\s+/, "").replace(/\s*\(([^)]*)\)\s*$/, ", $1")) : null;
+  const zs = new Set(), lbl = {};
+  for (const e of SCHED?.events || []) {
+    const city = tzFold(String(e.place || "").split(",")[0].replace(/\s*\(.*\)\s*$/, "").replace(/\s+-\s+.*$/, "").replace(/\s+\d+$/, ""));
+    if (city.length < 3 || !name.includes(" " + city + " ")) continue;
+    if (d < new Date(new Date(e.start + "T12:00:00Z") - 10 * 864e5) || d > new Date(new Date((e.end || e.start) + "T12:00:00Z").getTime() + 2 * 864e5)) continue;
+    const z = tzPlace(e.place);
+    if (own && (!z || z.tz !== own.tz)) continue;  // the name says another nation (two towns called Lagos)
+    zs.add(z ? z.tz : ""); if (z) lbl[z.tz] = z.n;
+  }
+  // several events in that city on different zones, or one we can't place: UK time instead of a guess
+  const tz = zs.size === 1 ? [...zs][0] : zs.size ? "" : own?.tz || "";
+  const out = tz && tzOk(tz) ? { tz, n: lbl[tz] || own.n } : null;
+  tzMemo.set(key, out);
+  return out;
+}
+const tzOk = tz => { try { new Intl.DateTimeFormat("en-GB", { timeZone: tz }); return true; } catch (e) { return false; } };
+// UK date + "HH:MM" UK -> the real moment
+function ukMoment(date, time){
   const guess = new Date(`${date}T${time}:00Z`);
   const p = new Intl.DateTimeFormat("en-GB", { timeZone:"Europe/London", hour:"2-digit", minute:"2-digit", hourCycle:"h23" }).formatToParts(guess);
   const ukMin = +p.find(x => x.type === "hour").value * 60 + +p.find(x => x.type === "minute").value;
   let off = ukMin - (guess.getUTCHours() * 60 + guess.getUTCMinutes()); if (off > 720) off -= 1440; if (off < -720) off += 1440;
-  const real = new Date(guess.getTime() - off * 60000);
-  return real.toLocaleTimeString("en-GB", { timeZone:"Europe/Madrid", hour:"2-digit", minute:"2-digit", hourCycle:"h23" });
+  return new Date(guess.getTime() - off * 60000);
+}
+// a moment as "14:05" in a zone (undefined = this device), with the day added ("Wed 02:10") when it isn't the match's day (as shown on the card)
+function clock(d, tz, date){
+  const o = { hour:"2-digit", minute:"2-digit", hourCycle:"h23" }; if (tz) o.timeZone = tz;
+  const t = d.toLocaleTimeString("en-GB", o);
+  const day = new Intl.DateTimeFormat("en-CA", { timeZone: tz, year:"numeric", month:"2-digit", day:"2-digit" }).format(d);
+  return date && day !== date ? d.toLocaleDateString("en-GB", { timeZone: tz, weekday:"short" }) + " " + t : t;
+}
+// "14:05 your time" + "21:05 China" (the event's local time; UK when the event can't be placed). One line when both read the same.
+function twoTimes(d, m){
+  const day = md(m), mine = clock(d, undefined, day), z = evZone(m);
+  const there = clock(d, z ? z.tz : "Europe/London", day), where = z ? z.n : "UK";
+  return mine === there ? [`${mine}`, `your time, also ${where}`] : [mine, "your time", there, where];
+}
+// "Time info as of 14:05" under an approx. start: when the feed last confirmed the time (day added if not today), device time
+function asOf(iso){
+  const d = iso ? new Date(iso) : null;
+  if (!d || isNaN(d)) return "";
+  const t = d.toLocaleTimeString("en-GB", { hour:"2-digit", minute:"2-digit", hourCycle:"h23" });
+  const day = d.toDateString() === new Date().toDateString() ? "" : d.toLocaleDateString("en-GB", { day:"numeric", month:"short" }) + " ";
+  return `<small class="asof">Time info as of ${esc(day + t)} your time</small>`;
 }
 // "Alex de Minaur" -> "A. de Minaur", used on phones where match cards are narrow
 const shortName = n => { const w = String(n || "").trim().split(/\s+/); return w.length > 1 && !/^\(/.test(w[0]) ? w[0][0] + ". " + w.slice(1).join(" ") : String(n || ""); };
@@ -1350,13 +1499,13 @@ const isLive = m => !!(m.status === "live" && m.seenLive && Date.now() - new Dat
 const eventKind = m => m.source === "te" ? "Tennis Europe" : m.source === "itf" ? "ITF junior"
   : /challenger/i.test(m.category || "") ? "Challenger" : /^(ITF|[MW]\d)/i.test(m.category || "") ? "ITF" : "";
 function card(m){
-  const today = m.date === ukDate();
+  const today = md(m) === myDate();
   const fin = m.status === "finished";
   const live = isLive(m);
   const isFinal = /^(final|f)\b/i.test((m.round || "").trim());
   // finals are a 72 gold tile: gold edge while coming up or live, green or red edge once finished (today or past results)
   const fdone = isFinal && fin;
-  const final = isFinal && !fin && (m.date >= ukDate() || live);
+  const final = isFinal && !fin && (md(m) >= myDate() || live);
   const ours = id => !!byId[id];
   const row = (side) => {
     const id = side === 1 ? m.p1Id : m.p2Id, name = side === 1 ? m.p1 : m.p2;
@@ -1367,25 +1516,25 @@ function card(m){
       <span class="sets">${fin ? scoreCells(m.score, side) : live && m.espnLive ? scoreCells(m.score, side, true) : ""}</span>
     </div>`;
   };
-  const pending = !fin && !live && (m.date < ukDate() || m.status === "live");
+  const pending = !fin && !live && (md(m) < myDate() || m.status === "live");
   // a 72 win or loss (only when exactly one side is a 72 player and the winner is known)
   const wl = fin && m.winner && ours(m.p1Id) !== ours(m.p2Id) ? (ours(m.winner === 1 ? m.p1Id : m.p2Id) ? "win72" : "loss72") : "";
   const delayed = live && !!m.delay;
   const when = delayed ? `<span class="when delayed"><span class="pulse"></span>In progress<span class="dtag">Delayed</span></span>`
     : live ? `<span class="when live"><span class="pulse"></span>In progress</span>`
-    : fin ? `<span class="when fin"><span class="rtag">${wl === "win72" ? "72 win" : wl === "loss72" ? "72 loss" : "Result"}</span>${esc(dayLabel(m.date))}</span>`
-    : pending ? `<span class="when fin">${esc(dayLabel(m.date))} · result pending</span>`
-    : `<span class="when ${today ? "today" : ""}">${esc(dayLabel(m.date))}</span>`;
+    : fin ? `<span class="when fin"><span class="rtag">${wl === "win72" ? "72 win" : wl === "loss72" ? "72 loss" : "Result"}</span>${esc(dayLabel(md(m)))}</span>`
+    : pending ? `<span class="when fin">${esc(dayLabel(md(m)))} · result pending</span>`
+    : `<span class="when ${today ? "today" : ""}">${esc(dayLabel(md(m)))}</span>`;
   const times = !fin && !live && !pending
     ? (m.source === "itf" || m.source === "te"
       ? `<div class="times"><span>Order of play</span><b>${m.slot ? esc(m.slot) + " (local time)" : "Time TBC"}</b></div>`
-      : `<div class="times"><span>Approx. start</span>${m.time ? `<b>${esc(m.time)} UK</b><b>${esc(esTime(m.date, m.time))} Spain</b>` : "<b>Time TBC</b>"}${asOf(m.timeAt)}</div>`) : "";
+      : `<div class="times"><span>Approx. start</span>${m.time ? twoTimes(ukMoment(m.date, m.time), m).reduce((h, x, i, a) => i % 2 ? h : h + `<b>${esc(x)}<i>${esc(a[i + 1])}</i></b>`, "") : "<b>Time TBC</b>"}${asOf(m.timeAt)}</div>`) : "";
   // result tiles: the court played on (when the feed gave one) and the finish time
-  // finish time: only recorded when a check saw the match unfinished shortly before, so it's "by" that time (UK)
+  // finish time: only recorded when a check saw the match unfinished shortly before, so it's "by" that time (device time, then the event's)
   const end = fin && m.endAt && !isNaN(new Date(m.endAt)) ? new Date(m.endAt) : null;
-  const endTxt = end ? (ukDate(end) === m.date ? "" : end.toLocaleDateString("en-GB", { timeZone:"Europe/London", day:"numeric", month:"short" }) + " ")
-    + end.toLocaleTimeString("en-GB", { timeZone:"Europe/London", hour:"2-digit", minute:"2-digit", hourCycle:"h23" }) : "";
-  const rs = fin ? [m.court ? `Played on <b>${esc(m.court)}</b>` : "", endTxt ? `Finished by <b>${esc(endTxt)} UK</b>` : ""].filter(Boolean) : [];
+  const et = end ? twoTimes(end, m) : null;
+  const endTxt = et ? `<b>${esc(et[0])}</b> ${esc(et[1])}${et[2] ? ` · <b>${esc(et[2])}</b> ${esc(et[3])}` : ""}` : "";
+  const rs = fin ? [m.court ? `Played on <b>${esc(m.court)}</b>` : "", endTxt ? `Finished by ${endTxt}` : ""].filter(Boolean) : [];
   const stats = rs.length ? `<div class="rstats">${rs.map(x => `<span>${x}</span>`).join("")}</div>` : "";
   const p = byId[m.p1Id] || byId[m.p2Id];
   const link = safeUrl(p?.sofa);
@@ -1420,7 +1569,7 @@ function renderChamps(){
   el.hidden = !wins.length;
   const txt = wins.map(({ m, id }) => {
     const p = byId[id];
-    return `<b>${esc(p.first[0])}. ${esc(p.last)}</b> won ${esc(m.tournament)}${m.category ? " " + esc(m.category.replace(/^ITF /, "")) : ""} (${esc(dayLabel(m.date))})`;
+    return `<b>${esc(p.first[0])}. ${esc(p.last)}</b> won ${esc(m.tournament)}${m.category ? " " + esc(m.category.replace(/^ITF /, "")) : ""} (${esc(dayLabel(md(m)))})`;
   }).join("<i>·</i>");
   el.innerHTML = wins.length ? `<div class="champ">🏆 <span class="k">Congratulations</span><span class="w"><span class="trk">${txt}</span></span></div>` : "";
   // ticker: "Congratulations" stays put, the wins slide back and forth on one line
@@ -1438,7 +1587,7 @@ function fitChamps(){
 }
 window.addEventListener("resize", fitChamps);
 /* plain warnings when the automatic updates have fallen behind, so old data is never mistaken for current */
-const fmtWhen = d => d.toLocaleString("en-GB", { timeZone:"Europe/London", weekday:"short", day:"numeric", month:"short", hour:"2-digit", minute:"2-digit" });
+const fmtWhen = d => d.toLocaleString("en-GB", { weekday:"short", day:"numeric", month:"short", hour:"2-digit", minute:"2-digit" });
 function setStale(sel, msg){ const el = $(sel); el.hidden = !msg; el.innerHTML = msg || ""; }
 // when the score feed last actually answered (lastChecked moves on every run, even when the feed's daily limit is used up)
 function schFed(){ const t = [STATE?.liveChecked, STATE?.upcomingChecked].filter(Boolean).map(x => new Date(x)); return t.length ? new Date(Math.max(...t)) : null; }
@@ -1455,7 +1604,7 @@ function renderScores(){
     : STATE?.teChecked && Date.now() - new Date(STATE.teChecked) > 36 * 36e5
     ? `<b>Heads up:</b> Tennis Europe matches haven't updated since ${fmtWhen(new Date(STATE.teChecked))}. Check the Tennis Europe website for the latest draws and results.` : "");
   const ms = (STATE?.matches || []).slice();
-  const today = ukDate();
+  const today = myDate();
   const key = m => `${m.date} ${m.time || "99"}`;
   // today's matches always show as scheduled; their results only appear here the next day
   const asToday = m => m.status === "scheduled" ? m : { ...m, status: "scheduled", score: "", winner: null, note: "" };
@@ -1465,20 +1614,19 @@ function renderScores(){
     && x.date === m.date && ours(x).some(id => ours(m).includes(id)));
   // every match dated today stays in today's list all day, even once the player's next round is confirmed
   // today's order: in progress, then coming up (soonest first, no time yet last), then result pending, then finished (biggest tournament first, then latest)
-  const grp = m => m.status === "finished" ? 3 : isLive(m) ? 0 : m.status === "live" || m.date < today ? 2 : 1;
-  const tday = ms.filter(m => m.date === today || (m.status === "live" && m.date < today)).sort((a,b) => grp(a) - grp(b)
+  const grp = m => m.status === "finished" ? 3 : isLive(m) ? 0 : m.status === "live" || md(m) < today ? 2 : 1;
+  const tday = ms.filter(m => md(m) === today || (m.status === "live" && md(m) < today)).sort((a,b) => grp(a) - grp(b)
     || (grp(a) === 1 ? key(a).localeCompare(key(b)) || byTier(a, b) : grp(a) === 3 ? byTier(a, b) || key(b).localeCompare(key(a)) : byTier(a, b) || key(a).localeCompare(key(b))));
-  const next = ms.filter(m => m.date > today && m.status === "scheduled").sort((a,b) => a.date.localeCompare(b.date) || byTier(a, b) || key(a).localeCompare(key(b)));
-  // results from the previous two days (UK dates) - never today's
-  // latest results this week (Monday up to yesterday, UK dates; on a Monday, last week): each player's most recent match only,
+  const next = ms.filter(m => md(m) > today && m.status === "scheduled").sort((a,b) => md(a).localeCompare(md(b)) || byTier(a, b) || key(a).localeCompare(key(b)));
+  // latest results this week (Monday up to yesterday, the viewer's own dates; on a Monday, last week): each player's most recent match only,
   // and on the same day the one furthest into the event - e.g. a quarter-final, not the round before it too
   const ydD = new Date(new Date(today + "T12:00:00Z").getTime() - 864e5), yday = ydD.toISOString().slice(0, 10);
   const wkStart = new Date(ydD.getTime() - ((ydD.getUTCDay() + 6) % 7) * 864e5).toISOString().slice(0, 10);
   const stage = roundStage;
   const best = {};
-  for (const m of ms.filter(m => m.date <= yday && m.date >= wkStart && (m.status === "finished" || m.status === "scheduled")))
+  for (const m of ms.filter(m => md(m) <= yday && md(m) >= wkStart && (m.status === "finished" || m.status === "scheduled")))
     for (const id of ours(m)) { const b = best[id];
-      if (!b || m.date > b.date || (m.date === b.date && stage(m.round) > stage(b.round))) best[id] = m; }
+      if (!b || md(m) > md(b) || (md(m) === md(b) && stage(m.round) > stage(b.round))) best[id] = m; }
   const done = [...new Set(Object.values(best))].sort((a,b) => byTier(a, b) || key(b).localeCompare(key(a)));
   const fill = (el, arr, empty) => { $(el).innerHTML = arr.length ? arr.map(card).join("") : `<div class="empty">${empty}</div>`; };
   if (!STATE) {
@@ -1489,18 +1637,18 @@ function renderScores(){
     fill("#gNext", next, "Nothing scheduled yet. Orders of play are usually published the evening before.");
     fill("#gDone", done, "No results yet this week.");
   }
-  $("#todayLbl").textContent = new Date().toLocaleDateString("en-GB", { weekday:"long", day:"numeric", month:"long", timeZone:"Europe/London" });
+  $("#todayLbl").textContent = new Date().toLocaleDateString("en-GB", { weekday:"long", day:"numeric", month:"long" });
   $("#cToday").textContent = tday.length; $("#cNext").textContent = next.length; $("#cDone").textContent = done.length;
 
   // roster status
   const rks = mergeRanks(STATE?.rankings);
   const items = ROSTER.map(p => {
     const mine = ms.filter(m => m.p1Id === p.id || m.p2Id === p.id);
-    const up = mine.filter(m => (m.status !== "finished" || m.date === today) && m.date >= today).sort((a,b) => key(a).localeCompare(key(b)))[0];
-    const last = mine.filter(m => m.status === "finished" && m.date < today).sort((a,b) => key(b).localeCompare(key(a)))[0];
+    const up = mine.filter(m => (m.status !== "finished" || md(m) === today) && md(m) >= today).sort((a,b) => key(a).localeCompare(key(b)))[0];
+    const last = mine.filter(m => m.status === "finished" && md(m) < today).sort((a,b) => key(b).localeCompare(key(a)))[0];
     let st = "No match scheduled", on = false;
-    if (up) { const opp = up.p1Id === p.id ? up.p2 : up.p1; st = `${dayLabel(up.date)}${up.time ? " ~" + up.time + " UK" : ""} · vs ${opp} · ${up.tournament}`; on = up.date === today; }
-    else if (last) { const w = (last.winner === 1 && last.p1Id === p.id) || (last.winner === 2 && last.p2Id === p.id); st = `${w ? "Won" : "Lost"} ${last.round || ""} · ${last.tournament} · ${dayLabel(last.date)}`; }
+    if (up) { const opp = up.p1Id === p.id ? up.p2 : up.p1; st = `${dayLabel(md(up))}${up.time ? " ~" + clock(ukMoment(up.date, up.time), undefined, md(up)) + " your time" : ""} · vs ${opp} · ${up.tournament}`; on = md(up) === today; }
+    else if (last) { const w = (last.winner === 1 && last.p1Id === p.id) || (last.winner === 2 && last.p2Id === p.id); st = `${w ? "Won" : "Lost"} ${last.round || ""} · ${last.tournament} · ${dayLabel(md(last))}`; }
     if (STATE?.status?.[p.id]) st = STATE.status[p.id];
     const link = safeUrl(p.sofa);
     const rank = rks[p.id]?.rank ?? null;
@@ -1514,7 +1662,7 @@ function renderScores(){
 
   if (STATE?.lastChecked) {
     const d = schFed() || new Date(STATE.lastChecked);
-    $("#checked").textContent = d.toLocaleString("en-GB", { timeZone:"Europe/London", weekday:"short", day:"numeric", month:"short", hour:"2-digit", minute:"2-digit" });
+    $("#checked").textContent = d.toLocaleString("en-GB", { weekday:"short", day:"numeric", month:"short", hour:"2-digit", minute:"2-digit" });
   } else $("#checked").textContent = STATE ? "Not yet" : "Loading…";
 }
 
@@ -1935,8 +2083,8 @@ function roundStage(r){ r = (r || "").replace(/\(.*\)/, "").trim().toLowerCase()
   if ((n = r.match(/^r(\d)$|^(\d)r$/))) return 10 + +(n[1] || n[2]); return 5; }
 // a player's latest result (from before today, as on the Competition Zone), furthest round first on the same day
 function latestResult(id){
-  const today = ukDate();
-  return (STATE?.matches || []).filter(m => m.status === "finished" && m.date < today && (m.p1Id === id || m.p2Id === id))
+  const today = myDate();
+  return (STATE?.matches || []).filter(m => m.status === "finished" && md(m) < today && (m.p1Id === id || m.p2Id === id))
     .sort((a, b) => b.date.localeCompare(a.date) || roundStage(b.round) - roundStage(a.round))[0] || null;
 }
 function openProfile(id){
@@ -2193,7 +2341,7 @@ function renderSchedule(){
       </a>`).join("")}
     </section>`).join("") : `<div class="sq-empty">${SCH.p ? `${esc(byId[SCH.p] ? byId[SCH.p].first + " " + byId[SCH.p].last : SCH.p)} isn't entered in any of these events yet. Entry lists come out about 3 to 4 weeks before each event.` : SCH.e72 ? "No 72 players are entered in these events yet. Entry lists come out about 3 to 4 weeks before each event." : "No events match these filters."}</div>`;
   const up = SCHED.updated ? new Date(SCHED.updated) : null;
-  setStale("#staleSch", up && Date.now() - up > 3 * 864e5 ? `<b>Heads up:</b> the schedule was last updated ${up.toLocaleDateString("en-GB", { day:"numeric", month:"long", timeZone:"Europe/London" })}, so it may be out of date.` : "");
+  setStale("#staleSch", up && Date.now() - up > 3 * 864e5 ? `<b>Heads up:</b> the schedule was last updated ${up.toLocaleDateString("en-GB", { day:"numeric", month:"long" })}, so it may be out of date.` : "");
   $("#schSrc").innerHTML = `Updated every morning. 72 entries are shown for events up to ${schFmt(SCHED.entriesTo || from, { year:"numeric" })}, about as far ahead as entry lists are published: ITF from the official acceptance lists, WTA and WTA 125 from the WTA player lists, Tennis Europe from each player's Tennis Europe entries, and ATP and Challenger when any of live-tennis.eu, Tick Tock Tennis or Spazio Tennis lists the player (left out if any of them shows a withdrawal), then from the draw once it is out. Sources: ATP Tour and Challenger calendars from Wikipedia's 2026 season pages (ATP events show the week only), WTA, ITF and Tennis Europe.`;
 }
 document.addEventListener("click", e => {
@@ -2311,7 +2459,7 @@ function renderCorner(){
     .map(([k, p]) => cnCard(k, p));
   const wait = waiting.filter(x => keep(x.name, x.g)).map(x => `<div class="cn cn-wait"><div class="cn-h"><span class="nm">${esc(x.name)}</span><span class="mt">Looking up… usually within 10 minutes${x.by ? " · added by " + esc(x.by) : ""}</span></div></div>`);
   $("#cnList").innerHTML = [...wait, ...cards].join("") || `<div class="sq-empty">${CORNER ? (Object.keys(P).length ? "No prospect matches." : "No prospects yet. Add the first one above.") : "Loading the watch list…"}</div>`;
-  $("#cnSrc").textContent = CORNER?.checked ? `Sources: Tennis Europe (internal use only), the ITF and the official ATP/WTA rankings. Last updated ${new Date(CORNER.checked).toLocaleString("en-GB", { day:"numeric", month:"short", hour:"2-digit", minute:"2-digit", timeZone:"Europe/London" })} UK.` : "";
+  $("#cnSrc").textContent = CORNER?.checked ? `Sources: Tennis Europe (internal use only), the ITF and the official ATP/WTA rankings. Last updated ${new Date(CORNER.checked).toLocaleString("en-GB", { day:"numeric", month:"short", hour:"2-digit", minute:"2-digit" })} your time.` : "";
 }
 $("#cnList").addEventListener("click", e => {
   const r = e.target.closest("[data-rm]");
@@ -2500,18 +2648,18 @@ function renderHome(){
   const g = greeting(); $("#hpGreet").hidden = !g; $("#hpGreet").innerHTML = g;
   const lc = STATE?.lastChecked ? new Date(STATE.lastChecked) : null;
   const fresh = lc && Date.now() - lc < 3 * 36e5;
-  $("#hpMeta").innerHTML = STATE ? `<span class="hp-pill${fresh ? "" : " warn"}"><i></i>${lc ? `Scores updated ${lc.toLocaleTimeString("en-GB", { hour:"2-digit", minute:"2-digit", timeZone:"Europe/London" })} UK${fresh ? "" : ", " + lc.toLocaleDateString("en-GB", { day:"numeric", month:"short", timeZone:"Europe/London" })}` : "Scores not updated yet"}</span>`
+  $("#hpMeta").innerHTML = STATE ? `<span class="hp-pill${fresh ? "" : " warn"}"><i></i>${lc ? `Scores updated ${lc.toLocaleTimeString("en-GB", { hour:"2-digit", minute:"2-digit" })}${fresh ? "" : ", " + lc.toLocaleDateString("en-GB", { day:"numeric", month:"short" })}` : "Scores not updated yet"}</span>`
     + (STATE.rankingsWeek || STATE.rankingsAsOf ? `<span class="hp-pill">Rankings: week of ${new Date((STATE.rankingsWeek || STATE.rankingsAsOf) + "T12:00:00Z").toLocaleDateString("en-GB", { day:"numeric", month:"short", timeZone:"UTC" })}</span>` : "") : "";
   // 01 Competition Zone
-  const ms = STATE?.matches || [], today = ukDate();
+  const ms = STATE?.matches || [], today = myDate();
   const nm = m => [m.p1, m.p2].filter(Boolean).map(esc).join(" v ");
   const live = ms.filter(m => m.status === "live");
   if (STATE) {
-    const tday = ms.filter(m => m.date === today);
-    const nxt = ms.filter(m => m.status === "scheduled" && (m.date > today || (m.date === today && m.time)))
+    const tday = ms.filter(m => md(m) === today);
+    const nxt = ms.filter(m => m.status === "scheduled" && (md(m) > today || (md(m) === today && m.time)))
       .sort((a, b) => `${a.date} ${a.time || "99"}`.localeCompare(`${b.date} ${b.time || "99"}`))[0];
     $("#hpT1").innerHTML = `${tday.length}<small>${tday.length === 1 ? "match" : "matches"} today</small>`;
-    $("#hpS1").innerHTML = live.length ? `${live.length} in progress right now` : nxt ? `Next: ${nm(nxt)} · ${dayLabel(nxt.date)}${nxt.time ? " " + esc(nxt.time) + " UK" : ""}` : "Nothing else scheduled yet";
+    $("#hpS1").innerHTML = live.length ? `${live.length} in progress right now` : nxt ? `Next: ${nm(nxt)} · ${dayLabel(md(nxt))}${nxt.time ? " " + esc(clock(ukMoment(nxt.date, nxt.time), undefined, md(nxt))) + " your time" : ""}` : "Nothing else scheduled yet";
   }
   // 02 Rankings: the roster's highest-ranked player
   const ranked = ROSTER.map(p => ({ p, r: playerRank(p.id) })).filter(o => o.r).sort((a, b) => a.r - b.r);
@@ -2545,7 +2693,7 @@ function renderHome(){
   } else if (SCOUT) { $("#hpT4").textContent = "—"; $("#hpS4").textContent = "Scouting list not available yet"; }
   if (SCHED?.events?.length) {
     // 72 players playing in a week: everyone on an event that runs that week (two-week events count in both)
-    const wk0 = schMonday(ukDate()), wk1 = schMonday(new Date(schDay(wk0).getTime() + 7 * 864e5).toISOString().slice(0, 10));
+    const wk0 = schMonday(myDate()), wk1 = schMonday(new Date(schDay(wk0).getTime() + 7 * 864e5).toISOString().slice(0, 10));
     const inWeek = w => { const ev = SCHED.events.filter(e => (e.e72 || []).length && schWeeks(e).includes(w)); return { ev: ev.length, ppl: new Set(ev.flatMap(e => e.e72.map(x => x.id))).size }; };
     const now = inWeek(wk0), next = inWeek(wk1);
     $("#hpT5").innerHTML = `${now.ppl}<small>72 player${now.ppl === 1 ? "" : "s"} playing this week</small>`;
@@ -2691,12 +2839,12 @@ async function espnLive(){
   } catch (e) { liveErr = true; }
   applyLive(STATE);
   renderScores(); renderHome();
-  const t = liveAt ? new Date(liveAt).toLocaleTimeString("en-GB", { timeZone:"Europe/London", hour:"2-digit", minute:"2-digit", second:"2-digit" }) : "";
+  const t = liveAt ? new Date(liveAt).toLocaleTimeString("en-GB", { hour:"2-digit", minute:"2-digit", second:"2-digit" }) : "";
   note.hidden = false;
   note.classList.toggle("err", liveErr);
   note.innerHTML = liveErr
-    ? `Live ATP and WTA scores can't be read from ESPN right now${t ? ` (last read ${t} UK)` : ""}, so the scores below update about every hour. Check SofaScore for live scores.`
-    : `<span class="pulse"></span>Live ATP and WTA scores from ESPN, updated every minute · last checked ${t} UK`;
+    ? `Live ATP and WTA scores can't be read from ESPN right now${t ? ` (last read ${t})` : ""}, so the scores below update about every hour. Check SofaScore for live scores.`
+    : `<span class="pulse"></span>Live ATP and WTA scores from ESPN, updated every minute · last checked ${t}`;
 }
 /* ---------- boot ---------- */
 route();
