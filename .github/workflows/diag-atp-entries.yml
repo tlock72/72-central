@@ -1,0 +1,11 @@
+name: ATP entries check (one-off, test branch only)
+on:
+  push:
+    branches: [claude/upbeat-curie-si1jdd]
+    paths: [scripts/diag_atp_entries.py, .github/workflows/diag-atp-entries.yml]
+jobs:
+  diag:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v6
+      - run: pip install -q beautifulsoup4 && python3 -u scripts/diag_atp_entries.py
