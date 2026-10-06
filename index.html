@@ -79,6 +79,7 @@ section.block{margin-bottom:38px}
 .when.fin{color:var(--muted)}
 .times{display:flex;flex-wrap:wrap;align-items:baseline;gap:6px 14px;padding:10px 16px 0;font-size:11px;color:var(--muted);text-transform:uppercase;letter-spacing:.1em}
 .times b{font-family:var(--display);font-weight:500;font-size:15px;color:var(--gold-2);letter-spacing:.06em;text-transform:none}
+.times small.asof{flex-basis:100%;font-size:10px;letter-spacing:.02em;text-transform:none;opacity:.8}
 .m-body{padding:6px 0;flex:1}
 .row{display:grid;grid-template-columns:1fr auto;align-items:center;gap:10px;padding:9px 16px}
 .pname{display:flex;align-items:center;gap:8px;min-width:0;font-size:15px;font-weight:500;color:var(--muted)}
@@ -507,6 +508,7 @@ nav .sh,.nm-s{display:none}
   .times{gap:0 5px;padding:4px 6px 0;font-size:8px;letter-spacing:0}
   .times > span{display:none}
   .times b{font-size:10px}
+  .times small.asof{font-size:8px}
   .m-body{padding:2px 0}
   .row{gap:3px;padding:3px 6px}
   .pname{font-size:10.5px;gap:3px}
@@ -914,6 +916,14 @@ function scoreCells(score, side, live){
   }).filter(Boolean).map((x, i, arr) => `<span class="set ${(live ? (i < arr.length - 1 && x.mine > x.theirs) || (i === arr.length - 1) : x.mine > x.theirs) ? "w" : ""}">${x.mine}${x.tb}</span>`).join("");
 }
 // UK local date + time -> the same moment in Spain (Europe/Madrid)
+// "Time info as of 14:05 UK" under an approx. start: when the feed last confirmed the time (day added if not today)
+function asOf(iso){
+  const d = iso ? new Date(iso) : null;
+  if (!d || isNaN(d)) return "";
+  const t = d.toLocaleTimeString("en-GB", { timeZone:"Europe/London", hour:"2-digit", minute:"2-digit", hourCycle:"h23" });
+  const day = ukDate(d) === ukDate() ? "" : d.toLocaleDateString("en-GB", { timeZone:"Europe/London", day:"numeric", month:"short" }) + " ";
+  return `<small class="asof">Time info as of ${esc(day + t)} UK</small>`;
+}
 function esTime(date, time){
   const guess = new Date(`${date}T${time}:00Z`);
   const p = new Intl.DateTimeFormat("en-GB", { timeZone:"Europe/London", hour:"2-digit", minute:"2-digit", hourCycle:"h23" }).formatToParts(guess);
@@ -947,7 +957,7 @@ function card(m){
   const times = !fin && !live && !pending
     ? (m.source === "itf" || m.source === "te"
       ? `<div class="times"><span>Order of play</span><b>${m.slot ? esc(m.slot) + " (local time)" : "Time TBC"}</b></div>`
-      : `<div class="times"><span>Approx. start</span>${m.time ? `<b>${esc(m.time)} UK</b><b>${esc(esTime(m.date, m.time))} Spain</b>` : "<b>Time TBC</b>"}</div>`) : "";
+      : `<div class="times"><span>Approx. start</span>${m.time ? `<b>${esc(m.time)} UK</b><b>${esc(esTime(m.date, m.time))} Spain</b>` : "<b>Time TBC</b>"}${asOf(m.timeAt)}</div>`) : "";
   const p = byId[m.p1Id] || byId[m.p2Id];
   const link = safeUrl(p?.sofa);
   const itfLink = m.source === "itf" && /^https:\/\/www\.itftennis\.com\//.test(m.link || "") ? m.link : null;
@@ -1919,6 +1929,7 @@ function applyLive(st){
       // not started yet: if ESPN has moved the start time (delays, rain), show the new one straight away
       const at = new Date(x.at);
       m.date = ukDate(at);
+      m.timeAt = new Date(liveAt).toISOString();
       m.time = x.timeValid ? at.toLocaleTimeString("en-GB", { timeZone:"Europe/London", hour:"2-digit", minute:"2-digit", hourCycle:"h23" }) : "";
     }
   }
