@@ -754,20 +754,23 @@ html.name-only .gate-box h2,html.name-only .gate-digits{display:none}
 /* pull down to refresh (phones, and the home-screen app where there's no browser reload):
    the 72 ball rolls down as you pull, bounces like a ball toss while it loads, then flies off like an ace */
 html,body{overscroll-behavior-y:contain}
-#ptr{position:fixed;left:50%;top:0;z-index:9;display:flex;flex-direction:column;align-items:center;gap:6px;pointer-events:none;
+/* the page slides down as you pull and the ball sits in the gap under the header, so it never covers the tiles */
+main.ptr-go,footer.ptr-go{transition:transform .35s cubic-bezier(.2,.8,.3,1)}
+#ptr{position:fixed;left:50%;top:0;z-index:9;display:flex;align-items:center;gap:10px;pointer-events:none;
   transform:translate(-50%,-120px);opacity:0}
 #ptr .ptr-ball{width:46px;height:46px;border-radius:50%;background:var(--navy-2);border:1px solid var(--line);box-shadow:0 6px 18px rgba(0,0,0,.45);display:grid;place-items:center}
 #ptr .ptr-ball img{width:36px;height:36px;display:block}
-#ptr .ptr-txt{margin-top:12px;font-family:var(--display);font-size:11px;letter-spacing:.16em;text-transform:uppercase;color:var(--gold-2);background:rgba(12,20,49,.85);padding:3px 10px;border-radius:999px;white-space:nowrap}
+#ptr .ptr-txt{position:absolute;left:100%;margin-left:10px;transition:opacity .2s;font-family:var(--display);font-size:11px;letter-spacing:.16em;text-transform:uppercase;color:var(--gold-2);background:rgba(12,20,49,.85);padding:3px 10px;border-radius:999px;white-space:nowrap}
 #ptr.go{transition:transform .35s cubic-bezier(.2,.8,.3,1),opacity .35s}
 #ptr.busy .ptr-ball{animation:ptrBounce .6s cubic-bezier(.4,0,.6,1) infinite alternate}
 #ptr.busy .ptr-ball img{animation:ptrSpin .5s linear infinite}
 #ptr.ace .ptr-ball{animation:ptrAce .55s cubic-bezier(.5,0,.9,.4) forwards}
 #ptr.out .ptr-ball{animation:ptrOut .7s ease-in forwards}
-@keyframes ptrBounce{0%{transform:translateY(-14px) scale(1)}85%{transform:translateY(10px) scale(1)}100%{transform:translateY(12px) scale(1.12,.86)}}
+#ptr.ace .ptr-txt{opacity:0}
+@keyframes ptrBounce{0%{transform:translateY(-12px) scale(1)}85%{transform:translateY(9px) scale(1)}100%{transform:translateY(11px) scale(1.12,.86)}}
 @keyframes ptrSpin{to{transform:rotate(360deg)}}
-@keyframes ptrAce{0%{transform:none}25%{transform:translate(-12px,4px) scale(1.1)}100%{transform:translate(70vw,-40px) rotate(900deg) scale(.6);opacity:0}}
-@keyframes ptrOut{0%{transform:none}30%{transform:translateY(-16px)}100%{transform:translateY(60px) rotate(-200deg);opacity:0}}
+@keyframes ptrAce{0%{transform:none}25%{transform:translate(-12px,2px) scale(1.1)}100%{transform:translate(70vw,-6px) rotate(900deg) scale(.6);opacity:0}}
+@keyframes ptrOut{0%{transform:none}30%{transform:translateY(-10px)}100%{transform:translateY(14px) rotate(-200deg) scale(.7);opacity:0}}
 @media (prefers-reduced-motion:reduce){#ptr .ptr-ball,#ptr .ptr-ball img{animation:none!important}}
 </style>
 </head>
@@ -2528,16 +2531,23 @@ window.addEventListener("hashchange", () => setTimeout(espnLive, 300));
 // version of the site. The 72 ball from the logo rolls down as you pull, bounces while it checks the connection, then flies
 // off like an ace and the page reloads (or it drops "out" with no signal, and the page stays as it is).
 (() => {
-  const box = $("#ptr"), img = box.querySelector("img"), txt = box.querySelector(".ptr-txt"), FIRE = 80, MAX = 130;
+  // FIRE = how far the page has to slide down (px) before letting go refreshes; HOLD = the gap kept open while it loads
+  const box = $("#ptr"), img = box.querySelector("img"), txt = box.querySelector(".ptr-txt"), FIRE = 90, HOLD = 90, MAX = 140;
+  const page = [$("main"), $("footer")];
   // the ball on its own, cut out of the logo (a plain gold ball if the logo ever changes shape)
   const defs = (LOGO_SVG.match(/<defs>[\s\S]*?<\/defs>/) || [""])[0];
   const ball = (LOGO_SVG.match(/<g class="b"><g[^>]*>([\s\S]*?)<\/g><\/g>/) || [])[1] || '<circle r="28" fill="#D0A579"/>';
   img.src = "data:image/svg+xml;base64," + btoa(`<svg xmlns="http://www.w3.org/2000/svg" viewBox="-30 -30 60 60">${defs}<g transform="rotate(-28)">${ball}</g></svg>`);
   let y0 = null, x0 = 0, pull = 0, busy = false;
   const top = () => Math.max(0, $("header").getBoundingClientRect().bottom);
-  const show = (d, rot) => { box.style.transform = `translate(-50%,${top() + d - 60}px)`; box.style.opacity = Math.min(1, d / 40); img.style.transform = `rotate(${rot}deg)`; };
-  const hide = () => { box.classList.add("go"); box.style.transform = "translate(-50%,-120px)"; box.style.opacity = 0;
-    setTimeout(() => { box.className = ""; img.style.transform = ""; }, 400); };
+  // d = how far the page is pushed down; the ball (with its label) stays centred in the gap that opens above it
+  const show = (d, rot, glide) => {
+    page.forEach(el => { el.classList.toggle("ptr-go", !!glide); el.style.transform = d ? `translateY(${d}px)` : ""; });
+    box.style.transform = `translate(-50%,${top() + d / 2 - box.offsetHeight / 2}px)`;
+    box.style.opacity = Math.min(1, d / 50); txt.style.opacity = d >= 70 ? 1 : 0; img.style.transform = `rotate(${rot}deg)`;
+  };
+  const hide = () => { box.classList.add("go"); show(0, 0, true); box.style.transform = "translate(-50%,-120px)";
+    setTimeout(() => { box.className = ""; img.style.transform = ""; page.forEach(el => el.classList.remove("ptr-go")); }, 400); };
   // somewhere that scrolls by itself (a table, a list) gets the drag first
   const innerScrolled = el => { for (; el && el !== document.body; el = el.parentElement) if (el.scrollTop > 0) return true; return false; };
   addEventListener("touchstart", e => {
@@ -2553,7 +2563,7 @@ window.addEventListener("hashchange", () => setTimeout(espnLive, 300));
     if (dy <= 0 || window.scrollY > 0 || (!pull && dx > dy)) { if (pull) { pull = 0; hide(); } y0 = null; return; }
     e.preventDefault();
     box.className = "";
-    pull = Math.min(MAX, dy * .5);  // the ball moves half as far as the finger, so it feels heavy
+    pull = Math.min(MAX, dy * .55);  // the page moves about half as far as the finger, so it feels heavy
     show(pull, dy * 2.5);
     txt.textContent = pull >= FIRE ? "Let go to serve" : "Pull to refresh";
   }, { passive: false });
@@ -2562,7 +2572,7 @@ window.addEventListener("hashchange", () => setTimeout(espnLive, 300));
     y0 = null;
     if (pull < FIRE) { if (pull) hide(); pull = 0; return; }
     pull = 0; busy = true;
-    box.className = "go busy"; show(FIRE, 0); img.style.transform = ""; txt.textContent = "Refreshing…";
+    box.className = "go busy"; show(HOLD, 0, true); img.style.transform = ""; txt.textContent = "Refreshing…";
     const wait = new Promise(r => setTimeout(r, 900));  // long enough to see a couple of bounces
     // only reload if the site can be reached, so a pull with no signal doesn't leave a blank screen
     let ok = false;
