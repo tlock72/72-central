@@ -1,0 +1,11 @@
+name: Tennis Europe entry list probe (one-off, read-only)
+on:
+  push:
+    branches: [claude/sleepy-brahmagupta-4mzgfx]
+    paths: [scripts/te_probe.py, .github/workflows/te-probe.yml]
+jobs:
+  probe:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v6
+      - run: pip install -q beautifulsoup4 && python3 scripts/te_probe.py
