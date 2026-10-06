@@ -11,6 +11,9 @@ Where the prospects come from:
 How the stages are linked (never guessed - an unsure link is left empty and alerted instead):
   - ITF: one ITF player id covers a player's junior AND pro career, so it is the anchor. Found by exact
     full name (and nationality, when known). Two or more people that fit = not linked, alerted.
+    Spelling: names get proper capitals (tidy), and once linked the ITF's own spelling is shown. A name the
+    ITF doesn't know is checked for a typo (itf_find): one close ITF player with the typed nationality is
+    linked under the ITF spelling and alerted; anything less sure is only alerted as "Did you mean ...?".
   - Tennis Europe: exact full name, and the nationality on the Tennis Europe profile must be the
     prospect's (or the ITF profile's) nationality. Two or more that fit = not linked, alerted.
   - ATP / WTA: the official ranking the ITF shows for that ITF id, matched to the same rank and surname in
@@ -68,6 +71,47 @@ def key_of(name):
     return re.sub(r"[^a-z]", "", norm(name))
 
 
+# little words kept lower case inside a name when typed that way ("Botic van de Zandschulp")
+PARTICLES = {"de", "del", "della", "der", "den", "di", "da", "das", "do", "dos", "du", "van", "von", "ten", "ter", "le", "la", "y"}
+
+
+def tidy(name):
+    """Proper capitals: "keegan rice" -> "Keegan Rice", "MARCEL LATAK" -> "Marcel Latak", "o'connor-smith" -> "O'Connor-Smith".
+    A word typed with its own capitals inside ("McDonald", "DiMarco") is left as typed. Same rules as cnTidy in index.html."""
+    words = " ".join(str(name or "").split()).split(" ")
+
+    def cap(part):
+        part = part[:1].upper() + part[1:].lower()
+        return part[:2] + part[2:3].upper() + part[3:] if part.startswith("Mc") and len(part) > 3 else part
+
+    out = []
+    for i, w in enumerate(words):
+        if w[:1].isupper() and any(c.isupper() for c in w[1:]) and not w.isupper():
+            out.append(w)  # deliberate capitals
+        elif w.islower() and w in PARTICLES and 0 < i < len(words) - 1:
+            out.append(w)
+        else:
+            out.append("-".join("'".join(cap(a) for a in h.split("'")) for h in w.split("-")))
+    return " ".join(out)
+
+
+def dist(a, b):
+    """Edit distance between two names, ignoring accents, capitals and word order."""
+    a, b = " ".join(sorted(norm(a).split())), " ".join(sorted(norm(b).split()))
+    row = list(range(len(b) + 1))
+    for i, ca in enumerate(a, 1):
+        prev, row[0] = row[0], i
+        for j, cb in enumerate(b, 1):
+            prev, row[j] = row[j], min(row[j] + 1, row[j - 1] + 1, prev + (ca != cb))
+    return row[-1]
+
+
+def close(a, b):
+    """A likely typo: 1 letter out (2 for names over 10 letters), but not the same name."""
+    d = dist(a, b)
+    return 0 < d <= (2 if len(key_of(a)) > 10 else 1)
+
+
 def iso(dt):
     return dt.strftime("%Y-%m-%dT%H:%M:%SZ")
 
@@ -97,25 +141,59 @@ def itf(path, **params):
     return json.loads(body)
 
 
+def itf_name(c):
+    return tidy(f'{c.get("givenName") or ""} {c.get("familyName") or ""}')
+
+
 def itf_find(p):
-    """Returns (status, id, nat, circuits, note). status: linked / none / unsure."""
+    """Returns (status, id, nat, circuits, note, itf name). status: linked / none / unsure.
+    Nobody with the exact name: each word is searched on its own, and the ITF players one letter out (a typo) are
+    looked at. Exactly one, with the nationality typed in = linked under the ITF's spelling (alerted, so it can be
+    checked). Otherwise the closest one is only suggested ("Did you mean ...?"), never linked."""
+    circ = lambda c: {x.get("value") for x in c.get("playedCircuits") or []}
+
+    def fits(hits):
+        if p.get("nat"):
+            hits = {k: c for k, c in hits.items() if (c.get("playerNationalityCode") or "").upper() == p["nat"]}
+        if p.get("g"):
+            wrong = "WT" if p["g"] == "M" else "MT"
+            hits = {k: c for k, c in hits.items() if wrong not in circ(c)}
+        return hits
+
     hits = {}
     for name in p["names"]:
         for c in itf("/PlayerApi/GetPlayerSearch", searchString=name).get("players") or []:
-            if same_name(f'{c.get("givenName")} {c.get("familyName")}', name):
+            if same_name(itf_name(c), name):
                 hits[c["playerId"]] = c
-    circ = lambda c: {x.get("value") for x in c.get("playedCircuits") or []}
-    if p.get("nat"):
-        hits = {k: c for k, c in hits.items() if (c.get("playerNationalityCode") or "").upper() == p["nat"]}
-    if p.get("g"):
-        wrong = "WT" if p["g"] == "M" else "MT"
-        hits = {k: c for k, c in hits.items() if wrong not in circ(c)}
+    hits = fits(hits)
+    fixed = ""
+    if not hits:  # spelling check
+        near = {}
+        for word in sorted({w for n in p["names"] for w in norm(n).split() if len(w) >= 3}, key=len, reverse=True)[:3]:
+            for c in itf("/PlayerApi/GetPlayerSearch", searchString=word).get("players") or []:
+                if any(close(itf_name(c), n) for n in p["names"]):
+                    near[c["playerId"]] = c
+        near = fits(near)
+        if len(near) == 1 and p.get("nat"):
+            hits, fixed = near, f"spelling corrected from {p['name']}"
+        elif near:
+            sug = "; ".join(f'{itf_name(c)} ({c.get("playerNationalityCode")}, id {k})' for k, c in near.items())
+            return "none", None, None, [], f"not found under this spelling. Did you mean {sug}?", ""
     if not hits:
-        return "none", None, None, [], ""
+        return "none", None, None, [], "", ""
     if len(hits) > 1:
-        return "unsure", None, None, [], "; ".join(f'id {k} ({c.get("playerNationalityCode")})' for k, c in hits.items())
+        return "unsure", None, None, [], "; ".join(f'id {k} ({c.get("playerNationalityCode")})' for k, c in hits.items()), ""
     k, c = hits.popitem()
-    return "linked", k, (c.get("playerNationalityCode") or "").upper(), sorted(circ(c)), "" if p.get("nat") else "name only (no nationality given)"
+    note = fixed or ("" if p.get("nat") else "name only (no nationality given)")
+    return "linked", k, (c.get("playerNationalityCode") or "").upper(), sorted(circ(c)), note, itf_name(c)
+
+
+def itf_spelling(pid, names):
+    """The ITF's own spelling of a player linked before names were checked (one search, done once)."""
+    for c in itf("/PlayerApi/GetPlayerSearch", searchString=names[0]).get("players") or []:
+        if c.get("playerId") == pid:
+            return itf_name(c)
+    return ""
 
 
 def itf_overview(pid, circuit):
@@ -312,7 +390,7 @@ def prospects(removed):
     except Exception as e:
         errors["sheet"] = {"at": iso(NOW), "msg": f"names added on the site couldn't be read ({str(e)[:120]})"}
     for p in out.values():
-        p["names"] = [n.strip() for n in p["name"].split("|") if n.strip()]
+        p["names"] = [tidy(n) for n in p["name"].split("|") if n.strip()]
         p["name"] = p["names"][0]
         p["g"] = {"m": "M", "b": "M", "boy": "M", "male": "M", "f": "F", "g": "F", "girl": "F", "female": "F"}.get(str(p.get("g") or "").strip().lower())
         p["nat"] = (str(p.get("nat") or "").strip().upper()[:3]) or None
@@ -375,6 +453,7 @@ def main():
             print("time budget used - the next run carries on"); break
         p = plist[k]
         rec = players.setdefault(k, {"links": {}, "hist": {}})
+        rec.pop("typed", None)
         rec.update({"name": p["name"], "g": p.get("g"), "src": p["src"], "by": p.get("by"), "added": p.get("added") or rec.get("added") or T.isoformat()})
         rec["nat"] = p.get("nat") or rec.get("nat")
         L = rec.setdefault("links", {})
@@ -392,15 +471,24 @@ def main():
                 if p.get("itf") and li.get("id") != int(p["itf"]):
                     li = {"id": int(p["itf"]), "status": "linked", "how": "pinned in prospects.json"}
                 if li.get("status") != "linked" and (force or ago(li.get("tried")) > RECHECK or li.get("q") != [p["name"], p.get("nat"), p.get("g")]):
-                    st, pid, nat, circ, note = itf_find(p)
+                    st, pid, nat, circ, note, spelt = itf_find(p)
                     li = {"status": st, "tried": iso(NOW), "q": [p["name"], p.get("nat"), p.get("g")]}
                     if pid:
-                        li.update({"id": pid, "nat": nat, "circuits": circ, "how": "name + nationality" if p.get("nat") else "name"})
+                        li.update({"id": pid, "nat": nat, "circuits": circ, "name": spelt,
+                                   "how": ("corrected spelling" if note.startswith("spelling") else "name") + (" + nationality" if p.get("nat") else "")})
                     if note:
                         li["note"] = note
+                elif li.get("status") == "linked" and "name" not in li and not p.get("itf"):
+                    li["name"] = itf_spelling(li["id"], p["names"])
                 L["itf"] = li
                 if li.get("status") == "linked":
                     pid = li["id"]
+                    if li.get("name") and not p.get("itf"):
+                        # show the ITF's spelling (accents, capitals, typos fixed); the typed name still finds them elsewhere
+                        if key_of(li["name"]) != key_of(p["name"]):
+                            rec["typed"] = p["name"]
+                        rec["name"] = li["name"]
+                        p["names"] = [li["name"]] + [n for n in p["names"] if not same_name(n, li["name"])]
                     rec["nat"] = rec.get("nat") or li.get("nat")
                     if not rec.get("g") and li.get("circuits"):
                         rec["g"] = "M" if "MT" in li["circuits"] else "F" if "WT" in li["circuits"] else None
@@ -489,7 +577,13 @@ def main():
                               f"Add the right id as \"{stage}\" for them in prospects.json so the right one is linked.")
             elif l.get("status") == "linked" and (l.get("note") or "").startswith("name only"):
                 checks.append(f"{rec['name']}: linked to {label} id {l.get('id')} by name only. Add their nationality in prospects.json (or on the site) to confirm it.")
-        if not any(((rec.get("links") or {}).get(s) or {}).get("status") in ("linked", "unsure") for s in ("itf", "te", "pro")) and rec.get("day"):
+            elif l.get("status") == "linked" and (l.get("note") or "").startswith("spelling"):
+                checks.append(f"{rec['name']}: typed as \"{rec.get('typed')}\" and linked to {label} id {l.get('id')} under the {label} spelling. "
+                              f"If that's the wrong player, pin the right id as \"{stage}\" in prospects.json.")
+            elif "Did you mean" in (l.get("note") or ""):
+                checks.append(f"{rec['name']}: {l['note']} If it's them, pin that id as \"{stage}\" in prospects.json (or remove and re-add them on the site with the right spelling).")
+        if not any(((rec.get("links") or {}).get(s) or {}).get("status") in ("linked", "unsure") for s in ("itf", "te", "pro")) and rec.get("day") \
+                and "Did you mean" not in (((rec.get("links") or {}).get("itf") or {}).get("note") or ""):
             checks.append(f"{rec['name']}: not found on Tennis Europe, the ITF or the ATP/WTA rankings. Check the spelling.")
     data["checks"] = checks
     for s in ("itf", "te"):
