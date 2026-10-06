@@ -193,18 +193,29 @@ def wta_events():
     return out
 
 
+LIST_MIN = 8  # a published entry list has at least this many players; fewer is a placeholder (lists not out yet)
+
+
+def list_state(ev, n):
+    """ev["list"]: "out" once the entry list is published, "none" before that, so the page can tell 'no 72 players on the
+    list' from 'list not out yet'. Not set when it couldn't be checked."""
+    ev["list"] = "out" if n >= LIST_MIN else "none"
+
+
 def wta_entries(ev, wta72):
     j = get_json(f"{WTA}/tournaments/{ev['wtaId']}/{ev['year']}/players")
-    found = []
+    found, n = [], 0
     for e in j.get("events") or []:
         if e.get("eventTypeCode") != "LS":  # ladies' singles
             continue
         for ep in e.get("eventPlayers") or []:
             for p in ep.get("players") or []:
+                n += 1
                 rid = wta72.get(key(p.get("fullName") or f"{p.get('firstName', '')} {p.get('lastName', '')}"))
                 if rid:
                     found.append({"id": rid, "how": {"Q": "Qualifier", "WC": "Wildcard", "LL": "Lucky loser", "PR": "Protected ranking",
                                                      "SE": "Special exempt", "ALT": "Alternate"}.get(ep.get("entryType") or "", "Entered")})
+    list_state(ev, n)
     return found
 
 
@@ -237,7 +248,7 @@ ITF_HOW = {"M": "Main draw", "Q": "Qualifying", "A": "Alternate", "JA": "Junior 
 
 def itf_entries(ev, itf72):
     lists = get_json(f"{ITF}/TournamentApi/GetAcceptanceList?" + urllib.parse.urlencode({"tournamentKey": ev["itfKey"], "circuitCode": ev["circuit"]}), "itf")
-    found = {}
+    found, n = {}, 0
     for group in lists or []:
         for cl in group.get("entryClassifications") or []:
             raw = (cl.get("entryClassification") or "").strip().lower()
@@ -247,10 +258,12 @@ def itf_entries(ev, itf72):
                                        ("wild", "Wildcard"), ("special exempt", "Special exempt"), ("lucky", "Lucky loser")) if k in raw), None) \
                 or raw.capitalize() or ITF_HOW.get(cl.get("entryClassificationCode") or "", "Entered")
             for e in cl.get("entries") or []:
+                n += 1
                 for p in e.get("players") or []:
                     rid = itf72.get(p.get("playerId"))
                     if rid and rid not in found:
                         found[rid] = {"id": rid, "how": how}
+    list_state(ev, n)
     return list(found.values())
 
 
@@ -441,7 +454,7 @@ def tt_entries(events, men, need, everyone):
     return out
 
 
-def sp_entries(events, men, everyone):
+def sp_entries(events, men, everyone, listed=None):
     """Spazio Tennis: {(roster id, event key): "main" or "alt"} for 72 men. Each list is matched to the coming event in
     the city its heading names (Italian names like 'Firenze' translated), and only used if most of its players are
     also down for that event on live-tennis.eu or Tick Tock, so an old edition's list is never used.
@@ -498,6 +511,8 @@ def sp_entries(events, men, everyone):
             elif not score or score[0][0] < max(4, len(main) * 0.4) or (len(score) > 1 and score[1][0] * 2 > score[0][0]):
                 continue  # not a coming event in that city, or an old edition's list (too few of the same players)
             lists += 1
+            if listed is not None:
+                listed.add(score[0][1])
             for k in main | alt | out_:
                 if k in men:
                     out[(men[k], score[0][1])] = "withdrawn" if k in out_ else "main" if k in main else "alt"
@@ -519,7 +534,7 @@ def atp_entries(events, errors):
         return {}  # off-season: no ATP or Challenger events in the next few weeks
     need = min(15, soon)  # names that must match the calendar before the week columns are trusted
     men = {pkey(n): rid for rid, (n, t) in ROSTER.items() if t == "atp"}
-    everyone, got = {}, {}
+    everyone, got, sp_listed = {}, {}, set()
 
     def lt():
         out, ev, _ = lt_entries(events, men, need)
@@ -527,7 +542,7 @@ def atp_entries(events, errors):
             everyone.setdefault(k, set()).update(v)
         return out
     for name, fn in (("live-tennis", lt), ("tick tock", lambda: tt_entries(events, men, need, everyone)),
-                     ("spazio", lambda: sp_entries(events, men, everyone))):
+                     ("spazio", lambda: sp_entries(events, men, everyone, sp_listed))):
         try:
             got[name] = fn()
         except Exception as x:
@@ -551,6 +566,14 @@ def atp_entries(events, errors):
         how = hows.pop() if len(hows) == 1 else "Wildcard" if hows == {"Main draw", "Wildcard"} else "Entered"
         found.setdefault(k, []).append({"id": rid, "how": how})
     missing_top(events, found, everyone)
+    # which events' lists are out (only said to be "not out" when all three sites could be read)
+    for e in events:
+        k = ev_key(e)
+        if e["tour"] in ("atp", "ch") and in_window(e["start"], e["end"]):
+            if k in sp_listed or len(everyone.get(k, ())) >= LIST_MIN:
+                e["list"] = "out"
+            elif len(got) == 3:
+                e["list"] = "none"
     return found
 
 
@@ -679,6 +702,7 @@ def main():
     for e in events:
         e["tier"] = tier(e["tour"], e["cat"])
         e.pop("e72", None)
+        e.pop("list", None)
 
     # ---- 72 entries, only for events whose entry lists are out ----
     prev_e72 = {(e.get("src"), e.get("name"), e.get("start")): e.get("e72") for e in prev.get("events") or [] if e.get("e72")}
@@ -742,6 +766,8 @@ def main():
             e.pop(k, None)
         for p in e.get("e72") or []:
             p.pop("carried", None)
+        if e.get("list") == "none" and e["start"] <= T.isoformat():
+            e.pop("list")
         if not e.get("e72"):
             e.pop("e72", None)
     events.sort(key=lambda e: (e["start"], e["tier"], e["name"]))

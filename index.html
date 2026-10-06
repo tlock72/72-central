@@ -355,6 +355,8 @@ select.sq-in option{background:var(--navy-2);color:var(--white)}
 .ev .cat{grid-row:1;grid-column:2;justify-self:end;font-family:var(--display);font-size:11px;font-weight:600;letter-spacing:.08em;text-transform:uppercase;padding:3px 9px;border-radius:999px;color:var(--navy);background:var(--t);white-space:nowrap}
 .ev .e72{grid-column:1/-1;display:flex;flex-wrap:wrap;gap:5px;margin-top:3px}
 .ev .e72 b{font-size:11px;font-weight:600;color:var(--navy);background:var(--gold);border-radius:999px;padding:2px 9px}
+.ev .nl{grid-column:1/-1;font-size:11px;color:var(--muted-2);margin-top:3px}
+.ev .nl.wait{font-style:italic}
 .ev .e72 b.me{box-shadow:0 0 0 2px var(--white)}
 .ev .e72 b em{font-style:normal;font-weight:400;opacity:.75;margin-left:4px}
 /* colour groups: sg1 Slams & Finals, sg2 1000, sg3 500, sg4 250, sg5 Challenger/WTA/ITF 125 down to 50, sg6 35 down to 15, sg7 ITF Juniors, sg8 Tennis Europe */
@@ -1721,7 +1723,8 @@ function renderSchedule(){
         <div class="nm">${esc(e.name)}</div>
         <span class="cat">${esc(e.tour === "te" ? schLvl(e) : e.cat)}</span>
         <div class="mt">${esc([e.place, e.surface, e.weekOnly ? "" : `${schFmt(e.start)} – ${schFmt(e.end)}`, wkOf(e, w), (e.ages || []).length ? e.ages.map(a => "U" + a).join("/") : "", e.status].filter(Boolean).join(" · "))}</div>
-        ${(e.e72 || []).length ? `<div class="e72">${e.e72.map(x => `<b${x.id === SCH.p ? ' class="me"' : ""} title="${esc(x.how)}">${esc(nm(x.id))}<em>${esc(x.how)}</em></b>`).join("")}</div>` : ""}
+        ${(e.e72 || []).length ? `<div class="e72">${e.e72.map(x => `<b${x.id === SCH.p ? ' class="me"' : ""} title="${esc(x.how)}">${esc(nm(x.id))}<em>${esc(x.how)}</em></b>`).join("")}</div>`
+          : e.list === "out" ? `<div class="nl">Entry list out · no 72 players</div>` : e.list === "none" ? `<div class="nl wait">Entry list not out yet</div>` : ""}
       </a>`).join("")}
     </section>`).join("") : `<div class="sq-empty">${SCH.p ? `${esc(byId[SCH.p] ? byId[SCH.p].first + " " + byId[SCH.p].last : SCH.p)} isn't entered in any of these events yet. Entry lists come out about 3 to 4 weeks before each event.` : SCH.e72 ? "No 72 players are entered in these events yet. Entry lists come out about 3 to 4 weeks before each event." : "No events match these filters."}</div>`;
   const up = SCHED.updated ? new Date(SCHED.updated) : null;
