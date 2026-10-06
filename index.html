@@ -41,6 +41,9 @@ button{font:inherit;color:inherit;background:none;border:0;cursor:pointer}
 .wrap{max-width:1180px;margin:0 auto;padding-inline:24px}
 
 header{position:sticky;top:env(safe-area-inset-top,0px);z-index:10;background:rgba(12,20,49,.9);backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);border-bottom:1px solid var(--line)}
+/* iPad (touch screen wider than a phone): Safari's see-through address bar sits over the top of the page, so a header
+   pinned to the top hid half the logo once the page moved at all. There the header just scrolls away with the page. */
+@media (hover:none) and (pointer:coarse) and (min-width:641px){header{position:relative}}
 .bar{display:flex;align-items:center;justify-content:space-between;gap:32px;padding-block:18px}
 .brand{display:flex;align-items:center;gap:18px;text-decoration:none;flex:none}
 .brand img{height:40px;width:auto;display:block}
