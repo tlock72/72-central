@@ -129,6 +129,8 @@ def gaps():
     for k, e in (sc.get("errors") or {}).items():
         if ukday(e.get("at")) == TODAY:
             out.append(f"Tour schedule: {parts.get(k, k)} couldn't be refreshed on {TODAY} ({e.get('msg')}). The page still shows the previous list.")
+    for c in sc.get("checks") or []:  # e.g. a Masters 1000 entry list without one of our top men on it
+        out.append(f"Tour schedule: {c}")
     if sc.get("updated") and ukday(sc["updated"]) < TODAY - timedelta(days=3):
         out.append(f"Tour schedule: not updated since {ukday(sc['updated'])}. Check the 'Tour schedule' job: {ACTIONS_URL}")
     # 7) updates have stopped: live scores normally refresh every 30 minutes from 07:13 to 23:43 UK

@@ -17,12 +17,9 @@ Sources (all free, no key):
   - ITF: the official acceptance list, matched by ITF player id.
   - WTA / WTA 125: the WTA player list, matched by name.
   - Tennis Europe: the player's own Tennis Europe profile.
-  - ATP / Challenger: the ATP's own site blocks GitHub, so three free sites are read. live-tennis.eu (each
-    top ~1,000 player's events for the next 3 weeks, the most up to date) must list the player, and Tick Tock
-    Tennis (each event's main draw, qualifying and alternate lists) or Spazio Tennis (each event's official
-    acceptance list) must agree on the same event. This week's events aren't on live-tennis.eu, so for those
-    Tick Tock and Spazio must both list the player. Once the draw is out, the matches in data.json show the
-    player as "In the draw".
+  - ATP / Challenger: the ATP's own site blocks GitHub, so three free sites are read: live-tennis.eu, Tick Tock
+    Tennis and Spazio Tennis (see atp_entries). A player shows if any one lists him, unless one shows a withdrawal.
+    Once the draw is out, data.json and ESPN's published draws show the player as "In the draw".
 A part that fails keeps what it had last time and is listed under "errors" (report_gaps.py alerts).
 """
 import html, json, os, re, sys, time, unicodedata, urllib.parse, urllib.request
@@ -346,11 +343,12 @@ def place_words(s):
 
 
 def find_event(name, monday, events):
-    """The one ATP / Challenger event in the week of `monday` whose name or city matches `name` ('Olbia', 'Guangzhou 2')."""
+    """The one ATP / Challenger event played in the week of `monday` whose name or city matches `name` ('Olbia', 'Guangzhou 2').
+    An event that runs over two weeks (Shanghai, Indian Wells...) matches in either week."""
     want = place_words(re.sub(r"\(.*?\)|\s-\s.*$", "", name))
     if not want:
         return None
-    hits = [e for e in events if e["tour"] in ("atp", "ch") and e["start"] == monday.isoformat()
+    hits = [e for e in events if e["tour"] in ("atp", "ch") and e["start"] <= monday.isoformat() <= max(e["start"], e["end"])
             and want <= place_words(e["name"]) | place_words(e["place"])]
     return hits[0] if len(hits) == 1 else None
 
@@ -446,17 +444,21 @@ def tt_entries(events, men, need, everyone):
 def sp_entries(events, men, everyone):
     """Spazio Tennis: {(roster id, event key): "main" or "alt"} for 72 men. Each list is matched to the coming event in
     the city its heading names (Italian names like 'Firenze' translated), and only used if most of its players are
-    also down for that event on live-tennis.eu or Tick Tock, so an old edition's list is never used."""
+    also down for that event on live-tennis.eu or Tick Tock, so an old edition's list is never used.
+    When neither of the other sites covers that event (live-tennis.eu only looks 3 weeks ahead, and both move on once an
+    event has started) the list is used on its own, but only if it is this year's (the year is in its title or heading),
+    it was posted in the 10 weeks before the event, the event hasn't started, and only one coming event is in that city."""
     cat = json.loads(get(f"{SP_API}/categories?slug=ent&_fields=id"))
     if not cat:
         raise RuntimeError("the 'Entry List' category is missing")
-    after = (FROM - timedelta(days=42)).isoformat() + "T00:00:00"
-    posts = json.loads(get(f"{SP_API}/posts?categories={cat[0]['id']}&per_page=100&after={after}&_fields=id,content"))
-    window = [ev_key(e) for e in events if e["tour"] in ("atp", "ch") and FROM.isoformat() <= e["start"] <= (FROM + timedelta(weeks=5)).isoformat()]
+    after = (FROM - timedelta(days=70)).isoformat() + "T00:00:00"
+    posts = json.loads(get(f"{SP_API}/posts?categories={cat[0]['id']}&per_page=100&after={after}&_fields=id,date,title,content"))
+    window = [ev_key(e) for e in events if e["tour"] in ("atp", "ch") and e["end"] >= FROM.isoformat() and e["start"] <= (FROM + timedelta(weeks=5)).isoformat()]
     byk = {ev_key(e): e for e in events}
     out, lists = {}, 0
     for post in posts:
         body = (post.get("content") or {}).get("rendered") or ""
+        title, posted = html.unescape((post.get("title") or {}).get("rendered") or ""), (post.get("date") or "")[:10]
         for sec in re.split(r"<h[23][^>]*>", body)[1:]:
             end = re.search(r"</h[23]>", sec)
             head, rest = (sec[:end.start()], sec[end.end():]) if end else (sec, "")
@@ -488,7 +490,12 @@ def sp_entries(events, men, everyone):
             want = place_words(city)
             same = [k for k in window if want and want <= place_words(byk[k]["name"]) | place_words(byk[k]["place"])]
             score = sorted(((len(main & everyone.get(k, set())), k) for k in same), reverse=True)
-            if not score or score[0][0] < max(4, len(main) * 0.4) or (len(score) > 1 and score[1][0] * 2 > score[0][0]):
+            alone = (len(same) == 1 and not everyone.get(same[0]) and str(YEAR) in f"{title} {head}" and posted
+                     and (date.fromisoformat(byk[same[0]]["start"]) - timedelta(days=70)).isoformat() <= posted <= byk[same[0]]["start"]
+                     and T.isoformat() < byk[same[0]]["start"])  # once an event has started, its draw is the better source
+            if alone:
+                score = [(len(main), same[0])]  # no other site covers it: this year's list, posted shortly before the event
+            elif not score or score[0][0] < max(4, len(main) * 0.4) or (len(score) > 1 and score[1][0] * 2 > score[0][0]):
                 continue  # not a coming event in that city, or an old edition's list (too few of the same players)
             lists += 1
             for k in main | alt | out_:
@@ -543,7 +550,27 @@ def atp_entries(events, errors):
         # the sites agree, or only one lists him: use its wording; if they disagree, just "Entered"
         how = hows.pop() if len(hows) == 1 else "Wildcard" if hows == {"Main draw", "Wildcard"} else "Entered"
         found.setdefault(k, []).append({"id": rid, "how": how})
+    missing_top(events, found, everyone)
     return found
+
+
+CHECKS = []  # things to look at by hand, alerted once each by report_gaps.py (no times in the text)
+
+
+def missing_top(events, found, everyone):
+    """A Grand Slam or Masters 1000 entry list is out (30+ names on live-tennis.eu or Tick Tock) but one of our top-40 men
+    isn't on it, or on any other event that week. Usually an injury or a skipped event, but it could be a missed entry."""
+    ranks = (load("data.json", {}).get("rankings") or {})
+    top = [rid for rid, (n, t) in ROSTER.items() if t == "atp" and ((ranks.get(rid) or {}).get("rank") or 999) <= 40]
+    for e in events:
+        k = ev_key(e)
+        if e["tour"] != "atp" or e["tier"] > 2 or e["start"] <= T.isoformat() or not in_window(e["start"], e["end"]) or len(everyone.get(k, ())) < 30:
+            continue
+        same_week = [ev_key(x) for x in events if x["tour"] in ("atp", "ch") and x["start"] <= e["start"] <= max(x["start"], x["end"])]
+        for rid in top:
+            if not any(p["id"] == rid for w in same_week for p in found.get(w, [])):
+                CHECKS.append(f"{e['name']}: the entry list is out but {ROSTER[rid][0]} isn't on it (nor on any other event that week). "
+                              "Probably injured or skipping it, but worth a check.")
 
 
 # ---------------- ATP / Challenger: 72 players in a draw (data.json) ----------------
@@ -596,6 +623,7 @@ def espn_draws(events):
                     if len(hits) != 1 or not in_window(hits[0]["start"], hits[0]["end"]):
                         continue
                     e72 = hits[0].setdefault("e72", [])
+                    e72[:] = [x for x in e72 if not x.get("carried")]  # the draw is out: it replaces entries kept from before
                     for rid, qual in ours.items():
                         e72[:] = [x for x in e72 if x["id"] != rid] + [{"id": rid, "how": "Qualifying draw" if qual else "In the draw"}]
                         found += 1
@@ -693,6 +721,10 @@ def main():
         byev = atp_entries(events, errors)
         for e in atp_window:
             e["e72"] = byev.get(ev_key(e), [])
+            if not e["e72"] and e["start"] <= T.isoformat():
+                # the event has started and the sites have moved on to the coming weeks: keep yesterday's entries
+                # (marked, so ESPN's draw replaces them once it is out)
+                e["e72"] = [dict(p, carried=True) for p in prev_e72.get(ev_key(e)) or []]
     except Exception as x:
         print("ATP / Challenger entries failed, keeping the previous ones:", x)
         errors["atp-entries"] = {"at": NOW.isoformat(timespec="seconds"), "msg": str(x)[:200]}
@@ -708,11 +740,13 @@ def main():
     for e in events:
         for k in ("wtaId", "year", "itfKey", "circuit", "teId"):
             e.pop(k, None)
+        for p in e.get("e72") or []:
+            p.pop("carried", None)
         if not e.get("e72"):
             e.pop("e72", None)
     events.sort(key=lambda e: (e["start"], e["tier"], e["name"]))
     data = {"updated": NOW.isoformat(timespec="seconds"), "from": FROM.isoformat(), "to": TO.isoformat(),
-            "entriesTo": (T + timedelta(days=ENTRY_DAYS)).isoformat(), "done": done, "errors": errors, "events": events}
+            "entriesTo": (T + timedelta(days=ENTRY_DAYS)).isoformat(), "done": done, "errors": errors, "checks": CHECKS, "events": events}
     with open(OUT, "w", encoding="utf-8") as f:
         json.dump(data, f, ensure_ascii=False, separators=(",", ":"))
     print(f"schedule.json: {len(events)} events, {sum(1 for e in events if e.get('e72'))} with 72 players entered, errors: {list(errors)}")
