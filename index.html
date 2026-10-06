@@ -761,7 +761,7 @@ html.name-only .gate-box h2,html.name-only .gate-digits{display:none}
 
     <section class="block">
       <div class="sec-h"><h2>Today's matches<span id="todayLbl" class="dt"></span></h2><span class="count" id="cToday">0</span><span class="rule"></span></div>
-      <p class="sec-d">Every 72 match scheduled for today (UK date): in progress first, then the next to start, then finished results (green edge for a 72 win, red for a 72 loss). Matches show <b>In progress</b> once they start and the final score once they finish. ATP and WTA tour matches (and WTA 125s) update live from ESPN every minute while this page is open; Challengers and ITF are checked about every hour. ITF junior and Tennis Europe matches have no live scoring, so their results appear after the next check. For point-by-point scores, check SofaScore.</p>
+      <p class="sec-d">Every 72 match scheduled for today (UK date): in progress first, then the next to start, then finished results, biggest tournaments first (green edge for a 72 win, red for a 72 loss). Matches show <b>In progress</b> once they start and the final score once they finish. ATP and WTA tour matches (and WTA 125s) update live from ESPN every minute while this page is open; Challengers and ITF are checked about every hour. ITF junior and Tennis Europe matches have no live scoring, so their results appear after the next check. For point-by-point scores, check SofaScore.</p>
       <div class="live-note" id="liveNote" hidden></div>
       <div class="grid" id="gToday"></div>
     </section>
@@ -1135,10 +1135,10 @@ function renderScores(){
   const superseded = m => m.status === "finished" && ms.some(x => x !== m && x.status !== "finished" && x.tournament === m.tournament
     && x.date === m.date && ours(x).some(id => ours(m).includes(id)));
   // every match dated today stays in today's list all day, even once the player's next round is confirmed
-  // today's order: in progress, then coming up (soonest first, no time yet last), then result pending, then finished (latest first)
+  // today's order: in progress, then coming up (soonest first, no time yet last), then result pending, then finished (biggest tournament first, then latest)
   const grp = m => m.status === "finished" ? 3 : isLive(m) ? 0 : m.status === "live" || m.date < today ? 2 : 1;
   const tday = ms.filter(m => m.date === today || (m.status === "live" && m.date < today)).sort((a,b) => grp(a) - grp(b)
-    || (grp(a) === 1 ? key(a).localeCompare(key(b)) || byTier(a, b) : grp(a) === 3 ? key(b).localeCompare(key(a)) || byTier(a, b) : byTier(a, b) || key(a).localeCompare(key(b))));
+    || (grp(a) === 1 ? key(a).localeCompare(key(b)) || byTier(a, b) : grp(a) === 3 ? byTier(a, b) || key(b).localeCompare(key(a)) : byTier(a, b) || key(a).localeCompare(key(b))));
   const next = ms.filter(m => m.date > today && m.status === "scheduled").sort((a,b) => a.date.localeCompare(b.date) || byTier(a, b) || key(a).localeCompare(key(b)));
   // results from the previous two days (UK dates) - never today's
   // latest results this week (Monday up to yesterday, UK dates; on a Monday, last week): each player's most recent match only,
