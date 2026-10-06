@@ -1,51 +1,51 @@
 {
- "ran": "2026-10-06T05:00:55+00:00",
+ "ran": "2026-10-06T06:08:02+00:00",
  "leagues": {
   "atp": {
    "http": 200,
-   "seconds": 0.22,
-   "bytes": 906847,
+   "seconds": 0.09,
+   "bytes": 908920,
    "matches": 446
   },
   "wta": {
    "http": 200,
-   "seconds": 0.06,
-   "bytes": 738810,
+   "seconds": 0.11,
+   "bytes": 741931,
    "matches": 343
   },
   "atp-challenger": {
    "http": 400,
-   "seconds": 0.1,
+   "seconds": 0.16,
    "bytes": 0,
    "matches": 0
   },
   "challenger": {
    "http": 400,
-   "seconds": 0.11,
+   "seconds": 0.22,
    "bytes": 0,
    "matches": 0
   },
   "itf": {
    "http": 400,
-   "seconds": 0.09,
+   "seconds": 0.06,
    "bytes": 0,
    "matches": 0
   },
   "itf-men": {
    "http": 400,
-   "seconds": 0.09,
+   "seconds": 0.13,
    "bytes": 0,
    "matches": 0
   },
   "itf-women": {
    "http": 400,
-   "seconds": 0.13,
+   "seconds": 0.1,
    "bytes": 0,
    "matches": 0
   },
   "wta-125": {
    "http": 400,
-   "seconds": 0.12,
+   "seconds": 0.06,
    "bytes": 0,
    "matches": 0
   }
@@ -53,7 +53,7 @@
  "days": {
   "atp 20260926": {
    "http": 200,
-   "seconds": 0.13,
+   "seconds": 0.29,
    "matches": 108,
    "events": [
     "AITO Hangzhou Open",
@@ -71,7 +71,7 @@
   },
   "atp 20260927": {
    "http": 200,
-   "seconds": 0.16,
+   "seconds": 0.13,
    "matches": 392,
    "events": [
     "AITO Hangzhou Open",
@@ -93,7 +93,7 @@
   },
   "atp 20260928": {
    "http": 200,
-   "seconds": 0.16,
+   "seconds": 0.08,
    "matches": 392,
    "events": [
     "AITO Hangzhou Open",
@@ -115,7 +115,7 @@
   },
   "atp 20260929": {
    "http": 200,
-   "seconds": 0.12,
+   "seconds": 0.16,
    "matches": 392,
    "events": [
     "AITO Hangzhou Open",
@@ -137,7 +137,7 @@
   },
   "atp 20260930": {
    "http": 200,
-   "seconds": 0.29,
+   "seconds": 0.1,
    "matches": 284,
    "events": [
     "China Open",
@@ -157,7 +157,7 @@
   },
   "atp 20261001": {
    "http": 200,
-   "seconds": 0.1,
+   "seconds": 0.14,
    "matches": 284,
    "events": [
     "China Open",
@@ -177,7 +177,7 @@
   },
   "atp 20261002": {
    "http": 200,
-   "seconds": 0.09,
+   "seconds": 0.1,
    "matches": 284,
    "events": [
     "China Open",
@@ -197,7 +197,7 @@
   },
   "atp 20261003": {
    "http": 200,
-   "seconds": 0.09,
+   "seconds": 0.07,
    "matches": 284,
    "events": [
     "China Open",
@@ -217,7 +217,7 @@
   },
   "atp 20261004": {
    "http": 200,
-   "seconds": 0.13,
+   "seconds": 0.1,
    "matches": 284,
    "events": [
     "China Open",
@@ -237,7 +237,7 @@
   },
   "atp 20261005": {
    "http": 200,
-   "seconds": 0.11,
+   "seconds": 0.06,
    "matches": 446,
    "events": [
     "China Open",
@@ -258,7 +258,7 @@
   },
   "atp 20261006": {
    "http": 200,
-   "seconds": 0.21,
+   "seconds": 0.09,
    "matches": 446,
    "events": [
     "China Open",
@@ -279,7 +279,7 @@
   },
   "atp 20261007": {
    "http": 200,
-   "seconds": 0.1,
+   "seconds": 0.09,
    "matches": 385,
    "events": [
     "China Open",
@@ -299,7 +299,7 @@
   },
   "atp 20261008": {
    "http": 200,
-   "seconds": 0.2,
+   "seconds": 0.13,
    "matches": 385,
    "events": [
     "China Open",
@@ -319,7 +319,7 @@
   },
   "atp 20261009": {
    "http": 200,
-   "seconds": 0.12,
+   "seconds": 0.08,
    "matches": 385,
    "events": [
     "China Open",
@@ -339,7 +339,7 @@
   },
   "wta 20260926": {
    "http": 200,
-   "seconds": 0.2,
+   "seconds": 0.29,
    "matches": 397,
    "events": [
     "Adana Open",
@@ -388,7 +388,7 @@
   },
   "wta 20260928": {
    "http": 200,
-   "seconds": 0.11,
+   "seconds": 0.12,
    "matches": 337,
    "events": [
     "Adana Open",
@@ -409,7 +409,7 @@
   },
   "wta 20260929": {
    "http": 200,
-   "seconds": 0.14,
+   "seconds": 0.1,
    "matches": 337,
    "events": [
     "Adana Open",
@@ -430,7 +430,7 @@
   },
   "wta 20260930": {
    "http": 200,
-   "seconds": 0.14,
+   "seconds": 0.1,
    "matches": 337,
    "events": [
     "Adana Open",
@@ -451,7 +451,7 @@
   },
   "wta 20261001": {
    "http": 200,
-   "seconds": 0.13,
+   "seconds": 0.11,
    "matches": 337,
    "events": [
     "Adana Open",
@@ -472,7 +472,7 @@
   },
   "wta 20261002": {
    "http": 200,
-   "seconds": 0.1,
+   "seconds": 0.24,
    "matches": 337,
    "events": [
     "Adana Open",
@@ -493,7 +493,7 @@
   },
   "wta 20261003": {
    "http": 200,
-   "seconds": 0.29,
+   "seconds": 0.13,
    "matches": 395,
    "events": [
     "Adana Open",
@@ -515,7 +515,7 @@
   },
   "wta 20261004": {
    "http": 200,
-   "seconds": 0.1,
+   "seconds": 0.09,
    "matches": 457,
    "events": [
     "Adana Open",
@@ -538,7 +538,7 @@
   },
   "wta 20261005": {
    "http": 200,
-   "seconds": 0.1,
+   "seconds": 0.15,
    "matches": 343,
    "events": [
     "China Open",
@@ -559,7 +559,7 @@
   },
   "wta 20261006": {
    "http": 200,
-   "seconds": 0.1,
+   "seconds": 0.07,
    "matches": 343,
    "events": [
     "China Open",
@@ -580,7 +580,7 @@
   },
   "wta 20261007": {
    "http": 200,
-   "seconds": 0.1,
+   "seconds": 0.07,
    "matches": 343,
    "events": [
     "China Open",
@@ -601,7 +601,7 @@
   },
   "wta 20261008": {
    "http": 200,
-   "seconds": 0.12,
+   "seconds": 0.17,
    "matches": 343,
    "events": [
     "China Open",
