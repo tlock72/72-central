@@ -614,13 +614,14 @@ nav .sh,.nm-s{display:none}
   .brand img{height:28px}
   .p-find{margin-bottom:10px;padding:8px 14px;font-size:16px}
   .champ{font-size:11px;padding:7px 12px;margin:8px 0 0}
-  /* six tabs don't fit beside the logo on a phone: the menu gets its own full-width row under it */
+  /* six tabs don't fit beside the logo on a phone: the menu sits under it as two rows of three (72 Scores, 72 Rankings, Roster / Filtered Rankings, Schedule, Scouting) */
   header .bar{flex-wrap:wrap;justify-content:center;row-gap:8px}
-  nav{display:grid;grid-template-columns:repeat(6,minmax(0,1fr));gap:2px;padding:3px;border-radius:999px;width:100%}
-  nav a{text-align:center;overflow:hidden;text-overflow:ellipsis;padding:7px 2px;font-size:10px;letter-spacing:0;white-space:nowrap}
-  nav .n72{display:none}
+  nav{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:3px;padding:4px;border-radius:20px;width:100%}
+  nav a{text-align:center;overflow:hidden;text-overflow:ellipsis;padding:7px 2px;font-size:11px;letter-spacing:.04em;white-space:nowrap}
+  nav a[data-tab=players] .n72{display:none}
   #champs{margin-top:8px}
   nav .lg{display:none} nav .sh{display:inline}
+  nav a[data-tab=scouting] .lg{display:inline} nav a[data-tab=scouting] .sh{display:none}
   body.on-home header .bar{justify-content:center}
   .hero{padding-block:14px 10px;gap:10px}
   .hero h1{font-size:30px}
@@ -721,7 +722,7 @@ nav .sh,.nm-s{display:none}
   .hp-ld .nmx{font-size:11px;margin-top:2px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 }
 @media (max-width:360px){
-  nav a{padding:6px 1px;font-size:9px}
+  nav a{padding:6px 1px;font-size:10px;letter-spacing:.02em}
   .pname{font-size:9.5px}
 }
 @media (prefers-reduced-motion:reduce){*{transition:none!important;animation:none!important}}
