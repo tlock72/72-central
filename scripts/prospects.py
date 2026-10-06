@@ -320,7 +320,7 @@ def te_past(pub, player, names):
                 m = re.match(r"\d+", row.get("rank") or "")
                 if m:
                     ranks[row["category"].replace("&amp;", "&")] = int(m[0])
-        return monday.isoformat(), ranks
+        return (monday.isoformat(), ranks) if ranks else None  # an empty table is never taken as "not ranked"
     return None
 
 
