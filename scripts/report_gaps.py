@@ -89,6 +89,12 @@ def gaps():
     if d.get("quotaHit") and ukday(d["quotaHit"]) == TODAY:
         out.append(f"The live-score feed's free daily allowance ran out on {TODAY}. "
                    "Today's results and 'In progress' updates will be late until it resets overnight.")
+    if d.get("espnError") and ukday(d["espnError"].get("at")) == TODAY:
+        out.append(f"ESPN's scoreboard (the source for ATP and WTA matches) couldn't be read on {TODAY} "
+                   f"({d['espnError'].get('msg')}). The Live Tennis API is covering ATP/WTA until it's back.")
+    if (d.get("conflicts") or {}).get("date") == TODAY:
+        out.append(f"ESPN and the Live Tennis API disagree on who won: {'; '.join(d['conflicts']['matches'])}. "
+                   "No result is shown for these until it's checked. Check SofaScore / the event page.")
     # a tour has published a newer official week (seen by Scouting HQ) but the site still hasn't got it by Wednesday
     tw = d.get("rankingsTourWeek") or {}
     sqw = load("scouting.json")
