@@ -197,6 +197,8 @@ section.block{margin-bottom:38px}
 .rk .no .hash{font-size:15px;color:var(--muted-2);margin-right:2px;font-weight:400}
 .rk .who{min-width:0}
 .rk .who .nm{font-weight:700;color:var(--white);font-size:15px}
+.rk .who a.nm{display:block;text-decoration:none}
+.rk .who a.nm:hover{color:var(--gold);text-decoration:underline;text-underline-offset:3px}
 .rk .who .ct{font-size:11px;color:var(--muted);letter-spacing:.12em;margin-top:3px}
 .rk .pts{text-align:right;font-family:var(--display);font-size:16px;color:var(--text);font-variant-numeric:tabular-nums}
 .rk .pts small{display:block;font-family:var(--body);font-size:10px;color:var(--muted-2);letter-spacing:.12em}
@@ -1301,7 +1303,7 @@ function renderItf(){
     .sort((a, b) => (a.d.rank ?? 1e9) - (b.d.rank ?? 1e9) || a.x.born - b.x.born || a.p.last.localeCompare(b.p.last));
   const html = list => list.map(({ x, p, d }) => `<div class="rk">
       <div class="no ${d.rank ? "" : "na"}">${d.rank ? `<span class="hash">#</span>${d.rank}` : "—"}</div>
-      <div class="who"><div class="nm">${esc(p.first)} ${esc(p.last)}</div><div class="ct">${esc([p.country, "b. " + x.born, d.rank ? "" : d.high ? "No current ITF junior ranking" : (x.head ? `${x.head[0]} #${x.head[1]}` : "Not ITF-ranked")].filter(Boolean).join(" · "))}</div></div>
+      <div class="who">${nmLink(p)}<div class="ct">${esc([p.country, "b. " + x.born, d.rank ? "" : d.high ? "No current ITF junior ranking" : (x.head ? `${x.head[0]} #${x.head[1]}` : "Not ITF-ranked")].filter(Boolean).join(" · "))}</div></div>
       <div class="pts">${d.high ? "#" + d.high : ""}<small>${d.high ? "BEST" : ""}</small></div>
       ${mv(d.rank ? d.move : null)}</div>`).join("");
   const b = rows("ATP"), g = rows("WTA");
@@ -1317,6 +1319,8 @@ function renderItf(){
   $("#itfSrc").textContent = ITF ? `Source: ITF World Tennis Junior Rankings${wk}. Updated every Monday. Only players with a current ITF junior ranking are listed.` : "Loading ITF junior rankings…";
 }
 function rkKey(s){ return String(s || "").normalize("NFD").toLowerCase().replace(/[^a-z]/g, "").replace(/ae/g, "a").replace(/oe/g, "o").replace(/ue/g, "u"); }
+// 72 Rankings: a player's name opens their 72 Roster profile (plain text if they have no profile)
+const nmLink = p => profById[p.id] ? `<a class="nm" href="#players/${esc(p.id)}" title="Open ${esc(p.first)} ${esc(p.last)}'s profile">${esc(p.first)} ${esc(p.last)}</a>` : `<div class="nm">${esc(p.first)} ${esc(p.last)}</div>`;
 function renderRankings(){
   $("#rk-tour").hidden = rankTab !== "tour"; $("#rk-itf").hidden = rankTab !== "itf";
   document.querySelectorAll(".chip.rt").forEach(c => c.classList.toggle("on", c.dataset.rt === rankTab));
@@ -1341,7 +1345,7 @@ function renderRankings(){
   const html = list => list.map(({p,d}) => { const t = d.rank ? trendOf(p) : null; const pts = d.points ? Number(d.points).toLocaleString("en-GB") : "";
     return `<div class="rk t6">
       <div class="no ${d.rank ? "" : "na"}">${d.rank ? `<span class="hash">#</span>${d.rank}` : "—"}</div>
-      <div class="who"><div class="nm">${esc(p.first)} ${esc(p.last)}</div><div class="ct">${esc([p.country, d.rank ? "" : (d.note || "Not ranked")].filter(Boolean).join(" · "))}${pts ? `<span class="ptm"> · ${pts} pts</span>` : ""}</div></div>
+      <div class="who">${nmLink(p)}<div class="ct">${esc([p.country, d.rank ? "" : (d.note || "Not ranked")].filter(Boolean).join(" · "))}${pts ? `<span class="ptm"> · ${pts} pts</span>` : ""}</div></div>
       <div class="pts">${pts}<small>${pts ? "PTS" : ""}</small></div>
       ${t ? trCell(t, "w") + trCell(t, "m3") + trCell(t, "m12") : d.rank ? `<div class="tr">${mv(d.move)}</div><div class="tr"></div><div class="tr"></div>` : `<div class="tr"></div><div class="tr"></div><div class="tr"></div>`}</div>`; }).join("");
   const atp = rows("ATP"), wta = rows("WTA");
