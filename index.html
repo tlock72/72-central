@@ -400,6 +400,15 @@ select.sq-in option{background:var(--navy-2);color:var(--white)}
 .sq-row .ch small{display:block;font-family:var(--body);font-size:10px;color:var(--muted-2);letter-spacing:.04em}
 .sq-row .ch.up{color:var(--up)} .sq-row .ch.down{color:var(--down)} .sq-row .ch.same,.sq-row .ch.na{color:var(--muted-2)}
 .sq-row .ch.new{color:var(--gold);font-size:12px;letter-spacing:.12em}
+.sq-eye{display:inline-flex;align-items:center;justify-content:center;color:var(--gold);border:1px solid var(--gold);border-radius:4px;padding:1px 4px;margin-left:6px;vertical-align:1px;line-height:0}
+.sq-eye svg{width:13px;height:11px}
+.sq-eye.wait{opacity:.55}
+.sq-add{display:inline-flex;align-items:center;gap:4px;margin-left:8px;font-size:10px;letter-spacing:.08em;color:var(--muted-2);border:1px solid var(--line-2);border-radius:999px;padding:1px 7px;vertical-align:1px}
+.sq-add svg{width:12px;height:10px}
+.sq-add:hover{color:var(--gold);border-color:var(--gold)}
+.sq-addf{display:flex;flex-wrap:wrap;align-items:center;gap:6px;margin-top:6px;font-size:12px;letter-spacing:0;color:var(--text)}
+.sq-addf button{font-size:11px;border-radius:999px;padding:2px 10px;border:1px solid var(--gold);color:var(--gold)}
+.sq-addf button.go{background:var(--gold);color:var(--navy)}
 .sq-72{display:inline-block;font-family:var(--display);font-size:10px;font-weight:600;color:var(--navy);background:var(--gold);border-radius:4px;padding:1px 5px;margin-left:6px;vertical-align:2px}
 .sq-more{display:block;margin:16px auto 0;font-family:var(--display);text-transform:uppercase;letter-spacing:.14em;font-size:12px;color:var(--gold);border:1px solid var(--line);border-radius:999px;padding:10px 22px}
 .sq-more:hover{background:var(--gold-dim)}
@@ -1176,7 +1185,7 @@ main.ptr-go,footer.ptr-go{transition:transform .35s cubic-bezier(.2,.8,.3,1)}
       <div>
         <div class="eyebrow">SeventyTwo Sports Group</div>
         <h1>Filtered Rankings</h1>
-        <p class="sub" id="sqSub">72's scouting radar. Every ranked ATP and WTA singles player (filtered by age group or birth year) and every ITF junior and Tennis Europe U14 player (filtered by birth year), and by ranking, with ranking moves over the last week, 3 months and 12 months, so we can spot rising talent early and see how 72 players (marked <span class="sq-72">72</span>) compare with their age group.</p>
+        <p class="sub" id="sqSub">72's scouting radar. Every ranked ATP and WTA singles player (filtered by age group or birth year) and every ITF junior and Tennis Europe U14 player (filtered by birth year), and by ranking, with ranking moves over the last week, 3 months and 12 months, so we can spot rising talent early and see how 72 players (marked <span class="sq-72">72</span>) compare with their age group. Players on the Scouting Corner watch list are marked <span class="sq-eye" title="On the Scouting Corner watch list"><svg viewBox="0 0 24 18" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linejoin="round" aria-hidden="true"><circle cx="6" cy="12.5" r="4.3"/><circle cx="18" cy="12.5" r="4.3"/><path d="M10.3 12.5h3.4M2.6 10 5.3 2h3.4l1.6 8.5M21.4 10 18.7 2h-3.4l-1.6 8.5"/></svg></span>; tap <b>Scout</b> next to anyone else to add them there.</p>
       </div>
       <div class="chips" role="group" aria-label="Choose tour"><button class="chip sqt on" data-t="atp">ATP</button><button class="chip sqt" data-t="wta">WTA</button><button class="chip sqt" data-t="itfb">ITF Boys</button><button class="chip sqt" data-t="itfg">ITF Girls</button><button class="chip sqt" data-t="teb14">TE U14 Boys</button><button class="chip sqt" data-t="teg14">TE U14 Girls</button></div>
     </div>
@@ -2228,7 +2237,7 @@ const SQ_NAME = { atp: "ATP", wta: "WTA", itfb: "ITF junior boys", itfg: "ITF ju
 const SQ_SHORT = { itfb: "ITF Boys", itfg: "ITF Girls", teb14: "TE U14 Boys", teg14: "TE U14 Girls" };
 // by: "age" (age groups) or "year" (one birth year); ag: "all", "21"…"16" or "custom"; age: under-age limit, 0 = all ages;
 // yr: birth year, 0 = all; rk: "all", "100"…"1000" or "custom"; top: ranking limit, 0 = no limit
-const SQ = { t: "atp", by: "age", ag: "all", age: 0, yr: 0, rk: "all", top: 0, q: "", c: "", sort: "rank", asc: true, all: false, o72: false };
+const SQ = { t: "atp", by: "age", ag: "all", age: 0, yr: 0, rk: "all", top: 0, q: "", c: "", sort: "rank", asc: true, all: false, o72: false, add: "" };
 const SQ_AGES = [["all", "All"], ["22", "U22"], ["21", "U21"], ["20", "U20"], ["19", "U19"], ["18", "U18"], ["17", "U17"], ["16", "U16"], ["custom", "Custom"]];
 const SQ_RANKS = [["all", "All"], ["100", "Top 100"], ["300", "Top 300"], ["500", "Top 500"], ["1000", "Top 1000"], ["custom", "Custom"]];
 const sqNum = el => Math.max(0, parseInt(el.value, 10) || 0);
@@ -2261,6 +2270,55 @@ function sqSort(rows){
   const f = { rank: p => p.rank, name: p => p.name, born: p => -p.born, w: p => -mv(p, "w"), m3: p => -mv(p, "m3"), m12: p => -mv(p, "m12") }[SQ.sort];
   return rows.sort((a, b) => { const x = f(a), y = f(b); const r = x < y ? -1 : x > y ? 1 : a.rank - b.rank; return SQ.asc ? r : -r; });
 }
+/* Scouting Corner on Filtered Rankings: binoculars next to anyone on the watch list (matched by their ATP/WTA,
+   ITF or Tennis Europe link, else by name in any word order), and a "Scout" button to add anyone else. */
+const SQ_BINO = `<svg viewBox="0 0 24 18" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linejoin="round" aria-hidden="true"><circle cx="6" cy="12.5" r="4.3"/><circle cx="18" cy="12.5" r="4.3"/><path d="M10.3 12.5h3.4M2.6 10 5.3 2h3.4l1.6 8.5M21.4 10 18.7 2h-3.4l-1.6 8.5"/></svg>`;
+function sqWatch(){
+  const ids = [], names = new Map();
+  for (const p of Object.values(typeof cnShown === "function" && CORNER ? cnShown() : {})) {
+    const L = p.links || {};
+    if (L.pro?.url) ids.push(L.pro.url.toLowerCase());
+    if (L.itf?.id) ids.push("/" + L.itf.id + "/");
+    if (L.te?.id) ids.push(String(L.te.id).toLowerCase());
+    for (const n of [p.name, p.typed]) if (n) names.set(cnSorted(n), "on");
+  }
+  // added on the site but not looked up yet
+  const gone = new Set(CN_REMOVED.map(cnKey));
+  for (const x of [...CN_SHEET, ...cnLocal()]) if (x.name && !gone.has(cnKey(x.name)) && !names.has(cnSorted(x.name))) names.set(cnSorted(x.name), "wait");
+  return { ids, names };
+}
+function sqWatched(p, wl){
+  const u = (p.url || "").toLowerCase();
+  return u && wl.ids.some(i => u.includes(i)) ? "on" : wl.names.get(cnSorted(p.name)) || "";
+}
+function sqEye(p, wl){
+  const w = sqWatched(p, wl);
+  return w ? `<span class="sq-eye${w === "wait" ? " wait" : ""}" title="${w === "wait" ? "Being added to the Scouting Corner watch list" : "On the Scouting Corner watch list"}">${SQ_BINO}</span>` : "";
+}
+const sqRowKey = p => SQ.t + ":" + p.rank + ":" + cnSorted(p.name);
+function sqAddBtn(p, wl){
+  if (p.is72 || sqWatched(p, wl)) return "";
+  const k = sqRowKey(p);
+  if (SQ.add !== k) return `<button class="sq-add" data-add="${esc(k)}" title="Add to the Scouting Corner watch list">${SQ_BINO}Scout</button>`;
+  let by = ""; try { by = localStorage.getItem("72c-name") || ""; } catch (err) {}
+  return `<span class="sq-addf"><span>Add <b>${esc(p.name)}</b> to Scouting Corner? Everyone will see ${by ? esc(by) : "you"} added them.</span>
+    <button class="go" data-addgo="${esc(k)}">Add</button><button data-addx="1">Cancel</button></span>`;
+}
+$("#sqTbl").addEventListener("click", e => {
+  const a = e.target.closest("[data-add]"), go = e.target.closest("[data-addgo]");
+  if (a) { SQ.add = a.dataset.add; renderScouting(); return; }
+  if (e.target.closest("[data-addx]")) { SQ.add = ""; renderScouting(); return; }
+  if (!go) return;
+  const p = sqRows().find(r => sqRowKey(r) === go.dataset.addgo);
+  SQ.add = "";
+  if (p) {
+    let by = ""; try { by = localStorage.getItem("72c-name") || ""; } catch (err) {}
+    // the nation is only sent if it is a code the Scouting Corner knows (Tennis Europe's ROM etc. would stop the ITF match)
+    const nat = CN_NATS.some(x => x.c === p.cty) ? p.cty : "";
+    cnSend(cnTidy(p.name), /^(atp|itfb|teb14)$/.test(SQ.t) ? "M" : "F", nat, p.born ? String(p.born) : "", by);
+  }
+  renderScouting();
+});
 function renderScouting(){
   if (!$("#page-scouting")) return;
   const T = sqTour(), jr = sqJr(), by = sqBy();
@@ -2298,10 +2356,10 @@ function renderScouting(){
     <div class="stat"><div class="k">Biggest climb · 12 months${capTxt}</div><div class="v nm">${b12 && b12.m12 > b12.rank ? `${esc(b12.name)}<small>▲${b12.m12 - b12.rank}</small>` : "—"}</div></div>`;
   const cols = [["rank","Rank"],["name","Player"],["born","Born"],["w","1 wk"],["m3","3 mo"],["m12","12 mo"]];
   const head = `<div class="sq-row h">${cols.map(([k, l]) => `<button data-s="${k}" class="${SQ.sort === k ? "on" + (SQ.asc ? "" : " asc") : ""}">${l}</button>`).join("")}</div>`;
-  const shown = SQ.all ? rows : rows.slice(0, 100);
+  const shown = SQ.all ? rows : rows.slice(0, 100), wl = sqWatch();
   $("#sqTbl").innerHTML = head + (shown.length ? shown.map(p => `<div class="sq-row">
       <div class="no">${p.rank}</div>
-      <div style="min-width:0">${p.url ? `<a class="nm" href="${esc(p.url)}" target="_blank" rel="noopener">` : `<span class="nm">`}${esc(p.name)}${p.is72 ? `<span class="sq-72">72</span>` : ""}${p.url ? "</a>" : "</span>"}<div class="ct">${esc(p.cty)}</div></div>
+      <div style="min-width:0">${p.url ? `<a class="nm" href="${esc(p.url)}" target="_blank" rel="noopener">` : `<span class="nm">`}${esc(p.name)}${p.is72 ? `<span class="sq-72">72</span>` : ""}${sqEye(p, wl)}${p.url ? "</a>" : "</span>"}<div class="ct">${esc(p.cty)}${sqAddBtn(p, wl)}</div></div>
       <div class="by">${p.born || "—"}${p.born && !jr ? `<small>U${year - p.born}</small>` : ""}</div>
       ${sqCell(p.rank, p.w)}${sqCell(p.rank, p.m3)}${sqCell(p.rank, p.m12)}
     </div>`).join("") : `<div class="sq-empty">No players match these filters.</div>`);
@@ -2713,7 +2771,7 @@ async function loadCorner(){
     const r = await fetch(CORNER_URL + "?kind=prospects");
     if (r.ok) { const j = await r.json(); CN_SHEET = j.prospects || []; CN_REMOVED = j.removed || []; CN_ASKED = j.asked || []; CN_SHEET_OK = Array.isArray(j.prospects); }
   } catch (e) {}
-  renderCorner(); renderHome();
+  renderCorner(); renderHome(); renderScouting();
 }
 /* ---------- Settings (the cog in the top corner): first name and time zone, kept on this device ---------- */
 // "Europe/London" -> "Europe / London · 14:05" so the right zone is easy to spot by its time now
