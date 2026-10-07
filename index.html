@@ -451,7 +451,11 @@ select.sq-in option{background:var(--navy-2);color:var(--white)}
 .cn-add .cn-ok button.no{background:transparent;color:var(--muted);border:1px solid var(--line)}
 .cn-list{display:grid;gap:12px}
 .cn-view{margin:0 0 16px}
-.sg-sec{display:grid;gap:10px;grid-template-columns:repeat(2,minmax(0,1fr));align-items:start}
+.sg-sec{display:grid;gap:10px;grid-template-columns:repeat(2,minmax(0,1fr));align-items:stretch}
+/* every suggestion tile the same size: the Scout button sits in the top corner, and all tiles get the height of the fullest one */
+.sg-sec .cn{position:relative;min-height:var(--sg-h,0)}
+.sg-sec .cn-h{padding-right:110px}
+.sg-sec .cn-h .sg-act{position:absolute;top:14px;right:16px;margin:0}
 .sg-sec>h3,.sg-sec>.sq-empty{grid-column:1/-1}
 @media (max-width:760px){.sg-sec{grid-template-columns:minmax(0,1fr)}}
 .sg-sec h3{font-family:var(--display);font-weight:500;text-transform:uppercase;letter-spacing:.16em;font-size:12px;color:var(--gold);margin:14px 0 0}
@@ -2757,7 +2761,15 @@ function renderSuggest(){
   });
   $("#cnList").innerHTML = `<p class="sg-note sg-short">Picked by the computer from the official rankings: the fastest climbers. ATP/WTA top 35, 72 players and the watch list left out. A pointer, not a verdict.</p><p class="sg-note sg-long">Picked by the computer from the official rankings: young players climbing fastest over the last 3 and 12 months, with a little extra weight for younger players, plus exceptional climbs by over-21s who have never been this high before (so not comebacks from injury). No one in the ATP or WTA top 35 is ever suggested (they are already well known), and 72 players and anyone already on the watch list are left out. It's a pointer to look closer, not a verdict. <b>ITF juniors aren't included yet:</b> the ITF doesn't let us read past junior rankings, so climbs can only be measured from our own weekly records, which started on 5 Oct 2026. They can be added once there's 3 months of history.</p>` + secs.join("");
   $("#cnSrc").textContent = "Sources: the official ATP and WTA rankings, and Tennis Europe (internal use only). Recalculated whenever a new ranking week comes out.";
+  sgSize();
 }
+// all suggestion tiles as tall as the fullest one (re-measured when the window size changes)
+function sgSize(){
+  const box = $("#cnList"), cards = [...box.querySelectorAll(".sg-sec .cn")];
+  box.style.removeProperty("--sg-h");
+  if (cards.length) box.style.setProperty("--sg-h", Math.max(...cards.map(c => c.offsetHeight)) + "px");
+}
+window.addEventListener("resize", () => { if ($("#cnList")?.querySelector(".sg-sec")) sgSize(); });
 function renderCorner(){
   if (!$("#page-corner")) return;
   const sug = CN.view === "sug";
