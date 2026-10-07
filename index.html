@@ -281,6 +281,8 @@ dialog.prof[open]{animation:pop .28s ease}
 .camp .cwrap{position:relative;margin:0 -40px}
 .camp .ctrack{display:flex;gap:12px;overflow-x:auto;scrollbar-width:none;padding:4px 0 18px;cursor:grab;
   -webkit-mask-image:linear-gradient(90deg,transparent,#000 40px,#000 calc(100% - 40px),transparent);mask-image:linear-gradient(90deg,transparent,#000 40px,#000 calc(100% - 40px),transparent)}
+.camp .ctrack{transform:translateZ(0)}
+.camp .ctrack img{backface-visibility:hidden;transform:translateZ(0)}
 .camp .ctrack.drag{cursor:grabbing;user-select:none}
 .camp .ctrack::-webkit-scrollbar{display:none}
 .camp .ctrack img{flex:none;height:clamp(300px,42vw,440px);width:auto;object-fit:cover;border-radius:16px;box-shadow:0 14px 34px rgba(0,0,0,.45);background:rgba(255,255,255,.03);-webkit-user-drag:none;user-select:none}
@@ -2238,7 +2240,9 @@ function latestResult(id){
    Touching, dragging, scrolling or the arrows pause it for a few seconds; it never drifts if the device asks for less motion. */
 function campHtml(list){
   if (!list?.length) return "";
-  const imgs = [...list, ...list].map(([f, w, h], i) => `<img src="${esc(f)}" width="${w}" height="${h}" alt=""${i >= list.length ? ' aria-hidden="true"' : ""} draggable="false" decoding="async">`).join("");
+  // phones get the lighter "-m" copies (800px tall, still sharp at phone size): twenty full-size images made iPhones drop and redraw them, so they flickered
+  const sm = matchMedia("(max-width:640px), (pointer:coarse) and (max-width:1024px)").matches;
+  const imgs = [...list, ...list].map(([f, w, h], i) => `<img src="${esc(sm ? f.replace(/\.webp$/, "-m.webp") : f)}" width="${w}" height="${h}" alt=""${i >= list.length ? ' aria-hidden="true"' : ""} draggable="false">`).join("");
   return `<section class="camp"><h3 class="pk">Campaigns</h3>
     <div class="cwrap"><button class="carr l" data-camp="-1" aria-label="Previous image">‹</button>
       <div class="ctrack" data-n="${list.length}">${imgs}</div>
@@ -2256,11 +2260,15 @@ function campStep(dir){  // arrows: one image along
   const im = ims[Math.max(0, Math.min(ims.length - 1, i + dir))];
   t.scrollTo({ left: im.offsetLeft - x0 - (t.clientWidth - im.offsetWidth) / 2, behavior: "smooth" });
 }
-function campStop(){ cancelAnimationFrame(campRaf); campRaf = 0; }
+let campAC = null;
+function campStop(){ cancelAnimationFrame(campRaf); campRaf = 0; campAC?.abort(); campAC = null; }
 function campStart(){
   campStop(); const t = campTrack(); if (!t) return;
+  campAC = new AbortController();
   let pos = null, last = 0;
   const busy = () => { campIdle = Date.now(); };
+  // scrolling the profile up or down pauses the drift too (moving it while the page scrolls made phones flicker)
+  $("#prof").addEventListener("scroll", () => { campIdle = Math.max(campIdle, Date.now() - 2000); pos = null; }, { passive: true, signal: campAC.signal });
   ["pointerdown", "touchstart", "touchmove", "wheel", "focusin"].forEach(ev => t.parentElement.addEventListener(ev, busy, { passive: true }));
   // a scroll that isn't the drift (a swipe still gliding after the finger lifts, a trackpad) also counts as someone using it
   t.addEventListener("scroll", () => { if (pos !== null && Math.abs(t.scrollLeft - pos) > 2) { busy(); pos = null; } if (Date.now() - campIdle < 3000) campWrap(t); }, { passive: true });
@@ -2275,7 +2283,8 @@ function campStart(){
   campIdle = 0;
   const tick = now => {
     const dt = Math.min(now - last, 100) / 1000; last = now;
-    if (Date.now() - campIdle < 3000 || !t.isConnected) pos = null;  // someone is using it: let go, pick up from where they left it
+    const r = t.getBoundingClientRect();
+    if (Date.now() - campIdle < 3000 || !t.isConnected || r.bottom < 0 || r.top > innerHeight) pos = null;  // also still while off screen  // someone is using it: let go, pick up from where they left it
     else { if (pos === null) pos = t.scrollLeft; pos += CAMP_SPEED * dt; const h = campHalf(t); if (h > 0 && pos >= h) pos -= h; t.scrollLeft = pos; }
     if (t.isConnected) campRaf = requestAnimationFrame(tick);
   };
