@@ -3035,7 +3035,7 @@ function cmFor(names){
 // the button: outline bubble with "+" when no one has written, a filled gold bubble with the count once someone has
 function cmBtn(ctx, names, cls){
   const n = cmFor(names).length, open = CM.open === ctx;
-  return `<button type="button" class="cm-btn${n ? " has" : ""}${open ? " on" : ""}${cls ? " " + cls : ""}" data-cm="${esc(ctx)}" aria-expanded="${open}" title="${n ? `${n} comment${n === 1 ? "" : "s"}: open the log` : "No comments yet: add one"}">${CM_ICON}${n ? n : "+"}${cls ? (n ? " Comments" : " Comment") : ""}</button>`;
+  return `<button type="button" class="cm-btn${n ? " has" : ""}${open ? " on" : ""}${cls ? " " + cls : ""}" data-cm="${esc(ctx)}" aria-expanded="${open}" title="${n ? `${n} comment${n === 1 ? "" : "s"}: open the log` : "No comments yet: add one"}">${CM_ICON}${n ? n : "+"}${cls ? (n === 1 ? " Comment" : n ? " Comments" : " Comment") : ""}</button>`;
 }
 const cmWhen = at => new Date(at).toLocaleString("en-GB", { timeZone: MYTZ, day: "numeric", month: "short", year: "numeric", hour: "2-digit", minute: "2-digit" });
 // the log: one entry per comment (who, when, the comment), with Undo for the writer's first hour and "Request deletion"
