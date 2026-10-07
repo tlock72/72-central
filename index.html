@@ -2964,6 +2964,7 @@ function cnSend(name, g, nat, born, by){
 async function loadCorner(){
   const cmP = loadComments();  // read alongside the rest
   try { const r = await fetch("corner.json?t=" + Date.now(), { cache: "no-store" }); if (r.ok) CORNER = await r.json(); else if (!CORNER) CORNER = { players: {} }; } catch (e) { if (!CORNER) CORNER = { players: {} }; }
+  renderCorner();  // cards straight away (comments from this device's last read); the Sheet's answers fill in below
   // names added on the site but not looked up yet (the Sheet's list; skipped quietly if it can't be read)
   try {
     const r = await fetch(CORNER_URL + "?kind=prospects");
@@ -2982,12 +2983,19 @@ let CM_SHEET = [], CM_OK = false;
 const CM = { open: "", del: "", draft: {} };
 const CM_UNDO = 36e5;  // 1 hour
 const CM_ICON = `<svg viewBox="0 0 24 22" aria-hidden="true"><path d="M4 2h16a2 2 0 0 1 2 2v10a2 2 0 0 1-2 2h-9l-5 4.5V16H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2z"/></svg>`;
+// the Sheet can take 10 seconds to wake up, so the last list read on this device is shown straight away until it answers
+try { const c = JSON.parse(localStorage.getItem("72c-cmlist") || "[]"); if (Array.isArray(c)) CM_SHEET = c; } catch (e) {}
+let cmAt = 0, cmRetry = 0;
 async function loadComments(){
   try {
     const r = await fetch(CORNER_URL + "?kind=comments");
-    if (r.ok) { const j = await r.json(); if (Array.isArray(j.comments)) { CM_SHEET = j.comments; CM_OK = true; } }
+    if (r.ok) { const j = await r.json(); if (Array.isArray(j.comments)) { CM_SHEET = j.comments; CM_OK = true; cmAt = Date.now(); cmRetry = 0; try { localStorage.setItem("72c-cmlist", JSON.stringify(CM_SHEET)); } catch (e) {} return; } }
   } catch (e) {}
+  // couldn't be read: try again in 20 seconds (up to 3 times) instead of waiting for the 10-minute refresh
+  if (cmRetry++ < 3) setTimeout(() => loadComments().then(cmRender), 2e4);
 }
+// back on the page (phones pause it in the background): re-read the comments if the last read is over a minute old
+document.addEventListener("visibilitychange", () => { if (!document.hidden && Date.now() - cmAt > 6e4) { cmRetry = 0; loadComments().then(cmRender); } });
 // comments written on this device: { id, name, text, by, at, undo, undone }; kept 1 day (the Sheet's list covers the rest)
 function cmMineAll(){ try { return JSON.parse(localStorage.getItem("72c-comments") || "[]").filter(x => Date.now() - (x.at || 0) < 864e5); } catch (e) { return []; } }
 function cmMineSave(list){ try { localStorage.setItem("72c-comments", JSON.stringify(list.slice(-50))); } catch (e) {} }
