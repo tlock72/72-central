@@ -14,6 +14,9 @@
 // automatically with the first comment). The writer can undo one from the same device for an hour ("Undone");
 // anyone can ask for one to be deleted, and Tobey gets an email to approve ("Deleted") or decline ("Kept").
 // To delete a comment straight away yourself, set its Status to "Deleted".
+// Result alerts: a device that presses "Turn on result alerts" in the site's Settings is added to the "Alerts" tab
+// (made automatically). GitHub (scripts/notify.py) reads that tab with the script property ALERTS_KEY and sends each
+// new 72 result to every device on it. Delete a row to stop alerts to that device. See NOTIFICATIONS.md.
 
 const TZ = "Europe/London";
 
@@ -69,6 +72,8 @@ function doPost(e) {
   if (d.kind === "comment") return addComment(d);
   if (d.kind === "uncomment") return undoComment(d);
   if (d.kind === "delcomment") return askDeleteComment(d);
+  if (d.kind === "alerts") return addAlerts(d);
+  if (d.kind === "alertsoff") return dropAlerts(d);
   const id = String(d.id || "").slice(0, 40), start = new Date(Number(d.start));
   if (!id || isNaN(start)) return out("bad");
   // text starting with = + - @ would be read as a formula, so it's kept as plain text
@@ -413,6 +418,63 @@ function listComments() {
   return ContentService.createTextOutput(JSON.stringify({ comments: list })).setMimeType(ContentService.MimeType.JSON);
 }
 
+// Result alerts: one row per device. The push address is only accepted from the browser makers' own push services.
+function pushOk_(u) {
+  return /^https:\/\/([a-z0-9.-]+\.)?(push\.apple\.com|fcm\.googleapis\.com|push\.services\.mozilla\.com|notify\.windows\.com)\//.test(String(u || ""));
+}
+function alertsTab_() {
+  const ss = SpreadsheetApp.getActiveSpreadsheet();
+  let sh = ss.getSheetByName("Alerts");
+  if (!sh) {
+    sh = ss.insertSheet("Alerts");
+    sh.getRange(1, 1, 1, 6).setValues([["Turned on", "Name", "Device", "Push address", "Key", "Auth"]]).setFontWeight("bold");
+    sh.setFrozenRows(1);
+    sh.getRange("A:A").setNumberFormat("ddd d mmm yyyy HH:mm");
+  }
+  return sh;
+}
+function addAlerts(d) {
+  const key = x => /^[A-Za-z0-9_-]{16,200}$/.test(String(x || "")) ? String(x) : "";
+  const ep = String(d.endpoint || "").slice(0, 1000), p256dh = key(d.p256dh), auth = key(d.auth);
+  if (!pushOk_(ep) || !p256dh || !auth) return out("bad");
+  const txt = (x, n) => { const t = String(x || "").replace(/[\u0000-\u001f]/g, "").trim().slice(0, n); return /^[=+\-@]/.test(t) ? "'" + t : t; };
+  const lock = LockService.getScriptLock();
+  lock.waitLock(10000);
+  try {
+    const sh = alertsTab_();
+    const hit = sh.getRange("D:D").createTextFinder(ep).matchEntireCell(true).findNext();
+    const row = [new Date(), txt(d.by, 30) || "(no name)", txt(d.device, 20), ep, p256dh, auth];
+    if (hit) sh.getRange(hit.getRow(), 1, 1, 6).setValues([row]); else sh.appendRow(row);
+  } finally {
+    lock.releaseLock();
+  }
+  return out("ok");
+}
+// A device turned alerts off (or GitHub found its sign-up has expired): its row is deleted.
+function dropAlerts(d) {
+  const ep = String(d.endpoint || "");
+  if (!pushOk_(ep)) return out("bad");
+  const lock = LockService.getScriptLock();
+  lock.waitLock(10000);
+  try {
+    const sh = alertsTab_();
+    let hit;
+    while ((hit = sh.getRange("D:D").createTextFinder(ep).matchEntireCell(true).findNext())) sh.deleteRow(hit.getRow());
+  } finally {
+    lock.releaseLock();
+  }
+  return out("ok");
+}
+// Read by GitHub (scripts/notify.py) only: needs the secret ALERTS_KEY (script property, same as the GitHub secret).
+function alertsList_(e) {
+  const want = PropertiesService.getScriptProperties().getProperty("ALERTS_KEY");
+  if (!want || e.parameter.key !== want) return out("no");
+  const sh = alertsTab_();
+  const rows = sh.getLastRow() > 1 ? sh.getRange(2, 1, sh.getLastRow() - 1, 6).getValues() : [];
+  const alerts = rows.filter(r => pushOk_(r[3])).map(r => ({ name: String(r[1]).replace(/^'/, ""), endpoint: String(r[3]), p256dh: String(r[4]), auth: String(r[5]) }));
+  return ContentService.createTextOutput(JSON.stringify({ alerts })).setMimeType(ContentService.MimeType.JSON);
+}
+
 // Read by GitHub (scripts/prospects.py) and by the site: the names added on the site, plus removal requests
 // (names only; the request IDs and codes never leave the Sheet).
 function doGet(e) {
@@ -420,6 +482,7 @@ function doGet(e) {
   if (kind === "decide") return decidePage(e);
   if (kind === "decidecomment") return decideCommentPage(e);
   if (kind === "comments") return listComments();
+  if (kind === "alerts") return alertsList_(e);
   if (kind !== "prospects") return out("72 Central");
   const sh = SpreadsheetApp.getActiveSpreadsheet().getSheetByName("Prospects");
   const rows = sh && sh.getLastRow() > 1 ? sh.getRange(2, 1, sh.getLastRow() - 1, 6).getValues() : [];

@@ -674,6 +674,10 @@ dialog.stg[open]{display:block;animation:pop .28s ease}
 .stg .bt{display:flex;gap:8px;justify-content:flex-end}
 .stg .bt button{height:36px;padding:0 20px;border-radius:999px;font-family:var(--display);text-transform:uppercase;letter-spacing:.12em;font-size:12px;font-weight:500;background:var(--gold);color:var(--navy)}
 .stg .bt button.no{background:transparent;color:var(--muted);border:1px solid var(--line)}
+/* Settings: "Result alerts" (notifications on this device when a 72 player finishes a match) */
+.stg .alert-bt{display:block;width:100%;height:40px;margin:0 0 10px;border-radius:10px;border:1px solid var(--gold);background:var(--gold-dim);color:var(--white);font-family:var(--display);text-transform:uppercase;letter-spacing:.1em;font-size:12px}
+.stg .alert-bt.on{border-color:var(--line);background:transparent;color:var(--muted)}
+.stg .alert-bt[hidden]{display:none}
 @media (max-width:640px){dialog.stg{width:calc(100vw - 20px);padding:20px 18px 18px}.stg h2{font-size:19px;margin-bottom:14px}}
 @keyframes hpPulse{70%{box-shadow:0 0 0 8px rgba(127,211,160,0)}100%{box-shadow:0 0 0 0 rgba(127,211,160,0)}}
 .hp-live{display:flex;align-items:center;gap:14px;flex-wrap:wrap;margin:0 0 22px;padding:14px 20px;border-radius:16px;border:1px solid rgba(232,144,143,.45);background:linear-gradient(90deg,rgba(232,144,143,.14),rgba(232,144,143,.03));text-decoration:none;color:var(--white)}
@@ -1321,6 +1325,9 @@ main.ptr-go,footer.ptr-go{transition:transform .35s cubic-bezier(.2,.8,.3,1)}
     <label for="setTz">Time zone</label>
     <select id="setTz"></select>
     <p>Match times marked "your time", "Today" and "Tomorrow", and the greeting follow this zone. The event's local time stays as it is. Saved on this device only.</p>
+    <label>Result alerts</label>
+    <button type="button" class="alert-bt" id="alertBt" hidden></button>
+    <p id="alertMsg"></p>
     <div class="bt"><button type="button" class="no" id="setNo">Cancel</button><button type="button" id="setOk">Save</button></div>
   </dialog>
 </main>
@@ -3085,6 +3092,7 @@ function openSettings(){
     + all.map(z => `<option value="${esc(z)}">${esc(tzLabel(z))}</option>`).join("");
   $("#setTz").value = MYTZ || "";
   $("#sets").showModal();
+  alertShow();
   $("#setName").blur();  // the box opens with the name showing; it only clears when you click into it
 }
 function saveSettings(){
@@ -3109,6 +3117,61 @@ function saveSettings(){
 $("#cog").addEventListener("click", openSettings);
 $("#setOk").addEventListener("click", saveSettings);
 $("#setNo").addEventListener("click", () => $("#sets").close());
+/* ---------- Result alerts: a notification on this device when a 72 player finishes a match (no app needed) ----------
+   Uses Web Push. The phone's sign-up goes to the "Alerts" tab of the visit-log Sheet; scripts/notify.py (GitHub, every
+   30 minutes) sends each new 72 result to everyone signed up. sw.js shows it. iPhones only allow this once the site
+   is on the Home Screen (iOS 16.4+). See NOTIFICATIONS.md. */
+const ALERT_KEY = "BJCbIge6jQqoXJYxuBa5WSj5NRQ-r96-4NsEIBIFcIqdzwWb_IhVe6CUoE-2vPCPOS7cTxT3JSf6eKrnbLevdo4";  // public half; the private half is the VAPID_PRIVATE secret
+const alertIOS = /iPhone|iPad|iPod/.test(navigator.userAgent) || (navigator.platform === "MacIntel" && navigator.maxTouchPoints > 1);
+const alertHome = navigator.standalone === true || matchMedia("(display-mode: standalone)").matches;
+let alertOn = false;
+async function alertSub(){
+  try { const r = await navigator.serviceWorker.getRegistration(); return r ? await r.pushManager.getSubscription() : null; } catch (e) { return null; }
+}
+async function alertShow(){
+  const bt = $("#alertBt"), msg = $("#alertMsg");
+  bt.hidden = true; bt.disabled = false;
+  if (alertIOS && !alertHome) {
+    msg.textContent = "To get a notification when a 72 player finishes a match: in Safari tap the Share button, then \"Add to Home Screen\". Open 72 Central from your Home Screen and turn alerts on here.";
+    return;
+  }
+  if (!("serviceWorker" in navigator && "PushManager" in window && "Notification" in window)) {
+    msg.textContent = "This browser can't show notifications. On iPhone, use Safari and add 72 Central to the Home Screen."; return;
+  }
+  if (Notification.permission === "denied") {
+    msg.textContent = "Notifications are blocked for 72 Central on this device. Allow them in the device's settings (on iPhone: Settings > Notifications > 72 Central), then come back here."; return;
+  }
+  const on = alertOn = !!(await alertSub());
+  bt.hidden = false; bt.classList.toggle("on", on);
+  bt.textContent = on ? "Turn off result alerts" : "Turn on result alerts";
+  msg.textContent = on ? "On: this device gets a notification when a 72 player finishes a match (within about 30 minutes)."
+    : "Get a notification on this device when a 72 player finishes a match.";
+}
+async function alertToggle(){
+  const bt = $("#alertBt"), msg = $("#alertMsg");
+  bt.disabled = true;
+  try {
+    // iPhones only show the "Allow notifications?" question straight from the tap, so it's asked before anything else
+    if (!alertOn && await Notification.requestPermission() !== "granted") return alertShow();
+    const old = await alertSub();
+    if (old) {
+      try { fetch(CORNER_URL, { method: "POST", mode: "no-cors", body: JSON.stringify({ kind: "alertsoff", endpoint: old.endpoint }) }).catch(() => {}); } catch (e) {}
+      await old.unsubscribe();
+    } else {
+      const reg = await navigator.serviceWorker.register("sw.js");
+      await navigator.serviceWorker.ready;
+      const key = Uint8Array.from(atob(ALERT_KEY.replace(/-/g, "+").replace(/_/g, "/")), c => c.charCodeAt(0));
+      const sub = (await reg.pushManager.subscribe({ userVisibleOnly: true, applicationServerKey: key })).toJSON();
+      let by = ""; try { by = localStorage.getItem("72c-name") || ""; } catch (e) {}
+      await fetch(CORNER_URL, { method: "POST", mode: "no-cors", body: JSON.stringify({ kind: "alerts", endpoint: sub.endpoint,
+        p256dh: sub.keys.p256dh, auth: sub.keys.auth, by, device: /iPhone|iPad|Android/i.test(navigator.userAgent) ? "Phone/tablet" : "Computer" }) });
+    }
+  } catch (e) {
+    await alertShow(); msg.textContent = "Couldn't change result alerts on this device. Please try again."; return;
+  } finally { bt.disabled = false; }
+  await alertShow();
+}
+$("#alertBt").addEventListener("click", alertToggle);
 $("#setName").addEventListener("keydown", e => { if (e.key === "Enter") saveSettings(); });
 // clicking into the name box clears it; clicking away with it still empty puts the current name back
 $("#setName").addEventListener("focus", e => { if (e.target.value === e.target.placeholder) e.target.value = ""; });

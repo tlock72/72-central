@@ -1,29 +1,33 @@
 """
-iPhone notifications for 72 results, free, no Claude.
+Notifications for 72 results, free, no Claude.
 
 After each score update, every newly finished match with a 72 player (ATP/WTA, Challengers and ITF from
-data.json, ITF juniors from itfm.json, Tennis Europe from te.json) is sent once to the free ntfy app
-(ntfy.sh). Anyone who subscribes to the topic in the ntfy iPhone app gets the alert.
-
-Setup: see NOTIFICATIONS.md. The topic name is kept in the repo secret NTFY_TOPIC. With no secret set,
-this does nothing.
+data.json, ITF juniors from itfm.json, Tennis Europe from te.json) is sent once to:
+  - every phone/computer that pressed "Turn on result alerts" in the site's Settings (Web Push, no app needed;
+    on iPhone the site has to be added to the Home Screen first). Needs the secrets VAPID_PRIVATE and ALERTS_KEY.
+  - optionally, the free ntfy app, if the secret NTFY_TOPIC is set.
+Setup: see NOTIFICATIONS.md. With no secrets set, this does nothing.
 
 Only "finished" results are sent: the feeds' own final result, never a guess (a match where ESPN and the
 Live Tennis API disagree on the winner is never "finished"). notified.json remembers what was sent.
 """
-import json, os, sys, unicodedata, urllib.request
+import json, os, sys, unicodedata, urllib.parse, urllib.request
 from datetime import datetime, timedelta
 from zoneinfo import ZoneInfo
 
 sys.path.insert(0, os.path.dirname(__file__))
 from update import ROSTER  # roster id -> (full name, tour)
+import webpush
 
 TOPIC = os.environ.get("NTFY_TOPIC", "").strip()
+VAPID = os.environ.get("VAPID_PRIVATE", "").strip()
+ALERTS_KEY = os.environ.get("ALERTS_KEY", "").strip()
+SHEET = "https://script.google.com/macros/s/AKfycbwzEb0YNoDmZaaJ5fQg05ubEe_lowMLiGoYaXuclycqQikOngLQEmENPN5KoL_KJXu1kA/exec"  # LOG_URL in index.html
 SITE = "https://tlock72.github.io/72-central/"
 STATE = "notified.json"
 TODAY = datetime.now(ZoneInfo("Europe/London")).date()
 RECENT = (TODAY - timedelta(days=2)).isoformat()  # never send old results (e.g. a feed filling in a past match)
-MAX_SINGLE = 5  # more new results than this in one run = one combined alert (ntfy's free limits)
+MAX_SINGLE = 5  # more new results than this in one run = one combined alert
 
 
 def load(path, default):
@@ -62,17 +66,49 @@ def text(m):
     return title, f"{m['score']}\n{where}"
 
 
-def send(title, body):
-    req = urllib.request.Request("https://ntfy.sh/", method="POST", headers={"Content-Type": "application/json"},
-                                 data=json.dumps({"topic": TOPIC, "title": title, "message": body,
-                                                  "tags": ["tennis"], "click": SITE}).encode())
-    with urllib.request.urlopen(req, timeout=20) as r:
-        return r.status == 200
+def sheet(payload=None):
+    """The visit-log Sheet: read the sign-ups ("Alerts" tab), or drop one that has expired."""
+    if payload is None:
+        url = SHEET + "?" + urllib.parse.urlencode({"kind": "alerts", "key": ALERTS_KEY})
+        with urllib.request.urlopen(url, timeout=30) as r:
+            return json.load(r)["alerts"]
+    req = urllib.request.Request(SHEET, method="POST", data=json.dumps(payload).encode())
+    with urllib.request.urlopen(req, timeout=30) as r:
+        return r.read()
+
+
+def deliver(msgs):
+    """Sends every (title, body). Raises if a whole channel can't be reached, so nothing is marked sent."""
+    if VAPID and ALERTS_KEY:
+        subs, ok = sheet(), 0
+        for sub in subs:
+            gone = False
+            for title, body in msgs:
+                code = webpush.send(sub, {"title": title, "body": body, "url": SITE}, VAPID)
+                ok += code in (200, 201, 202)
+                if code in (404, 410):  # this phone turned alerts off or the sign-up expired
+                    gone = True
+                    break
+                if code not in (200, 201, 202):
+                    print(f"push to {sub.get('name') or 'a device'} failed: {code}")
+            if gone:
+                print(f"sign-up from {sub.get('name') or 'a device'} has expired, removing it")
+                try:
+                    sheet({"kind": "alertsoff", "endpoint": sub["endpoint"]})
+                except Exception as e:
+                    print("could not remove it:", e)
+        print(f"web push: {ok} sent to {len(subs)} device(s)")
+    if TOPIC:
+        for title, body in msgs:
+            req = urllib.request.Request("https://ntfy.sh/", method="POST", headers={"Content-Type": "application/json"},
+                                         data=json.dumps({"topic": TOPIC, "title": title, "message": body,
+                                                          "tags": ["tennis"], "click": SITE}).encode())
+            urllib.request.urlopen(req, timeout=20).close()
 
 
 def main():
-    if not TOPIC:
-        print("NTFY_TOPIC not set - notifications off")
+    if not TOPIC and not (VAPID and ALERTS_KEY):
+        print("no notification secrets set - notifications off")
         return
     matches = []
     for f in ("data.json", "itfm.json", "te.json"):
@@ -89,18 +125,18 @@ def main():
         print(f"first run: {len(done)} existing results remembered, nothing sent")
     else:
         new = [(k, m) for k, m in done.items() if k not in state["sent"]]
+        if len(new) > MAX_SINGLE:
+            msgs = [(f"🎾 {len(new)} new 72 results", "\n".join(text(m)[0] for _, m in new))]
+        else:
+            msgs = [text(m) for _, m in new]
         try:
-            if len(new) > MAX_SINGLE:
-                send(f"🎾 {len(new)} new 72 results", "\n".join(text(m)[0] for _, m in new))
-                print(f"sent 1 combined alert for {len(new)} results")
-                state["sent"].update((k, m["date"]) for k, m in new)
-            else:
-                for k, m in new:
-                    send(*text(m))
-                    print("sent:", text(m)[0])
-                    state["sent"][k] = m["date"]
-        except Exception as e:  # what wasn't sent stays unmarked, so the next run tries again
-            print("ntfy could not be reached:", e)
+            if msgs:
+                deliver(msgs)
+                for t, _ in msgs:
+                    print("sent:", t)
+            state["sent"].update((k, m["date"]) for k, m in new)
+        except Exception as e:  # not marked as sent, so the next run tries again
+            print("alerts could not be sent:", e)
     state["sent"] = {k: d for k, d in state["sent"].items() if d >= (TODAY - timedelta(days=14)).isoformat()}
     with open(STATE, "w") as f:
         json.dump(state, f, indent=1, sort_keys=True)

@@ -75,11 +75,13 @@ jobs:
         continue-on-error: true
         timeout-minutes: 6
       - id: notify
-        name: iPhone notifications for new 72 results (free ntfy app, see NOTIFICATIONS.md, no Claude)
-        run: python3 scripts/notify.py
+        name: Result alerts for new 72 results (site notifications, no app; see NOTIFICATIONS.md, no Claude)
+        run: pip install -q cryptography && python3 scripts/notify.py
         continue-on-error: true
-        timeout-minutes: 3
+        timeout-minutes: 4
         env:
+          VAPID_PRIVATE: ${{ secrets.VAPID_PRIVATE }}
+          ALERTS_KEY: ${{ secrets.ALERTS_KEY }}
           NTFY_TOPIC: ${{ secrets.NTFY_TOPIC }}
       - id: save
         name: Save changes
