@@ -2537,8 +2537,11 @@ const CN_SRC = { te: "Tennis Europe", "itf-jr": "ITF Juniors", "itf-pro": "Pro: 
 // Once the Sheet's list has been read, it is the truth: a name typed here only shows for 10 minutes if it isn't on it
 // (so a name taken off the Sheet doesn't come back as "Looking up…").
 function cnLocal(){ try { return JSON.parse(localStorage.getItem("72c-prospects") || "[]").filter(x => Date.now() - (x.at || 0) < (CN_SHEET_OK ? 6e5 : 3 * 864e5)); } catch (e) { return []; } }
-// removal requests sent from this device (shown as "Removal requested" until the Sheet lists them, for up to a day)
-function cnAsked(){ try { return JSON.parse(localStorage.getItem("72c-removals") || "[]").filter(x => Date.now() - (x.at || 0) < 864e5); } catch (e) { return []; } }
+// removal requests sent from this device: { name, at, undo (secret code only this device has), undone (when Undo was pressed) }.
+// Shown as "Removal requested" until the Sheet lists them (up to a day); kept 90 days so the request can still be undone.
+function cnAskedAll(){ try { return JSON.parse(localStorage.getItem("72c-removals") || "[]").filter(x => Date.now() - (x.at || 0) < 90 * 864e5); } catch (e) { return []; } }
+function cnAsked(){ return cnAskedAll().filter(x => !x.undone && Date.now() - (x.at || 0) < 864e5); }
+function cnAskedSave(list){ try { localStorage.setItem("72c-removals", JSON.stringify(list.slice(-30))); } catch (e) {} }
 function cnStage(label, l, txt, url){
   // one stage of the pathway, only shown once the player has a ranking there (no tile until then; ITF Juniors also shows a best rank for players who have aged out)
   if (l?.status !== "linked" || !txt) return "";
@@ -2589,10 +2592,14 @@ function cnCard(k, p){
     <div class="cn-acts">${res.length ? `<button class="cn-more${open ? " on" : ""}" data-k="${esc(k)}" aria-expanded="${open}"><span class="ar" aria-hidden="true">▾</span>${open ? "Hide" : "Show"} the last 12 months <span class="n">(${res.length} match${res.length === 1 ? "" : "es"})</span></button>` : ""}${cnRemoval(k, p.typed || p.name)}</div>
     ${res.length ? `<div class="cn-res"${open ? "" : " hidden"}>${resHtml}</div>` : ""}</div>`;
 }
-// "Request removal": anyone can ask; Tobey gets an email and nothing is removed until he approves it
+// "Request removal": anyone can ask; Tobey gets an email and nothing is removed until he approves it.
+// The device that asked gets an "Undo" button while the request is waiting (it alone has the undo code).
 function cnRemoval(k, name){
-  if ([...CN_ASKED, ...cnAsked().map(x => x.name)].some(n => cnKey(n) === cnKey(name)))
-    return `<div class="cn-ft"><span class="asked">Removal requested · waiting for Tobey's approval</span></div>`;
+  const mine = cnAskedAll().filter(x => cnKey(x.name) === cnKey(name)).pop();
+  // just undone here: the Sheet's list may still show it for a few minutes, so it's hidden for 10 minutes
+  const undone = mine?.undone && Date.now() - mine.undone < 6e5;
+  if (!undone && [...CN_ASKED, ...cnAsked().map(x => x.name)].some(n => cnKey(n) === cnKey(name)))
+    return `<div class="cn-ft"><span class="asked">Removal requested · waiting for Tobey's approval</span>${mine?.undo ? `<button class="no" type="button" data-rmu="${esc(name)}" title="Withdraw your removal request">Undo</button>` : ""}</div>`;
   if (CN.rm !== k) return `<div class="cn-ft"><button class="rm" data-rm="${esc(k)}">Request removal</button></div>`;
   return `<form class="cn-ft cn-rmf" data-k="${esc(k)}" data-n="${esc(name)}"><span>Ask Tobey to remove <b>${esc(name)}</b>?</span>
     <input class="sq-in" name="why" maxlength="300" placeholder="Reason (optional)" aria-label="Reason for removal">
@@ -2744,6 +2751,17 @@ $("#cnList").addEventListener("click", e => {
   const r = e.target.closest("[data-rm]");
   if (r) { CN.rm = r.dataset.rm; renderCorner(); document.querySelector(".cn-rmf input")?.focus(); return; }
   if (e.target.closest("[data-rmx]")) { CN.rm = ""; renderCorner(); return; }
+  // "Undo": withdraw a removal request made from this device (the Sheet only accepts it with this device's undo code)
+  const u = e.target.closest("[data-rmu]");
+  if (u) {
+    const list = cnAskedAll(), mine = list.filter(x => cnKey(x.name) === cnKey(u.dataset.rmu)).pop();
+    if (mine?.undo) {
+      try { fetch(CORNER_URL, { method: "POST", mode: "no-cors", body: JSON.stringify({ kind: "unremoval", undo: mine.undo }) }).catch(() => {}); } catch (err) {}
+      mine.undone = Date.now();
+      cnAskedSave(list);
+    }
+    renderCorner(); return;
+  }
   const b = e.target.closest(".cn-more"); if (!b) return;
   CN.open.has(b.dataset.k) ? CN.open.delete(b.dataset.k) : CN.open.add(b.dataset.k);
   renderCorner();
@@ -2753,8 +2771,9 @@ $("#cnList").addEventListener("submit", e => {
   e.preventDefault();
   const name = f.dataset.n, reason = f.elements.why.value.trim();
   let by = ""; try { by = localStorage.getItem("72c-name") || ""; } catch (err) {}
-  try { fetch(CORNER_URL, { method: "POST", mode: "no-cors", body: JSON.stringify({ kind: "removal", name, reason, by }) }).catch(() => {}); } catch (err) {}
-  try { localStorage.setItem("72c-removals", JSON.stringify([...cnAsked(), { name, at: Date.now() }].slice(-30))); } catch (err) {}
+  const undo = Array.from(crypto.getRandomValues(new Uint8Array(16)), b => b.toString(16).padStart(2, "0")).join("");
+  try { fetch(CORNER_URL, { method: "POST", mode: "no-cors", body: JSON.stringify({ kind: "removal", name, reason, by, undo }) }).catch(() => {}); } catch (err) {}
+  cnAskedSave([...cnAskedAll().filter(x => cnKey(x.name) !== cnKey(name)), { name, at: Date.now(), undo }]);
   CN.rm = "";
   renderCorner();
 });

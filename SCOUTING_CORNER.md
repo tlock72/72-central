@@ -19,7 +19,11 @@ without Claude, and uses no Live Tennis API calls.
 - The email has a link to a page with **Approve** and **Decline** buttons. Nothing is removed until Approve is pressed.
   Approved: the player disappears from the site straight away, their row on the "Prospects" tab is deleted, and
   GitHub leaves them out from then on, even if they're in `prospects.json` (you can delete their line there too, to tidy up).
-- Every request is kept on the **Removals** tab of the Sheet (asked, by whom, reason, Approved / Declined).
+- **Undo:** while a request is still waiting, the person who asked sees an **Undo** button next to "Removal requested"
+  on the device they asked from (that device holds a secret undo code, so nobody else can withdraw it). Undo marks the
+  request "Withdrawn" on the Removals tab and emails Tobey; the approve link then says there's nothing to do.
+  Requests made before 7 Oct 2026 have no undo code, so they can't be undone this way.
+- Every request is kept on the **Removals** tab of the Sheet (asked, by whom, reason, Approved / Declined / Withdrawn).
 - To bring someone back: add them again with the box on the site (that cancels the old removal), or change
   their Status on the Removals tab from "Approved" to "Re-added".
 - Deleting a row on the "Prospects" tab by hand still works too: the site hides them at once and GitHub drops them on its next run.
@@ -47,6 +51,8 @@ without Claude, and uses no Live Tennis API calls.
    dropdown and click **Run** (Google asks for permission to send email as you: **Advanced > Go to … > Allow**), then
    do the **Deploy > Manage deployments > Edit > Version: New version > Deploy** step again. Until then the button
    shows on the site but requests go nowhere.
+   **For "Undo" (added 7 Oct 2026):** paste the new script, run `setupRemovals` once more (adds the hidden "Undo code"
+   column) and do the **New version > Deploy** step. Until then Undo does nothing and the request stays waiting.
 4. **Optional, for near-instant lookups:** in GitHub go to **Settings > Developer settings > Fine-grained tokens >
    Generate new token**. Pick only the `72-central` repository, and under permissions set **Actions: Read and write**.
    Copy the token. In Apps Script, go to **Project Settings (cog) > Script properties > Add property**, name it
