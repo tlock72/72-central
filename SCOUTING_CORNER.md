@@ -15,7 +15,7 @@ without Claude, and uses no Live Tennis API calls.
 
 ## Removing players ("Request removal")
 - Every card has a small **Request removal** button. Anyone can press it (with an optional reason). The card then
-  says "Removal requested" and Tobey gets an email from his own Google account.
+  says "Removal requested" and Tobey gets an email at tlock@72sportsgroup.com (`REMOVAL_EMAIL` at the top of the script).
 - The email has a link to a page with **Approve** and **Decline** buttons. Nothing is removed until Approve is pressed.
   Approved: the player disappears from the site straight away, their row on the "Prospects" tab is deleted, and
   GitHub leaves them out from then on, even if they're in `prospects.json` (you can delete their line there too, to tidy up).

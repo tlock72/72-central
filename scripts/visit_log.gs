@@ -11,6 +11,8 @@
 // (their row on the "Prospects" tab is deleted, and GitHub stops showing anyone from prospects.json too).
 
 const TZ = "Europe/London";
+// Where "Request removal" emails go. Leave empty ("") to use the Google account that owns this script.
+const REMOVAL_EMAIL = "tlock@72sportsgroup.com";
 
 // Run once by hand: creates the "Visits" and "By person" tabs.
 function setup() {
@@ -148,7 +150,7 @@ function askRemoval(d) {
   }
   const link = ScriptApp.getService().getUrl() + "?kind=decide&id=" + id + "&code=" + code;
   try {
-    MailApp.sendEmail(Session.getEffectiveUser().getEmail(), "72 Central: remove " + name + " from Scouting Corner?",
+    MailApp.sendEmail(REMOVAL_EMAIL || Session.getEffectiveUser().getEmail(), "72 Central: remove " + name + " from Scouting Corner?",
       (by.replace(/^'/, "") || "Someone") + " asked for " + name + " to be removed from the Scouting Corner.\n" +
       (why ? "Reason given: " + why.replace(/^'/, "") + "\n" : "") +
       "\nOpen this link to approve or decline it:\n" + link + "\n\nNothing is removed until you approve. All requests are on the \"Removals\" tab of the visit-log Sheet.");
