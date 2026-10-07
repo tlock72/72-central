@@ -9,6 +9,7 @@
 // Each Scouting Corner card also has a "Request removal" button: the request goes on the "Removals" tab and
 // Tobey gets an email with a link to approve or decline it. Approved = taken off the Scouting Corner
 // (their row on the "Prospects" tab is deleted, and GitHub stops showing anyone from prospects.json too).
+// Whoever asked can undo their request from the same device while it's still waiting ("Withdrawn").
 
 const TZ = "Europe/London";
 
@@ -47,11 +48,11 @@ function setupProspects() {
 function setupRemovals() {
   const ss = SpreadsheetApp.getActiveSpreadsheet();
   const r = ss.getSheetByName("Removals") || ss.insertSheet("Removals");
-  r.getRange(1, 1, 1, 8).setValues([["Asked", "Name", "Asked by", "Reason", "Status", "Decided", "Request ID", "Code"]]).setFontWeight("bold");
+  r.getRange(1, 1, 1, 9).setValues([["Asked", "Name", "Asked by", "Reason", "Status", "Decided", "Request ID", "Code", "Undo code"]]).setFontWeight("bold");
   r.setFrozenRows(1);
   r.getRange("A:A").setNumberFormat("ddd d mmm yyyy HH:mm");
   r.getRange("F:F").setNumberFormat("ddd d mmm yyyy HH:mm");
-  r.hideColumns(7, 2);
+  r.hideColumns(7, 3);
 }
 
 // Called by the site. Adds a row for a new visit, or updates the row of a visit already logged.
@@ -60,6 +61,7 @@ function doPost(e) {
   try { d = JSON.parse(e.postData.contents); } catch (err) { return out("bad"); }
   if (d.kind === "prospect") return addProspect(d);
   if (d.kind === "removal") return askRemoval(d);
+  if (d.kind === "unremoval") return undoRemoval(d);
   const id = String(d.id || "").slice(0, 40), start = new Date(Number(d.start));
   if (!id || isNaN(start)) return out("bad");
   // text starting with = + - @ would be read as a formula, so it's kept as plain text
@@ -131,6 +133,7 @@ function askRemoval(d) {
   const name = clean(d.name).replace(/\s+/g, " ").slice(0, 60);
   if (name.length < 3 || !/^[\p{L}][\p{L} .'\-|]+$/u.test(name)) return out("bad");
   const by = plain(clean(d.by).slice(0, 30)), why = plain(clean(d.reason).slice(0, 300));
+  const undo = /^[a-f0-9]{16,64}$/.test(String(d.undo || "")) ? String(d.undo) : "";  // secret kept on the asker's device
   const key = s => String(s).normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLowerCase().replace(/[^a-z]/g, "");
   const lock = LockService.getScriptLock();
   lock.waitLock(10000);
@@ -142,7 +145,7 @@ function askRemoval(d) {
     if (removalRows_().some(x => x.status === "Waiting" && key(x.name) === key(name))) return out("dup");
     id = Utilities.getUuid().slice(0, 8);
     code = Utilities.getUuid().replace(/-/g, "");  // secret: only in Tobey's email, so only Tobey can decide
-    sh.appendRow([new Date(), name, by, why, "Waiting", "", id, code]);
+    sh.appendRow([new Date(), name, by, why, "Waiting", "", id, code, undo]);
   } finally {
     lock.releaseLock();
   }
@@ -156,12 +159,37 @@ function askRemoval(d) {
   return out("ok");
 }
 
+// Scouting Corner: the person who asked pressed "Undo" on the card. Only their device has the undo code,
+// so nobody else can withdraw it. Only a request still waiting can be withdrawn; Tobey gets a short email.
+function undoRemoval(d) {
+  const undo = String(d.undo || "");
+  if (!/^[a-f0-9]{16,64}$/.test(undo)) return out("bad");
+  const lock = LockService.getScriptLock();
+  lock.waitLock(10000);
+  let name;
+  try {
+    const x = removalRows_().find(r => r.status === "Waiting" && r.undo && r.undo === undo);
+    if (!x) return out("none");
+    name = x.name;
+    x.sheet.getRange(x.row, 5, 1, 2).setValues([["Withdrawn", new Date()]]);
+  } finally {
+    lock.releaseLock();
+  }
+  try {
+    MailApp.sendEmail(Session.getEffectiveUser().getEmail(), "72 Central: removal request for " + name + " withdrawn",
+      "The person who asked for " + name + " to be removed from the Scouting Corner has withdrawn the request.\n" +
+      "Nothing to do: " + name + " stays on the Scouting Corner.");
+  } catch (err) {}
+  return out("ok");
+}
+
 // Every row on the "Removals" tab, with its row number. (The _ at the end keeps it private: the page can't call it.)
 function removalRows_() {
   const sh = SpreadsheetApp.getActiveSpreadsheet().getSheetByName("Removals");
   if (!sh || sh.getLastRow() < 2) return [];
-  return sh.getRange(2, 1, sh.getLastRow() - 1, 8).getValues().map((r, i) => ({
-    sheet: sh, row: i + 2, name: String(r[1]).replace(/^'/, "").trim(), status: String(r[4]), id: String(r[6]), code: String(r[7])
+  return sh.getRange(2, 1, sh.getLastRow() - 1, 9).getValues().map((r, i) => ({
+    sheet: sh, row: i + 2, name: String(r[1]).replace(/^'/, "").trim(), status: String(r[4]), id: String(r[6]), code: String(r[7]),
+    undo: String(r[8] || "")
   })).filter(x => x.name);
 }
 
@@ -181,7 +209,9 @@ function decidePage(e) {
   t.name = x ? x.name : "";
   t.id = x ? x.id : ""; t.code = x ? x.code : "";  // only the Sheet's own values go into the page
   t.msg = !x ? "This request wasn't found (the link may be incomplete)."
-    : t.open ? "Remove " + x.name + " from the Scouting Corner?" : x.name + ": already decided (" + x.status + ").";
+    : t.open ? "Remove " + x.name + " from the Scouting Corner?"
+    : x.status === "Withdrawn" ? x.name + ": the person who asked has withdrawn this request. Nothing to do."
+    : x.name + ": already decided (" + x.status + ").";
   return t.evaluate().setTitle("72 Central: removal request");
 }
 
@@ -194,6 +224,7 @@ function decideRemoval(id, code, yes) {
   try {
     const x = removalRows_().find(r => r.id === String(id) && r.code && r.code === String(code));
     if (!x) return "This request wasn't found.";
+    if (x.status === "Withdrawn") return x.name + ": the person who asked has withdrawn this request. Nothing to do.";
     if (x.status !== "Waiting") return x.name + ": already decided (" + x.status + ").";
     name = x.name;
     x.sheet.getRange(x.row, 5, 1, 2).setValues([[yes ? "Approved" : "Declined", new Date()]]);
