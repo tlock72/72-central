@@ -393,6 +393,10 @@ select.sq-in option{background:var(--navy-2);color:var(--white)}
 .sq-row .no{font-family:var(--display);font-weight:600;font-size:22px;color:var(--gold);line-height:1;font-variant-numeric:tabular-nums}
 .sq-row .nm{color:var(--white);font-weight:600;font-size:14px;text-decoration:none;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;display:block}
 .sq-row a.nm:hover{color:var(--gold)}
+/* Filtered Rankings: a long name is cut short with "…", but the 72 badge and binoculars after it always stay in view */
+.sq-row .nm.fx{display:flex;align-items:center;min-width:0}
+.sq-row .nm.fx .nt{overflow:hidden;text-overflow:ellipsis;white-space:nowrap;min-width:0}
+.sq-row .nm.fx>:not(.nt){flex:none}
 .sq-row .ct{font-size:11px;color:var(--muted);letter-spacing:.12em;margin-top:2px}
 .sq-row .by{text-align:right;font-family:var(--display);font-size:16px;color:var(--text);font-variant-numeric:tabular-nums}
 .sq-row .by small{display:block;font-family:var(--body);font-size:10px;color:var(--muted-2);letter-spacing:.1em}
@@ -504,7 +508,9 @@ a.cn-st.ok:hover{border-color:var(--gold)}
 .stat .v.nm{font-size:22px;line-height:1.15}
 @media (max-width:640px){
   .sq-row{grid-template-columns:40px minmax(0,1fr) 42px repeat(3,46px);gap:6px;padding:10px 12px}
-  .sq-row .no{font-size:17px}.sq-row .nm{font-size:13px}.sq-row .by{font-size:14px}.sq-row .ch{font-size:13px}
+  .sq-row .no{font-size:17px}.sq-row .nm{font-size:13px}
+  /* long names wrap onto a second line (then "…"), with the 72 badge after them */
+  .sq-row .nm.fx .nt{white-space:normal;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;line-height:1.25;font-size:12.5px}.sq-row .by{font-size:14px}.sq-row .ch{font-size:13px}
   .sq-row .ch small,.sq-row .by small{display:none}
   .sq-row.h button{font-size:10px;letter-spacing:.06em}
   select.sq-in{flex:1 1 140px}
@@ -2359,7 +2365,7 @@ function renderScouting(){
   const shown = SQ.all ? rows : rows.slice(0, 100), wl = sqWatch();
   $("#sqTbl").innerHTML = head + (shown.length ? shown.map(p => `<div class="sq-row">
       <div class="no">${p.rank}</div>
-      <div style="min-width:0">${p.url ? `<a class="nm" href="${esc(p.url)}" target="_blank" rel="noopener">` : `<span class="nm">`}${esc(p.name)}${p.is72 ? `<span class="sq-72">72</span>` : ""}${sqEye(p, wl)}${p.url ? "</a>" : "</span>"}<div class="ct">${esc(p.cty)}${sqAddBtn(p, wl)}</div></div>
+      <div style="min-width:0">${p.url ? `<a class="nm fx" href="${esc(p.url)}" target="_blank" rel="noopener">` : `<span class="nm fx">`}<span class="nt">${esc(p.name)}</span>${p.is72 ? `<span class="sq-72">72</span>` : ""}${sqEye(p, wl)}${p.url ? "</a>" : "</span>"}<div class="ct">${esc(p.cty)}${sqAddBtn(p, wl)}</div></div>
       <div class="by">${p.born || "—"}${p.born && !jr ? `<small>U${year - p.born}</small>` : ""}</div>
       ${sqCell(p.rank, p.w)}${sqCell(p.rank, p.m3)}${sqCell(p.rank, p.m12)}
     </div>`).join("") : `<div class="sq-empty">No players match these filters.</div>`);
