@@ -21,8 +21,8 @@ from datetime import date, datetime, timedelta, timezone
 BASE = "https://www.itftennis.com/tennis/api/PlayerRankApi/GetPlayerRankings"
 UA = "72HubRankings/1.0 (+https://github.com/tlock72/72-central; weekly, one request every few seconds)"
 PAUSE = 6      # seconds between requests
-TAKE = 100     # players per page
-MAX_PAGES = 80
+TAKE = 500     # players per page (about 5,000 boys: 100 a page took too long)
+MAX_PAGES = 30
 OUT, HIST = "itfjr.json", "itfjr_history.json"
 BACK = {"w": 7, "m3": 91, "m12": 364}  # 1 week, 13 weeks, 52 weeks
 GENDERS = {"b": "B", "g": "G"}         # itfjr.json key -> ITF playerTypeCode
@@ -86,14 +86,15 @@ def born(p):
 
 def read_list(code):
     """The whole ranking list for boys (B) or girls (G): [{id, rank, name, nat, born, url}]."""
-    out, total = [], None
+    out, total, skip = [], None, 0
     for page in range(MAX_PAGES):
-        res = get(page * TAKE, code)
+        res = get(skip, code)
         items = res if isinstance(res, list) else pick(res, "items", "players", "rankings", "data") or []
         if total is None and isinstance(res, dict):
             total = pick(res, "totalItems", "total", "totalCount")
         if page == 0 and items:
             print("fields:", sorted(items[0].keys()))
+        print(f"  {code} page {page + 1}: {len(items)} players", flush=True)
         for p in items:
             pid, rank = pick(p, "playerId", "id"), pick(p, "rank", "ranking", "currentRank")
             given = pick(p, "playerGivenName", "givenName", "firstName") or ""
@@ -107,7 +108,8 @@ def read_list(code):
             url = (("https://www.itftennis.com" + link) if str(link or "").startswith("/") else link) \
                 or f"https://www.itftennis.com/en/players/{slug}/{pid}/{nat.lower()}/jt/s/overview/"
             out.append({"id": int(pid), "rank": int(rank), "name": name, "nat": nat, "born": born(p), "url": url})
-        if len(items) < TAKE or (total and (page + 1) * TAKE >= int(total)):
+        skip += len(items)  # the ITF may send fewer than asked for per page
+        if not items or (total and skip >= int(total)) or (not total and len(items) < TAKE):
             break
     else:
         raise RuntimeError(f"more than {MAX_PAGES * TAKE} players listed, stopped")
@@ -184,7 +186,9 @@ def main():
             for r in sorted(rows, key=lambda r: r["rank"])]}
         errors.pop(key, None)
         changed = True
-        print(f"{key}: {len(rows)} players, week of {wk}")
+        print(f"{key}: {len(rows)} players, week of {wk}", flush=True)
+        out["updated"] = NOW.isoformat(timespec="seconds")
+        save(HIST, hist); save(OUT, out)  # boys are kept even if the girls run out of time
     out["checked"] = NOW.isoformat(timespec="seconds")
     if changed:
         out["updated"] = out["checked"]
