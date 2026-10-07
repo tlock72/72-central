@@ -606,6 +606,7 @@ dialog.stg[open]{display:block;animation:pop .28s ease}
 .stg label{display:block;margin:0 0 6px;font-size:11px;font-family:var(--display);text-transform:uppercase;letter-spacing:.14em;color:var(--muted)}
 .stg input,.stg select{display:block;width:100%;height:40px;margin:0 0 16px;padding:0 12px;border:1px solid var(--line);border-radius:10px;background:var(--navy-2);color:var(--text);font:inherit;font-size:14px}
 .stg input:focus,.stg select:focus{outline:none;border-color:var(--gold)}
+.stg input:focus::placeholder{color:transparent}
 .stg p{margin:-6px 0 18px;font-size:12px;line-height:1.5;color:var(--muted)}
 .stg .err{color:var(--down);min-height:0;margin:-8px 0 12px;font-size:12px}
 .stg .bt{display:flex;gap:8px;justify-content:flex-end}
@@ -2682,7 +2683,7 @@ function tzLabel(tz){
 }
 function openSettings(){
   let n = ""; try { n = localStorage.getItem("72c-name") || ""; } catch (e) {}
-  $("#setName").value = n; $("#setErr").textContent = "";
+  $("#setName").value = n; $("#setName").placeholder = n || "First name"; $("#setErr").textContent = "";
   const dev = Intl.DateTimeFormat().resolvedOptions().timeZone || "";
   let all = []; try { all = Intl.supportedValuesOf("timeZone"); } catch (e) {}
   if (!all.includes("Europe/London")) all.push("Europe/London");
@@ -2694,10 +2695,14 @@ function openSettings(){
     + all.map(z => `<option value="${esc(z)}">${esc(tzLabel(z))}</option>`).join("");
   $("#setTz").value = MYTZ || "";
   $("#sets").showModal();
+  $("#setName").blur();  // the box opens with the name showing; it only clears when you click into it
 }
 function saveSettings(){
   // first name: tidied the same way as on the passcode screen
-  const n = $("#setName").value.trim().replace(/\s+/g, " "), name = n ? n[0].toUpperCase() + n.slice(1) : "";
+  // left empty after clicking in = keep the current name
+  let n = $("#setName").value.trim().replace(/\s+/g, " ");
+  if (!n) { try { n = localStorage.getItem("72c-name") || ""; } catch (e) {} }
+  const name = n ? n[0].toUpperCase() + n.slice(1) : "";
   if (!name) { $("#setErr").textContent = "Please enter your first name"; $("#setName").focus(); return; }
   const tz = $("#setTz").value || undefined;
   try {
@@ -2715,6 +2720,9 @@ $("#cog").addEventListener("click", openSettings);
 $("#setOk").addEventListener("click", saveSettings);
 $("#setNo").addEventListener("click", () => $("#sets").close());
 $("#setName").addEventListener("keydown", e => { if (e.key === "Enter") saveSettings(); });
+// clicking into the name box clears it; clicking away with it still empty puts the current name back
+$("#setName").addEventListener("focus", e => { if (e.target.value === e.target.placeholder) e.target.value = ""; });
+$("#setName").addEventListener("blur", e => { if (!e.target.value.trim() && e.target.placeholder !== "First name") e.target.value = e.target.placeholder; });
 $("#sets").addEventListener("click", e => {  // a tap outside the panel closes it
   const r = $("#sets").getBoundingClientRect();
   if (e.target === $("#sets") && (e.clientX < r.left || e.clientX > r.right || e.clientY < r.top || e.clientY > r.bottom)) $("#sets").close();
