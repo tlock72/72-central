@@ -450,6 +450,21 @@ select.sq-in option{background:var(--navy-2);color:var(--white)}
 .cn-ok .bt{display:flex;gap:8px;flex-wrap:wrap}
 .cn-add .cn-ok button.no{background:transparent;color:var(--muted);border:1px solid var(--line)}
 .cn-list{display:grid;gap:12px}
+.cn-view{margin:0 0 16px}
+.sg-sec{display:grid;gap:10px}
+.sg-sec h3{font-family:var(--display);font-weight:500;text-transform:uppercase;letter-spacing:.16em;font-size:12px;color:var(--gold);margin:14px 0 0}
+.sg-sec h3 small{margin-left:10px;color:var(--muted);letter-spacing:.06em;text-transform:none;font-family:var(--body)}
+.sg-note{margin:0;padding:12px 16px;border:1px solid var(--line-2);border-radius:14px;font-size:12px;color:var(--muted);line-height:1.5}
+.sg-why{display:flex;flex-wrap:wrap;gap:6px;padding:0 20px 14px}
+.sg-why span{font-size:12px;border:1px solid var(--line-2);border-radius:999px;padding:3px 10px;color:var(--text)}
+.sg-why span.up{color:var(--up);border-color:currentColor}
+.sg-why span.ms{color:var(--gold);border-color:var(--gold)}
+.cn-h .sg-act{margin-left:auto}
+#page-corner .sq-line[hidden],.cn-add[hidden]{display:none!important}
+.cn-h a.nm{text-decoration:none}
+.cn-h a.nm:hover{color:var(--gold)}
+.cn-h .sg-act .sq-add{margin-left:0}
+.cn-h .sg-act .wait{font-size:11px;color:var(--muted)}
 .cn{border:1px solid var(--line-2);border-radius:18px;background:linear-gradient(180deg,var(--navy-2),rgba(17,27,63,.55));overflow:hidden}
 .cn-h{display:flex;flex-wrap:wrap;align-items:baseline;gap:4px 12px;padding:14px 20px 10px}
 .cn-h .nm{font-family:var(--display);font-weight:600;font-size:20px;color:var(--white);letter-spacing:.02em}
@@ -1230,6 +1245,7 @@ main.ptr-go,footer.ptr-go{transition:transform .35s cubic-bezier(.2,.8,.3,1)}
         <p class="sub">Prospects we're watching, ATP/WTA first, then ITF juniors and Tennis Europe. <b>Check</b> means more than one player fits.</p>
       </div>
     </div>
+    <div class="chips cn-view" role="group" aria-label="Show"><button class="chip cnv on" data-v="">Watch list</button><button class="chip cnv" data-v="sug">Suggestions</button></div>
     <div class="cn-add">
       <h3><button type="button" id="cnAddT" aria-expanded="false">Add a prospect</button></h3>
       <form id="cnForm" autocomplete="off">
@@ -2504,7 +2520,7 @@ async function loadScouting(){
   try { const r = await fetch("scouting.json?t=" + Date.now(), { cache: "no-store" }); if (r.ok) SCOUT = await r.json(); else if (!SCOUT) SCOUT = {}; } catch (e) { if (!SCOUT) SCOUT = {}; }
   try { const r = await fetch("itfjr.json?t=" + Date.now(), { cache: "no-store" }); if (r.ok) ITFJR = await r.json(); else if (!ITFJR) ITFJR = {}; } catch (e) { if (!ITFJR) ITFJR = {}; }
   try { const r = await fetch("terank.json?t=" + Date.now(), { cache: "no-store" }); if (r.ok) TERANK = await r.json(); else if (!TERANK) TERANK = {}; } catch (e) { if (!TERANK) TERANK = {}; }
-  renderScouting(); renderRankings(); renderHome();
+  renderScouting(); renderRankings(); renderHome(); renderCorner();
 }
 /* ---------- Scouting Corner (corner.json, rebuilt by scripts/prospects.py) ----------
    Each prospect is one person linked across Tennis Europe, ITF juniors and ATP/WTA. Names typed into the
@@ -2512,7 +2528,8 @@ async function loadScouting(){
    them up, and until then they show here as "Looking up…". */
 const CORNER_URL = "https://script.google.com/macros/s/AKfycbwzEb0YNoDmZaaJ5fQg05ubEe_lowMLiGoYaXuclycqQikOngLQEmENPN5KoL_KJXu1kA/exec";  // same as LOG_URL
 let CORNER = null, CN_SHEET = [], CN_SHEET_OK = false, CN_REMOVED = [], CN_ASKED = [];
-const CN = { g: "", q: "", s: "", open: new Set(), rm: "" };
+const CN = { g: "", q: "", s: "", open: new Set(), rm: "", view: "", add: "" };
+try { CN.view = localStorage.getItem("72c-cnview") === "sug" ? "sug" : ""; } catch (e) {}
 const cnKey = s => String(s || "").split("|")[0].normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLowerCase().replace(/[^a-z]/g, "");
 const CN_SRC = { te: "Tennis Europe", "itf-jr": "ITF Juniors", "itf-pro": "Pro: ATP/WTA, Challenger, ITF" };
 // names added on this device: shown as "Looking up…" for up to 3 days (the Sheet's list covers everyone else's)
@@ -2598,8 +2615,88 @@ function cnPick(a, b){
   const up = CN.s === "old" || CN.s === "first";
   return x === y ? 0 : (x < y) === up ? -1 : 1;
 }
+/* Suggestions tab: young players making big ranking gains, picked by the page itself from the official ATP/WTA
+   lists (scouting.json) and the Tennis Europe U14 lists (terank.json). Nothing is guessed: it only uses the ranks
+   and past ranks those files already hold. ITF juniors are left out until our own weekly history covers 3 months
+   (the ITF doesn't publish past junior rankings).
+   Score: how many times better the rank is now than 12 months and 3 months ago (3 months counts 1.5x, so recent
+   form matters most), with a little extra for each year younger than the age limit. Anyone falling over 3 months
+   or 12 months, or dropping sharply this week, is left out, as are 72 players and anyone already on the watch list. */
+const SG_LISTS = [
+  { k: "atp", src: () => SCOUT, g: "M", name: "ATP", maxAge: 21, maxRank: 1000, marks: [10, 50, 100, 200, 500], tour: "ATP" },
+  { k: "wta", src: () => SCOUT, g: "F", name: "WTA", maxAge: 21, maxRank: 1000, marks: [10, 50, 100, 200, 500], tour: "WTA" },
+  { k: "b14", src: () => TERANK, g: "M", name: "Tennis Europe U14 boys", maxAge: 14, maxRank: 300, marks: [10, 50, 100], tour: "TE U14" },
+  { k: "g14", src: () => TERANK, g: "F", name: "Tennis Europe U14 girls", maxAge: 14, maxRank: 300, marks: [10, 50, 100], tour: "TE U14" },
+];
+const SG_SHOW = 12;
+function sgPick(L, wl){
+  const T = L.src()?.[L.k];
+  if (!T?.players?.length) return null;
+  const yr = +(T.week || "").slice(0, 4) || new Date().getFullYear(), n = T.players.length, out = [];
+  for (const r of T.players) {
+    const [rank, name, nat, born, w, m3, m12, url, rid] = r;
+    const age = born ? yr - born : 99;
+    if (age > L.maxAge || rank > L.maxRank) continue;
+    if (L.src() === SCOUT ? SQ72.has(L.k + ":" + sqKey(name)) : rid) continue;  // 72 players
+    const watch = sqWatched({ name, url }, wl);
+    if (watch === "on") continue;
+    // gain over a window: log of (rank then / rank now); not ranked then counts as at most 3x; -1 = not tracked then
+    const gain = p => p === -1 || p === undefined ? null : Math.log((p === null ? Math.min(n, rank * 3) : p) / rank);
+    const g3 = gain(m3), g12 = gain(m12);
+    if (g3 === null && g12 === null) continue;
+    if (m3 === null && m12 === null) continue;  // only newly ranked, no past rank to measure a climb from
+    if ((g3 ?? 0) < 0 || (g12 ?? 0) < 0) continue;
+    if (w > 0 && rank - w > Math.max(10, w * 0.1)) continue;
+    const score = ((g12 ?? 0) + 1.5 * (g3 ?? 0)) * (1 + 0.08 * (L.maxAge - age));
+    if (score < 0.4) continue;
+    const why = [];
+    const mv = (p, t) => p === null ? `<span class="up">Not ranked ${t} ago</span>` : p - rank > 0 ? `<span class="up">▲${p - rank} in ${t} (${p} → ${rank})</span>` : "";
+    if (m12 !== -1 && m12 !== undefined) why.push(mv(m12, "12 months"));
+    if (m3 !== -1 && m3 !== undefined) why.push(mv(m3, "3 months"));
+    // a milestone reached in the last 3 months: "Into the top 100"
+    const mk = L.marks.find(t => rank <= t && (m3 === null || m3 > t));
+    if (mk && m3 !== -1 && m3 !== undefined) why.unshift(`<span class="ms">Into the top ${mk}</span>`);
+    out.push({ L, rank, name: cnTidy(name), nat, born, url, score, why: why.filter(Boolean), watch, key: L.k + ":" + rank + ":" + cnSorted(name) });
+  }
+  return { week: T.week, list: out.sort((a, b) => b.score - a.score) };
+}
+function sgCard(x){
+  const meta = [x.nat, x.born ? "born " + x.born : "", `${x.L.tour} No. ${x.rank}`].filter(Boolean).join(" · ");
+  let act;
+  if (x.watch === "wait") act = `<span class="wait">Added · looking up…</span>`;
+  else if (CN.add !== x.key) act = `<button class="sq-add" data-sga="${esc(x.key)}" title="Add to the watch list">${SQ_BINO}Scout</button>`;
+  else {
+    let by = ""; try { by = localStorage.getItem("72c-name") || ""; } catch (err) {}
+    act = `<span class="sq-addf"><span>Add to the watch list? Everyone will see ${by ? esc(by) : "you"} added them.</span><button class="go" data-sgo="${esc(x.key)}">Add</button><button data-sgx="1">Cancel</button></span>`;
+  }
+  const nm = x.url ? `<a class="nm" href="${esc(x.url)}" target="_blank" rel="noopener">${esc(x.name)}</a>` : `<span class="nm">${esc(x.name)}</span>`;
+  return `<div class="cn"><div class="cn-h">${nm}<span class="mt">${esc(meta)}</span><span class="sg-act">${act}</span></div><div class="sg-why">${x.why.join("")}</div></div>`;
+}
+let SG_ROWS = [];
+function renderSuggest(){
+  const wl = sqWatch(), q = cnKey(CN.q);
+  SG_ROWS = [];
+  const secs = SG_LISTS.filter(L => !CN.g || L.g === CN.g).map(L => {
+    const P = sgPick(L, wl);
+    if (!P) return `<section class="sg-sec"><h3>${esc(L.name)}</h3><div class="sq-empty">${SCOUT ? "This list couldn't be read." : "Loading…"}</div></section>`;
+    const list = P.list.filter(x => !q || cnKey(x.name).includes(q)).slice(0, SG_SHOW);
+    SG_ROWS.push(...list);
+    return `<section class="sg-sec"><h3>${esc(L.name)}<small>${L.src() === SCOUT ? "age " + L.maxAge + " and under · " : ""}ranking week of ${esc(sqFmt(P.week))}</small></h3>
+      ${list.map(sgCard).join("") || `<div class="sq-empty">No one stands out${q ? " with that name" : ""} this week.</div>`}</section>`;
+  });
+  $("#cnList").innerHTML = `<p class="sg-note">Picked by the computer from the official rankings: young players climbing fastest over the last 3 and 12 months, with a little extra weight for younger players. 72 players and anyone already on the watch list are left out. It's a pointer to look closer, not a verdict. <b>ITF juniors aren't included yet:</b> the ITF doesn't let us read past junior rankings, so climbs can only be measured from our own weekly records, which started on 5 Oct 2026. They can be added once there's 3 months of history.</p>` + secs.join("");
+  $("#cnSrc").textContent = "Sources: the official ATP and WTA rankings, and Tennis Europe (internal use only). Recalculated whenever a new ranking week comes out.";
+}
 function renderCorner(){
   if (!$("#page-corner")) return;
+  const sug = CN.view === "sug";
+  document.querySelectorAll(".cnv").forEach(b => b.classList.toggle("on", b.dataset.v === CN.view));
+  $(".cn-add").hidden = sug; $("#cnSortLine").hidden = sug;
+  $("#cnQ").placeholder = sug ? "Search suggestions" : "Search prospect";
+  if (sug) {
+    document.querySelectorAll(".cng").forEach(b => b.classList.toggle("on", b.dataset.g === CN.g));
+    return renderSuggest();
+  }
   const P = cnShown(), gone = new Set(CN_REMOVED.map(cnKey));
   document.querySelectorAll(".cng").forEach(b => b.classList.toggle("on", b.dataset.g === CN.g));
   document.querySelectorAll(".cns").forEach(b => b.classList.toggle("on", b.dataset.s === CN.s));
@@ -2616,6 +2713,19 @@ function renderCorner(){
   $("#cnSrc").textContent = CORNER?.checked ? `Sources: Tennis Europe (internal use only), the ITF and the official ATP/WTA rankings. Last updated ${new Date(CORNER.checked).toLocaleString("en-GB", { timeZone: MYTZ, day:"numeric", month:"short", hour:"2-digit", minute:"2-digit" })} your time.` : "";
 }
 $("#cnList").addEventListener("click", e => {
+  // Suggestions: "Scout" adds the player to the watch list (the same as the "Add a prospect" box)
+  const sa = e.target.closest("[data-sga]"), sg = e.target.closest("[data-sgo]");
+  if (sa) { CN.add = sa.dataset.sga; renderCorner(); return; }
+  if (e.target.closest("[data-sgx]")) { CN.add = ""; renderCorner(); return; }
+  if (sg) {
+    const x = SG_ROWS.find(r => r.key === sg.dataset.sgo);
+    CN.add = "";
+    if (x) {
+      let by = ""; try { by = localStorage.getItem("72c-name") || ""; } catch (err) {}
+      cnSend(x.name, x.L.g, CN_NATS.some(n => n.c === x.nat) ? x.nat : "", x.born ? String(x.born) : "", by);
+    }
+    renderCorner(); return;
+  }
   const r = e.target.closest("[data-rm]");
   if (r) { CN.rm = r.dataset.rm; renderCorner(); document.querySelector(".cn-rmf input")?.focus(); return; }
   if (e.target.closest("[data-rmx]")) { CN.rm = ""; renderCorner(); return; }
@@ -2635,6 +2745,7 @@ $("#cnList").addEventListener("submit", e => {
 });
 document.querySelectorAll(".cng").forEach(b => b.addEventListener("click", () => { CN.g = b.dataset.g; renderCorner(); }));
 document.querySelectorAll(".cns").forEach(b => b.addEventListener("click", () => { CN.s = b.dataset.s; renderCorner(); }));
+document.querySelectorAll(".cnv").forEach(b => b.addEventListener("click", () => { CN.view = b.dataset.v; CN.add = ""; try { localStorage.setItem("72c-cnview", CN.view); } catch (e) {} renderCorner(); }));
 $("#cnQ").addEventListener("input", e => { CN.q = e.target.value; renderCorner(); });
 /* Nation box: a dropdown of nations that narrows as you type (name or 3-letter code). The code is what gets sent (ITF/IOC style, e.g. GBR, SUI, GER). */
 const CN_NATS = ("AFG Afghanistan|ALB Albania|ALG Algeria|AND Andorra|ANG Angola|ARG Argentina|ARM Armenia|ARU Aruba|AUS Australia|AUT Austria|AZE Azerbaijan|BAH Bahamas|BRN Bahrain|BAN Bangladesh|BAR Barbados|BLR Belarus|BEL Belgium|BEN Benin|BER Bermuda|BOL Bolivia|BIH Bosnia and Herzegovina|BOT Botswana|BRA Brazil|BUL Bulgaria|BUR Burkina Faso|BDI Burundi|CAM Cambodia|CMR Cameroon|CAN Canada|CHI Chile|CHN China|TPE Chinese Taipei|COL Colombia|CRC Costa Rica|CIV Côte d'Ivoire|CRO Croatia|CUB Cuba|CYP Cyprus|CZE Czechia|DEN Denmark|DOM Dominican Republic|ECU Ecuador|EGY Egypt|ESA El Salvador|EST Estonia|ETH Ethiopia|FIJ Fiji|FIN Finland|FRA France|GAB Gabon|GEO Georgia|GER Germany|GHA Ghana|GBR Great Britain|GRE Greece|GUA Guatemala|HAI Haiti|HON Honduras|HKG Hong Kong|HUN Hungary|ISL Iceland|IND India|INA Indonesia|IRI Iran|IRQ Iraq|IRL Ireland|ISR Israel|ITA Italy|JAM Jamaica|JPN Japan|JOR Jordan|KAZ Kazakhstan|KEN Kenya|KOR Korea, South|KOS Kosovo|KUW Kuwait|KGZ Kyrgyzstan|LAT Latvia|LIB Lebanon|LBA Libya|LIE Liechtenstein|LTU Lithuania|LUX Luxembourg|MAC Macau|MAD Madagascar|MAS Malaysia|MLT Malta|MRI Mauritius|MEX Mexico|MDA Moldova|MON Monaco|MGL Mongolia|MNE Montenegro|MAR Morocco|MOZ Mozambique|NAM Namibia|NEP Nepal|NED Netherlands|NZL New Zealand|NCA Nicaragua|NGR Nigeria|MKD North Macedonia|NOR Norway|OMA Oman|PAK Pakistan|PAN Panama|PAR Paraguay|PER Peru|PHI Philippines|POL Poland|POR Portugal|PUR Puerto Rico|QAT Qatar|ROU Romania|RUS Russia|RWA Rwanda|SMR San Marino|KSA Saudi Arabia|SEN Senegal|SRB Serbia|SGP Singapore|SVK Slovakia|SLO Slovenia|RSA South Africa|ESP Spain|SRI Sri Lanka|SUD Sudan|SWE Sweden|SUI Switzerland|SYR Syria|TJK Tajikistan|TAN Tanzania|THA Thailand|TOG Togo|TTO Trinidad and Tobago|TUN Tunisia|TUR Türkiye|TKM Turkmenistan|UGA Uganda|UKR Ukraine|UAE United Arab Emirates|USA United States|URU Uruguay|UZB Uzbekistan|VEN Venezuela|VIE Vietnam|ZAM Zambia|ZIM Zimbabwe")
