@@ -2538,9 +2538,10 @@ const CN_SRC = { te: "Tennis Europe", "itf-jr": "ITF Juniors", "itf-pro": "Pro: 
 // (so a name taken off the Sheet doesn't come back as "Looking up…").
 function cnLocal(){ try { return JSON.parse(localStorage.getItem("72c-prospects") || "[]").filter(x => Date.now() - (x.at || 0) < (CN_SHEET_OK ? 6e5 : 3 * 864e5)); } catch (e) { return []; } }
 // removal requests sent from this device: { name, at, undo (secret code only this device has), undone (when Undo was pressed) }.
-// Shown as "Removal requested" until the Sheet lists them (up to a day); kept 90 days so the request can still be undone.
+// Shown as "Removal requested" until the Sheet lists them; kept 90 days so the request can still be undone.
 function cnAskedAll(){ try { return JSON.parse(localStorage.getItem("72c-removals") || "[]").filter(x => Date.now() - (x.at || 0) < 90 * 864e5); } catch (e) { return []; } }
-function cnAsked(){ return cnAskedAll().filter(x => !x.undone && Date.now() - (x.at || 0) < 864e5); }
+// Once the Sheet's list has been read, it is the truth: a request it doesn't have only shows for 10 minutes (time to reach it).
+function cnAsked(){ return cnAskedAll().filter(x => !x.undone && Date.now() - (x.at || 0) < (CN_SHEET_OK ? 6e5 : 864e5)); }
 function cnAskedSave(list){ try { localStorage.setItem("72c-removals", JSON.stringify(list.slice(-30))); } catch (e) {} }
 function cnStage(label, l, txt, url){
   // one stage of the pathway, only shown once the player has a ranking there (no tile until then; ITF Juniors also shows a best rank for players who have aged out)
