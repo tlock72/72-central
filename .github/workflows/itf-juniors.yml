@@ -32,7 +32,7 @@ jobs:
       - name: Full ITF junior ranking lists for Filtered Rankings (no Claude)
         continue-on-error: true
         timeout-minutes: 25
-        run: python3 scripts/itf_jr_list.py
+        run: python3 -u scripts/itf_jr_list.py
         env:
           FORCE: ${{ github.event_name == 'workflow_dispatch' && inputs.source != 'timer' && '1' || '0' }}
       - name: Save changes
