@@ -196,6 +196,27 @@ def itf_spelling(pid, names):
     return ""
 
 
+def itf_born(pid, circuits):
+    """Year of birth from the ITF player details, only from a field labelled as the birth date (never a guess)."""
+    seen = set()
+    for circ in circuits:
+        d = itf("/PlayerApi/GetHeadToHeadPlayerDetails", circuitCode=circ, playerId=pid)
+        todo = [d]
+        while todo:
+            o = todo.pop()
+            items = o.items() if isinstance(o, dict) else enumerate(o) if isinstance(o, list) else []
+            for k, v in items:
+                if isinstance(v, (dict, list)):
+                    todo.append(v); continue
+                k = str(k); seen.add(k)
+                if re.search(r"(?i)birth|dob", k) and not re.search(r"(?i)place|city|country|nation", k) and v:
+                    m = re.search(r"\b((?:19|20)\d{2})\b", str(v))
+                    if m and 1980 <= int(m[1]) <= T.year - 5:
+                        return int(m[1])
+    print("  ITF year of birth not found; fields seen:", ", ".join(sorted(seen))[:400])
+    return None
+
+
 def itf_overview(pid, circuit):
     ov = itf("/PlayerApi/GetPlayerOverview", circuitCode=circuit, matchTypeCode="S", playerId=pid)
     cur = next(iter(ov.get("rankings") or []), None)
@@ -621,6 +642,15 @@ def main():
                     rec["nat"] = rec.get("nat") or li.get("nat")
                     if not rec.get("g") and li.get("circuits"):
                         rec["g"] = "M" if "MT" in li["circuits"] else "F" if "WT" in li["circuits"] else None
+                    if not rec.get("born") and not p.get("born"):
+                        try:
+                            y = itf_born(pid, ["JT"] + ([{"M": "MT", "F": "WT"}[rec["g"]]] if rec.get("g") else []))
+                            if y:
+                                rec["born"], rec["bornFrom"] = y, "ITF"
+                        except Blocked:
+                            raise
+                        except Exception as e:
+                            print("  ITF year of birth failed:", e)
                     jr = itf_overview(pid, "JT")
                     if jr.get("rank") or jr.get("high"):
                         rec["itfJr"] = jr
