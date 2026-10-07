@@ -2430,7 +2430,7 @@ function cnLocal(){ try { return JSON.parse(localStorage.getItem("72c-prospects"
 // removal requests sent from this device (shown as "Removal requested" until the Sheet lists them, for up to a day)
 function cnAsked(){ try { return JSON.parse(localStorage.getItem("72c-removals") || "[]").filter(x => Date.now() - (x.at || 0) < 864e5); } catch (e) { return []; } }
 function cnStage(label, l, txt, url){
-  // one stage of the pathway, only shown once the player has a ranking there (no tile until then)
+  // one stage of the pathway, only shown once the player has a ranking there (no tile until then; ITF Juniors also shows a best rank for players who have aged out)
   if (l?.status !== "linked" || !txt) return "";
   const tip = `Linked by ${l.how || "id"}`;
   return url ? `<a class="cn-st ok" href="${esc(url)}" target="_blank" rel="noopener" title="${esc(tip)}"><b>${label}</b><span>${esc(txt)}</span></a>`
@@ -2451,7 +2451,7 @@ function cnCard(k, p){
   const te = [...(p.te || [])].sort((a, b) => a.rank - b.rank)[0], jr = p.itfJr, pro = p.pro;  // best Tennis Europe category
   // most important first: ATP/WTA, then ITF Juniors, then Tennis Europe
   const path = cnStage(tourName, L.pro, (pro?.rank || p.itfPro?.rank) ? `No. ${pro?.rank || p.itfPro.rank}` : "", L.pro?.url)
-    + cnStage("ITF Juniors", L.itf, jr?.rank ? `No. ${jr.rank}` : "", L.itf?.id ? `https://www.itftennis.com/en/players/${cnKey(p.name) && p.name.normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLowerCase().replace(/[^a-z]+/g, "-").replace(/^-|-$/g, "")}/${L.itf.id}/${(L.itf.nat || "").toLowerCase()}/` : "")
+    + cnStage("ITF Juniors", L.itf, jr?.rank ? `No. ${jr.rank}` : jr?.high ? `Best ${jr.high}` : "", L.itf?.id ? `https://www.itftennis.com/en/players/${cnKey(p.name) && p.name.normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLowerCase().replace(/[^a-z]+/g, "-").replace(/^-|-$/g, "")}/${L.itf.id}/${(L.itf.nat || "").toLowerCase()}/` : "")
     + (L.te?.status === "skip" ? "" : cnStage("Tennis Europe", L.te, te ? `No. ${te.rank} ${te.cat}` : "", L.te?.id ? `https://te.tournamentsoftware.com/player-profile/${L.te.id}` : ""));  // not shown for anyone over 16
   const rows = [];
   if (pro) rows.push(cnRow(tourName, pro.week ? "week of " + sqFmt(pro.week) : "", pro.rank, pro.high, pro.w, pro.m3, pro.m12));
