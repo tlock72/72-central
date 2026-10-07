@@ -2633,6 +2633,12 @@ const SG_LISTS = [
   { k: "g14", src: () => TERANK, g: "F", name: "Tennis Europe U14 girls", maxAge: 14, maxRank: 300, marks: [10, 50, 100], tour: "TE U14" },
 ];
 const SG_SHOW = 12;
+// a 72 player: same name (any accents or word order), or same surname, first initial and nation on that tour
+function sg72(tour, name, nat){
+  const last = sqKey(name.split(" ").pop()), first = sqKey(name).charAt(0);
+  return SQ72.has(tour + ":" + sqKey(name)) || ROSTER.some(p => p.tour.toLowerCase() === tour
+    && (cnSorted(p.first + " " + p.last) === cnSorted(name) || (sqKey(p.last.split(" ").pop()) === last && sqKey(p.first).charAt(0) === first && p.country === nat)));
+}
 function sgPick(L, wl){
   const T = L.src()?.[L.k];
   if (!T?.players?.length) return null;
@@ -2641,7 +2647,7 @@ function sgPick(L, wl){
     const [rank, name, nat, born, w, m3, m12, url, rid] = r;
     const age = born ? yr - born : 99;
     if (age > L.maxAge || rank > L.maxRank || (L.over ? age <= 21 : L.src() === SCOUT && age > 21)) continue;
-    if (L.src() === SCOUT ? SQ72.has(L.k + ":" + sqKey(name)) : rid) continue;  // 72 players
+    if (L.src() === SCOUT ? sg72(L.k, name, nat) : rid) continue;  // 72 players
     const watch = sqWatched({ name, url }, wl);
     if (watch === "on") continue;
     // gain over a window: log of (rank then / rank now); not ranked then counts as at most 3x; -1 = not tracked then
