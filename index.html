@@ -2480,7 +2480,7 @@ function cnCard(k, p){
   const open = CN.open.has(k);
   const resHtml = groups.map(g => `<div class="cn-tn">${g.link ? `<a href="${esc(g.link)}" target="_blank" rel="noopener">${esc(g.t)}</a>` : esc(g.t)}<small>${esc(sqFmt(g.end))} · ${esc(g.cat)} · ${esc(CN_SRC[g.src] || g.src)}</small></div>`
     + g.m.map(m => `<div class="cn-m"><span>${esc(m.r)}</span><span class="r ${m.res}">${m.res || "–"}</span><span>${esc(m.o)}${m.on ? ` (${esc(m.on)})` : ""}</span><span class="s">${esc(m.s)}</span></div>`).join("")).join("");
-  const meta = [p.nat, p.born ? "born " + p.born : "", p.src === "site" && p.by ? "added by " + p.by : "", p.typed ? `typed as "${p.typed}", spelling corrected from the ITF` : ""].filter(Boolean).join(" · ");
+  const meta = [p.nat, p.born ? "born " + p.born : "", p.by ? "added by " + p.by : "", p.typed ? `typed as "${p.typed}", spelling corrected from the ITF` : ""].filter(Boolean).join(" · ");
   const unsure = ["itf", "te"].filter(s => L[s]?.status === "unsure").map(s => `${s === "te" ? "Tennis Europe" : "ITF"}: ${L[s].note || "more than one player fits"}`);
   return `<div class="cn"><div class="cn-h"><span class="nm">${esc(p.name)}</span><span class="mt">${esc(meta)}</span>${res.length ? `<span class="wl">Last 12 months <b>${won}-${lost}</b></span>` : ""}</div>
     ${path ? `<div class="cn-path">${path}</div>` : ""}
