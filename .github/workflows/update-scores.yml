@@ -52,6 +52,11 @@ jobs:
         timeout-minutes: 15
         env:
           RANKINGS: ${{ inputs.source == 'rankings' && '1' || '0' }}
+      - id: best
+        name: Past best rankings for Scouting Corner's over-21 suggestions (one quarter at a time, no Claude)
+        run: python3 scripts/best_ranks.py
+        continue-on-error: true
+        timeout-minutes: 8
       - id: itfm
         name: ITF junior matches (full check twice a day, hourly while a 72 junior has a match today, no Claude)
         run: python3 scripts/itf_matches.py
@@ -74,7 +79,7 @@ jobs:
         run: |
           git config user.name "72 Hub updater"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git add data.json players.json itf.json $(ls titles.json itfm.json te.json scouting.json scouting_history.json 2>/dev/null)
+          git add data.json players.json itf.json $(ls titles.json itfm.json te.json scouting.json scouting_history.json best.json 2>/dev/null)
           if git diff --cached --quiet; then echo "No changes"; exit 0; fi
           git commit -q -m "Update scores"
           if git pull -q --rebase -X theirs; then git push
