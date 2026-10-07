@@ -277,6 +277,18 @@ dialog.prof[open]{animation:pop .28s ease}
 .ph .facts{display:flex;flex-wrap:wrap;gap:8px 26px;margin-top:20px;font-size:13px;color:var(--muted)}
 .ph .facts b{color:var(--white);font-weight:600}
 .pb{padding:30px 40px 40px;display:grid;grid-template-columns:minmax(0,1fr);gap:30px}
+/* campaign gallery (campHtml): images at one height in a strip that drifts slowly on its own and can be swiped or dragged */
+.camp .cwrap{position:relative;margin:0 -40px}
+.camp .ctrack{display:flex;gap:12px;overflow-x:auto;scrollbar-width:none;padding:4px 0 18px;cursor:grab;
+  -webkit-mask-image:linear-gradient(90deg,transparent,#000 40px,#000 calc(100% - 40px),transparent);mask-image:linear-gradient(90deg,transparent,#000 40px,#000 calc(100% - 40px),transparent)}
+.camp .ctrack.drag{cursor:grabbing;user-select:none}
+.camp .ctrack::-webkit-scrollbar{display:none}
+.camp .ctrack img{flex:none;height:clamp(300px,42vw,440px);width:auto;object-fit:cover;border-radius:16px;box-shadow:0 14px 34px rgba(0,0,0,.45);background:rgba(255,255,255,.03);-webkit-user-drag:none;user-select:none}
+.camp .carr{position:absolute;top:calc(50% - 30px);z-index:1;width:42px;height:42px;border-radius:50%;border:1px solid var(--line);background:rgba(12,20,49,.7);color:var(--gold);font-size:26px;line-height:1;display:grid;place-items:center;padding-bottom:3px;backdrop-filter:blur(6px)}
+.camp .carr:hover{background:var(--gold-dim)}
+.camp .carr.l{left:52px}.camp .carr.r{right:52px}
+@media (max-width:640px), (pointer:coarse){.camp .carr{display:none}}
+@media (max-width:640px){.camp .cwrap{margin:0 -16px}.camp .ctrack{padding:2px 0 14px;gap:10px;-webkit-mask-image:none;mask-image:none}.camp .ctrack img{height:min(62vw,330px);max-width:calc(100vw - 52px);border-radius:12px}}
 dialog.prof{overflow-x:hidden;overflow-y:auto;overscroll-behavior:contain}
 /* phones: while a profile is open the page behind is pinned in place, so a swipe only ever scrolls the profile (openProfile/profLock) */
 html.prof-lock body{position:fixed;left:0;right:0;width:100%;overflow:hidden}
@@ -1906,7 +1918,8 @@ const PROFILES = [
     titles:[{ k:"WTA titles", n:20, p:[["WTA Finals",1],["1000",5],["Tour",14]] }, { k:"Team titles", team:1, n:4, note:"Including Tokyo 2020" }],
     partners:["waterdrop","MacPaw","adidas","Mercedes-Benz","VISA","Diadem","United24","EA7","WhiteBIT"],
     social:{ Instagram:1.8*M, TikTok:83*K, X:431*K },
-    quote:["I will not stand aside. I will do my best to help Ukraine win its most important fight.","Elina Svitolina"] },
+    quote:["I will not stand aside. I will do my best to help Ukraine win its most important fight.","Elina Svitolina"],
+    campaign:[["svitolina-c1.webp",1080,1350],["svitolina-c2.webp",1150,1150],["svitolina-c3.webp",1543,1929],["svitolina-c4.webp",1150,646],["svitolina-c5.webp",1150,1150]] },
   { id:"kasatkina", age:29, nat:"Australian", plays:BH, high:8,
     titles:[{ k:"WTA titles", n:9, p:[["500",3],["250",5],["125",1]] }],
     partners:["adidas","Artengo","Royaltiz","Decathlon"],
@@ -2220,6 +2233,54 @@ function latestResult(id){
   return (STATE?.matches || []).filter(m => m.status === "finished" && md(m) < today && (m.p1Id === id || m.p2Id === id))
     .sort((a, b) => b.date.localeCompare(a.date) || roundStage(b.round) - roundStage(a.round))[0] || null;
 }
+/* campaign gallery on a profile (only players with a campaign list, e.g. Svitolina): [file, width, height] each.
+   The images are listed twice so the strip can drift slowly to the left for ever (jumping back by one set when it reaches the copy).
+   Touching, dragging, scrolling or the arrows pause it for a few seconds; it never drifts if the device asks for less motion. */
+function campHtml(list){
+  if (!list?.length) return "";
+  const imgs = [...list, ...list].map(([f, w, h], i) => `<img src="${esc(f)}" width="${w}" height="${h}" alt=""${i >= list.length ? ' aria-hidden="true"' : ""} draggable="false" decoding="async">`).join("");
+  return `<section class="camp"><h3 class="pk">Campaigns</h3>
+    <div class="cwrap"><button class="carr l" data-camp="-1" aria-label="Previous image">‹</button>
+      <div class="ctrack" data-n="${list.length}">${imgs}</div>
+      <button class="carr r" data-camp="1" aria-label="Next image">›</button></div></section>`;
+}
+let campRaf = 0, campIdle = 0;
+const CAMP_SPEED = 28;  // pixels a second
+const campTrack = () => $("#prof .ctrack");
+const campHalf = t => { const n = +t.dataset.n, c = t.children; return c[n] ? c[n].offsetLeft - c[0].offsetLeft : 0; };
+function campWrap(t){ const h = campHalf(t); if (h > 0) { if (t.scrollLeft >= h) t.scrollLeft -= h; else if (t.scrollLeft <= 0) t.scrollLeft += h; } }
+function campStep(dir){  // arrows: one image along
+  const t = campTrack(); if (!t) return; campIdle = Date.now(); campWrap(t);
+  const x0 = t.children[0].offsetLeft, mid = t.scrollLeft + t.clientWidth / 2;
+  const ims = [...t.children], i = ims.findIndex(im => im.offsetLeft - x0 + im.offsetWidth > mid - 1);
+  const im = ims[Math.max(0, Math.min(ims.length - 1, i + dir))];
+  t.scrollTo({ left: im.offsetLeft - x0 - (t.clientWidth - im.offsetWidth) / 2, behavior: "smooth" });
+}
+function campStop(){ cancelAnimationFrame(campRaf); campRaf = 0; }
+function campStart(){
+  campStop(); const t = campTrack(); if (!t) return;
+  let pos = null, last = 0;
+  const busy = () => { campIdle = Date.now(); };
+  ["pointerdown", "touchstart", "touchmove", "wheel", "focusin"].forEach(ev => t.parentElement.addEventListener(ev, busy, { passive: true }));
+  // a scroll that isn't the drift (a swipe still gliding after the finger lifts, a trackpad) also counts as someone using it
+  t.addEventListener("scroll", () => { if (pos !== null && Math.abs(t.scrollLeft - pos) > 2) { busy(); pos = null; } if (Date.now() - campIdle < 3000) campWrap(t); }, { passive: true });
+  // mouse: drag the strip sideways
+  let dx = null;
+  t.addEventListener("pointerdown", e => { if (e.pointerType !== "mouse") return; dx = { x: e.clientX, l: t.scrollLeft }; t.classList.add("drag"); t.setPointerCapture(e.pointerId); });
+  t.addEventListener("pointermove", e => { if (!dx) return; busy(); t.scrollLeft = dx.l - (e.clientX - dx.x); });
+  const up = () => { dx = null; t.classList.remove("drag"); };
+  t.addEventListener("pointerup", up); t.addEventListener("pointercancel", up);
+  if (matchMedia("(prefers-reduced-motion:reduce)").matches) return;
+  last = performance.now();
+  campIdle = 0;
+  const tick = now => {
+    const dt = Math.min(now - last, 100) / 1000; last = now;
+    if (Date.now() - campIdle < 3000 || !t.isConnected) pos = null;  // someone is using it: let go, pick up from where they left it
+    else { if (pos === null) pos = t.scrollLeft; pos += CAMP_SPEED * dt; const h = campHalf(t); if (h > 0 && pos >= h) pos -= h; t.scrollLeft = pos; }
+    if (t.isConnected) campRaf = requestAnimationFrame(tick);
+  };
+  campRaf = requestAnimationFrame(tick);
+}
 function openProfile(id){
   const x = profById[id], p = byId[id];
   if (!x || !p) return;
@@ -2242,6 +2303,7 @@ function openProfile(id){
       <div class="facts">${facts.map(([k, v]) => `<span>${esc(k)} <b>${esc(v)}</b></span>`).join("")}</div>
     </div>
     <div class="pb">
+      ${campHtml(x.campaign)}
       ${(lr => lr ? `<section><h3 class="pk">Latest result</h3><div class="plr">${card(lr)}</div></section>` : "")(latestResult(id))}
       ${x.kind === "junior" ? juniorBody(x, p, rank) : proBody(x, p, rank)}
       <div class="pnav"><button data-go="${prev.x.id}">← ${esc(prev.p.last)}</button>${safeUrl(p.sofa) ? `<a class="live-btn" href="${esc(safeUrl(p.sofa))}" target="_blank" rel="noopener"><span class="dot"></span>SofaScore profile</a>` : ""}<button data-go="${next.x.id}">${esc(next.p.last)} →</button></div>
@@ -2249,6 +2311,7 @@ function openProfile(id){
   const d = $("#prof");
   if (!d.open) { profLock(true); d.showModal(); }
   d.scrollTop = 0;
+  campStart();
   if (location.hash !== "#players/" + id) history.replaceState(null, "", "#players/" + id);
 }
 document.addEventListener("click", e => {
@@ -2257,6 +2320,7 @@ document.addEventListener("click", e => {
   const rt = e.target.closest("[data-rt]"); if (rt) { rankTab = rt.dataset.rt; return renderRankings(); }
   const tp = e.target.closest("[data-tp]");
   if (tp) { const g = tp.parentElement; g.nextElementSibling.classList.toggle("second", tp.dataset.tp === "1"); g.querySelectorAll(".chip.tp").forEach(b => b.classList.toggle("on", b === tp)); return; }
+  const cb = e.target.closest("[data-camp]"); if (cb) return campStep(+cb.dataset.camp);
   const go = e.target.closest("[data-go]"); if (go) return openProfile(go.dataset.go);
   if (e.target.closest("[data-close]") || e.target.id === "prof") $("#prof").close();
 });
@@ -2269,7 +2333,7 @@ function profLock(on){
     document.documentElement.classList.remove("prof-lock"); document.body.style.top = ""; window.scrollTo(0, profY); profY = null;
   }
 }
-$("#prof").addEventListener("close", () => { profLock(false); if (location.hash.startsWith("#players/")) history.replaceState(null, "", "#players"); });
+$("#prof").addEventListener("close", () => { campStop(); profLock(false); if (location.hash.startsWith("#players/")) history.replaceState(null, "", "#players"); });
 
 function render(){ renderScores(); renderRankings(); renderPlayers(); renderHome(); }
 
