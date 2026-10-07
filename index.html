@@ -2604,7 +2604,10 @@ function cnCard(k, p){
   const rows = [];
   if (pro) rows.push(cnRow(tourName, pro.week ? "week of " + sqFmt(pro.week) : "", pro.rank, pro.high, pro.w, pro.m3, pro.m12));
   else if (p.itfPro?.rank) rows.push(cnRow(tourName, "as of " + (p.itfPro.date || ""), p.itfPro.rank, p.itfPro.high));
-  if (jr && (jr.rank || jr.high)) rows.push(cnRow("ITF Juniors", jr.date ? "as of " + jr.date : "", jr.rank, jr.high, jr.w, jr.m3, jr.m12,
+  // past junior age (ITF juniors end the year a player turns 18), or no birth year and no current junior rank:
+  // the "ITF Juniors · Best" tile above stays, but the table row goes
+  const exJr = p.born ? new Date().getFullYear() - p.born > 18 : !jr?.rank;
+  if (jr && (jr.rank || jr.high) && !exJr) rows.push(cnRow("ITF Juniors", jr.date ? "as of " + jr.date : "", jr.rank, jr.high, jr.w, jr.m3, jr.m12,
     "ITF won't let us pull past junior rankings, so these moves fill in week by week"));
   for (const r of p.te || []) rows.push(cnRow("Tennis Europe", r.cat, r.rank, r.high, r.w, r.m3, r.m12));
   const res = p.results || [];
