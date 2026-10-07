@@ -593,6 +593,25 @@ body.on-home header nav{display:none}
 .hp-pill{display:inline-flex;align-items:center;gap:8px;font-family:var(--display);text-transform:uppercase;letter-spacing:.14em;font-size:11px;color:var(--muted);border:1px solid var(--line);border-radius:999px;padding:7px 14px;background:rgba(12,20,49,.5)}
 .hp-pill i{width:7px;height:7px;border-radius:50%;background:var(--up);box-shadow:0 0 0 0 rgba(127,211,160,.6);animation:hpPulse 2s infinite}
 .hp-pill.warn i{background:var(--down);animation:none}
+/* Settings: the cog in the top corner, and the box it opens (name + time zone, saved on this device) */
+.bar nav{margin-left:auto}
+.cog{flex:none;width:34px;height:34px;margin-left:-18px;display:grid;place-items:center;border-radius:50%;color:var(--muted);transition:color .2s,background .2s}
+.cog:hover{color:var(--gold);background:var(--gold-dim)}
+.cog svg{width:20px;height:20px}
+@media (max-width:640px){header .cog{position:absolute;right:10px;top:8px;margin:0}}
+dialog.sets{width:min(440px,calc(100vw - 32px));padding:26px 28px 24px;border:1px solid var(--line);border-radius:20px;background:#0B1230;color:var(--text);box-shadow:0 30px 80px rgba(0,0,0,.6)}
+dialog.sets::backdrop{background:rgba(5,9,25,.72);backdrop-filter:blur(6px);-webkit-backdrop-filter:blur(6px)}
+dialog.sets[open]{display:block;animation:pop .28s ease}
+.sets h2{margin:0 0 18px;font-family:var(--display);text-transform:uppercase;letter-spacing:.08em;font-weight:600;font-size:22px;color:var(--white)}
+.sets label{display:block;margin:0 0 6px;font-size:11px;font-family:var(--display);text-transform:uppercase;letter-spacing:.14em;color:var(--muted)}
+.sets input,.sets select{display:block;width:100%;height:40px;margin:0 0 16px;padding:0 12px;border:1px solid var(--line);border-radius:10px;background:var(--navy-2);color:var(--text);font:inherit;font-size:14px}
+.sets input:focus,.sets select:focus{outline:none;border-color:var(--gold)}
+.sets p{margin:-6px 0 18px;font-size:12px;line-height:1.5;color:var(--muted)}
+.sets .err{color:var(--down);min-height:0;margin:-8px 0 12px;font-size:12px}
+.sets .bt{display:flex;gap:8px;justify-content:flex-end}
+.sets .bt button{height:36px;padding:0 20px;border-radius:999px;font-family:var(--display);text-transform:uppercase;letter-spacing:.12em;font-size:12px;font-weight:500;background:var(--gold);color:var(--navy)}
+.sets .bt button.no{background:transparent;color:var(--muted);border:1px solid var(--line)}
+@media (max-width:640px){dialog.sets{width:calc(100vw - 20px);padding:20px 18px 18px}.sets h2{font-size:19px;margin-bottom:14px}}
 @keyframes hpPulse{70%{box-shadow:0 0 0 8px rgba(127,211,160,0)}100%{box-shadow:0 0 0 0 rgba(127,211,160,0)}}
 .hp-live{display:flex;align-items:center;gap:14px;flex-wrap:wrap;margin:0 0 22px;padding:14px 20px;border-radius:16px;border:1px solid rgba(232,144,143,.45);background:linear-gradient(90deg,rgba(232,144,143,.14),rgba(232,144,143,.03));text-decoration:none;color:var(--white)}
 .hp-live .k{font-family:var(--display);letter-spacing:.2em;font-size:12px;color:#F3C1C0;display:inline-flex;align-items:center;gap:8px}
@@ -1004,6 +1023,7 @@ main.ptr-go,footer.ptr-go{transition:transform .35s cubic-bezier(.2,.8,.3,1)}
       <a href="#schedule" data-tab="schedule"><span class="lg">Tour Schedule</span><span class="sh">Schedule</span></a>
       <a href="#corner" data-tab="corner"><span class="lg">Scouting Corner</span><span class="sh">Scouting</span></a>
     </nav>
+    <button type="button" class="cog" id="cog" aria-label="Settings" title="Settings"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 1 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 1 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 1 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 1 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg></button>
   </div>
 </header>
 
@@ -1222,6 +1242,16 @@ main.ptr-go,footer.ptr-go{transition:transform .35s cubic-bezier(.2,.8,.3,1)}
     <p class="src" id="cnSrc"></p>
   </div>
   <dialog class="prof" id="prof" aria-label="Player profile"></dialog>
+  <dialog class="sets" id="sets" aria-label="Settings">
+    <h2>Settings</h2>
+    <label for="setName">Your first name</label>
+    <input id="setName" type="text" maxlength="30" autocomplete="given-name" autocapitalize="words" spellcheck="false">
+    <div class="err" id="setErr"></div>
+    <label for="setTz">Time zone</label>
+    <select id="setTz"></select>
+    <p>Match times marked "your time", "Today" and "Tomorrow", and the greeting follow this zone. The event's local time stays as it is. Saved on this device only.</p>
+    <div class="bt"><button type="button" class="no" id="setNo">Cancel</button><button type="button" id="setOk">Save</button></div>
+  </dialog>
 </main>
 
 <footer><div class="wrap"><span>Times shown in your device's time, with match times also in the event's local time</span></div></footer>
@@ -1283,8 +1313,11 @@ let STATE = null; // { lastChecked, rankingsAsOf, rankingsSource, rankings:{id:{
 
 /* ---------- dates in UK time ---------- */
 const ukDate = (d = new Date()) => new Intl.DateTimeFormat("en-CA", { timeZone: "Europe/London", year:"numeric", month:"2-digit", day:"2-digit" }).format(d);
-// the viewer's own date (device time zone): "Today", "Tomorrow" and "this week" follow it
-const myDate = (d = new Date()) => new Intl.DateTimeFormat("en-CA", { year:"numeric", month:"2-digit", day:"2-digit" }).format(d);
+// the viewer's time zone: the one picked in Settings (the cog in the top corner, saved on this device),
+// otherwise undefined = the device's own zone
+let MYTZ; try { MYTZ = localStorage.getItem("72c-tz") || undefined; new Intl.DateTimeFormat("en-GB", { timeZone: MYTZ }); } catch (e) { MYTZ = undefined; }
+// the viewer's own date (in their time zone): "Today", "Tomorrow" and "this week" follow it
+const myDate = (d = new Date()) => new Intl.DateTimeFormat("en-CA", { timeZone: MYTZ, year:"numeric", month:"2-digit", day:"2-digit" }).format(d);
 // the day a match falls on for the viewer: from its UK start time, or with no time yet, its UK date moved by however
 // many days the viewer is ahead of or behind the UK right now (UK "today" = the viewer's "today")
 function md(m){
@@ -1489,7 +1522,7 @@ function ukMoment(date, time){
   let off = ukMin - (guess.getUTCHours() * 60 + guess.getUTCMinutes()); if (off > 720) off -= 1440; if (off < -720) off += 1440;
   return new Date(guess.getTime() - off * 60000);
 }
-// a moment as "14:05" in a zone (undefined = this device), with the day added ("Wed 02:10") when it isn't the match's day (as shown on the card)
+// a moment as "14:05" in a zone (MYTZ = the viewer's), with the day added ("Wed 02:10") when it isn't the match's day (as shown on the card)
 function clock(d, tz, date){
   const o = { hour:"2-digit", minute:"2-digit", hourCycle:"h23" }; if (tz) o.timeZone = tz;
   const t = d.toLocaleTimeString("en-GB", o);
@@ -1498,16 +1531,16 @@ function clock(d, tz, date){
 }
 // "14:05 your time" + "21:05 China" (the event's local time; UK when the event can't be placed). One line when both read the same.
 function twoTimes(d, m){
-  const day = md(m), mine = clock(d, undefined, day), z = evZone(m);
+  const day = md(m), mine = clock(d, MYTZ, day), z = evZone(m);
   const there = clock(d, z ? z.tz : "Europe/London", day), where = z ? z.n : "UK";
   return mine === there ? [`${mine}`, `your time, also ${where}`] : [mine, "your time", there, where];
 }
-// "Time info as of 14:05" under an approx. start: when the feed last confirmed the time (day added if not today), device time
+// "Time info as of 14:05" under an approx. start: when the feed last confirmed the time (day added if not today), viewer's time
 function asOf(iso){
   const d = iso ? new Date(iso) : null;
   if (!d || isNaN(d)) return "";
-  const t = d.toLocaleTimeString("en-GB", { hour:"2-digit", minute:"2-digit", hourCycle:"h23" });
-  const day = d.toDateString() === new Date().toDateString() ? "" : d.toLocaleDateString("en-GB", { day:"numeric", month:"short" }) + " ";
+  const t = d.toLocaleTimeString("en-GB", { timeZone: MYTZ, hour:"2-digit", minute:"2-digit", hourCycle:"h23" });
+  const day = myDate(d) === myDate() ? "" : d.toLocaleDateString("en-GB", { timeZone: MYTZ, day:"numeric", month:"short" }) + " ";
   return `<small class="asof">Time info as of ${esc(day + t)} your time</small>`;
 }
 // "Alex de Minaur" -> "A. de Minaur", used on phones where match cards are narrow
@@ -1606,7 +1639,7 @@ function fitChamps(){
 }
 window.addEventListener("resize", fitChamps);
 /* plain warnings when the automatic updates have fallen behind, so old data is never mistaken for current */
-const fmtWhen = d => d.toLocaleString("en-GB", { weekday:"short", day:"numeric", month:"short", hour:"2-digit", minute:"2-digit" });
+const fmtWhen = d => d.toLocaleString("en-GB", { timeZone: MYTZ, weekday:"short", day:"numeric", month:"short", hour:"2-digit", minute:"2-digit" });
 function setStale(sel, msg){ const el = $(sel); el.hidden = !msg; el.innerHTML = msg || ""; }
 // when the score feed last actually answered (lastChecked moves on every run, even when the feed's daily limit is used up)
 function schFed(){ const t = [STATE?.liveChecked, STATE?.upcomingChecked].filter(Boolean).map(x => new Date(x)); return t.length ? new Date(Math.max(...t)) : null; }
@@ -1656,7 +1689,7 @@ function renderScores(){
     fill("#gNext", next, "Nothing scheduled yet. Orders of play are usually published the evening before.");
     fill("#gDone", done, "No results yet this week.");
   }
-  $("#todayLbl").textContent = new Date().toLocaleDateString("en-GB", { weekday:"long", day:"numeric", month:"long" });
+  $("#todayLbl").textContent = new Date().toLocaleDateString("en-GB", { timeZone: MYTZ, weekday:"long", day:"numeric", month:"long" });
   $("#cToday").textContent = tday.length; $("#cNext").textContent = next.length; $("#cDone").textContent = done.length;
 
   // roster status
@@ -1666,7 +1699,7 @@ function renderScores(){
     const up = mine.filter(m => (m.status !== "finished" || md(m) === today) && md(m) >= today).sort((a,b) => key(a).localeCompare(key(b)))[0];
     const last = mine.filter(m => m.status === "finished" && md(m) < today).sort((a,b) => key(b).localeCompare(key(a)))[0];
     let st = "No match scheduled", on = false;
-    if (up) { const opp = up.p1Id === p.id ? up.p2 : up.p1; st = `${dayLabel(md(up))}${up.time ? " ~" + clock(ukMoment(up.date, up.time), undefined, md(up)) + " your time" : ""} · vs ${opp} · ${up.tournament}`; on = md(up) === today; }
+    if (up) { const opp = up.p1Id === p.id ? up.p2 : up.p1; st = `${dayLabel(md(up))}${up.time ? " ~" + clock(ukMoment(up.date, up.time), MYTZ, md(up)) + " your time" : ""} · vs ${opp} · ${up.tournament}`; on = md(up) === today; }
     else if (last) { const w = (last.winner === 1 && last.p1Id === p.id) || (last.winner === 2 && last.p2Id === p.id); st = `${w ? "Won" : "Lost"} ${last.round || ""} · ${last.tournament} · ${dayLabel(md(last))}`; }
     if (STATE?.status?.[p.id]) st = STATE.status[p.id];
     const link = safeUrl(p.sofa);
@@ -1681,7 +1714,7 @@ function renderScores(){
 
   if (STATE?.lastChecked) {
     const d = schFed() || new Date(STATE.lastChecked);
-    $("#checked").textContent = d.toLocaleString("en-GB", { weekday:"short", day:"numeric", month:"short", hour:"2-digit", minute:"2-digit" });
+    $("#checked").textContent = d.toLocaleString("en-GB", { timeZone: MYTZ, weekday:"short", day:"numeric", month:"short", hour:"2-digit", minute:"2-digit" });
   } else $("#checked").textContent = STATE ? "Not yet" : "Loading…";
 }
 
@@ -2360,7 +2393,7 @@ function renderSchedule(){
       </a>`).join("")}
     </section>`).join("") : `<div class="sq-empty">${SCH.p ? `${esc(byId[SCH.p] ? byId[SCH.p].first + " " + byId[SCH.p].last : SCH.p)} isn't entered in any of these events yet. Entry lists come out about 3 to 4 weeks before each event.` : SCH.e72 ? "No 72 players are entered in these events yet. Entry lists come out about 3 to 4 weeks before each event." : "No events match these filters."}</div>`;
   const up = SCHED.updated ? new Date(SCHED.updated) : null;
-  setStale("#staleSch", up && Date.now() - up > 3 * 864e5 ? `<b>Heads up:</b> the schedule was last updated ${up.toLocaleDateString("en-GB", { day:"numeric", month:"long" })}, so it may be out of date.` : "");
+  setStale("#staleSch", up && Date.now() - up > 3 * 864e5 ? `<b>Heads up:</b> the schedule was last updated ${up.toLocaleDateString("en-GB", { timeZone: MYTZ, day:"numeric", month:"long" })}, so it may be out of date.` : "");
   $("#schSrc").innerHTML = `Updated every morning. 72 entries are shown for events up to ${schFmt(SCHED.entriesTo || from, { year:"numeric" })}, about as far ahead as entry lists are published: ITF from the official acceptance lists, WTA and WTA 125 from the WTA player lists, Tennis Europe from each player's Tennis Europe entries, and ATP and Challenger when any of live-tennis.eu, Tick Tock Tennis or Spazio Tennis lists the player (left out if any of them shows a withdrawal), then from the draw once it is out. Sources: ATP Tour and Challenger calendars from Wikipedia's 2026 season pages (ATP events show the week only), WTA, ITF and Tennis Europe.`;
 }
 document.addEventListener("click", e => {
@@ -2478,7 +2511,7 @@ function renderCorner(){
     .map(([k, p]) => cnCard(k, p));
   const wait = waiting.filter(x => keep(x.name, x.g)).map(x => `<div class="cn cn-wait"><div class="cn-h"><span class="nm">${esc(cnTidy(x.name))}</span><span class="mt">Looking up… usually within 10 minutes${x.by ? " · added by " + esc(x.by) : ""}</span></div></div>`);
   $("#cnList").innerHTML = [...wait, ...cards].join("") || `<div class="sq-empty">${CORNER ? (Object.keys(P).length ? "No prospect matches." : "No prospects yet. Add the first one above.") : "Loading the watch list…"}</div>`;
-  $("#cnSrc").textContent = CORNER?.checked ? `Sources: Tennis Europe (internal use only), the ITF and the official ATP/WTA rankings. Last updated ${new Date(CORNER.checked).toLocaleString("en-GB", { day:"numeric", month:"short", hour:"2-digit", minute:"2-digit" })} your time.` : "";
+  $("#cnSrc").textContent = CORNER?.checked ? `Sources: Tennis Europe (internal use only), the ITF and the official ATP/WTA rankings. Last updated ${new Date(CORNER.checked).toLocaleString("en-GB", { timeZone: MYTZ, day:"numeric", month:"short", hour:"2-digit", minute:"2-digit" })} your time.` : "";
 }
 $("#cnList").addEventListener("click", e => {
   const r = e.target.closest("[data-rm]");
@@ -2643,6 +2676,52 @@ async function loadCorner(){
   } catch (e) {}
   renderCorner(); renderHome();
 }
+/* ---------- Settings (the cog in the top corner): first name and time zone, kept on this device ---------- */
+// "Europe/London" -> "Europe / London · 14:05" so the right zone is easy to spot by its time now
+function tzLabel(tz){
+  let t = ""; try { t = new Date().toLocaleTimeString("en-GB", { timeZone: tz, hour:"2-digit", minute:"2-digit", hourCycle:"h23" }); } catch (e) {}
+  return tz.replace(/_/g, " ").replace(/\//g, " / ") + (t ? " · " + t : "");
+}
+function openSettings(){
+  let n = ""; try { n = localStorage.getItem("72c-name") || ""; } catch (e) {}
+  $("#setName").value = n; $("#setErr").textContent = "";
+  const dev = Intl.DateTimeFormat().resolvedOptions().timeZone || "";
+  let all = []; try { all = Intl.supportedValuesOf("timeZone"); } catch (e) {}
+  if (!all.includes("Europe/London")) all.push("Europe/London");
+  if (dev && !all.includes(dev)) all.push(dev);
+  if (MYTZ && !all.includes(MYTZ)) all.push(MYTZ);
+  all = all.filter(z => z !== "UTC").sort();
+  $("#setTz").innerHTML = `<option value="">Automatic: this device${dev ? ` (${esc(tzLabel(dev))})` : ""}</option>`
+    + `<option value="Europe/London">UK time (${esc(tzLabel("Europe/London").split(" · ")[1] || "")})</option>`
+    + all.map(z => `<option value="${esc(z)}">${esc(tzLabel(z))}</option>`).join("");
+  $("#setTz").value = MYTZ || "";
+  $("#sets").showModal();
+}
+function saveSettings(){
+  // first name: tidied the same way as on the passcode screen
+  const n = $("#setName").value.trim().replace(/\s+/g, " "), name = n ? n[0].toUpperCase() + n.slice(1) : "";
+  if (!name) { $("#setErr").textContent = "Please enter your first name"; $("#setName").focus(); return; }
+  const tz = $("#setTz").value || undefined;
+  try {
+    localStorage.setItem("72c-name", name);
+    if (tz) localStorage.setItem("72c-tz", tz); else localStorage.removeItem("72c-tz");
+  } catch (e) {}
+  MYTZ = tz; greetMsg = ""; window.greetFirst = false;
+  $("#sets").close();
+  // redraw everything that shows the viewer's time or name
+  render();
+  if (SCHED) renderSchedule();
+  if (CORNER) renderCorner();
+}
+$("#cog").addEventListener("click", openSettings);
+$("#setOk").addEventListener("click", saveSettings);
+$("#setNo").addEventListener("click", () => $("#sets").close());
+$("#setName").addEventListener("keydown", e => { if (e.key === "Enter") saveSettings(); });
+$("#sets").addEventListener("click", e => {  // a tap outside the panel closes it
+  const r = $("#sets").getBoundingClientRect();
+  if (e.target === $("#sets") && (e.clientX < r.left || e.clientX > r.right || e.clientY < r.top || e.clientY > r.bottom)) $("#sets").close();
+});
+
 /* ---------- Home portal ---------- */
 // home greeting: "Welcome to 72 Central" the first time, then a greeting that changes each visit
 let greetMsg = "";
@@ -2651,7 +2730,8 @@ function greeting(){
   if (!n) return "";
   if (window.greetFirst) return `Welcome to 72 Central, <b>${esc(n)}</b>.`;
   if (greetMsg) return greetMsg;
-  const now = new Date(), h = now.getHours(), day = now.getDay(), b = `<b>${esc(n)}</b>`;
+  const p = new Intl.DateTimeFormat("en-GB", { timeZone: MYTZ, weekday:"short", hour:"numeric", hourCycle:"h23" }).formatToParts(new Date());
+  const h = +p.find(x => x.type === "hour").value, day = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"].indexOf(p.find(x => x.type === "weekday").value), b = `<b>${esc(n)}</b>`;
   const part = h < 5 ? "night" : h < 12 ? "morning" : h < 17 ? "afternoon" : h < 22 ? "evening" : "night";
   const opts = [`Welcome back, ${b}.`, `Good to see you, ${b}.`, `Hi ${b}, here's the latest.`, `Welcome back to 72 Central, ${b}.`];
   if (part === "night") opts.push(`Working late, ${b}?`, `Hello ${b}, burning the midnight oil?`);
@@ -2667,7 +2747,7 @@ function renderHome(){
   const g = greeting(); $("#hpGreet").hidden = !g; $("#hpGreet").innerHTML = g;
   const lc = STATE?.lastChecked ? new Date(STATE.lastChecked) : null;
   const fresh = lc && Date.now() - lc < 3 * 36e5;
-  $("#hpMeta").innerHTML = STATE ? `<span class="hp-pill${fresh ? "" : " warn"}"><i></i>${lc ? `Scores updated ${lc.toLocaleTimeString("en-GB", { hour:"2-digit", minute:"2-digit" })}${fresh ? "" : ", " + lc.toLocaleDateString("en-GB", { day:"numeric", month:"short" })}` : "Scores not updated yet"}</span>`
+  $("#hpMeta").innerHTML = STATE ? `<span class="hp-pill${fresh ? "" : " warn"}"><i></i>${lc ? `Scores updated ${lc.toLocaleTimeString("en-GB", { timeZone: MYTZ, hour:"2-digit", minute:"2-digit" })}${fresh ? "" : ", " + lc.toLocaleDateString("en-GB", { timeZone: MYTZ, day:"numeric", month:"short" })}` : "Scores not updated yet"}</span>`
     + (STATE.rankingsWeek || STATE.rankingsAsOf ? `<span class="hp-pill">Rankings: week of ${new Date((STATE.rankingsWeek || STATE.rankingsAsOf) + "T12:00:00Z").toLocaleDateString("en-GB", { day:"numeric", month:"short", timeZone:"UTC" })}</span>` : "") : "";
   // 01 Competition Zone
   const ms = STATE?.matches || [], today = myDate();
@@ -2678,7 +2758,7 @@ function renderHome(){
     const nxt = ms.filter(m => m.status === "scheduled" && (md(m) > today || (md(m) === today && m.time)))
       .sort((a, b) => `${a.date} ${a.time || "99"}`.localeCompare(`${b.date} ${b.time || "99"}`))[0];
     $("#hpT1").innerHTML = `${tday.length}<small>${tday.length === 1 ? "match" : "matches"} today</small>`;
-    $("#hpS1").innerHTML = live.length ? `${live.length} in progress right now` : nxt ? `Next: ${nm(nxt)} · ${dayLabel(md(nxt))}${nxt.time ? " " + esc(clock(ukMoment(nxt.date, nxt.time), undefined, md(nxt))) + " your time" : ""}` : "Nothing else scheduled yet";
+    $("#hpS1").innerHTML = live.length ? `${live.length} in progress right now` : nxt ? `Next: ${nm(nxt)} · ${dayLabel(md(nxt))}${nxt.time ? " " + esc(clock(ukMoment(nxt.date, nxt.time), MYTZ, md(nxt))) + " your time" : ""}` : "Nothing else scheduled yet";
   }
   // 02 Rankings: the roster's highest-ranked player
   const ranked = ROSTER.map(p => ({ p, r: playerRank(p.id) })).filter(o => o.r).sort((a, b) => a.r - b.r);
@@ -2858,7 +2938,7 @@ async function espnLive(){
   } catch (e) { liveErr = true; }
   applyLive(STATE);
   renderScores(); renderHome();
-  const t = liveAt ? new Date(liveAt).toLocaleTimeString("en-GB", { hour:"2-digit", minute:"2-digit", second:"2-digit" }) : "";
+  const t = liveAt ? new Date(liveAt).toLocaleTimeString("en-GB", { timeZone: MYTZ, hour:"2-digit", minute:"2-digit", second:"2-digit" }) : "";
   note.hidden = false;
   note.classList.toggle("err", liveErr);
   note.innerHTML = liveErr
