@@ -153,7 +153,7 @@ def gaps():
         wk = (src.get(t) or {}).get("week")
         if e and ukday(e.get("at")) == TODAY:
             out.append(f"Filtered Rankings: the {name} list couldn't be refreshed on {TODAY} ({e.get('msg')}). "
-                       f"It still shows the ranking week of {wk or 'an earlier week'}.")
+                       + (f"It still shows the ranking week of {wk}." if wk else "Nothing is shown for it yet."))
         if wk and wk < ago(16):
             out.append(f"Filtered Rankings: the {name} list is still on the ranking week of {wk} - no newer week has been picked up.")
     # 6b) Tour schedule (schedule.json, once a day): a source that failed today, or no update for 3 days
