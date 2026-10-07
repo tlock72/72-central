@@ -48,13 +48,21 @@ def save(path, obj):
         f.write("\n")
 
 
-def get(skip, code):
+def get(skip, code, tries=4):
     time.sleep(PAUSE)
     q = {"circuitCode": "JT", "playerTypeCode": code, "ageCategoryCode": "", "juniorRankingType": "itf",
          "take": TAKE, "skip": skip, "isOrderAscending": "true"}
     req = urllib.request.Request(f"{BASE}?{urllib.parse.urlencode(q)}", headers={"User-Agent": UA, "Accept": "application/json"})
-    with urllib.request.urlopen(req, timeout=30) as r:
-        body = r.read().decode("utf-8", "replace")
+    for i in range(tries):  # the ITF is sometimes slow to answer: wait and ask again, up to 4 times
+        try:
+            with urllib.request.urlopen(req, timeout=60) as r:
+                body = r.read().decode("utf-8", "replace")
+            break
+        except Exception as e:
+            if i == tries - 1:
+                raise
+            print(f"  slow answer ({e}), trying again", flush=True)
+            time.sleep(10 * (i + 1))
     if not body.lstrip().startswith(("{", "[")):
         raise Blocked("ITF answered with its bot check")
     return json.loads(body)
