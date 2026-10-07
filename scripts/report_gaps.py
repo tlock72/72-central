@@ -209,8 +209,10 @@ def gaps():
         except Exception as e:
             print("couldn't read recent runs:", e)
         try:
-            b = json.loads(gh("api", f"repos/{REPO}/pages/builds/latest"))
-            if b.get("status") == "errored":
+            # GitHub lists a build it cancelled (a newer save replaced it) as "errored" too,
+            # so only alert when the two newest builds both failed
+            bs = json.loads(gh("api", f"repos/{REPO}/pages/builds?per_page=2"))
+            if len(bs) == 2 and all(b.get("status") == "errored" for b in bs):
                 out.append(f"The website didn't publish its latest update (GitHub Pages build failed, seen on {TODAY}). Details: {ACTIONS_URL}")
         except Exception as e:
             print("couldn't read the Pages build:", e)
