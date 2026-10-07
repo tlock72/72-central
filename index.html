@@ -455,6 +455,7 @@ select.sq-in option{background:var(--navy-2);color:var(--white)}
 .sg-sec h3{font-family:var(--display);font-weight:500;text-transform:uppercase;letter-spacing:.16em;font-size:12px;color:var(--gold);margin:14px 0 0}
 .sg-sec h3 small{margin-left:10px;color:var(--muted);letter-spacing:.06em;text-transform:none;font-family:var(--body)}
 .sg-note{margin:0;padding:12px 16px;border:1px solid var(--line-2);border-radius:14px;font-size:12px;color:var(--muted);line-height:1.5}
+.sg-short{display:none}
 .sg-why{display:flex;flex-wrap:wrap;gap:6px;padding:0 20px 14px}
 .sg-why span{font-size:12px;border:1px solid var(--line-2);border-radius:999px;padding:3px 10px;color:var(--text)}
 .sg-why span.up{color:var(--up);border-color:currentColor}
@@ -809,6 +810,7 @@ nav .sh,.nm-s{display:none}
   #page-rankings .hero,#page-scouting .hero,#page-schedule .hero,#page-corner .hero{padding-block:12px 8px}
   #page-rankings .hero h1,#page-scouting .hero h1,#page-schedule .hero h1,#page-corner .hero h1{font-size:24px}
   #page-schedule .hero .sub,#page-scouting .hero .sub,#page-corner .hero .sub{display:none}
+  .sg-long{display:none}.sg-short{display:block;padding:8px 12px;font-size:11px;line-height:1.4}
   #page-rankings .hero .sub{font-size:11px;line-height:1.45;margin-top:4px}
   #page-rankings .hero,#page-scouting .hero{display:grid;grid-template-columns:minmax(0,1fr) auto;align-items:center;gap:0 10px}
   #page-rankings .hero>div:first-child,#page-scouting .hero>div:first-child{display:contents}
@@ -1245,7 +1247,7 @@ main.ptr-go,footer.ptr-go{transition:transform .35s cubic-bezier(.2,.8,.3,1)}
         <p class="sub">Prospects we're watching, ATP/WTA first, then ITF juniors and Tennis Europe. <b>Check</b> means more than one player fits.</p>
       </div>
     </div>
-    <div class="chips cn-view" role="group" aria-label="Show"><button class="chip cnv on" data-v="">Watch list</button><button class="chip cnv" data-v="sug">Suggestions</button></div>
+    <div class="chips cn-view" role="group" aria-label="Show"><button class="chip cnv on" data-v="">Watch list</button><button class="chip cnv" data-v="sug">Computerised suggestions</button></div>
     <div class="cn-add">
       <h3><button type="button" id="cnAddT" aria-expanded="false">Add a prospect</button></h3>
       <form id="cnForm" autocomplete="off">
@@ -2713,7 +2715,7 @@ function renderSuggest(){
     return `<section class="sg-sec">${head}
       ${list.map(sgCard).join("") || `<div class="sq-empty">No one stands out${q ? " with that name" : ""} this week.</div>`}</section>`;
   });
-  $("#cnList").innerHTML = `<p class="sg-note">Picked by the computer from the official rankings: young players climbing fastest over the last 3 and 12 months, with a little extra weight for younger players, plus exceptional climbs by over-21s who have never been this high before (so not comebacks from injury). 72 players and anyone already on the watch list are left out. It's a pointer to look closer, not a verdict. <b>ITF juniors aren't included yet:</b> the ITF doesn't let us read past junior rankings, so climbs can only be measured from our own weekly records, which started on 5 Oct 2026. They can be added once there's 3 months of history.</p>` + secs.join("");
+  $("#cnList").innerHTML = `<p class="sg-note sg-short">Picked by the computer from the official rankings: the fastest climbers. 72 players and the watch list left out. A pointer, not a verdict.</p><p class="sg-note sg-long">Picked by the computer from the official rankings: young players climbing fastest over the last 3 and 12 months, with a little extra weight for younger players, plus exceptional climbs by over-21s who have never been this high before (so not comebacks from injury). 72 players and anyone already on the watch list are left out. It's a pointer to look closer, not a verdict. <b>ITF juniors aren't included yet:</b> the ITF doesn't let us read past junior rankings, so climbs can only be measured from our own weekly records, which started on 5 Oct 2026. They can be added once there's 3 months of history.</p>` + secs.join("");
   $("#cnSrc").textContent = "Sources: the official ATP and WTA rankings, and Tennis Europe (internal use only). Recalculated whenever a new ranking week comes out.";
 }
 function renderCorner(){
@@ -2721,7 +2723,7 @@ function renderCorner(){
   const sug = CN.view === "sug";
   document.querySelectorAll(".cnv").forEach(b => b.classList.toggle("on", b.dataset.v === CN.view));
   $(".cn-add").hidden = sug; $("#cnSortLine").hidden = sug;
-  $("#cnQ").placeholder = sug ? "Search suggestions" : "Search prospect";
+  $("#cnQ").placeholder = sug ? "Search players" : "Search prospect";
   if (sug) {
     document.querySelectorAll(".cng").forEach(b => b.classList.toggle("on", b.dataset.g === CN.g));
     return renderSuggest();
