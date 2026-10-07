@@ -2249,7 +2249,7 @@ function addItfMatches(st, im, src = "itf"){
 /* ---------- Scouting HQ (scouting.json, rebuilt weekly by scripts/scouting.py) ----------
    ITF Boys / ITF Girls come from itfjr.json (scripts/itf_jr_list.py, Mondays), TE U14 Boys / Girls from terank.json
    (scripts/te_rank_list.py). Juniors are all under 18, so on those the age filter is by birth year only. */
-let SCOUT = null, ITFJR = null, TERANK = null;
+let SCOUT = null, ITFJR = null, TERANK = null, BEST = null;
 const sqTe = () => SQ.t === "teb14" || SQ.t === "teg14";
 const sqJr = () => SQ.t === "itfb" || SQ.t === "itfg" || sqTe();
 const sqSrcData = () => sqTe() ? TERANK : sqJr() ? ITFJR : SCOUT;
@@ -2520,6 +2520,7 @@ async function loadScouting(){
   try { const r = await fetch("scouting.json?t=" + Date.now(), { cache: "no-store" }); if (r.ok) SCOUT = await r.json(); else if (!SCOUT) SCOUT = {}; } catch (e) { if (!SCOUT) SCOUT = {}; }
   try { const r = await fetch("itfjr.json?t=" + Date.now(), { cache: "no-store" }); if (r.ok) ITFJR = await r.json(); else if (!ITFJR) ITFJR = {}; } catch (e) { if (!ITFJR) ITFJR = {}; }
   try { const r = await fetch("terank.json?t=" + Date.now(), { cache: "no-store" }); if (r.ok) TERANK = await r.json(); else if (!TERANK) TERANK = {}; } catch (e) { if (!TERANK) TERANK = {}; }
+  try { const r = await fetch("best.json?t=" + Date.now(), { cache: "no-store" }); if (r.ok) BEST = await r.json(); else if (!BEST) BEST = {}; } catch (e) { if (!BEST) BEST = {}; }
   renderScouting(); renderRankings(); renderHome(); renderCorner();
 }
 /* ---------- Scouting Corner (corner.json, rebuilt by scripts/prospects.py) ----------
@@ -2620,11 +2621,14 @@ function cnPick(a, b){
    and past ranks those files already hold. ITF juniors are left out until our own weekly history covers 3 months
    (the ITF doesn't publish past junior rankings).
    Score: how many times better the rank is now than 12 months and 3 months ago (3 months counts 1.5x, so recent
-   form matters most), with a little extra for each year younger than the age limit. Anyone falling over 3 months
-   or 12 months, or dropping sharply this week, is left out, as are 72 players and anyone already on the watch list. */
+   form matters most), with a little extra for each year younger than the age limit. Anyone falling over 12 months,
+   more than 10% over 3 months, or sharply this week, is left out, as are 72 players and anyone already on the watch list. */
 const SG_LISTS = [
   { k: "atp", src: () => SCOUT, g: "M", name: "ATP", maxAge: 21, maxRank: 1000, marks: [10, 50, 100, 200, 500], tour: "ATP" },
   { k: "wta", src: () => SCOUT, g: "F", name: "WTA", maxAge: 21, maxRank: 1000, marks: [10, 50, 100, 200, 500], tour: "WTA" },
+  // over 21: exceptional climbs only (at least doubled in 12 months), and never this high before (best.json)
+  { k: "atp", src: () => SCOUT, g: "M", name: "ATP over 21", over: true, maxAge: 30, maxRank: 350, marks: [10, 50, 100, 200, 500], tour: "ATP" },
+  { k: "wta", src: () => SCOUT, g: "F", name: "WTA over 21", over: true, maxAge: 30, maxRank: 350, marks: [10, 50, 100, 200, 500], tour: "WTA" },
   { k: "b14", src: () => TERANK, g: "M", name: "Tennis Europe U14 boys", maxAge: 14, maxRank: 300, marks: [10, 50, 100], tour: "TE U14" },
   { k: "g14", src: () => TERANK, g: "F", name: "Tennis Europe U14 girls", maxAge: 14, maxRank: 300, marks: [10, 50, 100], tour: "TE U14" },
 ];
@@ -2636,7 +2640,7 @@ function sgPick(L, wl){
   for (const r of T.players) {
     const [rank, name, nat, born, w, m3, m12, url, rid] = r;
     const age = born ? yr - born : 99;
-    if (age > L.maxAge || rank > L.maxRank) continue;
+    if (age > L.maxAge || rank > L.maxRank || (L.over ? age <= 21 : L.src() === SCOUT && age > 21)) continue;
     if (L.src() === SCOUT ? SQ72.has(L.k + ":" + sqKey(name)) : rid) continue;  // 72 players
     const watch = sqWatched({ name, url }, wl);
     if (watch === "on") continue;
@@ -2645,9 +2649,17 @@ function sgPick(L, wl){
     const g3 = gain(m3), g12 = gain(m12);
     if (g3 === null && g12 === null) continue;
     if (m3 === null && m12 === null) continue;  // only newly ranked, no past rank to measure a climb from
-    if ((g3 ?? 0) < 0 || (g12 ?? 0) < 0) continue;
+    if ((g12 ?? 0) < 0 || (g3 ?? 0) < -Math.log(1.1)) continue;  // falling over 12 months, or more than 10% over 3 months
     if (w > 0 && rank - w > Math.max(10, w * 0.1)) continue;
-    const score = ((g12 ?? 0) + 1.5 * (g3 ?? 0)) * (1 + 0.08 * (L.maxAge - age));
+    // over 21: at least doubled their ranking in 12 months, and never this high before (not a comeback from injury)
+    let before = "";
+    if (L.over) {
+      if (!(m12 > 0) || m12 / rank < 2) continue;
+      const old = BEST?.[L.k]?.old?.[name];
+      if (old === undefined || (old && old[0] <= rank * 1.25)) continue;  // can't check, or has been about this high before
+      before = old ? `<span>Best before: No. ${old[0]} (${new Date(old[1] + "T12:00:00Z").toLocaleDateString("en-GB", { month: "short", year: "numeric", timeZone: "UTC" })})</span>` : `<span>Never in the top 700 before</span>`;
+    }
+    const score = ((g12 ?? 0) + 1.5 * (g3 ?? 0)) * (L.over ? 1 : 1 + 0.08 * (L.maxAge - age));
     if (score < 0.4) continue;
     const why = [];
     const mv = (p, t) => p === null ? `<span class="up">Not ranked ${t} ago</span>` : p - rank > 0 ? `<span class="up">▲${p - rank} in ${t} (${p} → ${rank})</span>` : "";
@@ -2656,6 +2668,7 @@ function sgPick(L, wl){
     // a milestone reached in the last 3 months: "Into the top 100"
     const mk = L.marks.find(t => rank <= t && (m3 === null || m3 > t));
     if (mk && m3 !== -1 && m3 !== undefined) why.unshift(`<span class="ms">Into the top ${mk}</span>`);
+    if (before) why.push(before);
     out.push({ L, rank, name: cnTidy(name), nat, born, url, score, why: why.filter(Boolean), watch, key: L.k + ":" + rank + ":" + cnSorted(name) });
   }
   return { week: T.week, list: out.sort((a, b) => b.score - a.score) };
@@ -2677,14 +2690,16 @@ function renderSuggest(){
   const wl = sqWatch(), q = cnKey(CN.q);
   SG_ROWS = [];
   const secs = SG_LISTS.filter(L => !CN.g || L.g === CN.g).map(L => {
-    const P = sgPick(L, wl);
+    const P = sgPick(L, wl), head = `<h3>${esc(L.name)}<small>${L.over ? "age 22 to 30, top 350, at least doubled their ranking in 12 months, never this high before · " : L.src() === SCOUT ? "age " + L.maxAge + " and under · " : ""}ranking week of ${esc(sqFmt(P?.week))}</small></h3>`;
+    if (L.over && P && !(BEST?.[L.k]?.ready && BEST[L.k].week === P.week))
+      return `<section class="sg-sec">${head}<div class="sq-empty">${BEST ? "Still loading past rankings to check for comebacks from injury. This list appears once they're all in." : "Loading…"}</div></section>`;
     if (!P) return `<section class="sg-sec"><h3>${esc(L.name)}</h3><div class="sq-empty">${SCOUT ? "This list couldn't be read." : "Loading…"}</div></section>`;
-    const list = P.list.filter(x => !q || cnKey(x.name).includes(q)).slice(0, SG_SHOW);
+    const list = P.list.filter(x => !q || cnKey(x.name).includes(q)).slice(0, L.show || SG_SHOW);
     SG_ROWS.push(...list);
-    return `<section class="sg-sec"><h3>${esc(L.name)}<small>${L.src() === SCOUT ? "age " + L.maxAge + " and under · " : ""}ranking week of ${esc(sqFmt(P.week))}</small></h3>
+    return `<section class="sg-sec">${head}
       ${list.map(sgCard).join("") || `<div class="sq-empty">No one stands out${q ? " with that name" : ""} this week.</div>`}</section>`;
   });
-  $("#cnList").innerHTML = `<p class="sg-note">Picked by the computer from the official rankings: young players climbing fastest over the last 3 and 12 months, with a little extra weight for younger players. 72 players and anyone already on the watch list are left out. It's a pointer to look closer, not a verdict. <b>ITF juniors aren't included yet:</b> the ITF doesn't let us read past junior rankings, so climbs can only be measured from our own weekly records, which started on 5 Oct 2026. They can be added once there's 3 months of history.</p>` + secs.join("");
+  $("#cnList").innerHTML = `<p class="sg-note">Picked by the computer from the official rankings: young players climbing fastest over the last 3 and 12 months, with a little extra weight for younger players, plus exceptional climbs by over-21s who have never been this high before (so not comebacks from injury). 72 players and anyone already on the watch list are left out. It's a pointer to look closer, not a verdict. <b>ITF juniors aren't included yet:</b> the ITF doesn't let us read past junior rankings, so climbs can only be measured from our own weekly records, which started on 5 Oct 2026. They can be added once there's 3 months of history.</p>` + secs.join("");
   $("#cnSrc").textContent = "Sources: the official ATP and WTA rankings, and Tennis Europe (internal use only). Recalculated whenever a new ranking week comes out.";
 }
 function renderCorner(){

@@ -144,6 +144,10 @@ def gaps():
             out.append(f"Scouting HQ: the {name} list is still on the ranking week of {wk} - no newer week has been picked up.")
     if not sq:
         out.append("Scouting HQ has no data file (scouting.json is missing or unreadable).")
+    # 6) Scouting Corner's over-21 suggestions: past best rankings (best.json) that couldn't be read today
+    for t, e in (load("best.json").get("errors") or {}).items():
+        if ukday(e.get("at")) == TODAY:
+            out.append(f"Scouting Corner: past {t.upper()} rankings (for the over-21 suggestions) couldn't be read on {TODAY} ({e.get('msg')}). It tries again next run.")
     # 6a) Filtered Rankings' ITF junior lists (itfjr.json, Mondays) and Tennis Europe U14 lists (terank.json): a list that failed today, or stuck on an old week
     jr = load("itfjr.json")
     te = load("terank.json")
