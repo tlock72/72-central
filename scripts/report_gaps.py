@@ -143,6 +143,16 @@ def gaps():
             out.append(f"Scouting HQ: the {name} list is still on the ranking week of {wk} - no newer week has been picked up.")
     if not sq:
         out.append("Scouting HQ has no data file (scouting.json is missing or unreadable).")
+    # 6a) Filtered Rankings' ITF junior lists (itfjr.json, Mondays): a list that failed today, or stuck on an old week
+    jr = load("itfjr.json")
+    for t, name in (("b", "ITF junior boys"), ("g", "ITF junior girls")):
+        e = (jr.get("errors") or {}).get(t)
+        wk = (jr.get(t) or {}).get("week")
+        if e and ukday(e.get("at")) == TODAY:
+            out.append(f"Filtered Rankings: the {name} list couldn't be refreshed on {TODAY} ({e.get('msg')}). "
+                       f"It still shows the ranking week of {wk or 'an earlier week'}.")
+        if wk and wk < ago(16):
+            out.append(f"Filtered Rankings: the {name} list is still on the ranking week of {wk} - no newer week has been picked up.")
     # 6b) Tour schedule (schedule.json, once a day): a source that failed today, or no update for 3 days
     sc = load("schedule.json")
     parts = {"atp": "the ATP Tour calendar (Wikipedia)", "challenger": "the Challenger calendar (Wikipedia)", "wta": "the WTA calendar",
