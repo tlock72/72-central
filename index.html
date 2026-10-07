@@ -2627,8 +2627,8 @@ const SG_LISTS = [
   { k: "atp", src: () => SCOUT, g: "M", name: "ATP", maxAge: 21, maxRank: 1000, marks: [10, 50, 100, 200, 500], tour: "ATP" },
   { k: "wta", src: () => SCOUT, g: "F", name: "WTA", maxAge: 21, maxRank: 1000, marks: [10, 50, 100, 200, 500], tour: "WTA" },
   // over 21: exceptional climbs only (at least doubled in 12 months), and never this high before (best.json)
-  { k: "atp", src: () => SCOUT, g: "M", name: "ATP over 21", over: true, maxAge: 30, maxRank: 500, marks: [10, 50, 100, 200, 500], tour: "ATP" },
-  { k: "wta", src: () => SCOUT, g: "F", name: "WTA over 21", over: true, maxAge: 30, maxRank: 500, marks: [10, 50, 100, 200, 500], tour: "WTA" },
+  { k: "atp", src: () => SCOUT, g: "M", name: "ATP over 21", over: true, maxAge: 30, maxRank: 350, marks: [10, 50, 100, 200, 500], tour: "ATP" },
+  { k: "wta", src: () => SCOUT, g: "F", name: "WTA over 21", over: true, maxAge: 30, maxRank: 350, marks: [10, 50, 100, 200, 500], tour: "WTA" },
   { k: "b14", src: () => TERANK, g: "M", name: "Tennis Europe U14 boys", maxAge: 14, maxRank: 300, marks: [10, 50, 100], tour: "TE U14" },
   { k: "g14", src: () => TERANK, g: "F", name: "Tennis Europe U14 girls", maxAge: 14, maxRank: 300, marks: [10, 50, 100], tour: "TE U14" },
 ];
@@ -2690,7 +2690,7 @@ function renderSuggest(){
   const wl = sqWatch(), q = cnKey(CN.q);
   SG_ROWS = [];
   const secs = SG_LISTS.filter(L => !CN.g || L.g === CN.g).map(L => {
-    const P = sgPick(L, wl), head = `<h3>${esc(L.name)}<small>${L.over ? "age 22 to 30, top 500, at least doubled their ranking in 12 months, never this high before · " : L.src() === SCOUT ? "age " + L.maxAge + " and under · " : ""}ranking week of ${esc(sqFmt(P?.week))}</small></h3>`;
+    const P = sgPick(L, wl), head = `<h3>${esc(L.name)}<small>${L.over ? "age 22 to 30, top 350, at least doubled their ranking in 12 months, never this high before · " : L.src() === SCOUT ? "age " + L.maxAge + " and under · " : ""}ranking week of ${esc(sqFmt(P?.week))}</small></h3>`;
     if (L.over && P && !(BEST?.[L.k]?.ready && BEST[L.k].week === P.week))
       return `<section class="sg-sec">${head}<div class="sq-empty">${BEST ? "Still loading past rankings to check for comebacks from injury. This list appears once they're all in." : "Loading…"}</div></section>`;
     if (!P) return `<section class="sg-sec"><h3>${esc(L.name)}</h3><div class="sq-empty">${SCOUT ? "This list couldn't be read." : "Loading…"}</div></section>`;
