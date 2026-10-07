@@ -19,7 +19,7 @@ permissions:
 jobs:
   itf:
     runs-on: ubuntu-latest
-    timeout-minutes: 40
+    timeout-minutes: 50
     steps:
       - uses: actions/checkout@v6
         with:
@@ -31,7 +31,7 @@ jobs:
           FORCE: ${{ github.event_name == 'workflow_dispatch' && inputs.source != 'timer' && '1' || '0' }}
       - name: Full ITF junior ranking lists for Filtered Rankings (no Claude)
         continue-on-error: true
-        timeout-minutes: 15
+        timeout-minutes: 25
         run: python3 scripts/itf_jr_list.py
         env:
           FORCE: ${{ github.event_name == 'workflow_dispatch' && inputs.source != 'timer' && '1' || '0' }}
