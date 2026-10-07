@@ -1,44 +1,43 @@
 """One-off look at Tennis Europe's ranking pages (read only, a handful of requests)."""
-import re, sys, os, json, urllib.request
+import re, sys, os
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 import te_matches as TE
 from bs4 import BeautifulSoup
 
-def show(path, n=4000):
-    page = TE.fetch(path)
-    soup = BeautifulSoup(page, "html.parser")
-    print(f"\n===== {path}\nTITLE:", soup.title.get_text(strip=True) if soup.title else None)
-    for s in soup.find_all("select"):
-        opts = [(o.get("value"), o.get_text(strip=True)) for o in s.find_all("option")]
-        print("SELECT", s.get("name"), s.get("id"), len(opts), opts[:6])
-    links = [(a["href"], a.get_text(" ", strip=True)) for a in soup.find_all("a", href=True) if "ranking" in a["href"].lower()]
-    print("RANKING LINKS", len(links)); [print("  ", l) for l in links[:60]]
-    for t in soup.find_all("table")[:3]:
-        print("TABLE class", t.get("class"))
-        for tr in t.find_all("tr")[:5]:
-            print("  ROW", [c.get_text(" ", strip=True) for c in tr.find_all(["th", "td"])])
-        tr = t.find_all("tr")[1:2]
-        if tr: print("  RAW", str(tr[0])[:1500])
-    txt = soup.get_text(" ", strip=True)
-    print("TEXT", txt[:n])
-    return page
-
 TE.consent()
-page = show("/ranking/ranking.aspx?rid=79")
-cats = re.findall(r'href="(/ranking/category\.aspx\?[^"]+)"', page)
-print("CATS", cats[:20])
-for c in cats[:2]:
-    p = show(c.replace("&amp;", "&"), 1500)
-    pl = re.findall(r'href="(/ranking/player\.aspx\?[^"]+)"', p)
-    pages = sorted(set(re.findall(r'href="([^"]*category\.aspx[^"]*p=\d+[^"]*)"', p)))
-    print("PAGING", pages[:10])
-    if pl:
-        show(pl[0].replace("&amp;", "&"), 2500)
-        break
-# ITF junior ranking list shape
-req = urllib.request.Request("https://www.itftennis.com/tennis/api/PlayerRankApi/GetPlayerRankings?circuitCode=JT&playerTypeCode=B&ageCategoryCode=&juniorRankingType=itf&take=2&skip=0&isOrderAscending=true",
-                             headers={"User-Agent": "72HubRankings/1.0", "Accept": "application/json"})
-try:
-    print("\n===== ITF", urllib.request.urlopen(req, timeout=30).read().decode()[:2500])
-except Exception as e:
-    print("ITF failed", e)
+page = TE.fetch("/ranking/ranking.aspx?id=54125")
+soup = BeautifulSoup(page, "html.parser")
+for a in soup.find_all("a", href=True):
+    if a.get_text(strip=True) == "More" or "category" in a["href"].lower():
+        print("LINK", a["href"], "|", a.find_previous(["th", "td", "h3", "h4"]).get_text(" ", strip=True)[:60] if a.find_previous(["th","td"]) else "")
+for th in soup.find_all(["th", "h3", "h4", "caption"]):
+    t = th.get_text(" ", strip=True)
+    if "Under" in t: print("HEAD", t, th.find("a")["href"] if th.find("a") else "")
+cats = [a["href"] for a in soup.find_all("a", href=True) if a.get_text(strip=True) == "More"]
+u14 = [h for h in cats]
+print("MORE", u14)
+for h in u14[:4]:
+    print(h)
+for h in u14[2:3] or u14[:1]:
+    url = h if h.startswith("/") else "/ranking/" + h
+    p = TE.fetch(url.replace("&amp;", "&"))
+    s = BeautifulSoup(p, "html.parser")
+    print("\n=====", url, s.title.get_text(strip=True) if s.title else None)
+    print("TEXT", s.get_text(" ", strip=True)[:600])
+    t = s.find("table", class_="ruler")
+    rows = t.find_all("tr") if t else []
+    print("ROWS", len(rows))
+    for tr in rows[:6] + rows[-3:]:
+        print("  ROW", [c.get_text(" ", strip=True) for c in tr.find_all(["th", "td"])][:12])
+    if len(rows) > 3: print("  RAW", str(rows[3])[:1500])
+    print("PAGING", sorted(set(a["href"] for a in s.find_all("a", href=True) if re.search(r"[?&]p=\d", a["href"])))[:15])
+    print("PAGER", [x.get_text(" ", strip=True) for x in s.select(".pagination, .page_navigation, .paging")][:3])
+    # same category, a past week
+    m = re.search(r"id=(\d+)", url)
+    old = url.replace(m.group(0), "id=53991")
+    p2 = TE.fetch(old.replace("&amp;", "&"))
+    s2 = BeautifulSoup(p2, "html.parser")
+    t2 = s2.find("table", class_="ruler")
+    print("\n===== PAST", old, s2.get_text(" ", strip=True)[:300])
+    for tr in (t2.find_all("tr") if t2 else [])[:5]:
+        print("  ROW", [c.get_text(" ", strip=True) for c in tr.find_all(["th", "td"])][:12])
