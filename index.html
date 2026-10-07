@@ -2670,7 +2670,7 @@ function cnPick(a, b){
    (the ITF doesn't publish past junior rankings).
    Score: how many times better the rank is now than 12 months and 3 months ago (3 months counts 1.5x, so recent
    form matters most), with a little extra for each year younger than the age limit. Anyone falling over 12 months,
-   more than 10% over 3 months, or sharply this week, is left out, as are 72 players and anyone already on the watch list. */
+   more than 10% over 3 months, or sharply this week, is left out, as are the ATP/WTA top 35, 72 players and anyone already on the watch list. */
 const SG_LISTS = [
   { k: "atp", src: () => SCOUT, g: "M", name: "ATP", maxAge: 21, maxRank: 1000, marks: [10, 50, 100, 200, 500], tour: "ATP" },
   { k: "wta", src: () => SCOUT, g: "F", name: "WTA", maxAge: 21, maxRank: 1000, marks: [10, 50, 100, 200, 500], tour: "WTA" },
@@ -2681,6 +2681,8 @@ const SG_LISTS = [
   { k: "g14", src: () => TERANK, g: "F", name: "Tennis Europe U14 girls", maxAge: 14, maxRank: 300, marks: [10, 50, 100], tour: "TE U14" },
 ];
 const SG_SHOW = 12;
+// ATP/WTA top 35 are already well known, so they are never suggested
+const SG_TOP = 35;
 // a 72 player: same name (any accents or word order), or same surname, first initial and nation on that tour
 function sg72(tour, name, nat){
   const last = sqKey(name.split(" ").pop()), first = sqKey(name).charAt(0);
@@ -2694,7 +2696,7 @@ function sgPick(L, wl){
   for (const r of T.players) {
     const [rank, name, nat, born, w, m3, m12, url, rid] = r;
     const age = born ? yr - born : 99;
-    if (age > L.maxAge || rank > L.maxRank || (L.over ? age <= 21 : L.src() === SCOUT && age > 21)) continue;
+    if (age > L.maxAge || rank > L.maxRank || (L.src() === SCOUT && rank <= SG_TOP) || (L.over ? age <= 21 : L.src() === SCOUT && age > 21)) continue;
     if (L.src() === SCOUT ? sg72(L.k, name, nat) : rid) continue;  // 72 players
     const watch = sqWatched({ name, url }, wl);
     if (watch === "on") continue;
@@ -2744,7 +2746,7 @@ function renderSuggest(){
   const wl = sqWatch(), q = cnKey(CN.q);
   SG_ROWS = [];
   const secs = SG_LISTS.filter(L => !CN.g || L.g === CN.g).map(L => {
-    const P = sgPick(L, wl), head = `<h3>${esc(L.name)}<small>${L.over ? "age 22 to 30, top 350, at least doubled their ranking in 12 months, never this high before · " : L.src() === SCOUT ? "age " + L.maxAge + " and under · " : ""}ranking week of ${esc(sqFmt(P?.week))}</small></h3>`;
+    const P = sgPick(L, wl), head = `<h3>${esc(L.name)}<small>${L.over ? "age 22 to 30, ranked 36 to 350, at least doubled their ranking in 12 months, never this high before · " : L.src() === SCOUT ? "age " + L.maxAge + " and under, ranked 36 to " + L.maxRank + " · " : ""}ranking week of ${esc(sqFmt(P?.week))}</small></h3>`;
     if (L.over && P && !(BEST?.[L.k]?.ready && BEST[L.k].week === P.week))
       return `<section class="sg-sec">${head}<div class="sq-empty">${BEST ? "Still loading past rankings to check for comebacks from injury. This list appears once they're all in." : "Loading…"}</div></section>`;
     if (!P) return `<section class="sg-sec"><h3>${esc(L.name)}</h3><div class="sq-empty">${SCOUT ? "This list couldn't be read." : "Loading…"}</div></section>`;
@@ -2753,7 +2755,7 @@ function renderSuggest(){
     return `<section class="sg-sec">${head}
       ${list.map(sgCard).join("") || `<div class="sq-empty">No one stands out${q ? " with that name" : ""} this week.</div>`}</section>`;
   });
-  $("#cnList").innerHTML = `<p class="sg-note sg-short">Picked by the computer from the official rankings: the fastest climbers. 72 players and the watch list left out. A pointer, not a verdict.</p><p class="sg-note sg-long">Picked by the computer from the official rankings: young players climbing fastest over the last 3 and 12 months, with a little extra weight for younger players, plus exceptional climbs by over-21s who have never been this high before (so not comebacks from injury). 72 players and anyone already on the watch list are left out. It's a pointer to look closer, not a verdict. <b>ITF juniors aren't included yet:</b> the ITF doesn't let us read past junior rankings, so climbs can only be measured from our own weekly records, which started on 5 Oct 2026. They can be added once there's 3 months of history.</p>` + secs.join("");
+  $("#cnList").innerHTML = `<p class="sg-note sg-short">Picked by the computer from the official rankings: the fastest climbers. ATP/WTA top 35, 72 players and the watch list left out. A pointer, not a verdict.</p><p class="sg-note sg-long">Picked by the computer from the official rankings: young players climbing fastest over the last 3 and 12 months, with a little extra weight for younger players, plus exceptional climbs by over-21s who have never been this high before (so not comebacks from injury). No one in the ATP or WTA top 35 is ever suggested (they are already well known), and 72 players and anyone already on the watch list are left out. It's a pointer to look closer, not a verdict. <b>ITF juniors aren't included yet:</b> the ITF doesn't let us read past junior rankings, so climbs can only be measured from our own weekly records, which started on 5 Oct 2026. They can be added once there's 3 months of history.</p>` + secs.join("");
   $("#cnSrc").textContent = "Sources: the official ATP and WTA rankings, and Tennis Europe (internal use only). Recalculated whenever a new ranking week comes out.";
 }
 function renderCorner(){
