@@ -107,7 +107,10 @@ def read_list(pub, cat, want):
             if not rk or not pl:
                 continue
             nat = re.search(r'flags/([A-Z]{3})\.', tr)
-            yob = re.search(r'<td class="left">\s*(\d{4})\s*</td>', tr)
+            # year of birth: the cell straight after the player's name (it can end in a non-breaking space)
+            cells = [" ".join(html.unescape(re.sub(r"<[^>]+>", " ", c)).split()) for c in re.findall(r"<td[^>]*>(.*?)</td>", tr, re.S)]
+            at = next((i for i, c in enumerate(re.findall(r"<td[^>]*>(.*?)</td>", tr, re.S)) if "profile/default.aspx" in c), None)
+            yob = re.fullmatch(r"(\d{4})", cells[at + 1]) if at is not None and at + 1 < len(cells) else None
             rows.append({"id": pl[1].upper(), "rank": int(rk[1]), "name": " ".join(html.unescape(pl[2]).split()),
                          "nat": nat[1] if nat else "", "born": int(yob[1]) if yob else None})
             got += 1
@@ -122,7 +125,8 @@ def main():
     hist = load(HIST, {})
     errors = out.setdefault("errors", {})
     last = out.get("checked")
-    if last and not FORCE and NOW - datetime.fromisoformat(last) < timedelta(hours=3):
+    # every 3 hours at most, except while a list has never loaded (then every run until it does)
+    if last and not FORCE and all(out.get(k) for k in CATS) and NOW - datetime.fromisoformat(last) < timedelta(hours=3):
         print("Tennis Europe ranking checked less than 3 hours ago"); return
     roster = {v.upper(): k for k, v in (load("te.json", {}).get("profiles") or {}).items() if ":" not in k}
     try:
