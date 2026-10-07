@@ -626,6 +626,13 @@ body.on-home header nav{display:none}
 .hp-pill{display:inline-flex;align-items:center;gap:8px;font-family:var(--display);text-transform:uppercase;letter-spacing:.14em;font-size:11px;color:var(--muted);border:1px solid var(--line);border-radius:999px;padding:7px 14px;background:rgba(12,20,49,.5)}
 .hp-pill i{width:7px;height:7px;border-radius:50%;background:var(--up);box-shadow:0 0 0 0 rgba(127,211,160,.6);animation:hpPulse 2s infinite}
 .hp-pill.warn i{background:var(--down);animation:none}
+/* Slam clocks in the home banner: live local time in each Grand Slam city, 72 in the slam's colours (built by slamClocks below) */
+.hp-clocks{display:flex;gap:22px;margin-top:30px}
+.hp-clock{margin:0;text-align:center;flex:0 1 104px;min-width:0}
+.hp-clock svg{display:block;width:100%;height:auto;filter:drop-shadow(0 8px 18px rgba(0,0,0,.35))}
+.hp-clock figcaption{margin-top:9px;font-family:var(--display);text-transform:uppercase;letter-spacing:.2em;font-size:11px;color:var(--muted);white-space:nowrap}
+.hp-clock figcaption::before{content:"";display:inline-block;width:6px;height:6px;border-radius:50%;background:var(--ac);margin:0 7px 1px 0;vertical-align:middle}
+@media (min-width:1100px){.hp-clocks{position:absolute;right:48px;top:50%;transform:translateY(-50%);margin:0}.hp-clock{flex-basis:104px;width:104px}}
 /* Settings: the cog in the top corner, and the box it opens (name + time zone, saved on this device) */
 .bar nav{margin-left:auto}
 .cog{flex:none;width:34px;height:34px;margin-left:-18px;display:grid;place-items:center;border-radius:50%;color:var(--muted);transition:color .2s,background .2s}
@@ -784,6 +791,10 @@ nav .sh,.nm-s{display:none}
   .hp-greet{margin-top:4px;font-size:13.5px}
   .hp-meta{margin-top:8px;gap:5px}
   .hp-pill{font-size:9px;padding:4px 9px;letter-spacing:.08em}
+  .hp-clocks{gap:10px;margin-top:10px;justify-content:space-between}
+  .hp-clock{flex:0 1 58px}
+  .hp-clock figcaption{margin-top:4px;font-size:8px;letter-spacing:.1em}
+  .hp-clock figcaption::before{width:4px;height:4px;margin-right:4px}
   #page-home > .hp-grid{grid-template-columns:repeat(2,minmax(0,1fr));grid-auto-rows:1fr;gap:10px;flex:1}
   .hp-tile{min-height:0;padding:14px 14px 12px;border-radius:18px}
   .hp-tile h2{font-size:16px;margin:0;letter-spacing:.03em}
@@ -1072,6 +1083,7 @@ main.ptr-go,footer.ptr-go{transition:transform .35s cubic-bezier(.2,.8,.3,1)}
       <h1><span class="n">72</span> Central</h1>
       <p class="hp-greet" id="hpGreet" hidden></p>
       <div class="hp-meta" id="hpMeta"></div>
+      <div class="hp-clocks" id="hpClocks"></div>
     </section>
     <div class="hp-grid">
       <a class="hp-tile" href="#scores">
@@ -3005,6 +3017,55 @@ function greeting(){
   if (day === 0 || day === 6) opts.push(`Hope you're having a good weekend, ${b}.`);
   return greetMsg = opts[Math.floor(Math.random() * opts.length)];
 }
+// Slam clocks on the home banner: the local time in each Grand Slam city, ticking every second.
+// Each clock has 72 in the middle in that slam's colours (n = the 72 and second hand, r = the rim).
+(function slamClocks(){
+  const SLAMS = [
+    { slam: "Australian Open", city: "Melbourne", tz: "Australia/Melbourne", n: "#2FA8F0", r: "#0057B8" },
+    { slam: "Roland Garros", city: "Paris", tz: "Europe/Paris", n: "#E86A2E", r: "#1F6B45" },
+    { slam: "Wimbledon", city: "London", tz: "Europe/London", n: "#2EA35F", r: "#6A2C91" },
+    { slam: "US Open", city: "New York", tz: "America/New_York", n: "#FFD21F", r: "#2A63D4" }
+  ];
+  const box = $("#hpClocks"); if (!box) return;
+  const calm = matchMedia("(prefers-reduced-motion:reduce)");
+  let ticks = "";
+  for (let i = 0; i < 60; i++) {
+    const big = i % 5 === 0;
+    ticks += `<line y1="-43" y2="${big ? -37 : -41}" transform="rotate(${i * 6})" stroke="${big ? "#E6C9A5" : "rgba(255,255,255,.22)"}" stroke-width="${big ? 1.8 : .7}" stroke-linecap="round"/>`;
+  }
+  box.innerHTML = SLAMS.map((c, i) => `<figure class="hp-clock" style="--ac:${c.n}" role="img" aria-label="${c.slam} clock, ${c.city} time">
+    <svg viewBox="-50 -50 100 100" aria-hidden="true">
+      <defs><radialGradient id="slf${i}" cx="35%" cy="28%" r="80%"><stop offset="0" stop-color="#1D2A5C"/><stop offset="1" stop-color="#080E26"/></radialGradient></defs>
+      <circle r="48" fill="url(#slf${i})" stroke="${c.r}" stroke-width="3"/>
+      <circle r="45.2" fill="none" stroke="${c.n}" stroke-opacity=".35" stroke-width=".6"/>
+      ${ticks}
+      <text y="1" text-anchor="middle" dominant-baseline="central" font-family="Oswald,'Arial Narrow',Impact,sans-serif" font-weight="700" font-size="30" fill="${c.n}" letter-spacing="-.5">72</text>
+      <line class="h" y1="5" y2="-22" stroke="#F4E9D8" stroke-width="3.4" stroke-linecap="round"/>
+      <line class="m" y1="7" y2="-34" stroke="#F4E9D8" stroke-width="2.2" stroke-linecap="round"/>
+      <g class="s"><line y1="11" y2="-40" stroke="${c.n}" stroke-width="1" stroke-linecap="round"/><circle cy="9" r="1.8" fill="${c.n}"/></g>
+      <circle r="2.6" fill="${c.n}"/><circle r="1" fill="#0C1431"/>
+    </svg>
+    <figcaption>${c.city}</figcaption>
+  </figure>`).join("");
+  const clocks = SLAMS.map((c, i) => ({ ...c, fig: box.children[i],
+    fmt: new Intl.DateTimeFormat("en-GB", { timeZone: c.tz, hour: "2-digit", minute: "2-digit", second: "2-digit", hourCycle: "h23" }) }));
+  const turn = (el, deg) => el.setAttribute("transform", `rotate(${deg})`);
+  function tick(){
+    const now = new Date();
+    if (!$("#page-home").hidden) for (const c of clocks) {
+      const [h, m, s] = c.fmt.format(now).split(":").map(Number);
+      turn(c.fig.querySelector(".h"), (h % 12) * 30 + m / 2);
+      turn(c.fig.querySelector(".m"), m * 6 + s / 10);
+      const sec = c.fig.querySelector(".s");
+      // a little kick past the mark, then back, so the second hand "ticks"
+      if (calm.matches) turn(sec, s * 6);
+      else { turn(sec, s * 6 + 1.5); setTimeout(() => turn(sec, s * 6), 90); }
+      c.fig.title = `${c.slam} · ${c.city} ${String(h).padStart(2, "0")}:${String(m).padStart(2, "0")}`;
+    }
+    setTimeout(tick, 1000 - Date.now() % 1000 + 5);
+  }
+  tick();
+})();
 window.renderHome = renderHome;
 function renderHome(){
   if (!$("#page-home")) return;
