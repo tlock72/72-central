@@ -150,15 +150,6 @@
     "link": "https://www.itftennis.com/en/tournament/w15-orlando-fl/usa/2026/w-itf-usa-2026-013/"
    },
    {
-    "id": "dudeney",
-    "tournament": "W15 Monastir",
-    "tier": "W15",
-    "type": "ITF World Tennis Tour",
-    "week": "23 Mar to 29 Mar 2026",
-    "end": "2026-03-29",
-    "link": "https://www.itftennis.com/en/tournament/w15-monastir/tun/2026/w-itf-tun-2026-013/"
-   },
-   {
     "id": "ivanov",
     "tournament": "M25 Tarragona",
     "tier": "M25",
@@ -166,6 +157,15 @@
     "week": "23 Mar to 29 Mar 2026",
     "end": "2026-03-29",
     "link": "https://www.itftennis.com/en/tournament/m25-tarragona/esp/2026/m-itf-esp-2026-009/"
+   },
+   {
+    "id": "dudeney",
+    "tournament": "W15 Monastir",
+    "tier": "W15",
+    "type": "ITF World Tennis Tour",
+    "week": "23 Mar to 29 Mar 2026",
+    "end": "2026-03-29",
+    "link": "https://www.itftennis.com/en/tournament/w15-monastir/tun/2026/w-itf-tun-2026-013/"
    },
    {
     "id": "dudeney",
@@ -973,7 +973,7 @@
    }
   ]
  },
- "checked": "2026-10-06",
+ "checked": "2026-10-07",
  "v": 3,
  "full": [
   "deminaur",
@@ -1255,31 +1255,29 @@
   },
   "dudeney": {
    "rank": 224,
-   "checked": "2026-10-06"
+   "itf": 224,
+   "seen": 245,
+   "week": "2026-09-28",
+   "checked": "2026-10-07"
   },
   "mmakarova": {
-   "rank": null,
-   "checked": "2026-10-06"
+   "week": "2026-09-28",
+   "checked": "2026-10-07"
   },
   "vmakarova": {
-   "rank": null,
-   "checked": "2026-10-06"
+   "week": "2026-09-28",
+   "checked": "2026-10-07"
   },
   "kanabar": {
    "rank": 1447,
-   "checked": "2026-10-06"
+   "itf": 1447,
+   "week": "2026-09-28",
+   "checked": "2026-10-07"
   }
  },
- "tried": "2026-10-07T06:18:13Z",
+ "tried": "2026-10-07T06:38:05Z",
  "pending": [],
- "todo": [
-  "dudeney",
-  "mmakarova",
-  "vmakarova",
-  "momot",
-  "kanabar",
-  "liu"
- ],
+ "todo": [],
  "todoMode": "daily",
  "source": "ITF singles results (itftennis.com)"
 }
