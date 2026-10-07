@@ -593,9 +593,12 @@ body.on-home header nav{display:none}
 .hp-pill{display:inline-flex;align-items:center;gap:8px;font-family:var(--display);text-transform:uppercase;letter-spacing:.14em;font-size:11px;color:var(--muted);border:1px solid var(--line);border-radius:999px;padding:7px 14px;background:rgba(12,20,49,.5)}
 .hp-pill i{width:7px;height:7px;border-radius:50%;background:var(--up);box-shadow:0 0 0 0 rgba(127,211,160,.6);animation:hpPulse 2s infinite}
 .hp-pill.warn i{background:var(--down);animation:none}
-/* Settings: the button at the end of the home pills, and its panel (name + time zone, saved on this device) */
-button.hp-set{cursor:pointer;color:var(--gold)}
-button.hp-set:hover{background:var(--gold-dim)}
+/* Settings: the cog in the top corner, and the box it opens (name + time zone, saved on this device) */
+.bar nav{margin-left:auto}
+.cog{flex:none;width:34px;height:34px;margin-left:-18px;display:grid;place-items:center;border-radius:50%;color:var(--muted);transition:color .2s,background .2s}
+.cog:hover{color:var(--gold);background:var(--gold-dim)}
+.cog svg{width:20px;height:20px}
+@media (max-width:640px){header .cog{position:absolute;right:10px;top:8px;margin:0}}
 dialog.sets{width:min(440px,calc(100vw - 32px));padding:26px 28px 24px;border:1px solid var(--line);border-radius:20px;background:#0B1230;color:var(--text);box-shadow:0 30px 80px rgba(0,0,0,.6)}
 dialog.sets::backdrop{background:rgba(5,9,25,.72);backdrop-filter:blur(6px);-webkit-backdrop-filter:blur(6px)}
 dialog.sets[open]{display:block;animation:pop .28s ease}
@@ -1020,6 +1023,7 @@ main.ptr-go,footer.ptr-go{transition:transform .35s cubic-bezier(.2,.8,.3,1)}
       <a href="#schedule" data-tab="schedule"><span class="lg">Tour Schedule</span><span class="sh">Schedule</span></a>
       <a href="#corner" data-tab="corner"><span class="lg">Scouting Corner</span><span class="sh">Scouting</span></a>
     </nav>
+    <button type="button" class="cog" id="cog" aria-label="Settings" title="Settings"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 1 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 1 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 1 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 1 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg></button>
   </div>
 </header>
 
@@ -1309,7 +1313,7 @@ let STATE = null; // { lastChecked, rankingsAsOf, rankingsSource, rankings:{id:{
 
 /* ---------- dates in UK time ---------- */
 const ukDate = (d = new Date()) => new Intl.DateTimeFormat("en-CA", { timeZone: "Europe/London", year:"numeric", month:"2-digit", day:"2-digit" }).format(d);
-// the viewer's time zone: the one picked in Settings (the button on the home page, saved on this device),
+// the viewer's time zone: the one picked in Settings (the cog in the top corner, saved on this device),
 // otherwise undefined = the device's own zone
 let MYTZ; try { MYTZ = localStorage.getItem("72c-tz") || undefined; new Intl.DateTimeFormat("en-GB", { timeZone: MYTZ }); } catch (e) { MYTZ = undefined; }
 // the viewer's own date (in their time zone): "Today", "Tomorrow" and "this week" follow it
@@ -2672,7 +2676,7 @@ async function loadCorner(){
   } catch (e) {}
   renderCorner(); renderHome();
 }
-/* ---------- Settings (⚙ on the home page): first name and time zone, kept on this device ---------- */
+/* ---------- Settings (the cog in the top corner): first name and time zone, kept on this device ---------- */
 // "Europe/London" -> "Europe / London · 14:05" so the right zone is easy to spot by its time now
 function tzLabel(tz){
   let t = ""; try { t = new Date().toLocaleTimeString("en-GB", { timeZone: tz, hour:"2-digit", minute:"2-digit", hourCycle:"h23" }); } catch (e) {}
@@ -2709,7 +2713,7 @@ function saveSettings(){
   if (SCHED) renderSchedule();
   if (CORNER) renderCorner();
 }
-document.addEventListener("click", e => { if (e.target.closest("#hpSet")) openSettings(); });
+$("#cog").addEventListener("click", openSettings);
 $("#setOk").addEventListener("click", saveSettings);
 $("#setNo").addEventListener("click", () => $("#sets").close());
 $("#setName").addEventListener("keydown", e => { if (e.key === "Enter") saveSettings(); });
@@ -2743,9 +2747,8 @@ function renderHome(){
   const g = greeting(); $("#hpGreet").hidden = !g; $("#hpGreet").innerHTML = g;
   const lc = STATE?.lastChecked ? new Date(STATE.lastChecked) : null;
   const fresh = lc && Date.now() - lc < 3 * 36e5;
-  $("#hpMeta").innerHTML = (STATE ? `<span class="hp-pill${fresh ? "" : " warn"}"><i></i>${lc ? `Scores updated ${lc.toLocaleTimeString("en-GB", { timeZone: MYTZ, hour:"2-digit", minute:"2-digit" })}${fresh ? "" : ", " + lc.toLocaleDateString("en-GB", { timeZone: MYTZ, day:"numeric", month:"short" })}` : "Scores not updated yet"}</span>`
-    + (STATE.rankingsWeek || STATE.rankingsAsOf ? `<span class="hp-pill">Rankings: week of ${new Date((STATE.rankingsWeek || STATE.rankingsAsOf) + "T12:00:00Z").toLocaleDateString("en-GB", { day:"numeric", month:"short", timeZone:"UTC" })}</span>` : "") : "")
-    + `<button type="button" class="hp-pill hp-set" id="hpSet">⚙ Settings</button>`;
+  $("#hpMeta").innerHTML = STATE ? `<span class="hp-pill${fresh ? "" : " warn"}"><i></i>${lc ? `Scores updated ${lc.toLocaleTimeString("en-GB", { timeZone: MYTZ, hour:"2-digit", minute:"2-digit" })}${fresh ? "" : ", " + lc.toLocaleDateString("en-GB", { timeZone: MYTZ, day:"numeric", month:"short" })}` : "Scores not updated yet"}</span>`
+    + (STATE.rankingsWeek || STATE.rankingsAsOf ? `<span class="hp-pill">Rankings: week of ${new Date((STATE.rankingsWeek || STATE.rankingsAsOf) + "T12:00:00Z").toLocaleDateString("en-GB", { day:"numeric", month:"short", timeZone:"UTC" })}</span>` : "") : "";
   // 01 Competition Zone
   const ms = STATE?.matches || [], today = myDate();
   const nm = m => [m.p1, m.p2].filter(Boolean).map(esc).join(" v ");
