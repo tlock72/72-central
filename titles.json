@@ -150,15 +150,6 @@
     "link": "https://www.itftennis.com/en/tournament/w15-orlando-fl/usa/2026/w-itf-usa-2026-013/"
    },
    {
-    "id": "ivanov",
-    "tournament": "M25 Tarragona",
-    "tier": "M25",
-    "type": "ITF World Tennis Tour",
-    "week": "23 Mar to 29 Mar 2026",
-    "end": "2026-03-29",
-    "link": "https://www.itftennis.com/en/tournament/m25-tarragona/esp/2026/m-itf-esp-2026-009/"
-   },
-   {
     "id": "dudeney",
     "tournament": "W15 Monastir",
     "tier": "W15",
@@ -166,6 +157,15 @@
     "week": "23 Mar to 29 Mar 2026",
     "end": "2026-03-29",
     "link": "https://www.itftennis.com/en/tournament/w15-monastir/tun/2026/w-itf-tun-2026-013/"
+   },
+   {
+    "id": "ivanov",
+    "tournament": "M25 Tarragona",
+    "tier": "M25",
+    "type": "ITF World Tennis Tour",
+    "week": "23 Mar to 29 Mar 2026",
+    "end": "2026-03-29",
+    "link": "https://www.itftennis.com/en/tournament/m25-tarragona/esp/2026/m-itf-esp-2026-009/"
    },
    {
     "id": "dudeney",
@@ -1022,155 +1022,236 @@
  "best": {
   "deminaur": {
    "rank": 5,
-   "checked": "2026-10-06"
+   "itf": 5,
+   "seen": 6,
+   "week": "2026-09-28",
+   "checked": "2026-10-07"
   },
   "rublev": {
    "rank": 5,
-   "checked": "2026-10-06"
+   "itf": 5,
+   "seen": 13,
+   "week": "2026-09-28",
+   "checked": "2026-10-07"
   },
   "buse": {
    "rank": 30,
-   "checked": "2026-10-06"
+   "itf": 30,
+   "seen": 34,
+   "week": "2026-09-28",
+   "checked": "2026-10-07"
   },
   "altmaier": {
    "rank": 44,
-   "checked": "2026-10-06"
+   "itf": 44,
+   "seen": 49,
+   "week": "2026-09-28",
+   "checked": "2026-10-07"
   },
   "monfils": {
    "rank": 6,
-   "checked": "2026-10-06"
+   "itf": 6,
+   "seen": 55,
+   "week": "2026-09-28",
+   "checked": "2026-10-07"
   },
   "coric": {
    "rank": 12,
-   "checked": "2026-10-06"
+   "itf": 12,
+   "week": "2026-09-28",
+   "checked": "2026-10-07"
   },
   "schwaerzler": {
    "rank": 150,
-   "checked": "2026-10-06"
+   "itf": 150,
+   "seen": 177,
+   "week": "2026-09-28",
+   "checked": "2026-10-07"
   },
   "kym": {
    "rank": 123,
-   "checked": "2026-10-06"
+   "itf": 123,
+   "seen": 154,
+   "week": "2026-09-28",
+   "checked": "2026-10-07"
   },
   "kuzuhara": {
    "rank": 394,
-   "checked": "2026-10-06"
+   "itf": 394,
+   "seen": 540,
+   "week": "2026-09-28",
+   "checked": "2026-10-07"
   },
   "ivanov": {
    "rank": 485,
-   "checked": "2026-10-06"
+   "itf": 485,
+   "seen": 485,
+   "week": "2026-09-28",
+   "checked": "2026-10-07"
   },
   "bonding": {
    "rank": 805,
-   "checked": "2026-10-06"
+   "itf": 805,
+   "seen": 836,
+   "week": "2026-09-28",
+   "checked": "2026-10-07"
   },
   "mackenzie": {
-   "rank": 563,
-   "checked": "2026-10-06"
+   "rank": 573,
+   "itf": 573,
+   "seen": 603,
+   "week": "2026-09-28",
+   "checked": "2026-10-07"
   },
   "choi": {
    "rank": 1818,
-   "checked": "2026-10-06"
+   "itf": 1818,
+   "week": "2026-09-28",
+   "checked": "2026-10-07"
   },
   "qi": {
    "rank": 1880,
-   "checked": "2026-10-06"
+   "itf": 1880,
+   "week": "2026-09-28",
+   "checked": "2026-10-07"
   },
   "chavez": {
    "rank": 1174,
-   "checked": "2026-10-06"
+   "itf": 1174,
+   "seen": 1180,
+   "week": "2026-09-28",
+   "checked": "2026-10-07"
   },
   "mateo": {
-   "rank": null,
-   "checked": "2026-10-06"
+   "week": "2026-09-28",
+   "checked": "2026-10-07"
   },
   "drijver": {
-   "rank": null,
-   "checked": "2026-10-06"
+   "week": "2026-09-28",
+   "checked": "2026-10-07"
   },
   "tarlazzi": {
-   "rank": null,
-   "checked": "2026-10-06"
+   "week": "2026-09-28",
+   "checked": "2026-10-07"
   },
   "fazekas": {
-   "rank": null,
-   "checked": "2026-10-06"
+   "week": "2026-09-28",
+   "checked": "2026-10-07"
   },
   "farkxodov": {
-   "rank": null,
-   "checked": "2026-10-06"
+   "week": "2026-09-28",
+   "checked": "2026-10-07"
   },
   "daraban": {
-   "rank": null,
-   "checked": "2026-10-06"
+   "week": "2026-09-28",
+   "checked": "2026-10-07"
   },
   "svitolina": {
    "rank": 3,
-   "checked": "2026-10-06"
+   "itf": 3,
+   "seen": 7,
+   "week": "2026-09-28",
+   "checked": "2026-10-07"
   },
   "bejlek": {
    "rank": 28,
-   "checked": "2026-10-06"
+   "itf": 28,
+   "seen": 28,
+   "week": "2026-09-28",
+   "checked": "2026-10-07"
   },
   "starodubtseva": {
    "rank": 42,
-   "checked": "2026-10-06"
+   "itf": 42,
+   "seen": 42,
+   "week": "2026-09-28",
+   "checked": "2026-10-07"
   },
   "kasatkina": {
-   "rank": null,
-   "checked": "2026-10-06"
+   "seen": 20,
+   "issue": "Career high for Daria Kasatkina: the ITF profile shows no WTA career high, but they have been No. 20 in the official WTA rankings. Their profile's 'high' in index.html is shown instead, if set.",
+   "week": "2026-09-28",
+   "checked": "2026-10-07"
   },
   "sawangkaew": {
-   "rank": 74,
-   "checked": "2026-10-06"
+   "rank": 88,
+   "itf": 88,
+   "seen": 89,
+   "week": "2026-09-28",
+   "checked": "2026-10-07"
   },
   "jones": {
    "rank": 65,
-   "checked": "2026-10-06"
+   "itf": 65,
+   "seen": 72,
+   "week": "2026-09-28",
+   "checked": "2026-10-07"
   },
   "jabeur": {
    "rank": 2,
-   "checked": "2026-10-06"
+   "itf": 2,
+   "week": "2026-09-28",
+   "checked": "2026-10-07"
   },
   "romero": {
    "rank": 123,
-   "checked": "2026-10-06"
+   "itf": 123,
+   "seen": 132,
+   "week": "2026-09-28",
+   "checked": "2026-10-07"
   },
   "ristic": {
    "rank": 182,
-   "checked": "2026-10-06"
+   "itf": 182,
+   "seen": 183,
+   "week": "2026-09-28",
+   "checked": "2026-10-07"
   },
   "rajeshwaran": {
    "rank": 642,
-   "checked": "2026-10-06"
+   "itf": 642,
+   "seen": 663,
+   "week": "2026-09-28",
+   "checked": "2026-10-07"
   },
   "dotsenko": {
    "rank": 1215,
-   "checked": "2026-10-06"
+   "itf": 1215,
+   "seen": 1215,
+   "week": "2026-09-28",
+   "checked": "2026-10-07"
   },
   "newman": {
    "rank": 885,
-   "checked": "2026-10-06"
+   "itf": 885,
+   "seen": 904,
+   "week": "2026-09-28",
+   "checked": "2026-10-07"
   },
   "lin": {
-   "rank": 848,
-   "checked": "2026-10-06"
+   "rank": 1004,
+   "itf": 1004,
+   "seen": 1004,
+   "week": "2026-09-28",
+   "checked": "2026-10-07"
   },
   "pinera": {
    "rank": 1382,
-   "checked": "2026-10-06"
+   "itf": 1382,
+   "week": "2026-09-28",
+   "checked": "2026-10-07"
   },
   "iwasa": {
-   "rank": null,
-   "checked": "2026-10-06"
+   "week": "2026-09-28",
+   "checked": "2026-10-07"
   },
   "skryp": {
-   "rank": null,
-   "checked": "2026-10-06"
+   "week": "2026-09-28",
+   "checked": "2026-10-07"
   },
   "kurylova": {
-   "rank": null,
-   "checked": "2026-10-06"
+   "week": "2026-09-28",
+   "checked": "2026-10-07"
   },
   "dudeney": {
    "rank": 224,
@@ -1189,9 +1270,16 @@
    "checked": "2026-10-06"
   }
  },
- "tried": "2026-10-06T22:54:58Z",
+ "tried": "2026-10-07T06:18:13Z",
  "pending": [],
- "todo": [],
- "todoMode": "career",
+ "todo": [
+  "dudeney",
+  "mmakarova",
+  "vmakarova",
+  "momot",
+  "kanabar",
+  "liu"
+ ],
+ "todoMode": "daily",
  "source": "ITF singles results (itftennis.com)"
 }
