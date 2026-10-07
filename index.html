@@ -809,6 +809,7 @@ nav .sh,.nm-s{display:none}
   #page-corner .sq-line{display:flex}
   #page-corner .sq-line .chips{flex:none;-webkit-mask-image:none;mask-image:none;padding-right:0}
   #page-corner .sq-line .sq-in{flex:1 1 0}
+  #page-corner #cnSortLine .chips{flex:1 1 auto;flex-wrap:wrap}
   .stale{margin:8px 0 6px;padding:9px 12px;font-size:12px}
   .src{font-size:11px;margin-top:12px}
   /* Scouting Corner */
@@ -1237,6 +1238,9 @@ main.ptr-go,footer.ptr-go{transition:transform .35s cubic-bezier(.2,.8,.3,1)}
       <div class="sq-line">
         <div class="chips" role="group" aria-label="Show"><button class="chip cng on" data-g="">Everyone</button><button class="chip cng" data-g="M">Male</button><button class="chip cng" data-g="F">Female</button></div>
         <input class="sq-in" id="cnQ" type="search" placeholder="Search prospect" aria-label="Search prospect">
+      </div>
+      <div class="sq-line" id="cnSortLine">
+        <div class="chips" role="group" aria-label="Sort"><button class="chip cns on" data-s="">Top ranked</button><button class="chip cns" data-s="young">Youngest</button><button class="chip cns" data-s="old">Oldest</button><button class="chip cns" data-s="new">Newest added</button><button class="chip cns" data-s="first">First added</button></div>
       </div>
     </div>
     <div class="cn-list" id="cnList"><div class="sq-empty">Loading the watch list…</div></div>
@@ -2421,7 +2425,7 @@ async function loadScouting(){
    them up, and until then they show here as "Looking up…". */
 const CORNER_URL = "https://script.google.com/macros/s/AKfycbwzEb0YNoDmZaaJ5fQg05ubEe_lowMLiGoYaXuclycqQikOngLQEmENPN5KoL_KJXu1kA/exec";  // same as LOG_URL
 let CORNER = null, CN_SHEET = [], CN_SHEET_OK = false, CN_REMOVED = [], CN_ASKED = [];
-const CN = { g: "", q: "", open: new Set(), rm: "" };
+const CN = { g: "", q: "", s: "", open: new Set(), rm: "" };
 const cnKey = s => String(s || "").split("|")[0].normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLowerCase().replace(/[^a-z]/g, "");
 const CN_SRC = { te: "Tennis Europe", "itf-jr": "ITF Juniors", "itf-pro": "Pro: ATP/WTA, Challenger, ITF" };
 // names added on this device: shown as "Looking up…" for up to 3 days (the Sheet's list covers everyone else's)
@@ -2496,17 +2500,29 @@ function cnShown(){
   return Object.fromEntries(Object.entries(CORNER?.players || {}).filter(([k, p]) => !gone.has(cnKey(p.typed || p.name)) && !(CN_SHEET_OK && p.src === "site" && !onSheet.has(cnKey(p.typed || p.name)))));
 }
 const cnOrd = r => r || 1e6, cnTeBest = p => Math.min(...(p.te || []).map(t => t.rank || 1e6), 1e6);
+// the "Sort" chips: age goes by birth year only; "added" by the day added (same day: the Sheet's row order, later row = newer).
+// Anyone missing a birth year or added day goes last.
+function cnPick(a, b){
+  if (!CN.s) return 0;
+  const age = CN.s === "young" || CN.s === "old";
+  const v = p => age ? (+p.born || 0) : !p.added ? "" : p.added + String(CN_SHEET.findIndex(x => cnKey(x.name) === cnKey(p.typed || p.name)) + 1).padStart(5, "0");
+  const x = v(a), y = v(b);
+  if (!x || !y) return !x - !y;
+  const up = CN.s === "old" || CN.s === "first";
+  return x === y ? 0 : (x < y) === up ? -1 : 1;
+}
 function renderCorner(){
   if (!$("#page-corner")) return;
   const P = cnShown(), gone = new Set(CN_REMOVED.map(cnKey));
   document.querySelectorAll(".cng").forEach(b => b.classList.toggle("on", b.dataset.g === CN.g));
+  document.querySelectorAll(".cns").forEach(b => b.classList.toggle("on", b.dataset.s === CN.s));
   // names added on the site that GitHub hasn't looked up yet
   const waiting = [...CN_SHEET, ...cnLocal()].filter((x, i, a) => x.name && !P[cnKey(x.name)] && !gone.has(cnKey(x.name)) && a.findIndex(y => cnKey(y.name) === cnKey(x.name)) === i);
   const q = cnKey(CN.q);
   const keep = (name, g) => (!CN.g || g === CN.g) && (!q || cnKey(name).includes(q));
   const cards = Object.entries(P).filter(([k, p]) => keep(p.name, p.g))
-    // ATP/WTA rank first, then ITF Juniors, then best Tennis Europe rank, then name
-    .sort((a, b) => cnOrd(a[1].pro?.rank || a[1].itfPro?.rank) - cnOrd(b[1].pro?.rank || b[1].itfPro?.rank) || cnOrd(a[1].itfJr?.rank) - cnOrd(b[1].itfJr?.rank) || cnOrd(cnTeBest(a[1])) - cnOrd(cnTeBest(b[1])) || a[1].name.localeCompare(b[1].name))
+    // the picked sort first (age or day added), then ATP/WTA rank, then ITF Juniors, then best Tennis Europe rank, then name
+    .sort((a, b) => cnPick(a[1], b[1]) || cnOrd(a[1].pro?.rank || a[1].itfPro?.rank) - cnOrd(b[1].pro?.rank || b[1].itfPro?.rank) || cnOrd(a[1].itfJr?.rank) - cnOrd(b[1].itfJr?.rank) || cnOrd(cnTeBest(a[1])) - cnOrd(cnTeBest(b[1])) || a[1].name.localeCompare(b[1].name))
     .map(([k, p]) => cnCard(k, p));
   const wait = waiting.filter(x => keep(x.name, x.g)).map(x => `<div class="cn cn-wait"><div class="cn-h"><span class="nm">${esc(cnTidy(x.name))}</span><span class="mt">Looking up… usually within 10 minutes${x.by ? " · added by " + esc(x.by) : ""}</span></div></div>`);
   $("#cnList").innerHTML = [...wait, ...cards].join("") || `<div class="sq-empty">${CORNER ? (Object.keys(P).length ? "No prospect matches." : "No prospects yet. Add the first one above.") : "Loading the watch list…"}</div>`;
@@ -2531,6 +2547,7 @@ $("#cnList").addEventListener("submit", e => {
   renderCorner();
 });
 document.querySelectorAll(".cng").forEach(b => b.addEventListener("click", () => { CN.g = b.dataset.g; renderCorner(); }));
+document.querySelectorAll(".cns").forEach(b => b.addEventListener("click", () => { CN.s = b.dataset.s; renderCorner(); }));
 $("#cnQ").addEventListener("input", e => { CN.q = e.target.value; renderCorner(); });
 /* Nation box: a dropdown of nations that narrows as you type (name or 3-letter code). The code is what gets sent (ITF/IOC style, e.g. GBR, SUI, GER). */
 const CN_NATS = ("AFG Afghanistan|ALB Albania|ALG Algeria|AND Andorra|ANG Angola|ARG Argentina|ARM Armenia|ARU Aruba|AUS Australia|AUT Austria|AZE Azerbaijan|BAH Bahamas|BRN Bahrain|BAN Bangladesh|BAR Barbados|BLR Belarus|BEL Belgium|BEN Benin|BER Bermuda|BOL Bolivia|BIH Bosnia and Herzegovina|BOT Botswana|BRA Brazil|BUL Bulgaria|BUR Burkina Faso|BDI Burundi|CAM Cambodia|CMR Cameroon|CAN Canada|CHI Chile|CHN China|TPE Chinese Taipei|COL Colombia|CRC Costa Rica|CIV Côte d'Ivoire|CRO Croatia|CUB Cuba|CYP Cyprus|CZE Czechia|DEN Denmark|DOM Dominican Republic|ECU Ecuador|EGY Egypt|ESA El Salvador|EST Estonia|ETH Ethiopia|FIJ Fiji|FIN Finland|FRA France|GAB Gabon|GEO Georgia|GER Germany|GHA Ghana|GBR Great Britain|GRE Greece|GUA Guatemala|HAI Haiti|HON Honduras|HKG Hong Kong|HUN Hungary|ISL Iceland|IND India|INA Indonesia|IRI Iran|IRQ Iraq|IRL Ireland|ISR Israel|ITA Italy|JAM Jamaica|JPN Japan|JOR Jordan|KAZ Kazakhstan|KEN Kenya|KOR Korea, South|KOS Kosovo|KUW Kuwait|KGZ Kyrgyzstan|LAT Latvia|LIB Lebanon|LBA Libya|LIE Liechtenstein|LTU Lithuania|LUX Luxembourg|MAC Macau|MAD Madagascar|MAS Malaysia|MLT Malta|MRI Mauritius|MEX Mexico|MDA Moldova|MON Monaco|MGL Mongolia|MNE Montenegro|MAR Morocco|MOZ Mozambique|NAM Namibia|NEP Nepal|NED Netherlands|NZL New Zealand|NCA Nicaragua|NGR Nigeria|MKD North Macedonia|NOR Norway|OMA Oman|PAK Pakistan|PAN Panama|PAR Paraguay|PER Peru|PHI Philippines|POL Poland|POR Portugal|PUR Puerto Rico|QAT Qatar|ROU Romania|RUS Russia|RWA Rwanda|SMR San Marino|KSA Saudi Arabia|SEN Senegal|SRB Serbia|SGP Singapore|SVK Slovakia|SLO Slovenia|RSA South Africa|ESP Spain|SRI Sri Lanka|SUD Sudan|SWE Sweden|SUI Switzerland|SYR Syria|TJK Tajikistan|TAN Tanzania|THA Thailand|TOG Togo|TTO Trinidad and Tobago|TUN Tunisia|TUR Türkiye|TKM Turkmenistan|UGA Uganda|UKR Ukraine|UAE United Arab Emirates|USA United States|URU Uruguay|UZB Uzbekistan|VEN Venezuela|VIE Vietnam|ZAM Zambia|ZIM Zimbabwe")
