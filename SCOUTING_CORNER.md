@@ -23,6 +23,9 @@ without Claude, and uses no Live Tennis API calls.
   on the device they asked from (that device holds a secret undo code, so nobody else can withdraw it). Undo marks the
   request "Withdrawn" on the Removals tab and emails Tobey; the approve link then says there's nothing to do.
   Requests made before 7 Oct 2026 have no undo code, so they can't be undone this way.
+- **Emails going to the wrong address:** in Apps Script go to **Project Settings (cog) > Script properties > Add property**,
+  name it `EMAIL` and put the right address as the value. To get the links again for requests still waiting, pick
+  `resendRemovals` in the function dropdown and click **Run**.
 - Every request is kept on the **Removals** tab of the Sheet (asked, by whom, reason, Approved / Declined / Withdrawn).
 - To bring someone back: add them again with the box on the site (that cancels the old removal), or change
   their Status on the Removals tab from "Approved" to "Re-added".

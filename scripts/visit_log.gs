@@ -149,14 +149,33 @@ function askRemoval(d) {
   } finally {
     lock.releaseLock();
   }
-  const link = ScriptApp.getService().getUrl() + "?kind=decide&id=" + id + "&code=" + code;
-  try {
-    MailApp.sendEmail(Session.getEffectiveUser().getEmail(), "72 Central: remove " + name + " from Scouting Corner?",
-      (by.replace(/^'/, "") || "Someone") + " asked for " + name + " to be removed from the Scouting Corner.\n" +
-      (why ? "Reason given: " + why.replace(/^'/, "") + "\n" : "") +
-      "\nOpen this link to approve or decline it:\n" + link + "\n\nNothing is removed until you approve. All requests are on the \"Removals\" tab of the visit-log Sheet.");
-  } catch (err) {}  // e.g. Google's daily email limit: the request is still on the "Removals" tab
+  try { removalEmail_(name, by, why, id, code); } catch (err) {}  // e.g. Google's daily email limit: the request is still on the "Removals" tab
   return out("ok");
+}
+
+// Where the emails go: the script property EMAIL if set (Project Settings > Script properties), else the Sheet owner's Google account.
+function mailTo_() {
+  return PropertiesService.getScriptProperties().getProperty("EMAIL") || Session.getEffectiveUser().getEmail();
+}
+
+function removalEmail_(name, by, why, id, code) {
+  const link = ScriptApp.getService().getUrl() + "?kind=decide&id=" + id + "&code=" + code;
+  MailApp.sendEmail(mailTo_(), "72 Central: remove " + name + " from Scouting Corner?",
+    (String(by).replace(/^'/, "") || "Someone") + " asked for " + name + " to be removed from the Scouting Corner.\n" +
+    (why ? "Reason given: " + String(why).replace(/^'/, "") + "\n" : "") +
+    "\nOpen this link to approve or decline it:\n" + link + "\n\nNothing is removed until you approve. All requests are on the \"Removals\" tab of the visit-log Sheet.");
+}
+
+// Run by hand (pick it in the function dropdown, click Run): emails the approve/decline link again for every request still waiting.
+function resendRemovals() {
+  const sh = SpreadsheetApp.getActiveSpreadsheet().getSheetByName("Removals");
+  let n = 0;
+  for (const x of removalRows_().filter(r => r.status === "Waiting" && r.id && r.code)) {
+    const r = sh.getRange(x.row, 1, 1, 4).getValues()[0];
+    removalEmail_(x.name, r[2], r[3], x.id, x.code);
+    n++;
+  }
+  Logger.log(n + " email(s) sent to " + mailTo_());
 }
 
 // Scouting Corner: the person who asked pressed "Undo" on the card. Only their device has the undo code,
@@ -176,7 +195,7 @@ function undoRemoval(d) {
     lock.releaseLock();
   }
   try {
-    MailApp.sendEmail(Session.getEffectiveUser().getEmail(), "72 Central: removal request for " + name + " withdrawn",
+    MailApp.sendEmail(mailTo_(), "72 Central: removal request for " + name + " withdrawn",
       "The person who asked for " + name + " to be removed from the Scouting Corner has withdrawn the request.\n" +
       "Nothing to do: " + name + " stays on the Scouting Corner.");
   } catch (err) {}
