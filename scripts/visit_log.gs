@@ -10,6 +10,10 @@
 // Tobey gets an email with a link to approve or decline it. Approved = taken off the Scouting Corner
 // (their row on the "Prospects" tab is deleted, and GitHub stops showing anyone from prospects.json too).
 // Whoever asked can undo their request from the same device while it's still waiting ("Withdrawn").
+// Comments on players (Scouting Corner cards and Filtered Rankings rows) go on the "Comments" tab (made
+// automatically with the first comment). The writer can undo one from the same device for an hour ("Undone");
+// anyone can ask for one to be deleted, and Tobey gets an email to approve ("Deleted") or decline ("Kept").
+// To delete a comment straight away yourself, set its Status to "Deleted".
 
 const TZ = "Europe/London";
 
@@ -62,6 +66,9 @@ function doPost(e) {
   if (d.kind === "prospect") return addProspect(d);
   if (d.kind === "removal") return askRemoval(d);
   if (d.kind === "unremoval") return undoRemoval(d);
+  if (d.kind === "comment") return addComment(d);
+  if (d.kind === "uncomment") return undoComment(d);
+  if (d.kind === "delcomment") return askDeleteComment(d);
   const id = String(d.id || "").slice(0, 40), start = new Date(Number(d.start));
   if (!id || isNaN(start)) return out("bad");
   // text starting with = + - @ would be read as a formula, so it's kept as plain text
@@ -261,11 +268,158 @@ function decideRemoval(id, code, yes) {
   return "Approved: " + name + " is taken off the Scouting Corner (the site updates within about 30 minutes, often sooner).";
 }
 
+// ---------- Comments on players ----------
+// Creates the "Comments" tab (also made automatically by the first comment). Run by hand only if you want it before then.
+function setupComments() {
+  const ss = SpreadsheetApp.getActiveSpreadsheet();
+  const c = ss.getSheetByName("Comments") || ss.insertSheet("Comments");
+  c.getRange(1, 1, 1, 11).setValues([["Written", "Player", "Comment", "By", "Status", "Decided", "Delete asked by", "Reason",
+    "Comment ID", "Code", "Undo code"]]).setFontWeight("bold");
+  c.setFrozenRows(1);
+  c.getRange("A:A").setNumberFormat("ddd d mmm yyyy HH:mm");
+  c.getRange("F:F").setNumberFormat("ddd d mmm yyyy HH:mm");
+  c.setColumnWidth(3, 420);
+  c.getRange("C:C").setWrap(true);
+  c.hideColumns(9, 3);
+  return c;
+}
+
+// Every row on the "Comments" tab, with its row number.
+function commentRows_() {
+  const sh = SpreadsheetApp.getActiveSpreadsheet().getSheetByName("Comments");
+  if (!sh || sh.getLastRow() < 2) return [];
+  return sh.getRange(2, 1, sh.getLastRow() - 1, 11).getValues().map((r, i) => ({
+    sheet: sh, row: i + 2, at: r[0], name: String(r[1]).replace(/^'/, "").trim(), text: String(r[2]).replace(/^'/, ""),
+    by: String(r[3]).replace(/^'/, ""), status: String(r[4]), askedBy: String(r[6]).replace(/^'/, ""), why: String(r[7]).replace(/^'/, ""),
+    id: String(r[8]), code: String(r[9]), undo: String(r[10] || "")
+  })).filter(x => x.name && x.id);
+}
+
+// Someone wrote a comment on the site. The id comes from the page (so it can show it straight away); the undo
+// code is a secret only the writer's device has.
+function addComment(d) {
+  const clean = x => String(x || "").replace(/[\u0000-\u0009\u000b-\u001f]/g, "").trim();
+  const plain = t => /^[=+\-@]/.test(t) ? "'" + t : t;  // never read as a formula
+  const name = clean(d.name).replace(/\s+/g, " ").slice(0, 60);
+  if (name.length < 3 || !/^[\p{L}][\p{L} .'\-|]+$/u.test(name)) return out("bad");
+  const text = clean(d.text).slice(0, 1000), by = clean(d.by).slice(0, 30);
+  const id = String(d.id || ""), undo = String(d.undo || "");
+  if (!text || !by || !/^[a-f0-9]{8}$/.test(id) || !/^[a-f0-9]{16,64}$/.test(undo)) return out("bad");
+  const lock = LockService.getScriptLock();
+  lock.waitLock(10000);
+  try {
+    const sh = SpreadsheetApp.getActiveSpreadsheet().getSheetByName("Comments") || setupComments();
+    if (commentRows_().some(x => x.id === id)) return out("dup");
+    sh.appendRow([new Date(), plain(name), plain(text), plain(by), "Live", "", "", "", id, "", undo]);
+  } finally {
+    lock.releaseLock();
+  }
+  return out("ok");
+}
+
+// The writer pressed "Undo": only their device has the undo code, and only within an hour of writing it.
+function undoComment(d) {
+  const undo = String(d.undo || "");
+  if (!/^[a-f0-9]{16,64}$/.test(undo)) return out("bad");
+  const lock = LockService.getScriptLock();
+  lock.waitLock(10000);
+  try {
+    const x = commentRows_().find(r => r.undo && r.undo === undo);
+    if (!x || x.status === "Deleted" || x.status === "Undone") return out("none");
+    if (!(x.at instanceof Date) || Date.now() - x.at.getTime() > 65 * 60 * 1000) return out("late");  // an hour, plus a few minutes for slow connections
+    x.sheet.getRange(x.row, 5, 1, 2).setValues([["Undone", new Date()]]);
+  } finally {
+    lock.releaseLock();
+  }
+  return out("ok");
+}
+
+// Someone pressed "Request deletion" on a comment. One open request per comment; Tobey is emailed.
+function askDeleteComment(d) {
+  const clean = x => String(x || "").replace(/[\u0000-\u001f]/g, "").trim();
+  const plain = t => /^[=+\-@]/.test(t) ? "'" + t : t;
+  const id = String(d.id || "");
+  if (!/^[a-f0-9]{8}$/.test(id)) return out("bad");
+  const by = plain(clean(d.by).slice(0, 30)), why = plain(clean(d.reason).slice(0, 300));
+  const lock = LockService.getScriptLock();
+  lock.waitLock(10000);
+  let x, code;
+  try {
+    x = commentRows_().find(r => r.id === id);
+    if (!x || x.status === "Deleted" || x.status === "Undone") return out("none");
+    if (x.status === "Delete requested") return out("dup");
+    code = Utilities.getUuid().replace(/-/g, "");  // secret: only in Tobey's email, so only Tobey can decide
+    x.sheet.getRange(x.row, 5, 1, 6).setValues([["Delete requested", "", by, why, id, code]]);
+  } finally {
+    lock.releaseLock();
+  }
+  try { deleteCommentEmail_(x, String(by).replace(/^'/, ""), String(why).replace(/^'/, ""), code); } catch (err) {}  // e.g. Google's daily email limit: it's still on the "Comments" tab
+  return out("ok");
+}
+
+function deleteCommentEmail_(x, by, why, code) {
+  const link = ScriptApp.getService().getUrl() + "?kind=decidecomment&id=" + x.id + "&code=" + code;
+  const when = x.at instanceof Date ? Utilities.formatDate(x.at, TZ, "d MMM yyyy HH:mm") : "";
+  MailApp.sendEmail(mailTo_(), "72 Central: delete a comment on " + x.name + "?",
+    (by || "Someone") + " asked for this comment on " + x.name + " to be deleted:\n\n" +
+    "\"" + x.text + "\"\n(written by " + (x.by || "someone") + (when ? ", " + when : "") + ")\n\n" +
+    (why ? "Reason given: " + why + "\n\n" : "") +
+    "Open this link to approve or decline it:\n" + link + "\n\nNothing is deleted until you approve. All comments are on the \"Comments\" tab of the visit-log Sheet.");
+}
+
+// The page Tobey opens from the email. Nothing changes until a button is pressed.
+function decideCommentPage(e) {
+  const p = e.parameter, x = commentRows_().find(r => r.id === p.id && r.code && r.code === p.code);
+  const t = HtmlService.createTemplate(
+    '<div style="font-family:sans-serif;max-width:480px;margin:40px auto;line-height:1.5">' +
+    '<h2>Delete a comment?</h2><p id="m"><?= msg ?></p><? if (text) { ?><blockquote style="border-left:3px solid #D0A579;margin:0 0 16px;padding:4px 12px;white-space:pre-wrap"><?= text ?></blockquote><? } ?>' +
+    '<? if (open) { ?><button onclick="go(true)" style="padding:10px 18px;margin-right:8px">Approve: delete it</button>' +
+    '<button onclick="go(false)" style="padding:10px 18px">Decline: keep it</button><? } ?></div>' +
+    '<script>function go(yes){document.querySelectorAll("button").forEach(b=>b.disabled=true);' +
+    'google.script.run.withSuccessHandler(t=>{document.getElementById("m").textContent=t;document.querySelectorAll("button").forEach(b=>b.remove())})' +
+    '.decideComment(<?!= JSON.stringify(id) ?>,<?!= JSON.stringify(code) ?>,yes)}</script>');
+  t.open = !!x && x.status === "Delete requested";
+  t.text = x ? x.text : "";
+  t.id = x ? x.id : ""; t.code = x ? x.code : "";
+  t.msg = !x ? "This request wasn't found (the link may be incomplete)."
+    : t.open ? (x.askedBy || "Someone") + " asked to delete this comment on " + x.name + " by " + (x.by || "someone") + (x.why ? ". Reason: " + x.why : "") + "."
+    : x.status === "Undone" ? "The writer took this comment back themselves. Nothing to do."
+    : "Already decided (" + x.status + ").";
+  return t.evaluate().setTitle("72 Central: delete a comment?");
+}
+
+// Called by the Approve / Decline buttons.
+function decideComment(id, code, yes) {
+  const lock = LockService.getScriptLock();
+  lock.waitLock(10000);
+  try {
+    const x = commentRows_().find(r => r.id === String(id) && r.code && r.code === String(code));
+    if (!x) return "This request wasn't found.";
+    if (x.status === "Undone") return "The writer took this comment back themselves. Nothing to do.";
+    if (x.status !== "Delete requested") return "Already decided (" + x.status + ").";
+    x.sheet.getRange(x.row, 5, 1, 2).setValues([[yes ? "Deleted" : "Kept", new Date()]]);
+    return yes ? "Deleted: the comment on " + x.name + " is gone from the site (within about 10 minutes for anyone with it open)."
+      : "Declined: the comment on " + x.name + " stays.";
+  } finally {
+    lock.releaseLock();
+  }
+}
+
+// Read by the site: every comment still showing (not undone or deleted). Undo and approval codes never leave the Sheet.
+function listComments() {
+  const list = commentRows_().filter(x => x.status !== "Undone" && x.status !== "Deleted" && x.at instanceof Date).map(x => ({
+    id: x.id, name: x.name, text: x.text, by: x.by, at: x.at.toISOString(), status: x.status === "Delete requested" ? "asked" : "live"
+  }));
+  return ContentService.createTextOutput(JSON.stringify({ comments: list })).setMimeType(ContentService.MimeType.JSON);
+}
+
 // Read by GitHub (scripts/prospects.py) and by the site: the names added on the site, plus removal requests
 // (names only; the request IDs and codes never leave the Sheet).
 function doGet(e) {
   const kind = (e && e.parameter && e.parameter.kind) || "";
   if (kind === "decide") return decidePage(e);
+  if (kind === "decidecomment") return decideCommentPage(e);
+  if (kind === "comments") return listComments();
   if (kind !== "prospects") return out("72 Central");
   const sh = SpreadsheetApp.getActiveSpreadsheet().getSheetByName("Prospects");
   const rows = sh && sh.getLastRow() > 1 ? sh.getRange(2, 1, sh.getLastRow() - 1, 6).getValues() : [];

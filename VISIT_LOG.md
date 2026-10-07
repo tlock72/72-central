@@ -26,3 +26,13 @@ Open the site, wait a minute and the first row appears.
   **Deploy > Manage deployments**, archive the old one, make a new one and update `LOG_URL`.
 - If you change the script later, use **Deploy > Manage deployments > Edit > Version: New version**, which keeps the
   same URL.
+
+## Player comments
+- The comment bubble on Scouting Corner cards and Filtered Rankings rows saves to a **Comments** tab, which the
+  script makes by itself with the first comment. Comments are matched to players by name, so a comment made on
+  Filtered Rankings also shows on that player's Scouting Corner card once they're added.
+- The writer can undo a comment from the same device for an hour (status "Undone").
+- "Request deletion" emails you an approve/decline link, like removal requests (status "Deleted" or "Kept").
+  To delete one yourself straight away, set its Status to "Deleted".
+- **After pasting the new script,** do **Deploy > Manage deployments > Edit > Version: New version**, or the site
+  keeps talking to the old script and comments won't save.
