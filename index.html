@@ -277,6 +277,19 @@ dialog.prof[open]{animation:pop .28s ease}
 .ph .facts{display:flex;flex-wrap:wrap;gap:8px 26px;margin-top:20px;font-size:13px;color:var(--muted)}
 .ph .facts b{color:var(--white);font-weight:600}
 .pb{padding:30px 40px 40px;display:grid;grid-template-columns:minmax(0,1fr);gap:30px}
+/* campaign gallery (campHtml): images at one height, side by side, snapping to the centre */
+.camp .cwrap{position:relative;margin:0 -40px}
+.camp .ctrack{display:flex;gap:12px;overflow-x:auto;scroll-snap-type:x mandatory;scrollbar-width:none;padding:4px 40px 18px;scroll-padding:0 40px}
+.camp .ctrack::-webkit-scrollbar{display:none}
+.camp .ctrack img{flex:none;height:clamp(300px,42vw,440px);width:auto;object-fit:cover;scroll-snap-align:center;border-radius:16px;box-shadow:0 14px 34px rgba(0,0,0,.45);background:rgba(255,255,255,.03)}
+.camp .carr{position:absolute;top:calc(50% - 30px);z-index:1;width:42px;height:42px;border-radius:50%;border:1px solid var(--line);background:rgba(12,20,49,.7);color:var(--gold);font-size:26px;line-height:1;display:grid;place-items:center;padding-bottom:3px;backdrop-filter:blur(6px)}
+.camp .carr:hover{background:var(--gold-dim)}
+.camp .carr.l{left:52px}.camp .carr.r{right:52px}
+.camp .cdots{display:flex;justify-content:center;gap:8px}
+.camp .cdots button{width:7px;height:7px;border-radius:99px;padding:0;border:0;background:rgba(208,165,121,.3);transition:width .3s,background .3s}
+.camp .cdots button.on{width:22px;background:var(--gold)}
+@media (max-width:640px), (pointer:coarse){.camp .carr{display:none}}
+@media (max-width:640px){.camp .cwrap{margin:0 -16px}.camp .ctrack{padding:2px 16px 14px;scroll-padding:0 16px;gap:10px}.camp .ctrack img{height:min(62vw,330px);max-width:calc(100vw - 52px);border-radius:12px}}
 dialog.prof{overflow-x:hidden;overflow-y:auto;overscroll-behavior:contain}
 /* phones: while a profile is open the page behind is pinned in place, so a swipe only ever scrolls the profile (openProfile/profLock) */
 html.prof-lock body{position:fixed;left:0;right:0;width:100%;overflow:hidden}
@@ -1906,7 +1919,8 @@ const PROFILES = [
     titles:[{ k:"WTA titles", n:20, p:[["WTA Finals",1],["1000",5],["Tour",14]] }, { k:"Team titles", team:1, n:4, note:"Including Tokyo 2020" }],
     partners:["waterdrop","MacPaw","adidas","Mercedes-Benz","VISA","Diadem","United24","EA7","WhiteBIT"],
     social:{ Instagram:1.8*M, TikTok:83*K, X:431*K },
-    quote:["I will not stand aside. I will do my best to help Ukraine win its most important fight.","Elina Svitolina"] },
+    quote:["I will not stand aside. I will do my best to help Ukraine win its most important fight.","Elina Svitolina"],
+    campaign:[["svitolina-c1.webp",800,1000],["svitolina-c2.webp",1000,1000],["svitolina-c3.webp",800,1000],["svitolina-c4.webp",1150,646],["svitolina-c5.webp",1000,1000]] },
   { id:"kasatkina", age:29, nat:"Australian", plays:BH, high:8,
     titles:[{ k:"WTA titles", n:9, p:[["500",3],["250",5],["125",1]] }],
     partners:["adidas","Artengo","Royaltiz","Decathlon"],
@@ -2220,6 +2234,33 @@ function latestResult(id){
   return (STATE?.matches || []).filter(m => m.status === "finished" && md(m) < today && (m.p1Id === id || m.p2Id === id))
     .sort((a, b) => b.date.localeCompare(a.date) || roundStage(b.round) - roundStage(a.round))[0] || null;
 }
+/* campaign gallery on a profile (only players with a campaign list, e.g. Svitolina): [file, width, height] each.
+   Slides itself along every few seconds, stops while someone is touching or hovering it, and never moves on its own if the device asks for less motion. */
+function campHtml(list){
+  if (!list?.length) return "";
+  return `<section class="camp"><h3 class="pk">Campaigns</h3>
+    <div class="cwrap"><button class="carr l" data-camp="-1" aria-label="Previous image">‹</button>
+      <div class="ctrack">${list.map(([f, w, h], i) => `<img src="${esc(f)}" width="${w}" height="${h}" alt="" ${i > 1 ? 'loading="lazy"' : ""} onerror="this.remove()">`).join("")}</div>
+      <button class="carr r" data-camp="1" aria-label="Next image">›</button></div>
+    <div class="cdots">${list.map((_, i) => `<button data-cdot="${i}" aria-label="Image ${i + 1}"${i ? "" : ' class="on"'}></button>`).join("")}</div></section>`;
+}
+let campT = null, campIdle = 0;
+const campTrack = () => $("#prof .ctrack");
+function campAt(){ const t = campTrack(); if (!t) return 0; const mid = t.scrollLeft + t.clientWidth / 2; let best = 0, bd = 1e9;
+  [...t.children].forEach((im, i) => { const d = Math.abs(im.offsetLeft + im.offsetWidth / 2 - mid); if (d < bd) { bd = d; best = i; } }); return best; }
+function campGo(i){ const t = campTrack(); if (!t || !t.children.length) return; const n = t.children.length; i = (i + n) % n;
+  const im = t.children[i]; t.scrollTo({ left: im.offsetLeft - (t.clientWidth - im.offsetWidth) / 2, behavior: "smooth" }); }
+function campStop(){ clearInterval(campT); campT = null; }
+function campStart(){
+  campStop(); const t = campTrack(); if (!t) return;
+  const dots = () => { const i = campAt(); $("#prof").querySelectorAll(".cdots button").forEach((b, j) => b.classList.toggle("on", j === i)); };
+  t.addEventListener("scroll", () => requestAnimationFrame(dots), { passive: true });
+  ["pointerenter", "pointerdown", "touchstart", "focusin"].forEach(ev => t.parentElement.addEventListener(ev, () => { campIdle = Date.now(); }, { passive: true }));
+  t.parentElement.addEventListener("pointerleave", () => { campIdle = Date.now() - 4000; });
+  if (matchMedia("(prefers-reduced-motion:reduce)").matches) return;
+  campIdle = 0;
+  campT = setInterval(() => { if (Date.now() - campIdle > 7000 && !t.parentElement.matches(":hover")) campGo(campAt() + 1); }, 4000);
+}
 function openProfile(id){
   const x = profById[id], p = byId[id];
   if (!x || !p) return;
@@ -2242,6 +2283,7 @@ function openProfile(id){
       <div class="facts">${facts.map(([k, v]) => `<span>${esc(k)} <b>${esc(v)}</b></span>`).join("")}</div>
     </div>
     <div class="pb">
+      ${campHtml(x.campaign)}
       ${(lr => lr ? `<section><h3 class="pk">Latest result</h3><div class="plr">${card(lr)}</div></section>` : "")(latestResult(id))}
       ${x.kind === "junior" ? juniorBody(x, p, rank) : proBody(x, p, rank)}
       <div class="pnav"><button data-go="${prev.x.id}">← ${esc(prev.p.last)}</button>${safeUrl(p.sofa) ? `<a class="live-btn" href="${esc(safeUrl(p.sofa))}" target="_blank" rel="noopener"><span class="dot"></span>SofaScore profile</a>` : ""}<button data-go="${next.x.id}">${esc(next.p.last)} →</button></div>
@@ -2249,6 +2291,7 @@ function openProfile(id){
   const d = $("#prof");
   if (!d.open) { profLock(true); d.showModal(); }
   d.scrollTop = 0;
+  campStart();
   if (location.hash !== "#players/" + id) history.replaceState(null, "", "#players/" + id);
 }
 document.addEventListener("click", e => {
@@ -2257,6 +2300,8 @@ document.addEventListener("click", e => {
   const rt = e.target.closest("[data-rt]"); if (rt) { rankTab = rt.dataset.rt; return renderRankings(); }
   const tp = e.target.closest("[data-tp]");
   if (tp) { const g = tp.parentElement; g.nextElementSibling.classList.toggle("second", tp.dataset.tp === "1"); g.querySelectorAll(".chip.tp").forEach(b => b.classList.toggle("on", b === tp)); return; }
+  const cb = e.target.closest("[data-camp]"); if (cb) { campIdle = Date.now(); return campGo(campAt() + +cb.dataset.camp); }
+  const cd = e.target.closest("[data-cdot]"); if (cd) { campIdle = Date.now(); return campGo(+cd.dataset.cdot); }
   const go = e.target.closest("[data-go]"); if (go) return openProfile(go.dataset.go);
   if (e.target.closest("[data-close]") || e.target.id === "prof") $("#prof").close();
 });
@@ -2269,7 +2314,7 @@ function profLock(on){
     document.documentElement.classList.remove("prof-lock"); document.body.style.top = ""; window.scrollTo(0, profY); profY = null;
   }
 }
-$("#prof").addEventListener("close", () => { profLock(false); if (location.hash.startsWith("#players/")) history.replaceState(null, "", "#players"); });
+$("#prof").addEventListener("close", () => { campStop(); profLock(false); if (location.hash.startsWith("#players/")) history.replaceState(null, "", "#players"); });
 
 function render(){ renderScores(); renderRankings(); renderPlayers(); renderHome(); }
 
