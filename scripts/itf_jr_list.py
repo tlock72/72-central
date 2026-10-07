@@ -20,9 +20,9 @@ from datetime import date, datetime, timedelta, timezone
 
 BASE = "https://www.itftennis.com/tennis/api/PlayerRankApi/GetPlayerRankings"
 UA = "72HubRankings/1.0 (+https://github.com/tlock72/72-central; weekly, one request every few seconds)"
-PAUSE = 6      # seconds between requests
-TAKE = 500     # players per page (about 5,000 boys: 100 a page took too long)
-MAX_PAGES = 30
+PAUSE = 3      # seconds between requests (the ITF itself takes 3-15 s to answer each page)
+TAKE = 100     # players per page (the ITF sends only 10 if asked for more)
+MAX_PAGES = 70  # about 5,000 boys and 4,000 girls
 OUT, HIST = "itfjr.json", "itfjr_history.json"
 BACK = {"w": 7, "m3": 91, "m12": 364}  # 1 week, 13 weeks, 52 weeks
 GENDERS = {"b": "B", "g": "G"}         # itfjr.json key -> ITF playerTypeCode
@@ -109,6 +109,8 @@ def read_list(code):
                 or f"https://www.itftennis.com/en/players/{slug}/{pid}/{nat.lower()}/jt/s/overview/"
             out.append({"id": int(pid), "rank": int(rank), "name": name, "nat": nat, "born": born(p), "url": url})
         skip += len(items)  # the ITF may send fewer than asked for per page
+        if page == 0 and total and len(items) < TAKE and int(total) > len(items) * MAX_PAGES:
+            raise RuntimeError(f"the ITF only sends {len(items)} players a page, too few to read {total}")
         if not items or (total and skip >= int(total)) or (not total and len(items) < TAKE):
             break
     else:
