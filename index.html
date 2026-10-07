@@ -513,6 +513,35 @@ a.cn-st.ok:hover{border-color:var(--gold)}
 .cn-ft .no{font-size:11px;color:var(--muted);border:1px solid var(--line);border-radius:999px;padding:0 14px;height:34px}
 .cn-ft .asked{font-size:11px;color:var(--muted-2);font-style:italic}
 .cn-note{font-size:11px;color:#F3C1C0;padding:0 20px 10px}
+/* Comments (Scouting Corner cards and every Filtered Rankings row): an outline bubble with "+" when there are none,
+   a filled gold bubble with the count once someone has written. The log opens underneath. */
+.cm-btn{display:inline-flex;align-items:center;gap:4px;margin-left:8px;font-size:10px;letter-spacing:.06em;color:var(--muted-2);border:1px dashed var(--line-2);border-radius:999px;padding:1px 7px;vertical-align:1px;line-height:14px}
+.cm-btn svg{width:13px;height:12px;fill:none;stroke:currentColor;stroke-width:2;stroke-linejoin:round}
+.cm-btn:hover,.cm-btn.on{color:var(--gold);border-color:var(--gold)}
+.cm-btn.has{color:var(--navy);background:var(--gold);border:1px solid var(--gold);font-weight:700}
+.cm-btn.has svg{fill:currentColor;stroke:currentColor}
+.cm-btn.has:hover,.cm-btn.has.on{color:var(--navy);background:var(--gold-2)}
+.cn-acts .cm-btn{margin:0 0 0 20px;font-size:11px;padding:3px 10px}
+.cm-log{margin:0 20px 14px;padding:12px 14px;border:1px solid var(--line);border-radius:14px;background:var(--navy);font-size:13px}
+#sqTbl .cm-log{margin:4px 0 12px}
+.cm-log h4{margin:0 0 8px;font-family:var(--display);font-weight:500;text-transform:uppercase;letter-spacing:.14em;font-size:11px;color:var(--gold)}
+.cm-e{border-left:2px solid var(--gold);padding:2px 0 2px 10px;margin:0 0 10px}
+.cm-e.asked{border-left-color:var(--muted-2);opacity:.75}
+.cm-meta{font-size:11px;color:var(--muted);letter-spacing:.04em}
+.cm-meta b{color:var(--text);font-weight:600}
+.cm-meta .st{font-style:italic;color:var(--muted-2)}
+.cm-t{margin:3px 0 0;color:var(--text);white-space:pre-wrap;overflow-wrap:anywhere;line-height:1.45}
+.cm-x{display:flex;flex-wrap:wrap;align-items:center;gap:6px;margin-top:5px}
+.cm-x button,.cm-f button{font-size:11px;border-radius:999px;padding:2px 10px;border:1px solid var(--line);color:var(--muted)}
+.cm-x button.del{border:0;padding:0;color:var(--down);text-decoration:underline;text-underline-offset:2px}
+.cm-x button.go,.cm-f button.go{background:var(--gold);border-color:var(--gold);color:var(--navy);font-weight:600}
+.cm-x .sq-in{flex:1 1 180px;height:30px}
+.cm-none{color:var(--muted);font-size:12px;margin:0 0 10px}
+.cm-f{display:flex;flex-wrap:wrap;gap:8px;align-items:flex-end;margin-top:4px}
+.cm-f textarea{flex:1 1 100%;min-height:62px;resize:vertical;font:inherit;font-size:13px;color:var(--text);background:var(--navy-2);border:1px solid var(--line);border-radius:10px;padding:8px 10px}
+.cm-f .sq-in{flex:0 1 160px;height:32px}
+.cm-f .who{flex:1 1 auto;font-size:11px;color:var(--muted)}
+.cm-f button.go{height:32px;padding:0 16px}
 @media (max-width:640px){
   .cn-h{padding:12px 12px 8px}.cn-h .nm{font-size:17px}
   .cn-path{padding:0 12px 10px;gap:4px}.cn-st{padding:6px 7px;font-size:10px}.cn-st b{font-size:9px;letter-spacing:.04em}
@@ -881,6 +910,7 @@ nav .sh,.nm-s{display:none}
   .cn-more{padding:8px 12px;font-size:10px;letter-spacing:.08em}
   .cn-more .n{display:none}
   .cn-ft{padding:8px 12px;gap:6px}
+  .cm-log{margin:0 12px 12px;padding:10px 11px}.cn-acts .cm-btn{margin-left:12px}.cm-btn{margin-left:6px}
   .cn-ft .rm{font-size:10px}
   .cn-ft .sq-in{flex-basis:100%}
   .cn-ft .go,.cn-ft .no{height:30px;font-size:10px}
@@ -2381,12 +2411,14 @@ function renderScouting(){
   const cols = [["rank","Rank"],["name","Player"],["born","Born"],["w","1 wk"],["m3","3 mo"],["m12","12 mo"]];
   const head = `<div class="sq-row h">${cols.map(([k, l]) => `<button data-s="${k}" class="${SQ.sort === k ? "on" + (SQ.asc ? "" : " asc") : ""}">${l}</button>`).join("")}</div>`;
   const shown = SQ.all ? rows : rows.slice(0, 100), wl = sqWatch();
+  // comments: the bubble next to each name opens that player's comment log under the row
+  const cmx = p => "sq:" + SQ.t + ":" + cnSorted(p.name);
   $("#sqTbl").innerHTML = head + (shown.length ? shown.map(p => `<div class="sq-row">
       <div class="no">${p.rank}</div>
-      <div style="min-width:0">${p.url ? `<a class="nm fx" href="${esc(p.url)}" target="_blank" rel="noopener">` : `<span class="nm fx">`}<span class="nt">${esc(p.name)}</span>${p.is72 ? `<span class="sq-72">72</span>` : ""}${sqEye(p, wl)}${p.url ? "</a>" : "</span>"}<div class="ct">${esc(p.cty)}${sqAddBtn(p, wl)}</div></div>
+      <div style="min-width:0">${p.url ? `<a class="nm fx" href="${esc(p.url)}" target="_blank" rel="noopener">` : `<span class="nm fx">`}<span class="nt">${esc(p.name)}</span>${p.is72 ? `<span class="sq-72">72</span>` : ""}${sqEye(p, wl)}${p.url ? "</a>" : "</span>"}<div class="ct">${esc(p.cty)}${cmBtn(cmx(p), [p.name])}${sqAddBtn(p, wl)}</div></div>
       <div class="by">${p.born || "—"}${p.born && !jr ? `<small>U${year - p.born}</small>` : ""}</div>
       ${sqCell(p.rank, p.w)}${sqCell(p.rank, p.m3)}${sqCell(p.rank, p.m12)}
-    </div>`).join("") : `<div class="sq-empty">No players match these filters.</div>`);
+    </div>${cmLog(cmx(p), cnTidy(p.name), [p.name])}`).join("") : `<div class="sq-empty">No players match these filters.</div>`);
   $("#sqMore").hidden = SQ.all || rows.length <= 100;
   $("#sqMore").textContent = `Show all ${rows.length}`;
   const c = T.cmp || {};
@@ -2592,7 +2624,8 @@ function cnCard(k, p){
     ${path ? `<div class="cn-path">${path}</div>` : ""}
     ${unsure.length ? `<div class="cn-note">${unsure.map(esc).join("<br>")}. Add the right id in prospects.json.</div>` : ""}
     ${rows.length ? `<div class="sq-row h"><span>Ranking</span><span>Rank</span><span>Best</span><span>1 wk</span><span>3 mo</span><span>12 mo</span></div>${rows.join("")}` : ""}
-    <div class="cn-acts">${res.length ? `<button class="cn-more${open ? " on" : ""}" data-k="${esc(k)}" aria-expanded="${open}"><span class="ar" aria-hidden="true">▾</span>${open ? "Hide" : "Show"} the last 12 months <span class="n">(${res.length} match${res.length === 1 ? "" : "es"})</span></button>` : ""}${cnRemoval(k, p.typed || p.name)}</div>
+    <div class="cn-acts">${cmBtn("cn:" + k, [p.name, p.typed], "lg")}${res.length ? `<button class="cn-more${open ? " on" : ""}" data-k="${esc(k)}" aria-expanded="${open}"><span class="ar" aria-hidden="true">▾</span>${open ? "Hide" : "Show"} the last 12 months <span class="n">(${res.length} match${res.length === 1 ? "" : "es"})</span></button>` : ""}${cnRemoval(k, p.typed || p.name)}</div>
+    ${cmLog("cn:" + k, p.name, [p.name, p.typed])}
     ${res.length ? `<div class="cn-res"${open ? "" : " hidden"}>${resHtml}</div>` : ""}</div>`;
 }
 // "Request removal": anyone can ask; Tobey gets an email and nothing is removed until he approves it.
@@ -2739,7 +2772,8 @@ function renderCorner(){
     // the picked sort first (age or day added), then ATP/WTA rank, then ITF Juniors, then best Tennis Europe rank, then name
     .sort((a, b) => cnPick(a[1], b[1]) || cnOrd(a[1].pro?.rank || a[1].itfPro?.rank) - cnOrd(b[1].pro?.rank || b[1].itfPro?.rank) || cnOrd(a[1].itfJr?.rank) - cnOrd(b[1].itfJr?.rank) || cnOrd(cnTeBest(a[1])) - cnOrd(cnTeBest(b[1])) || a[1].name.localeCompare(b[1].name))
     .map(([k, p]) => cnCard(k, p));
-  const wait = waiting.filter(x => keep(x.name, x.g)).map(x => `<div class="cn cn-wait"><div class="cn-h"><span class="nm">${esc(cnTidy(x.name))}</span><span class="mt">Looking up… usually within 10 minutes${x.by ? " · added by " + esc(x.by) : ""}</span></div></div>`);
+  const wait = waiting.filter(x => keep(x.name, x.g)).map(x => `<div class="cn cn-wait"><div class="cn-h"><span class="nm">${esc(cnTidy(x.name))}</span><span class="mt">Looking up… usually within 10 minutes${x.by ? " · added by " + esc(x.by) : ""}</span></div>
+    <div class="cn-acts" style="padding:8px 0">${cmBtn("cnw:" + cnKey(x.name), [x.name], "lg")}</div>${cmLog("cnw:" + cnKey(x.name), cnTidy(x.name), [x.name])}</div>`);
   $("#cnList").innerHTML = [...wait, ...cards].join("") || `<div class="sq-empty">${CORNER ? (Object.keys(P).length ? "No prospect matches." : "No prospects yet. Add the first one above.") : "Loading the watch list…"}</div>`;
   $("#cnSrc").textContent = CORNER?.checked ? `Sources: Tennis Europe (internal use only), the ITF and the official ATP/WTA rankings. Last updated ${new Date(CORNER.checked).toLocaleString("en-GB", { timeZone: MYTZ, day:"numeric", month:"short", hour:"2-digit", minute:"2-digit" })} your time.` : "";
 }
@@ -2925,14 +2959,112 @@ function cnSend(name, g, nat, born, by){
   renderCorner();
 }
 async function loadCorner(){
+  const cmP = loadComments();  // read alongside the rest
   try { const r = await fetch("corner.json?t=" + Date.now(), { cache: "no-store" }); if (r.ok) CORNER = await r.json(); else if (!CORNER) CORNER = { players: {} }; } catch (e) { if (!CORNER) CORNER = { players: {} }; }
   // names added on the site but not looked up yet (the Sheet's list; skipped quietly if it can't be read)
   try {
     const r = await fetch(CORNER_URL + "?kind=prospects");
     if (r.ok) { const j = await r.json(); CN_SHEET = j.prospects || []; CN_REMOVED = j.removed || []; CN_ASKED = j.asked || []; CN_SHEET_OK = Array.isArray(j.prospects); }
   } catch (e) {}
+  await cmP;
   renderCorner(); renderHome(); renderScouting();
 }
+/* ---------- Comments on players (Scouting Corner cards and every Filtered Rankings row) ----------
+   Kept on the "Comments" tab of Tobey's Google Sheet (scripts/visit_log.gs), one row each, and matched to a
+   player by name (any accents or word order), so a comment made on Filtered Rankings also shows on the
+   Scouting Corner once that player is added there. The writer can undo it from the same device for an hour
+   (only that device has the undo code). Anyone can ask for a comment to be deleted: Tobey gets an email to
+   approve or decline, like a removal request. */
+let CM_SHEET = [], CM_OK = false;
+const CM = { open: "", del: "", draft: {} };
+const CM_UNDO = 36e5;  // 1 hour
+const CM_ICON = `<svg viewBox="0 0 24 22" aria-hidden="true"><path d="M4 2h16a2 2 0 0 1 2 2v10a2 2 0 0 1-2 2h-9l-5 4.5V16H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2z"/></svg>`;
+async function loadComments(){
+  try {
+    const r = await fetch(CORNER_URL + "?kind=comments");
+    if (r.ok) { const j = await r.json(); if (Array.isArray(j.comments)) { CM_SHEET = j.comments; CM_OK = true; } }
+  } catch (e) {}
+}
+// comments written on this device: { id, name, text, by, at, undo, undone }; kept 1 day (the Sheet's list covers the rest)
+function cmMineAll(){ try { return JSON.parse(localStorage.getItem("72c-comments") || "[]").filter(x => Date.now() - (x.at || 0) < 864e5); } catch (e) { return []; } }
+function cmMineSave(list){ try { localStorage.setItem("72c-comments", JSON.stringify(list.slice(-50))); } catch (e) {} }
+// deletion requests sent from this device: shown as "Deletion requested" until the Sheet lists them (10 minutes once it has been read)
+function cmAskedLocal(){ try { return JSON.parse(localStorage.getItem("72c-cmdel") || "[]").filter(x => Date.now() - (x.at || 0) < (CM_OK ? 6e5 : 864e5)); } catch (e) { return []; } }
+// every comment on a player (names: the player's name and any other spelling), newest first
+function cmFor(names){
+  const keys = new Set(names.filter(Boolean).map(cnSorted)), mine = cmMineAll(), undone = new Set(mine.filter(x => x.undone).map(x => x.id));
+  const asked = new Set(cmAskedLocal().map(x => x.id)), seen = new Set(CM_SHEET.map(c => c.id));
+  // written here but not on the Sheet's list yet: shown at once (only for 10 minutes once the Sheet has been read)
+  const local = mine.filter(x => !x.undone && !seen.has(x.id) && (!CM_OK || Date.now() - x.at < 6e5)).map(x => ({ ...x, status: "live" }));
+  return [...CM_SHEET, ...local].filter(c => keys.has(cnSorted(c.name)) && !undone.has(c.id))
+    .map(c => asked.has(c.id) ? { ...c, status: "asked" } : c)
+    .sort((a, b) => new Date(b.at) - new Date(a.at));
+}
+// the button: outline bubble with "+" when no one has written, a filled gold bubble with the count once someone has
+function cmBtn(ctx, names, cls){
+  const n = cmFor(names).length, open = CM.open === ctx;
+  return `<button type="button" class="cm-btn${n ? " has" : ""}${open ? " on" : ""}${cls ? " " + cls : ""}" data-cm="${esc(ctx)}" aria-expanded="${open}" title="${n ? `${n} comment${n === 1 ? "" : "s"}: open the log` : "No comments yet: add one"}">${CM_ICON}${n ? n : "+"}${cls ? (n ? " Comments" : " Comment") : ""}</button>`;
+}
+const cmWhen = at => new Date(at).toLocaleString("en-GB", { timeZone: MYTZ, day: "numeric", month: "short", year: "numeric", hour: "2-digit", minute: "2-digit" });
+// the log: one entry per comment (who, when, the comment), with Undo for the writer's first hour and "Request deletion"
+function cmLog(ctx, name, names){
+  if (CM.open !== ctx) return "";
+  const list = cmFor(names), mine = new Map(cmMineAll().map(x => [x.id, x]));
+  let me = ""; try { me = localStorage.getItem("72c-name") || ""; } catch (err) {}
+  const rows = list.map(c => {
+    const m = mine.get(c.id), left = m?.undo ? CM_UNDO - (Date.now() - m.at) : 0;
+    const undo = left > 0 ? `<button type="button" data-cmu="${esc(c.id)}" title="Take your comment back (possible for an hour after writing it)">Undo · ${Math.max(1, Math.ceil(left / 6e4))} min left</button>` : "";
+    let act;
+    if (c.status === "asked") act = `<span class="cm-meta st">Deletion requested · waiting for Tobey's approval</span>`;
+    else if (CM.del === c.id) act = `<form class="cm-df" data-id="${esc(c.id)}" style="display:contents"><span class="cm-meta">Ask Tobey to delete this comment?</span><input class="sq-in" name="why" maxlength="300" placeholder="Reason (optional)" aria-label="Reason for deletion"><button class="go" type="submit">Send request</button><button type="button" data-cmdx="1">Cancel</button></form>`;
+    else act = `<button type="button" class="del" data-cmd="${esc(c.id)}">Request deletion</button>`;
+    return `<div class="cm-e${c.status === "asked" ? " asked" : ""}"><div class="cm-meta"><b>${esc(c.by || "Someone")}</b> · ${esc(cmWhen(c.at))}</div><div class="cm-t">${esc(c.text)}</div><div class="cm-x">${undo}${act}</div></div>`;
+  }).join("");
+  return `<div class="cm-log"><h4>Comments on ${esc(name)}</h4>${rows || `<p class="cm-none">No comments yet.${CM_OK ? "" : " (The comment log couldn't be read just now, so older comments may be missing.)"}</p>`}
+    <form class="cm-f" data-ctx="${esc(ctx)}" data-n="${esc(name)}"><textarea name="t" maxlength="1000" placeholder="Write a comment about ${esc(name)}" aria-label="Comment" required>${esc(CM.draft[ctx] || "")}</textarea>
+    ${me ? `<span class="who">Everyone will see ${esc(me)} wrote it. You can undo it for an hour.</span>` : `<input class="sq-in" name="by" maxlength="30" placeholder="Your first name" aria-label="Your first name" required><span class="who">You can undo it for an hour.</span>`}
+    <button class="go" type="submit">Add comment</button></form></div>`;
+}
+function cmRender(){ renderScouting(); renderCorner(); }
+document.addEventListener("click", e => {
+  const b = e.target.closest("[data-cm]");
+  if (b) { CM.open = CM.open === b.dataset.cm ? "" : b.dataset.cm; CM.del = ""; cmRender(); document.querySelector(".cm-f textarea")?.focus(); return; }
+  const d = e.target.closest("[data-cmd]");
+  if (d) { CM.del = d.dataset.cmd; cmRender(); document.querySelector(".cm-df input")?.focus(); return; }
+  if (e.target.closest("[data-cmdx]")) { CM.del = ""; cmRender(); return; }
+  // "Undo": the Sheet only takes it back with this device's undo code, and only within the hour
+  const u = e.target.closest("[data-cmu]");
+  if (u) {
+    const list = cmMineAll(), mine = list.find(x => x.id === u.dataset.cmu);
+    if (mine?.undo && Date.now() - mine.at < CM_UNDO) {
+      try { fetch(CORNER_URL, { method: "POST", mode: "no-cors", body: JSON.stringify({ kind: "uncomment", undo: mine.undo }) }).catch(() => {}); } catch (err) {}
+      mine.undone = Date.now();
+      cmMineSave(list);
+    }
+    cmRender();
+  }
+});
+document.addEventListener("input", e => { const f = e.target.closest(".cm-f"); if (f && e.target.name === "t") CM.draft[f.dataset.ctx] = e.target.value; });
+document.addEventListener("submit", e => {
+  const f = e.target.closest(".cm-f, .cm-df"); if (!f) return;
+  e.preventDefault();
+  let by = ""; try { by = localStorage.getItem("72c-name") || ""; } catch (err) {}
+  const hex = n => Array.from(crypto.getRandomValues(new Uint8Array(n)), b => b.toString(16).padStart(2, "0")).join("");
+  if (f.classList.contains("cm-df")) {
+    const id = f.dataset.id, reason = f.elements.why.value.trim();
+    try { fetch(CORNER_URL, { method: "POST", mode: "no-cors", body: JSON.stringify({ kind: "delcomment", id, reason, by }) }).catch(() => {}); } catch (err) {}
+    try { localStorage.setItem("72c-cmdel", JSON.stringify([...cmAskedLocal(), { id, at: Date.now() }].slice(-30))); } catch (err) {}
+    CM.del = ""; cmRender(); return;
+  }
+  const text = f.elements.t.value.trim(), name = f.dataset.n;
+  if (!by && f.elements.by) { by = cnTidy(f.elements.by.value.trim()).slice(0, 30); try { localStorage.setItem("72c-name", by); } catch (err) {} }
+  if (!text || !by) return;
+  const c = { id: hex(4), name, text, by, at: Date.now(), undo: hex(16) };
+  try { fetch(CORNER_URL, { method: "POST", mode: "no-cors", body: JSON.stringify({ kind: "comment", id: c.id, name, text, by, undo: c.undo }) }).catch(() => {}); } catch (err) {}
+  cmMineSave([...cmMineAll(), c]);
+  delete CM.draft[f.dataset.ctx];
+  cmRender();
+});
 /* ---------- Settings (the cog in the top corner): first name and time zone, kept on this device ---------- */
 // "Europe/London" -> "Europe / London · 14:05" so the right zone is easy to spot by its time now
 function tzLabel(tz){
