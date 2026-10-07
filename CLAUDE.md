@@ -10,6 +10,7 @@ It is hosted on GitHub Pages at tlock72.github.io/72-central and protected by a 
 - **Live Tennis API free plan: 100 calls a day.** `update.py` caps each run at 45 (`MAX_CALLS`). A normal day uses about 45–50, and a busy Monday up to about 85. Runs started by hand always run (only timer runs skip if the site updated in the last 20 minutes), so they burn calls.
 - **Tennis Europe data:** used with permission from Tennis Europe, internal use only. Keep `robots.txt` blocking indexing.
 - Tobey edits in the GitHub web editor, so keep changes small and explain them in plain English.
+- **Google Sheet script (`scripts/visit_log.gs`) changes:** always give Tobey the direct GitHub link to the file on the branch it was pushed to (`https://github.com/tlock72/72-central/blob/<branch>/scripts/visit_log.gs`), so he can use "Copy raw file" at the top right and paste it over the whole script. Remind him to deploy a new version afterwards.
 
 ## Files
 | File | What it is |
