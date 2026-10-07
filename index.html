@@ -277,20 +277,19 @@ dialog.prof[open]{animation:pop .28s ease}
 .ph .facts{display:flex;flex-wrap:wrap;gap:8px 26px;margin-top:20px;font-size:13px;color:var(--muted)}
 .ph .facts b{color:var(--white);font-weight:600}
 .pb{padding:30px 40px 40px;display:grid;grid-template-columns:minmax(0,1fr);gap:30px}
-/* campaign gallery (campHtml): images at one height in a strip that drifts slowly on its own and can be swiped or dragged */
+/* campaign gallery (campHtml): images at one height in a strip that drifts slowly on its own and can be swiped or dragged.
+   The strip is moved with a transform (not by scrolling a box), so it keeps drifting smoothly while the profile is scrolled up or down */
 .camp .cwrap{position:relative;margin:0 -40px}
-.camp .ctrack{display:flex;gap:12px;overflow-x:auto;scrollbar-width:none;padding:4px 0 18px;cursor:grab;
+.camp .ctrack{overflow:hidden;touch-action:pan-y;cursor:grab;padding:4px 0 18px;
   -webkit-mask-image:linear-gradient(90deg,transparent,#000 40px,#000 calc(100% - 40px),transparent);mask-image:linear-gradient(90deg,transparent,#000 40px,#000 calc(100% - 40px),transparent)}
-.camp .ctrack{transform:translateZ(0)}
-.camp .ctrack img{backface-visibility:hidden;transform:translateZ(0)}
-.camp .ctrack.drag{cursor:grabbing;user-select:none}
-.camp .ctrack::-webkit-scrollbar{display:none}
-.camp .ctrack img{flex:none;height:clamp(300px,42vw,440px);width:auto;object-fit:cover;border-radius:16px;box-shadow:0 14px 34px rgba(0,0,0,.45);background:rgba(255,255,255,.03);-webkit-user-drag:none;user-select:none}
+.camp .ctrack.drag{cursor:grabbing}
+.camp .crow{display:flex;gap:12px;width:max-content;will-change:transform;transform:translate3d(0,0,0)}
+.camp .crow img{flex:none;height:clamp(300px,42vw,440px);width:auto;object-fit:cover;border-radius:16px;box-shadow:0 14px 34px rgba(0,0,0,.45);background:rgba(255,255,255,.03);-webkit-user-drag:none;user-select:none;-webkit-touch-callout:none;pointer-events:none}
 .camp .carr{position:absolute;top:calc(50% - 30px);z-index:1;width:42px;height:42px;border-radius:50%;border:1px solid var(--line);background:rgba(12,20,49,.7);color:var(--gold);font-size:26px;line-height:1;display:grid;place-items:center;padding-bottom:3px;backdrop-filter:blur(6px)}
 .camp .carr:hover{background:var(--gold-dim)}
 .camp .carr.l{left:52px}.camp .carr.r{right:52px}
 @media (max-width:640px), (pointer:coarse){.camp .carr{display:none}}
-@media (max-width:640px){.camp .cwrap{margin:0 -16px}.camp .ctrack{padding:2px 0 14px;gap:10px;-webkit-mask-image:none;mask-image:none}.camp .ctrack img{height:min(62vw,330px);max-width:calc(100vw - 52px);border-radius:12px}}
+@media (max-width:640px){.camp .cwrap{margin:0 -16px}.camp .ctrack{padding:2px 0 14px;-webkit-mask-image:none;mask-image:none}.camp .crow{gap:10px}.camp .crow img{height:min(62vw,330px);max-width:calc(100vw - 52px);border-radius:12px}}
 dialog.prof{overflow-x:hidden;overflow-y:auto;overscroll-behavior:contain}
 /* phones: while a profile is open the page behind is pinned in place, so a swipe only ever scrolls the profile (openProfile/profLock) */
 html.prof-lock body{position:fixed;left:0;right:0;width:100%;overflow:hidden}
@@ -2239,7 +2238,8 @@ function latestResult(id){
 }
 /* campaign gallery on a profile (only players with a campaign list, e.g. Svitolina): [file, width, height] each.
    The images are listed twice so the strip can drift slowly to the left for ever (jumping back by one set when it reaches the copy).
-   Touching, dragging, scrolling or the arrows pause it for a few seconds; it never drifts if the device asks for less motion. */
+   It keeps drifting while the profile is scrolled; a swipe, drag or the arrows take over and it picks up again 2 seconds after.
+   It never drifts on its own if the device asks for less motion. */
 function campHtml(list){
   if (!list?.length) return "";
   // phones get the lighter "-m" copies (800px tall, still sharp at phone size): twenty full-size images made iPhones drop and redraw them, so they flickered
@@ -2247,48 +2247,47 @@ function campHtml(list){
   const imgs = [...list, ...list].map(([f, w, h], i) => `<img src="${esc(sm ? f.replace(/\.webp$/, "-m.webp") : f)}" width="${w}" height="${h}" alt=""${i >= list.length ? ' aria-hidden="true"' : ""} draggable="false">`).join("");
   return `<section class="camp"><h3 class="pk">Campaigns</h3>
     <div class="cwrap"><button class="carr l" data-camp="-1" aria-label="Previous image">‹</button>
-      <div class="ctrack" data-n="${list.length}">${imgs}</div>
+      <div class="ctrack"><div class="crow" data-n="${list.length}">${imgs}</div></div>
       <button class="carr r" data-camp="1" aria-label="Next image">›</button></div></section>`;
 }
-let campRaf = 0, campIdle = 0;
 const CAMP_SPEED = 28;  // pixels a second
-const campTrack = () => $("#prof .ctrack");
-const campHalf = t => { const n = +t.dataset.n, c = t.children; return c[n] ? c[n].offsetLeft - c[0].offsetLeft : 0; };
-function campWrap(t){ const h = campHalf(t); if (h > 0) { if (t.scrollLeft >= h) t.scrollLeft -= h; else if (t.scrollLeft <= 0) t.scrollLeft += h; } }
-function campStep(dir){  // arrows: one image along
-  const t = campTrack(); if (!t) return; campIdle = Date.now(); campWrap(t);
-  const x0 = t.children[0].offsetLeft, mid = t.scrollLeft + t.clientWidth / 2;
-  const ims = [...t.children], i = ims.findIndex(im => im.offsetLeft - x0 + im.offsetWidth > mid - 1);
+let campRaf = 0, campAC = null, CAMP = null;
+const campHalf = row => { const n = +row.dataset.n, c = row.children; return c[n] ? c[n].offsetLeft - c[0].offsetLeft : 0; };
+function campStep(dir){  // arrows: glide one image along
+  if (!CAMP) return; const { row } = CAMP, ims = [...row.children], x0 = ims[0].offsetLeft, view = row.parentElement.clientWidth;
+  const mid = CAMP.x + view / 2, i = ims.findIndex(im => im.offsetLeft - x0 + im.offsetWidth > mid - 1);
   const im = ims[Math.max(0, Math.min(ims.length - 1, i + dir))];
-  t.scrollTo({ left: im.offsetLeft - x0 - (t.clientWidth - im.offsetWidth) / 2, behavior: "smooth" });
+  CAMP.to = im.offsetLeft - x0 - (view - im.offsetWidth) / 2; CAMP.v = 0; CAMP.idle = Date.now();
 }
-let campAC = null;
-function campStop(){ cancelAnimationFrame(campRaf); campRaf = 0; campAC?.abort(); campAC = null; }
+function campStop(){ cancelAnimationFrame(campRaf); campRaf = 0; campAC?.abort(); campAC = null; CAMP = null; }
 function campStart(){
-  campStop(); const t = campTrack(); if (!t) return;
-  campAC = new AbortController();
-  let pos = null, last = 0;
-  const busy = () => { campIdle = Date.now(); };
-  // scrolling the profile up or down pauses the drift too (moving it while the page scrolls made phones flicker)
-  $("#prof").addEventListener("scroll", () => { campIdle = Math.max(campIdle, Date.now() - 2000); pos = null; }, { passive: true, signal: campAC.signal });
-  ["pointerdown", "touchstart", "touchmove", "wheel", "focusin"].forEach(ev => t.parentElement.addEventListener(ev, busy, { passive: true }));
-  // a scroll that isn't the drift (a swipe still gliding after the finger lifts, a trackpad) also counts as someone using it
-  t.addEventListener("scroll", () => { if (pos !== null && Math.abs(t.scrollLeft - pos) > 2) { busy(); pos = null; } if (Date.now() - campIdle < 3000) campWrap(t); }, { passive: true });
-  // mouse: drag the strip sideways
-  let dx = null;
-  t.addEventListener("pointerdown", e => { if (e.pointerType !== "mouse") return; dx = { x: e.clientX, l: t.scrollLeft }; t.classList.add("drag"); t.setPointerCapture(e.pointerId); });
-  t.addEventListener("pointermove", e => { if (!dx) return; busy(); t.scrollLeft = dx.l - (e.clientX - dx.x); });
-  const up = () => { dx = null; t.classList.remove("drag"); };
-  t.addEventListener("pointerup", up); t.addEventListener("pointercancel", up);
-  if (matchMedia("(prefers-reduced-motion:reduce)").matches) return;
-  last = performance.now();
-  campIdle = 0;
+  campStop(); const row = $("#prof .crow"); if (!row) return;
+  const t = row.parentElement, sig = { signal: (campAC = new AbortController()).signal };
+  const C = CAMP = { row, x: 0, v: 0, to: null, idle: 0, drag: null };
+  const still = matchMedia("(prefers-reduced-motion:reduce)").matches;
+  // swipe (touch) or drag (mouse) sideways; an up-down swipe is left to the page (touch-action:pan-y), which cancels this
+  t.addEventListener("pointerdown", e => { if (e.button) return; C.drag = { x: e.clientX, y: e.clientY, x0: C.x, t: performance.now(), on: e.pointerType === "mouse" }; C.v = 0; C.to = null; C.idle = Date.now();
+    if (C.drag.on) { t.classList.add("drag"); t.setPointerCapture(e.pointerId); } }, sig);
+  t.addEventListener("pointermove", e => { const d = C.drag; if (!d) return; const dx = e.clientX - d.x;
+    if (!d.on) { if (Math.abs(e.clientY - d.y) > Math.abs(dx) && Math.abs(e.clientY - d.y) > 8) { C.drag = null; return; } if (Math.abs(dx) < 6) return; d.on = true; t.setPointerCapture(e.pointerId); }
+    const now = performance.now(), nx = d.x0 - dx; C.v = (nx - C.x) / Math.max(now - d.t, 1) * 1000; d.t = now; C.x = nx; C.idle = Date.now(); }, sig);
+  const up = () => { if (!C.drag) return; if (!C.drag.on) C.v = 0; C.drag = null; t.classList.remove("drag"); C.idle = Date.now(); };
+  t.addEventListener("pointerup", up, sig); t.addEventListener("pointercancel", up, sig); t.addEventListener("lostpointercapture", up, sig);
+  t.addEventListener("wheel", e => { if (Math.abs(e.deltaX) > Math.abs(e.deltaY)) { C.x += e.deltaX; C.v = 0; C.to = null; C.idle = Date.now(); e.preventDefault(); } }, { passive: false, ...sig });
+  let last = performance.now(), shown = null;
   const tick = now => {
+    if (!row.isConnected) return;
     const dt = Math.min(now - last, 100) / 1000; last = now;
-    const r = t.getBoundingClientRect();
-    if (Date.now() - campIdle < 3000 || !t.isConnected || r.bottom < 0 || r.top > innerHeight) pos = null;  // also still while off screen  // someone is using it: let go, pick up from where they left it
-    else { if (pos === null) pos = t.scrollLeft; pos += CAMP_SPEED * dt; const h = campHalf(t); if (h > 0 && pos >= h) pos -= h; t.scrollLeft = pos; }
-    if (t.isConnected) campRaf = requestAnimationFrame(tick);
+    if (!C.drag) {
+      if (C.to !== null) { const d = C.to - C.x; C.x += d * Math.min(1, dt * 8); if (Math.abs(d) < 0.5) { C.x = C.to; C.to = null; } }  // arrow glide
+      else if (Math.abs(C.v) > 5) { C.x += C.v * dt; C.v *= Math.pow(0.05, dt); C.idle = Date.now(); }  // swipe carrying on after the finger lifts
+      else if (!still && Date.now() - C.idle > 2000) C.x += CAMP_SPEED * dt;  // the slow drift
+    }
+    const h = campHalf(row);
+    if (h > 0 && (C.x >= h || C.x < 0)) { const k = Math.floor(C.x / h) * h; C.x -= k; if (C.to !== null) C.to -= k; if (C.drag) C.drag.x0 -= k; }
+    const r = t.getBoundingClientRect();  // only repaint while it's on screen
+    if (r.bottom > 0 && r.top < innerHeight && shown !== C.x) { row.style.transform = `translate3d(${-C.x}px,0,0)`; shown = C.x; }
+    campRaf = requestAnimationFrame(tick);
   };
   campRaf = requestAnimationFrame(tick);
 }
