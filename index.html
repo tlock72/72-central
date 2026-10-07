@@ -1663,12 +1663,8 @@ function card(m){
     ? (m.source === "itf" || m.source === "te"
       ? `<div class="times"><span>Order of play</span><b>${m.slot ? esc(m.slot) + " (local time)" : "Time TBC"}</b></div>`
       : `<div class="times"><span>Approx. start</span>${m.time ? twoTimes(ukMoment(m.date, m.time), m).reduce((h, x, i, a) => i % 2 ? h : h + `<b>${esc(x)}<i>${esc(a[i + 1])}</i></b>`, "") : "<b>Time TBC</b>"}${asOf(m.timeAt)}</div>`) : "";
-  // result tiles: the court played on (when the feed gave one) and the finish time
-  // finish time: only recorded when a check saw the match unfinished shortly before, so it's "by" that time (device time, then the event's)
-  const end = fin && m.endAt && !isNaN(new Date(m.endAt)) ? new Date(m.endAt) : null;
-  const et = end ? twoTimes(end, m) : null;
-  const endTxt = et ? `<b>${esc(et[0])}</b> ${esc(et[1])}${et[2] ? ` · <b>${esc(et[2])}</b> ${esc(et[3])}` : ""}` : "";
-  const rs = fin ? [m.court ? `Played on <b>${esc(m.court)}</b>` : "", endTxt ? `Finished by ${endTxt}` : ""].filter(Boolean) : [];
+  // result tiles: the court played on (when the feed gave one)
+  const rs = fin && m.court ? [`Played on <b>${esc(m.court)}</b>`] : [];
   const stats = rs.length ? `<div class="rstats">${rs.map(x => `<span>${x}</span>`).join("")}</div>` : "";
   const p = byId[m.p1Id] || byId[m.p2Id];
   const link = safeUrl(p?.sofa);
@@ -3039,7 +3035,7 @@ function cmFor(names){
 // the button: outline bubble with "+" when no one has written, a filled gold bubble with the count once someone has
 function cmBtn(ctx, names, cls){
   const n = cmFor(names).length, open = CM.open === ctx;
-  return `<button type="button" class="cm-btn${n ? " has" : ""}${open ? " on" : ""}${cls ? " " + cls : ""}" data-cm="${esc(ctx)}" aria-expanded="${open}" title="${n ? `${n} comment${n === 1 ? "" : "s"}: open the log` : "No comments yet: add one"}">${CM_ICON}${n ? n : "+"}${cls ? (n ? " Comments" : " Comment") : ""}</button>`;
+  return `<button type="button" class="cm-btn${n ? " has" : ""}${open ? " on" : ""}${cls ? " " + cls : ""}" data-cm="${esc(ctx)}" aria-expanded="${open}" title="${n ? `${n} comment${n === 1 ? "" : "s"}: open the log` : "No comments yet: add one"}">${CM_ICON}${n ? n : "+"}${cls ? (n === 1 ? " Comment" : n ? " Comments" : " Comment") : ""}</button>`;
 }
 const cmWhen = at => new Date(at).toLocaleString("en-GB", { timeZone: MYTZ, day: "numeric", month: "short", year: "numeric", hour: "2-digit", minute: "2-digit" });
 // the log: one entry per comment (who, when, the comment), with Undo for the writer's first hour and "Request deletion"
