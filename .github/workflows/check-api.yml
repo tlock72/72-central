@@ -6,4 +6,6 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v6
-      - run: pip install -q beautifulsoup4 && python3 scripts/discover_te.py
+      - run: python3 scripts/discover.py
+        env:
+          LIVETENNIS_API_KEY: ${{ secrets.LIVETENNIS_API_KEY }}
