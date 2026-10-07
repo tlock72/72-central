@@ -599,19 +599,19 @@ body.on-home header nav{display:none}
 .cog:hover{color:var(--gold);background:var(--gold-dim)}
 .cog svg{width:20px;height:20px}
 @media (max-width:640px){header .cog{position:absolute;right:10px;top:8px;margin:0}}
-dialog.sets{width:min(440px,calc(100vw - 32px));padding:26px 28px 24px;border:1px solid var(--line);border-radius:20px;background:#0B1230;color:var(--text);box-shadow:0 30px 80px rgba(0,0,0,.6)}
-dialog.sets::backdrop{background:rgba(5,9,25,.72);backdrop-filter:blur(6px);-webkit-backdrop-filter:blur(6px)}
-dialog.sets[open]{display:block;animation:pop .28s ease}
-.sets h2{margin:0 0 18px;font-family:var(--display);text-transform:uppercase;letter-spacing:.08em;font-weight:600;font-size:22px;color:var(--white)}
-.sets label{display:block;margin:0 0 6px;font-size:11px;font-family:var(--display);text-transform:uppercase;letter-spacing:.14em;color:var(--muted)}
-.sets input,.sets select{display:block;width:100%;height:40px;margin:0 0 16px;padding:0 12px;border:1px solid var(--line);border-radius:10px;background:var(--navy-2);color:var(--text);font:inherit;font-size:14px}
-.sets input:focus,.sets select:focus{outline:none;border-color:var(--gold)}
-.sets p{margin:-6px 0 18px;font-size:12px;line-height:1.5;color:var(--muted)}
-.sets .err{color:var(--down);min-height:0;margin:-8px 0 12px;font-size:12px}
-.sets .bt{display:flex;gap:8px;justify-content:flex-end}
-.sets .bt button{height:36px;padding:0 20px;border-radius:999px;font-family:var(--display);text-transform:uppercase;letter-spacing:.12em;font-size:12px;font-weight:500;background:var(--gold);color:var(--navy)}
-.sets .bt button.no{background:transparent;color:var(--muted);border:1px solid var(--line)}
-@media (max-width:640px){dialog.sets{width:calc(100vw - 20px);padding:20px 18px 18px}.sets h2{font-size:19px;margin-bottom:14px}}
+dialog.stg{width:min(440px,calc(100vw - 32px));padding:26px 28px 24px;border:1px solid var(--line);border-radius:20px;background:#0B1230;color:var(--text);box-shadow:0 30px 80px rgba(0,0,0,.6)}
+dialog.stg::backdrop{background:rgba(5,9,25,.72);backdrop-filter:blur(6px);-webkit-backdrop-filter:blur(6px)}
+dialog.stg[open]{display:block;animation:pop .28s ease}
+.stg h2{margin:0 0 18px;font-family:var(--display);text-transform:uppercase;letter-spacing:.08em;font-weight:600;font-size:22px;color:var(--white)}
+.stg label{display:block;margin:0 0 6px;font-size:11px;font-family:var(--display);text-transform:uppercase;letter-spacing:.14em;color:var(--muted)}
+.stg input,.stg select{display:block;width:100%;height:40px;margin:0 0 16px;padding:0 12px;border:1px solid var(--line);border-radius:10px;background:var(--navy-2);color:var(--text);font:inherit;font-size:14px}
+.stg input:focus,.stg select:focus{outline:none;border-color:var(--gold)}
+.stg p{margin:-6px 0 18px;font-size:12px;line-height:1.5;color:var(--muted)}
+.stg .err{color:var(--down);min-height:0;margin:-8px 0 12px;font-size:12px}
+.stg .bt{display:flex;gap:8px;justify-content:flex-end}
+.stg .bt button{height:36px;padding:0 20px;border-radius:999px;font-family:var(--display);text-transform:uppercase;letter-spacing:.12em;font-size:12px;font-weight:500;background:var(--gold);color:var(--navy)}
+.stg .bt button.no{background:transparent;color:var(--muted);border:1px solid var(--line)}
+@media (max-width:640px){dialog.stg{width:calc(100vw - 20px);padding:20px 18px 18px}.stg h2{font-size:19px;margin-bottom:14px}}
 @keyframes hpPulse{70%{box-shadow:0 0 0 8px rgba(127,211,160,0)}100%{box-shadow:0 0 0 0 rgba(127,211,160,0)}}
 .hp-live{display:flex;align-items:center;gap:14px;flex-wrap:wrap;margin:0 0 22px;padding:14px 20px;border-radius:16px;border:1px solid rgba(232,144,143,.45);background:linear-gradient(90deg,rgba(232,144,143,.14),rgba(232,144,143,.03));text-decoration:none;color:var(--white)}
 .hp-live .k{font-family:var(--display);letter-spacing:.2em;font-size:12px;color:#F3C1C0;display:inline-flex;align-items:center;gap:8px}
@@ -1242,7 +1242,7 @@ main.ptr-go,footer.ptr-go{transition:transform .35s cubic-bezier(.2,.8,.3,1)}
     <p class="src" id="cnSrc"></p>
   </div>
   <dialog class="prof" id="prof" aria-label="Player profile"></dialog>
-  <dialog class="sets" id="sets" aria-label="Settings">
+  <dialog class="stg" id="sets" aria-label="Settings">
     <h2>Settings</h2>
     <label for="setName">Your first name</label>
     <input id="setName" type="text" maxlength="30" autocomplete="given-name" autocapitalize="words" spellcheck="false">
