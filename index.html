@@ -1888,6 +1888,9 @@ const PROFILES = [
   { id:"ristic", age:20, nat:"Serbian", plays:BH,
     titles:[],
     partners:["adidas","Dunlop"], social:{ Instagram:10*K } },
+  { id:"dudeney", nat:"British", plays:BH,
+    titles:[],
+    partners:["Yonex"], social:{} },
 ];
 /* Juniors: group, born, nationality, Instagram, the ranking the deck headlines, highlights, partners, results by year */
 const RNA = "Rafa Nadal Academy";
@@ -2109,14 +2112,14 @@ function proBody(x, p, rank){
         <div><b>${rank ? `<small>#</small>${rank}` : "—"}</b><span>Current ${p.tour} ranking</span></div>
         <div><b>${x.junior ? `<small>#</small>${x.junior}` : best ? `<small>#</small>${best}` : "—"}</b><span>${x.junior ? "Highest ITF junior ranking" : "Career-high ranking"}</span></div>
         ${tour ? `<div><b>${pad2(titles)}</b><span>Career titles${titleExcl(tl)}</span></div>` : ""}
-        <div><b>${fmtN(reach)}</b><span>Social following</span></div>
+        <div><b>${reach ? fmtN(reach) : "—"}</b><span>Social following</span></div>
       </div>
       <section><h3 class="pk">Titles</h3><div class="tg">${tl.map(tblock).join("") || `<div class="leg">No titles yet</div>`}</div></section>
       <section><h3 class="pk">Partner line-up</h3>${partnersHtml(x.partners, x.id)}</section>
-      <section><h3 class="pk">Social media</h3><div class="soc">
+      ${reach ? `<section><h3 class="pk">Social media</h3><div class="soc">
         <div class="tot"><b>${fmtN(reach)}</b><span>Combined following</span></div>
         ${Object.entries(x.social).map(([k, v]) => `<div><b>${fmtN(v)}</b><span>${esc(k)}</span></div>`).join("")}
-      </div></section>
+      </div></section>` : ""}
       ${x.quote ? `<blockquote class="q"><p>${esc(x.quote[0])}</p><cite>${esc(x.quote[1])}</cite></blockquote>` : ""}`;
 }
 function juniorBody(x, p, rank){
