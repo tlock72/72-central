@@ -3,7 +3,8 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<script>/* iPhone/iPad: stop the page zooming in when a search box or menu is tapped (boxes are under 16px). iOS still allows pinch zoom with this; other phones would lose it, so they are left alone */if(/iPhone|iPad|iPod/.test(navigator.userAgent)||(navigator.platform==="MacIntel"&&navigator.maxTouchPoints>1))document.querySelector('meta[name="viewport"]').content+=", maximum-scale=1";</script>
+<script>/* iPhone/iPad: stop the page zooming in when a search box or menu is tapped (boxes are under 16px). iOS still allows pinch zoom with this; other phones would lose it, so they are left alone.
+   iPad: "viewport-fit=cover" let Safari draw the page under its see-through address bar, which hid the top half of the logo, so on iPad it is taken off and the page starts below the bar */(function(){const v=document.querySelector('meta[name="viewport"]'),ipad=/iPad/.test(navigator.userAgent)||(navigator.platform==="MacIntel"&&navigator.maxTouchPoints>1);if(ipad)v.content=v.content.replace(", viewport-fit=cover","");if(ipad||/iPhone|iPod/.test(navigator.userAgent))v.content+=", maximum-scale=1"})();</script>
 <title>72 Central</title>
 <link rel="icon" type="image/png" sizes="64x64" href="tab-icon.png?v=3">
 <!-- installable app: "Add to Home Screen" uses this icon and opens full-screen (manifest.json) -->
@@ -43,8 +44,9 @@ button{font:inherit;color:inherit;background:none;border:0;cursor:pointer}
 
 header{position:sticky;top:env(safe-area-inset-top,0px);z-index:10;background:rgba(12,20,49,.9);backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);border-bottom:1px solid var(--line)}
 /* iPad (touch screen wider than a phone): Safari's see-through address bar sits over the top of the page, so a header
-   pinned to the top hid half the logo once the page moved at all. There the header just scrolls away with the page. */
-@media (hover:none) and (pointer:coarse) and (min-width:641px){header{position:relative}}
+   pinned to the top hid half the logo once the page moved at all. There the header just scrolls away with the page, and is pushed
+   below anything Safari still reports as covering the top (safe area). */
+@media (hover:none) and (pointer:coarse) and (min-width:641px){header{position:relative;padding-top:env(safe-area-inset-top,0px)}}
 .bar{display:flex;align-items:center;justify-content:space-between;gap:32px;padding-block:18px}
 .brand{display:flex;align-items:center;gap:18px;text-decoration:none;flex:none}
 .brand img{height:40px;width:auto;display:block}
