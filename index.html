@@ -2430,13 +2430,11 @@ function cnLocal(){ try { return JSON.parse(localStorage.getItem("72c-prospects"
 // removal requests sent from this device (shown as "Removal requested" until the Sheet lists them, for up to a day)
 function cnAsked(){ try { return JSON.parse(localStorage.getItem("72c-removals") || "[]").filter(x => Date.now() - (x.at || 0) < 864e5); } catch (e) { return []; } }
 function cnStage(label, l, txt, url){
-  // one stage of the pathway: linked (with its rank), not found yet, or more than one player fits (Check)
-  const st = l?.status;
-  const body = st === "linked" ? txt || "Linked" : st === "unsure" ? "Check: more than one fits" : st === "none" ? "Not found yet" : "Not checked yet";
-  const tip = st === "linked" ? `Linked by ${l.how || "id"}` : st === "unsure" ? l.note || "" : "";
-  const cls = st === "linked" ? "ok" : st === "unsure" ? "bad" : "";
-  return url && st === "linked" ? `<a class="cn-st ${cls}" href="${esc(url)}" target="_blank" rel="noopener" title="${esc(tip)}"><b>${label}</b><span>${esc(body)}</span></a>`
-    : `<div class="cn-st ${cls}" title="${esc(tip)}"><b>${label}</b><span>${esc(body)}</span></div>`;
+  // one stage of the pathway, only shown once the player has a ranking there (no tile until then)
+  if (l?.status !== "linked" || !txt) return "";
+  const tip = `Linked by ${l.how || "id"}`;
+  return url ? `<a class="cn-st ok" href="${esc(url)}" target="_blank" rel="noopener" title="${esc(tip)}"><b>${label}</b><span>${esc(txt)}</span></a>`
+    : `<div class="cn-st ok" title="${esc(tip)}"><b>${label}</b><span>${esc(txt)}</span></div>`;
 }
 function cnRow(level, sub, rank, high, w, m3, m12, note){
   const mv = v => v === undefined ? `<div class="ch same">—</div>` : sqCell(rank, v);
@@ -2452,8 +2450,8 @@ function cnCard(k, p){
   const L = p.links || {}, tourName = p.g === "F" ? "WTA" : "ATP";
   const te = [...(p.te || [])].sort((a, b) => a.rank - b.rank)[0], jr = p.itfJr, pro = p.pro;  // best Tennis Europe category
   // most important first: ATP/WTA, then ITF Juniors, then Tennis Europe
-  const path = cnStage(tourName, L.pro?.status ? L.pro : null, pro ? `No. ${pro.rank}` : "", L.pro?.url)
-    + cnStage("ITF Juniors", L.itf, jr?.rank ? `No. ${jr.rank}` : jr?.high ? `Best ${jr.high}` : L.itf?.status === "linked" ? "ITF profile" : "", L.itf?.id ? `https://www.itftennis.com/en/players/${cnKey(p.name) && p.name.normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLowerCase().replace(/[^a-z]+/g, "-").replace(/^-|-$/g, "")}/${L.itf.id}/${(L.itf.nat || "").toLowerCase()}/` : "")
+  const path = cnStage(tourName, L.pro, (pro?.rank || p.itfPro?.rank) ? `No. ${pro?.rank || p.itfPro.rank}` : "", L.pro?.url)
+    + cnStage("ITF Juniors", L.itf, jr?.rank ? `No. ${jr.rank}` : "", L.itf?.id ? `https://www.itftennis.com/en/players/${cnKey(p.name) && p.name.normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLowerCase().replace(/[^a-z]+/g, "-").replace(/^-|-$/g, "")}/${L.itf.id}/${(L.itf.nat || "").toLowerCase()}/` : "")
     + (L.te?.status === "skip" ? "" : cnStage("Tennis Europe", L.te, te ? `No. ${te.rank} ${te.cat}` : "", L.te?.id ? `https://te.tournamentsoftware.com/player-profile/${L.te.id}` : ""));  // not shown for anyone over 16
   const rows = [];
   if (pro) rows.push(cnRow(tourName, pro.week ? "week of " + sqFmt(pro.week) : "", pro.rank, pro.high, pro.w, pro.m3, pro.m12));
@@ -2475,7 +2473,7 @@ function cnCard(k, p){
   const meta = [p.nat, p.born ? "born " + p.born : "", p.src === "site" && p.by ? "added by " + p.by : "", p.typed ? `typed as "${p.typed}", spelling corrected from the ITF` : ""].filter(Boolean).join(" · ");
   const unsure = ["itf", "te"].filter(s => L[s]?.status === "unsure").map(s => `${s === "te" ? "Tennis Europe" : "ITF"}: ${L[s].note || "more than one player fits"}`);
   return `<div class="cn"><div class="cn-h"><span class="nm">${esc(p.name)}</span><span class="mt">${esc(meta)}</span>${res.length ? `<span class="wl">Last 12 months <b>${won}-${lost}</b></span>` : ""}</div>
-    <div class="cn-path">${path}</div>
+    ${path ? `<div class="cn-path">${path}</div>` : ""}
     ${unsure.length ? `<div class="cn-note">${unsure.map(esc).join("<br>")}. Add the right id in prospects.json.</div>` : ""}
     ${rows.length ? `<div class="sq-row h"><span>Ranking</span><span>Rank</span><span>Best</span><span>1 wk</span><span>3 mo</span><span>12 mo</span></div>${rows.join("")}` : ""}
     <div class="cn-acts">${res.length ? `<button class="cn-more${open ? " on" : ""}" data-k="${esc(k)}" aria-expanded="${open}"><span class="ar" aria-hidden="true">▾</span>${open ? "Hide" : "Show"} the last 12 months <span class="n">(${res.length} match${res.length === 1 ? "" : "es"})</span></button>` : ""}${cnRemoval(k, p.typed || p.name)}</div>
