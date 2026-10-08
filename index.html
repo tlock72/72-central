@@ -467,7 +467,7 @@ select.sq-in option{background:var(--navy-2);color:var(--white)}
 .sg-sec{display:grid;gap:10px;grid-template-columns:repeat(2,minmax(0,1fr));align-items:stretch}
 /* every suggestion tile the same size: the Scout button sits in the top corner, and all tiles get the height of the fullest one */
 .sg-sec .cn{position:relative;min-height:var(--sg-h,0);display:flex;flex-direction:column}
-.sg-sec .cn.sg-open{grid-column:1/-1}  /* an open results list takes the whole row */
+.sg-sec:has(.sg-open) .cn{align-self:start}  /* an open results list stays in its half; the tile beside it keeps its own height */
 .sg-wl{margin-top:auto;padding:0 20px 10px;font-size:12px;color:var(--muted)}
 .sg-wl b{color:var(--text);font-family:var(--display);font-size:15px;font-weight:500}
 .sg-wl span{margin-left:10px;color:var(--muted-2)}.sg-wl span b{font-size:12px}
@@ -2943,7 +2943,10 @@ $("#cnList").addEventListener("click", e => {
     renderCorner(); return;
   }
   const b = e.target.closest(".cn-more"); if (!b) return;
-  CN.open.has(b.dataset.k) ? CN.open.delete(b.dataset.k) : CN.open.add(b.dataset.k);
+  // only one "last 12 months" list open at a time (watch list and suggestions)
+  const was = CN.open.has(b.dataset.k);
+  CN.open.clear();
+  if (!was) CN.open.add(b.dataset.k);
   renderCorner();
 });
 $("#cnList").addEventListener("submit", e => {
