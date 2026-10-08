@@ -417,6 +417,10 @@ select.sq-in option{background:var(--navy-2);color:var(--white)}
 .sq-row .ch small{display:block;font-family:var(--body);font-size:10px;color:var(--muted-2);letter-spacing:.04em}
 .sq-row .ch.up{color:var(--up)} .sq-row .ch.down{color:var(--down)} .sq-row .ch.same,.sq-row .ch.na{color:var(--muted-2)}
 .sq-row .ch.new{color:var(--gold);font-size:12px;letter-spacing:.12em}
+/* ATP/WTA: a ranking points column after the player (phones show the points in the country line instead) */
+.sq-tbl.wp .sq-row{grid-template-columns:64px minmax(0,1fr) 78px 64px repeat(3,74px)}
+.sq-row .pt{text-align:right;font-family:var(--display);font-size:16px;color:var(--text);font-variant-numeric:tabular-nums}
+.sq-row .ct .ptm{display:none}
 .sq-eye{display:inline-flex;align-items:center;justify-content:center;color:var(--gold);border:1px solid var(--gold);border-radius:4px;padding:1px 4px;margin-left:6px;vertical-align:1px;line-height:0}
 .sq-eye svg{width:13px;height:11px}
 .sq-eye.wait{opacity:.55}
@@ -581,7 +585,8 @@ a.cn-st.ok:hover{border-color:var(--gold)}
 }
 .stat .v.nm{font-size:22px;line-height:1.15}
 @media (max-width:640px){
-  .sq-row{grid-template-columns:40px minmax(0,1fr) 42px repeat(3,46px);gap:6px;padding:10px 12px}
+  .sq-row,.sq-tbl.wp .sq-row{grid-template-columns:40px minmax(0,1fr) 42px repeat(3,46px);gap:6px;padding:10px 12px}
+  .sq-row .pt,.sq-row.h button.pt{display:none}.sq-row .ct .ptm{display:inline}
   .sq-row .no{font-size:17px}.sq-row .nm{font-size:13px}
   /* long names wrap onto a second line (then "…"), with the 72 badge after them */
   .sq-row .nm.fx .nt{white-space:normal;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;line-height:1.25;font-size:12.5px}.sq-row .by{font-size:14px}.sq-row .ch{font-size:13px}
@@ -1881,13 +1886,14 @@ function renderRankings(){
   const trendOf = p => { const T = SCOUT && SCOUT[p.tour.toLowerCase()]; if (!T?.players) return null;
     const k = rkKey(p.first + p.last); let x = T.players.find(q => rkKey(q[1]) === k);
     if (!x) { const h = T.players.filter(q => { const n = rkKey(q[1]); return n.startsWith(k) || k.startsWith(n); }); if (h.length === 1) x = h[0]; } // e.g. "Leyre Romero Gormaz"
-    return x ? { rank: x[0], w: x[4], m3: x[5], m12: x[6] } : null; };
+    return x ? { rank: x[0], w: x[4], m3: x[5], m12: x[6], pts: x[9] } : null; };
   const trCell = (t, k) => { if (!t) return `<div class="tr"></div>`; const prev = t[k];
     if (prev === -1) return `<div class="tr" title="Not tracked then">—</div>`;
     if (prev == null) return `<div class="tr new" title="Not ranked then">NEW</div>`;
     const m = prev - t.rank; return `<div class="tr ${m > 0 ? "up" : m < 0 ? "down" : ""}" title="Was ${prev}">${m > 0 ? "▲" + m : m < 0 ? "▼" + -m : "–"}</div>`; };
   const head = `<div class="rk t6 h"><span>Rank</span><span>Player</span><span class="pts">Points</span><span>1 wk</span><span>3 mo</span><span>12 mo</span></div>`;
-  const html = list => list.map(({p,d}) => { const t = d.rank ? trendOf(p) : null; const pts = d.points ? Number(d.points).toLocaleString("en-GB") : "";
+  const html = list => list.map(({p,d}) => { const t = d.rank ? trendOf(p) : null; const op = t && t.rank === d.rank ? t.pts : null;  // the score feed's points, else the official list's (same rank only)
+    const pts = d.points || op ? Number(d.points || op).toLocaleString("en-GB") : "";
     return `<div class="rk t6">
       <div class="no ${d.rank ? "" : "na"}">${d.rank ? `<span class="hash">#</span>${d.rank}` : "—"}</div>
       <div class="who">${nmLink(p)}<div class="ct">${esc([p.country, d.rank ? "" : (d.note || "Not ranked")].filter(Boolean).join(" · "))}${pts ? `<span class="ptm"> · ${pts} pts</span>` : ""}</div></div>
@@ -2418,7 +2424,7 @@ function sqRows(){
   if (!T) return [];
   const year = (SCOUT.minYear || new Date().getFullYear() - 21) + 21;
   const q = sqKey(SQ.q);
-  return T.players.map(p => ({ rank:p[0], name:p[1], cty:p[2], born:p[3], w:p[4], m3:p[5], m12:p[6], url:p[7],
+  return T.players.map(p => ({ rank:p[0], name:p[1], cty:p[2], born:p[3], w:p[4], m3:p[5], m12:p[6], url:p[7], pts:p[9] ?? null,
       is72: sqJr() ? !!p[8] : SQ72.has(SQ.t + ":" + sqKey(p[1])), rid: p[8] }))
     .map(p => { if (p.rid && byId[p.rid]) p.name = `${byId[p.rid].first} ${byId[p.rid].last}`;  // ITF juniors: 72 players matched by ITF id
       else if (p.is72 && !sqJr()) { const r = ROSTER.find(x => x.tour.toLowerCase() === SQ.t && sqKey(x.first + x.last) === sqKey(p.name)); if (r) p.name = `${r.first} ${r.last}`; } return p; })
@@ -2426,7 +2432,7 @@ function sqRows(){
 }
 function sqSort(rows){
   const mv = (p, k) => { const d = sqMove(p.rank, p[k]); return d == null ? 0.5 : d; }; // a new entry sits just after the climbers
-  const f = { rank: p => p.rank, name: p => p.name, born: p => -p.born, w: p => -mv(p, "w"), m3: p => -mv(p, "m3"), m12: p => -mv(p, "m12") }[SQ.sort];
+  const f = { rank: p => p.rank, name: p => p.name, born: p => -p.born, pts: p => -(p.pts ?? -1), w: p => -mv(p, "w"), m3: p => -mv(p, "m3"), m12: p => -mv(p, "m12") }[SQ.sort];
   return rows.sort((a, b) => { const x = f(a), y = f(b); const r = x < y ? -1 : x > y ? 1 : a.rank - b.rank; return SQ.asc ? r : -r; });
 }
 /* Scouting Corner on Filtered Rankings: binoculars next to anyone on the watch list (matched by their ATP/WTA,
@@ -2500,6 +2506,10 @@ function renderScouting(){
   const ctys = [...new Set(T.players.map(p => p[2]).filter(Boolean))].sort();
   if (SQ.c && !ctys.includes(SQ.c)) SQ.c = "";
   $("#sqC").innerHTML = `<option value="">All countries</option>` + ctys.map(c => `<option${c === SQ.c ? " selected" : ""}>${esc(c)}</option>`).join("");
+  // ranking points: ATP/WTA only (scouting.json field 9), left blank when they couldn't be read reliably
+  const wp = T.players.some(p => p[9] != null), ptx = p => p.pts != null ? Number(p.pts).toLocaleString("en-GB") : "";
+  $("#sqTbl").classList.toggle("wp", wp);
+  if (!wp && SQ.sort === "pts") SQ.sort = "rank";
   const rows = sqSort(sqRows());
   // climbers are picked from players now inside the top 300 (U21, U20) or top 500 (U19, U18); younger groups use everyone
   //   (or the ranking filter, if that is tighter)
@@ -2513,15 +2523,15 @@ function renderScouting(){
     <div class="stat"><div class="k">Highest ranked</div><div class="v nm">${top ? `${esc(top.name)}<small>#${top.rank}</small>` : "—"}</div></div>
     <div class="stat"><div class="k">Biggest climb · 3 months${capTxt}</div><div class="v nm">${b3 && b3.m3 > b3.rank ? `${esc(b3.name)}<small>▲${b3.m3 - b3.rank}</small>` : "—"}</div></div>
     <div class="stat"><div class="k">Biggest climb · 12 months${capTxt}</div><div class="v nm">${b12 && b12.m12 > b12.rank ? `${esc(b12.name)}<small>▲${b12.m12 - b12.rank}</small>` : "—"}</div></div>`;
-  const cols = [["rank","Rank"],["name","Player"],["born","Born"],["w","1 wk"],["m3","3 mo"],["m12","12 mo"]];
-  const head = `<div class="sq-row h">${cols.map(([k, l]) => `<button data-s="${k}" class="${SQ.sort === k ? "on" + (SQ.asc ? "" : " asc") : ""}">${l}</button>`).join("")}</div>`;
+  const cols = [["rank","Rank"],["name","Player"],...(wp ? [["pts","Points"]] : []),["born","Born"],["w","1 wk"],["m3","3 mo"],["m12","12 mo"]];
+  const head = `<div class="sq-row h">${cols.map(([k, l]) => `<button data-s="${k}" class="${k === "pts" ? "pt " : ""}${SQ.sort === k ? "on" + (SQ.asc ? "" : " asc") : ""}">${l}</button>`).join("")}</div>`;
   const shown = SQ.all ? rows : rows.slice(0, 100), wl = sqWatch();
   // comments: the bubble next to each name opens that player's comment log under the row
   const cmx = p => "sq:" + SQ.t + ":" + cnSorted(p.name);
   $("#sqTbl").innerHTML = head + (shown.length ? shown.map(p => `<div class="sq-row">
       <div class="no">${p.rank}</div>
-      <div style="min-width:0">${p.url ? `<a class="nm fx" href="${esc(p.url)}" target="_blank" rel="noopener">` : `<span class="nm fx">`}<span class="nt">${esc(p.name)}</span>${p.is72 ? `<span class="sq-72">72</span>` : ""}${sqEye(p, wl)}${p.url ? "</a>" : "</span>"}<div class="ct">${esc(p.cty)}${cmBtn(cmx(p), [p.name])}${sqAddBtn(p, wl)}</div></div>
-      <div class="by">${p.born || "—"}${p.born && !jr ? `<small>U${year - p.born}</small>` : ""}</div>
+      <div style="min-width:0">${p.url ? `<a class="nm fx" href="${esc(p.url)}" target="_blank" rel="noopener">` : `<span class="nm fx">`}<span class="nt">${esc(p.name)}</span>${p.is72 ? `<span class="sq-72">72</span>` : ""}${sqEye(p, wl)}${p.url ? "</a>" : "</span>"}<div class="ct">${esc(p.cty)}${wp && ptx(p) ? `<span class="ptm"> · ${ptx(p)} pts</span>` : ""}${cmBtn(cmx(p), [p.name])}${sqAddBtn(p, wl)}</div></div>
+      ${wp ? `<div class="pt">${ptx(p) || "—"}</div>` : ""}<div class="by">${p.born || "—"}${p.born && !jr ? `<small>U${year - p.born}</small>` : ""}</div>
       ${sqCell(p.rank, p.w)}${sqCell(p.rank, p.m3)}${sqCell(p.rank, p.m12)}
     </div>${cmLog(cmx(p), cnTidy(p.name), [p.name])}`).join("") : `<div class="sq-empty">No players match these filters.</div>`);
   $("#sqMore").hidden = SQ.all || rows.length <= 100;
@@ -2530,7 +2540,7 @@ function renderScouting(){
   const cmpTxt = [["w", "1 wk"], ["m3", "3 mo"], ["m12", "12 mo"]].filter(([k]) => c[k]).map(([k, l]) => `${sqFmt(c[k])} (${l})`).join(", ").replace(/^(.)/, ", compared with the rankings of $1");
   $("#sqSrc").innerHTML = sqTe() ? `Tennis Europe Ranking, ${SQ.t === "teb14" ? "Boys" : "Girls"} 14 &amp; Under, week of ${sqFmt(T.week)}${cmpTxt}. <b>NEW</b> means the player was not ranked then. Filtered by birth year, as junior events are. 72 players are matched by their Tennis Europe profile. Source: Tennis Europe (used with permission, internal use only). Updates itself when Tennis Europe publishes a new week.`
     : jr ? `ITF World Tennis Junior Ranking (${SQ.t === "itfb" ? "boys" : "girls"}) of ${sqFmt(T.week)}${[["w", "1 wk"], ["m3", "3 mo"], ["m12", "12 mo"]].filter(([k]) => c[k]).map(([k, l]) => `${sqFmt(c[k])} (${l})`).join(", ").replace(/^(.)/, ", compared with the rankings of $1")}. <b>NEW</b> means the player was not ranked then; <b>—</b> means not tracked then (the ITF doesn't publish past junior weeks, so the moves build up week by week from October 2026). Filtered by birth year, as junior events are. Source: ITF. Updates itself every Monday.`
-    : `Official ${SQ.t.toUpperCase()} singles ranking of ${sqFmt(T.week)}, compared with the rankings of ${sqFmt(c.w)} (1 wk), ${sqFmt(c.m3)} (3 mo) and ${sqFmt(c.m12)} (12 mo). <b>NEW</b> means the player was not ranked then${rows.some(p => p.w === -1 || p.m3 === -1 || p.m12 === -1) ? "; <b>—</b> means not tracked then (older ATP weeks are being filled in for every player, a few weeks every half hour)" : ""}. Source: ${SQ.t === "atp" ? "ATP via Tennis Abstract" : "WTA"}. Updates itself every week.`;
+    : `Official ${SQ.t.toUpperCase()} singles ranking of ${sqFmt(T.week)}, compared with the rankings of ${sqFmt(c.w)} (1 wk), ${sqFmt(c.m3)} (3 mo) and ${sqFmt(c.m12)} (12 mo). <b>NEW</b> means the player was not ranked then${rows.some(p => p.w === -1 || p.m3 === -1 || p.m12 === -1) ? "; <b>—</b> means not tracked then (older ATP weeks are being filled in for every player, a few weeks every half hour)" : ""}. Source: ${SQ.t === "atp" ? `ATP via Tennis Abstract${wp ? " (points via Tennis Explorer)" : ""}` : "WTA"}. Updates itself every week.`;
 }
 document.addEventListener("click", e => {
   const t = e.target.closest(".sqt, .sqm, .sqa, .sqy, .sqr, .sqo, .sq-row.h button, #sqMore");
