@@ -1928,7 +1928,8 @@ const PROFILES = [
     titles:[{ k:"ATP titles", n:11, p:[["500",4],["250",7]] }, { k:"Team titles", team:1, n:2, p:[["Laver Cup",2]] }],
     partners:["Wilson","SAJ","SAP","Gerald Charles","Pepperstone","La Roche-Posay","Weet-Bix"],
     social:{ Instagram:554*K, TikTok:57*K, X:74*K },
-    quote:["I've been watching Alex for a while, and his work ethic and dedication to the game are impressive. He has a great attitude and the kind of tenacity that can take him far.","Pat Rafter"] },
+    quote:["I've been watching Alex for a while, and his work ethic and dedication to the game are impressive. He has a great attitude and the kind of tenacity that can take him far.","Pat Rafter"],
+    campaign:[["deminaur-c1.webp",1406,2000],["deminaur-c2.webp",1024,683],["deminaur-c3.webp",960,1194],["deminaur-c4.webp",1920,1740],["deminaur-c5.webp",1280,573]] },
   { id:"rublev", age:28, nat:"Russian", plays:BH, high:5,
     titles:[{ k:"ATP titles", n:18, p:[["Masters 1000",2],["500",6],["250",10]] }, { k:"Team titles", team:1, n:4, p:[["Davis Cup",1],["Laver Cup",1],["ATP Cup",1],["Tokyo 2020",1]] }],
     partners:["waterdrop","K-Swiss","HEAD","Vanguart","PRYPCO Blocks"],
@@ -2253,7 +2254,7 @@ function latestResult(id){
   return (STATE?.matches || []).filter(m => m.status === "finished" && md(m) < today && (m.p1Id === id || m.p2Id === id))
     .sort((a, b) => b.date.localeCompare(a.date) || roundStage(b.round) - roundStage(a.round))[0] || null;
 }
-/* campaign gallery on a profile (only players with a campaign list, e.g. Svitolina): [file, width, height] each.
+/* campaign gallery on a profile (only players with a campaign list, e.g. Svitolina, de Minaur): [file, width, height] each.
    The images are listed twice so the strip can drift slowly to the left for ever (jumping back by one set when it reaches the copy).
    It keeps drifting while the profile is scrolled; a swipe, drag or the arrows take over and it picks up again 2 seconds after.
    It never drifts on its own if the device asks for less motion. */
