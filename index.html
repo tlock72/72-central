@@ -2460,6 +2460,8 @@ function vcard(p, photo){
   if (p.title) L.push(`TITLE:${v(p.title)}`);
   if (p.phone) L.push(`TEL;TYPE=CELL:${p.phone.replace(/[^\d+]/g, "")}`);
   if (p.email) L.push(`EMAIL;TYPE=INTERNET:${p.email}`);
+  // a "WhatsApp" link on the saved contact (Apple's custom-label format), so tapping it on the contact page opens a WhatsApp chat
+  if (p.phone) L.push(`item1.URL:https://wa.me/${p.phone.replace(/\D/g, "")}`, "item1.X-ABLabel:WhatsApp");
   if (photo) L.push(("PHOTO;ENCODING=b;TYPE=JPEG:" + photo).match(/.{1,74}/g).join("\r\n "));
   L.push("END:VCARD");
   return L.join("\r\n");
