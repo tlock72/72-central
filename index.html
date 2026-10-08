@@ -1772,7 +1772,8 @@ function renderScores(){
   for (const m of ms.filter(m => md(m) <= yday && md(m) >= wkStart && (m.status === "finished" || m.status === "scheduled")))
     for (const id of ours(m)) { const b = best[id];
       if (!b || md(m) > md(b) || (md(m) === md(b) && stage(m.round) > stage(b.round))) best[id] = m; }
-  const done = [...new Set(Object.values(best))].sort((a,b) => byTier(a, b) || key(b).localeCompare(key(a)));
+  // most recent first (latest day, then latest start time), biggest tournament first when they tie
+  const done = [...new Set(Object.values(best))].sort((a,b) => md(b).localeCompare(md(a)) || key(b).localeCompare(key(a)) || byTier(a, b));
   const fill = (el, arr, empty) => { $(el).innerHTML = arr.length ? arr.map(card).join("") : `<div class="empty">${empty}</div>`; };
   if (!STATE) {
     $("#gToday").innerHTML = `<div class="empty">Loading the match schedule…</div>`;
