@@ -475,7 +475,6 @@ select.sq-in option{background:var(--navy-2);color:var(--white)}
 .sg-bar button.go{background:var(--gold);color:var(--navy)}
 .sg-sec .cn-h .sg-act{position:absolute;top:14px;right:16px;margin:0}
 .sg-sec>h3,.sg-sec>.sq-empty{grid-column:1/-1}
-@media (max-width:760px){.sg-sec{grid-template-columns:minmax(0,1fr)}}
 .sg-sec h3{font-family:var(--display);font-weight:500;text-transform:uppercase;letter-spacing:.16em;font-size:12px;color:var(--gold);margin:14px 0 0}
 .sg-sec h3 small{margin-left:10px;color:var(--muted);letter-spacing:.06em;text-transform:none;font-family:var(--body)}
 .sg-note{margin:0;padding:12px 16px;border:1px solid var(--line-2);border-radius:14px;font-size:12px;color:var(--muted);line-height:1.5}
@@ -484,6 +483,7 @@ select.sq-in option{background:var(--navy-2);color:var(--white)}
 .sg-why span{font-size:12px;border:1px solid var(--line-2);border-radius:999px;padding:3px 10px;color:var(--text)}
 .sg-why span.up{color:var(--up);border-color:currentColor}
 .sg-why span.ms{color:var(--gold);border-color:var(--gold)}
+.sg-why i{font-style:normal}.sg-why .nw{white-space:nowrap}.sg-why .sh{display:none}
 .cn-h .sg-act{margin-left:auto}
 #page-corner .sq-line[hidden],.cn-add[hidden]{display:none!important}
 .cn-h a.nm{text-decoration:none}
@@ -864,6 +864,22 @@ nav .sh,.nm-s{display:none}
   #page-rankings .hero h1,#page-scouting .hero h1,#page-schedule .hero h1,#page-corner .hero h1{font-size:24px}
   #page-schedule .hero .sub,#page-scouting .hero .sub,#page-corner .hero .sub{display:none}
   .sg-long{display:none}.sg-short{display:block;padding:8px 12px;font-size:11px;line-height:1.4}
+  /* Computerised suggestions: two tiles side by side, with the Scout button shrunk to just the binoculars */
+  .sg-sec{gap:6px}
+  .sg-sec .cn{min-height:0}  /* only the two tiles in a row match heights on phones */
+  .sg-sec .cn-h{padding:8px 34px 5px 10px;gap:1px 6px}
+  .sg-sec .cn-h .nm{flex:1 1 100%;font-size:14px;line-height:1.2}
+  .sg-sec .cn-h .mt{font-size:10px;letter-spacing:.02em}
+  .sg-sec .cn-h .sg-act{top:7px;right:7px}
+  .sg-sec .cn-h .sg-act:has(.wait){position:static;flex:1 1 100%}
+  .sg-sec .cn-h .sg-act .wait{font-size:10px}
+  .sg-sec .sq-add{font-size:0;gap:0;padding:4px 6px}
+  .sg-sec .sq-add svg{width:15px;height:12px}
+  .sg-why{gap:4px;padding:0 10px 9px}
+  .sg-why span{font-size:10px;padding:2px 7px;border-radius:8px;line-height:1.3}
+  .sg-why .lg{display:none}.sg-why .sh{display:inline}
+  .sg-bar{padding:5px 8px;gap:4px 6px;font-size:10.5px}
+  .sg-bar button{font-size:10px;padding:2px 8px}
   #page-rankings .hero .sub{font-size:11px;line-height:1.45;margin-top:4px}
   #page-rankings .hero,#page-scouting .hero{display:grid;grid-template-columns:minmax(0,1fr) auto;align-items:center;gap:0 10px}
   #page-rankings .hero>div:first-child,#page-scouting .hero>div:first-child{display:contents}
@@ -2798,7 +2814,7 @@ function sgPick(L, wl){
     const score = ((g12 ?? 0) + 1.5 * (g3 ?? 0)) * (L.over ? 1 : 1 + 0.08 * (L.maxAge - age));
     if (score < 0.4) continue;
     const why = [];
-    const mv = (p, t) => p === null ? `<span class="up">Not ranked ${t} ago</span>` : p - rank > 0 ? `<span class="up">▲${p - rank} in ${t} (${p} → ${rank})</span>` : "";
+    const mv = (p, t) => p === null ? `<span class="up">Not ranked ${t.replace(/ (months)$/, ' <i class="lg">$1</i><i class="sh">mo</i>')} ago</span>` : p - rank > 0 ? `<span class="up">▲${p - rank} in ${t.replace(/ (months)$/, ' <i class="lg">$1</i><i class="sh">mo</i>')} <i class="nw">(${p} → ${rank})</i></span>` : "";
     if (m12 !== -1 && m12 !== undefined) why.push(mv(m12, "12 months"));
     if (m3 !== -1 && m3 !== undefined) why.push(mv(m3, "3 months"));
     // a milestone reached in the last 3 months: "Into the top 100"
@@ -2810,7 +2826,7 @@ function sgPick(L, wl){
   return { week: T.week, list: out.sort((a, b) => b.score - a.score) };
 }
 function sgCard(x){
-  const meta = [x.nat, x.born ? "born " + x.born : "", `${x.L.tour} No. ${x.rank}`].filter(Boolean).join(" · ");
+  const meta = [x.nat, x.born ? "born " + x.born : "", `${x.L.tour} No. ${x.rank}`.replace(/ /g, "\u00a0")].filter(Boolean).join(" · ");
   let act, bar = "";
   if (x.watch === "wait") act = `<span class="wait">Added · looking up…</span>`;
   else if (CN.add !== x.key) act = `<button class="sq-add" data-sga="${esc(x.key)}" title="Add to the watch list">${SQ_BINO}Scout</button>`;
