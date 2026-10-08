@@ -466,7 +466,12 @@ select.sq-in option{background:var(--navy-2);color:var(--white)}
 .cn-view{margin:0 0 16px}
 .sg-sec{display:grid;gap:10px;grid-template-columns:repeat(2,minmax(0,1fr));align-items:stretch}
 /* every suggestion tile the same size: the Scout button sits in the top corner, and all tiles get the height of the fullest one */
-.sg-sec .cn{position:relative;min-height:var(--sg-h,0)}
+.sg-sec .cn{position:relative;min-height:var(--sg-h,0);display:flex;flex-direction:column}
+.sg-sec .cn.sg-open{grid-column:1/-1}  /* an open results list takes the whole row */
+.sg-wl{margin-top:auto;padding:0 20px 10px;font-size:12px;color:var(--muted)}
+.sg-wl b{color:var(--text);font-family:var(--display);font-size:15px;font-weight:500}
+.sg-wl span{margin-left:10px;color:var(--muted-2)}.sg-wl span b{font-size:12px}
+.cn-h .wl small{display:block;text-align:right;font-size:11px;color:var(--muted-2)}.cn-h .wl small b{font-size:12px}
 .sg-measure .sg-sec{align-items:start}
 .sg-sec .cn-h{padding-right:110px}
 .sg-bar{display:flex;flex-wrap:wrap;align-items:center;gap:4px 8px;padding:5px 16px;background:var(--gold-dim);border-bottom:1px solid var(--line-2);font-size:12px;line-height:1.3;color:var(--text)}
@@ -876,6 +881,7 @@ nav .sh,.nm-s{display:none}
   .sg-sec .sq-add{font-size:0;gap:0;padding:4px 6px}
   .sg-sec .sq-add svg{width:15px;height:12px}
   .sg-why{gap:4px;padding:0 10px 9px}
+  .sg-wl{padding:0 10px 6px;font-size:11px}.sg-wl span{display:block;margin:0}
   .sg-why span{font-size:10px;padding:2px 7px;border-radius:8px;line-height:1.3}
   .sg-why .lg{display:none}.sg-why .sh{display:inline}
   .sg-bar{padding:5px 8px;gap:4px 6px;font-size:10.5px}
@@ -2660,6 +2666,7 @@ async function loadScouting(){
    "Add a prospect" box go to Tobey's Google Sheet (scripts/visit_log.gs); GitHub reads that list and looks
    them up, and until then they show here as "Looking up…". */
 const CORNER_URL = "https://script.google.com/macros/s/AKfycbwzEb0YNoDmZaaJ5fQg05ubEe_lowMLiGoYaXuclycqQikOngLQEmENPN5KoL_KJXu1kA/exec";  // same as LOG_URL
+let SUGG = null;  // suggest.json: the suggestions' last 12 months of results
 let CORNER = null, CN_SHEET = [], CN_SHEET_OK = false, CN_REMOVED = [], CN_ASKED = [];
 const CN = { g: "", q: "", s: "", open: new Set(), rm: "", view: "", add: "" };
 try { CN.view = localStorage.getItem("72c-cnview") === "sug" ? "sug" : ""; } catch (e) {}
@@ -2710,24 +2717,32 @@ function cnCard(k, p){
   for (const r of p.te || []) rows.push(cnRow("Tennis Europe", r.cat, r.rank, r.high, r.w, r.m3, r.m12));
   const res = p.results || [];
   const won = res.filter(r => r.res === "W").length, lost = res.filter(r => r.res === "L").length;
-  // results grouped by tournament, newest first
-  const groups = [];
-  for (const r of res) {
-    const g = groups.find(x => x.src === r.src && x.t === r.t && x.start === r.start);
-    if (g) g.m.push(r); else groups.push({ src: r.src, t: r.t, start: r.start, end: r.end, cat: r.cat, link: r.link, m: [r] });
-  }
-  const open = CN.open.has(k);
-  const resHtml = groups.map(g => `<div class="cn-tn">${g.link ? `<a href="${esc(g.link)}" target="_blank" rel="noopener">${esc(g.t)}</a>` : esc(g.t)}<small>${esc(sqFmt(g.end))} · ${esc(g.cat)} · ${esc(CN_SRC[g.src] || g.src)}</small></div>`
-    + g.m.map(m => `<div class="cn-m"><span>${esc(m.r)}</span><span class="r ${m.res}">${m.res || "–"}</span><span>${esc(m.o)}${m.on ? ` (${esc(m.on)})` : ""}</span><span class="s">${esc(m.s)}</span></div>`).join("")).join("");
+  const open = CN.open.has(k), resHtml = cnResHtml(res);
   const meta = [p.nat, p.born ? "born " + p.born : "", p.by ? "added by " + p.by : "", p.typed ? `typed as "${p.typed}", spelling corrected from the ITF` : ""].filter(Boolean).join(" · ");
   const unsure = ["itf", "te"].filter(s => L[s]?.status === "unsure").map(s => `${s === "te" ? "Tennis Europe" : "ITF"}: ${L[s].note || "more than one player fits"}`);
-  return `<div class="cn"><div class="cn-h"><span class="nm">${esc(p.name)}</span><span class="mt">${esc(meta)}</span>${res.length ? `<span class="wl">Last 12 months <b>${won}-${lost}</b></span>` : ""}</div>
+  return `<div class="cn"><div class="cn-h"><span class="nm">${esc(p.name)}</span><span class="mt">${esc(meta)}</span>${res.length ? `<span class="wl">Last 12 months <b>${won}-${lost}</b><small>${cnYears(res)}</small></span>` : ""}</div>
     ${path ? `<div class="cn-path">${path}</div>` : ""}
     ${unsure.length ? `<div class="cn-note">${unsure.map(esc).join("<br>")}. Add the right id in prospects.json.</div>` : ""}
     ${rows.length ? `<div class="sq-row h"><span>Ranking</span><span>Rank</span><span>Best</span><span>1 wk</span><span>3 mo</span><span>12 mo</span></div>${rows.join("")}` : ""}
     <div class="cn-acts">${cmBtn("cn:" + k, [p.name, p.typed], "lg")}${res.length ? `<button class="cn-more${open ? " on" : ""}" data-k="${esc(k)}" aria-expanded="${open}"><span class="ar" aria-hidden="true">▾</span>${open ? "Hide" : "Show"} the last 12 months <span class="n">(${res.length} match${res.length === 1 ? "" : "es"})</span></button>` : ""}${cnRemoval(k, p.typed || p.name)}</div>
     ${cmLog("cn:" + k, p.name, [p.name, p.typed])}
     ${res.length ? `<div class="cn-res"${open ? "" : " hidden"}>${resHtml}</div>` : ""}</div>`;
+}
+// last 12 months of results, grouped by tournament, newest first (watch list cards and suggestions)
+function cnResHtml(res){
+  const groups = [];
+  for (const r of res) {
+    const g = groups.find(x => x.src === r.src && x.t === r.t && x.start === r.start);
+    if (g) g.m.push(r); else groups.push({ src: r.src, t: r.t, start: r.start, end: r.end, cat: r.cat, link: r.link, m: [r] });
+  }
+  return groups.map(g => `<div class="cn-tn">${g.link ? `<a href="${esc(g.link)}" target="_blank" rel="noopener">${esc(g.t)}</a>` : esc(g.t)}<small>${esc(sqFmt(g.end))} · ${esc(g.cat)} · ${esc(CN_SRC[g.src] || g.src)}</small></div>`
+    + g.m.map(m => `<div class="cn-m"><span>${esc(m.r)}</span><span class="r ${m.res}">${m.res || "–"}</span><span>${esc(m.o)}${m.on ? ` (${esc(m.on)})` : ""}</span><span class="s">${esc(m.s)}</span></div>`).join("")).join("");
+}
+// a calendar-year W-L line ("2026 30-12 · 2025 8-4") for the last 12 months of results
+function cnYears(res){
+  const y = {};
+  for (const r of res) if (r.res === "W" || r.res === "L") { const k = (r.end || "").slice(0, 4); if (k) (y[k] ||= [0, 0])[r.res === "W" ? 0 : 1]++; }
+  return Object.keys(y).sort().reverse().map(k => `${k} <b>${y[k][0]}-${y[k][1]}</b>`).join(" · ");
 }
 // "Request removal": anyone can ask; Tobey gets an email and nothing is removed until he approves it.
 // The device that asked gets an "Undo" button while the request is waiting (it alone has the undo code).
@@ -2837,7 +2852,13 @@ function sgCard(x){
     bar = `<div class="sg-bar"><span>Add to the watch list? Everyone will see ${by ? esc(by) : "you"} added them.</span><button class="go" data-sgo="${esc(x.key)}">Add</button><button data-sgx="1">Cancel</button></div>`;
   }
   const nm = x.url ? `<a class="nm" href="${esc(x.url)}" target="_blank" rel="noopener">${esc(x.name)}</a>` : `<span class="nm">${esc(x.name)}</span>`;
-  return `<div class="cn">${bar}<div class="cn-h">${nm}<span class="mt">${esc(meta)}</span><span class="sg-act">${act}</span></div><div class="sg-why">${x.why.join("")}</div></div>`;
+  // last 12 months of results, read by scripts/suggest_results.py (suggest.json); left off when it has none yet
+  const S = SUGG?.players?.[x.L.k + ":" + cnSorted(x.name)], res = S?.results || [], k = "sg:" + x.key.replace(/:\d+:/, ":"), open = CN.open.has(k);
+  const won = res.filter(r => r.res === "W").length, lost = res.filter(r => r.res === "L").length;
+  const foot = res.length ? `<div class="sg-wl">Last 12 months <b>${won}-${lost}</b><span>${cnYears(res)}</span></div>
+    <div class="cn-acts"><button class="cn-more${open ? " on" : ""}" data-k="${esc(k)}" aria-expanded="${open}"><span class="ar" aria-hidden="true">▾</span>${open ? "Hide" : "Show"} the last 12 months <span class="n">(${res.length} match${res.length === 1 ? "" : "es"})</span></button></div>
+    <div class="cn-res"${open ? "" : " hidden"}>${cnResHtml(res)}</div>` : "";
+  return `<div class="cn${open ? " sg-open" : ""}">${bar}<div class="cn-h">${nm}<span class="mt">${esc(meta)}</span><span class="sg-act">${act}</span></div><div class="sg-why">${x.why.join("")}</div>${foot}</div>`;
 }
 let SG_ROWS = [];
 function renderSuggest(){
@@ -2859,7 +2880,7 @@ function renderSuggest(){
 }
 // all suggestion tiles as tall as the fullest one (re-measured when the window size changes)
 function sgSize(){
-  const box = $("#cnList"), cards = [...box.querySelectorAll(".sg-sec .cn")];
+  const box = $("#cnList"), cards = [...box.querySelectorAll(".sg-sec .cn:not(.sg-open)")];
   box.style.removeProperty("--sg-h");
   box.classList.add("sg-measure");  // measured at their natural height, not stretched to the tile beside them
   if (cards.length) box.style.setProperty("--sg-h", Math.max(...cards.map(c => c.offsetHeight - (c.querySelector(".sg-bar")?.offsetHeight || 0))) + "px");
@@ -3076,6 +3097,7 @@ function cnSend(name, g, nat, born, by){
 async function loadCorner(){
   const cmP = loadComments();  // read alongside the rest
   try { const r = await fetch("corner.json?t=" + Date.now(), { cache: "no-store" }); if (r.ok) CORNER = await r.json(); else if (!CORNER) CORNER = { players: {} }; } catch (e) { if (!CORNER) CORNER = { players: {} }; }
+  try { const r = await fetch("suggest.json?t=" + Date.now(), { cache: "no-store" }); if (r.ok) SUGG = await r.json(); } catch (e) {}
   renderCorner();  // cards straight away (comments from this device's last read); the Sheet's answers fill in below
   // names added on the site but not looked up yet (the Sheet's list; skipped quietly if it can't be read)
   try {
