@@ -467,7 +467,7 @@ select.sq-in option{background:var(--navy-2);color:var(--white)}
 .sg-sec{display:grid;gap:10px;grid-template-columns:repeat(2,minmax(0,1fr));align-items:stretch}
 /* every suggestion tile the same size: the Scout button sits in the top corner, and all tiles get the height of the fullest one */
 .sg-sec .cn{position:relative;min-height:var(--sg-h,0);display:flex;flex-direction:column}
-.sg-sec:has(.sg-open) .cn{align-self:start}  /* an open results list stays in its half; the tile beside it keeps its own height */
+.sg-col{display:flex;flex-direction:column;gap:10px;min-width:0}  /* the two columns while a results list is open */
 .sg-wl{margin-top:auto;padding:0 20px 10px;font-size:12px;color:var(--muted)}
 .sg-wl b{color:var(--text);font-family:var(--display);font-size:15px;font-weight:500}
 .sg-wl span{margin-left:10px;color:var(--muted-2)}.sg-wl span b{font-size:12px}
@@ -870,7 +870,7 @@ nav .sh,.nm-s{display:none}
   #page-schedule .hero .sub,#page-scouting .hero .sub,#page-corner .hero .sub{display:none}
   .sg-long{display:none}.sg-short{display:block;padding:8px 12px;font-size:11px;line-height:1.4}
   /* Computerised suggestions: two tiles side by side, with the Scout button shrunk to just the binoculars */
-  .sg-sec{gap:6px}
+  .sg-sec{gap:6px}.sg-col{gap:6px}
   .sg-sec .cn{min-height:0}  /* only the two tiles in a row match heights on phones */
   .sg-sec .cn-h{padding:8px 34px 5px 10px;gap:1px 6px}
   .sg-sec .cn-h .nm{flex:1 1 100%;font-size:14px;line-height:1.2}
@@ -2861,6 +2861,14 @@ function sgCard(x){
     <div class="cn-res"${open ? "" : " hidden"}>${cnResHtml(res)}</div>` : "";
   return `<div class="cn${open ? " sg-open" : ""}">${bar}<div class="cn-h">${nm}<span class="mt">${esc(meta)}</span><span class="sg-act">${act}</span></div><div class="sg-why">${x.why.join("")}</div>${foot}</div>`;
 }
+// tiles two side by side; while a "last 12 months" list is open the section becomes two separate columns,
+// so the open tile grows down its own column and the other column carries on with its tiles
+function sgCols(list){
+  const open = list.some(x => CN.open.has("sg:" + x.key.replace(/:\d+:/, ":")));
+  if (!open) return list.map(sgCard).join("");
+  const col = r => `<div class="sg-col">${list.filter((x, i) => i % 2 === r).map(sgCard).join("")}</div>`;
+  return col(0) + col(1);
+}
 let SG_ROWS = [];
 function renderSuggest(){
   const wl = sqWatch(), q = cnKey(CN.q);
@@ -2873,7 +2881,7 @@ function renderSuggest(){
     const list = P.list.filter(x => !q || cnKey(x.name).includes(q)).slice(0, L.show || SG_SHOW);
     SG_ROWS.push(...list);
     return `<section class="sg-sec">${head}
-      ${list.map(sgCard).join("") || `<div class="sq-empty">No one stands out${q ? " with that name" : ""} this week.</div>`}</section>`;
+      ${sgCols(list) || `<div class="sq-empty">No one stands out${q ? " with that name" : ""} this week.</div>`}</section>`;
   });
   $("#cnList").innerHTML = `<p class="sg-note sg-short">Picked by the computer from the official rankings: the fastest climbers. ATP/WTA top 35, 72 players and the watch list left out. A pointer, not a verdict.</p><p class="sg-note sg-long">Picked by the computer from the official rankings: young players climbing fastest over the last 3 and 12 months, with a little extra weight for younger players, plus exceptional climbs by over-21s who have never been this high before (so not comebacks from injury). No one in the ATP or WTA top 35 is ever suggested (they are already well known), and 72 players and anyone already on the watch list are left out. It's a pointer to look closer, not a verdict. <b>ITF juniors aren't included yet:</b> the ITF doesn't let us read past junior rankings, so climbs can only be measured from our own weekly records, which started on 5 Oct 2026. They can be added once there's 3 months of history.</p>` + secs.join("");
   $("#cnSrc").textContent = "Sources: the official ATP and WTA rankings, and Tennis Europe (internal use only). Recalculated whenever a new ranking week comes out.";
