@@ -279,12 +279,21 @@ def main():
         return {x for x in (m.get("p1Id"), m.get("p2Id")) if x}
 
     def opp(m):
-        """The opponent's name words (no initials), to tell whether two feeds list the same match."""
+        """The opponent's name words, to tell whether two feeds list the same match."""
         rid = m.get("p1Id") or m.get("p2Id")
-        return {w for w in espn.fold(m["p2"] if m.get("p1Id") == rid else m["p1"]) if len(w) > 1}
+        return espn.fold(m["p2"] if m.get("p1Id") == rid else m["p1"])
+
+    def same_opp(a, b):
+        x, y = opp(a), opp(b)
+        if {w for w in x if len(w) > 1} & {w for w in y if len(w) > 1}:
+            return True
+        # Family name first (Chinese, Korean...): one feed writes "Q. Zheng", the other "Z. Qinwen"
+        ix, lx = [w for w in x if len(w) == 1], [w for w in x if len(w) > 1]
+        iy, ly = [w for w in y if len(w) == 1], [w for w in y if len(w) > 1]
+        return len(ix) == len(iy) == len(lx) == len(ly) == 1 and ix[0] == ly[0][0] and iy[0] == lx[0][0]
 
     def same(a, b, days=1):
-        if not (ours(a) & ours(b)) or not (opp(a) & opp(b)) or not a.get("date") or not b.get("date"):
+        if not (ours(a) & ours(b)) or not same_opp(a, b) or not a.get("date") or not b.get("date"):
             return False
         return abs((date.fromisoformat(a["date"]) - date.fromisoformat(b["date"])).days) <= days
 
