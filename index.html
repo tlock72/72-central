@@ -2451,11 +2451,11 @@ $("#prof").addEventListener("close", () => { campStop(); profLock(false); if (lo
 // founder:true puts them in the top row ("Co-founders"), side by side; everyone else is listed under "Team" in this order.
 const STAFF_COMPANY = "SeventyTwo Sports Group";
 const STAFF = [
-  { id:"galo", first:"Galo", last:"Blanco", title:"Co-founder and Director", phone:"+34 667 770 999", email:"gblanco@72sportsgroup.com", photo:"staff-galo.webp", founder:true },
   { id:"john", first:"John", last:"Morris", title:"Co-founder and Managing Director", phone:"+44 7944 298545", email:"jmorris@72sportsgroup.com", photo:"staff-john.webp", founder:true },
+  { id:"galo", first:"Galo", last:"Blanco", title:"Co-founder and Director", phone:"+34 667 770 999", email:"gblanco@72sportsgroup.com", photo:"staff-galo.webp", founder:true },
   { id:"bryn", first:"Bryn", last:"Evans", title:"Head of Commercial", phone:"+44 7957 256974", email:"bevans@72sportsgroup.com", photo:"staff-bryn.webp" },
+  { id:"natalia", first:"Natalia", last:"Mordasova", title:"Agent", phone:"+34 691 54 28 75", email:"nmordasova@72sportsgroup.com", photo:"staff-natalia.webp" },
   { id:"tobey", first:"Tobey", last:"Lock", title:"Junior Agent", phone:"+44 7873 506 025", email:"tlock@72sportsgroup.com", photo:"staff-tobey.webp" },
-  { id:"staff5", first:"", last:"", title:"", phone:"", email:"", photo:"" },
 ];
 const tmName = p => [p.first, p.last].filter(Boolean).join(" ") || "Name to add";
 const tmInit = p => (((p.first || "")[0] || "") + ((p.last || "")[0] || "")).toUpperCase() || "72";
