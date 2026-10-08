@@ -181,6 +181,8 @@ def gaps():
     co = load("corner.json")
     for c in co.get("checks") or []:
         out.append(f"Scouting Corner: {c}")
+    for c in load("suggest.json").get("checks") or []:  # computerised suggestions linked to the ITF on the closest name
+        out.append(f"Scouting Corner: {c}")
     for k, e in (co.get("errors") or {}).items():
         if ukday(e.get("at")) == TODAY:
             out.append(f"Scouting Corner: the {(e.get('msg') or '').split(' (')[0]} on {TODAY}. Names on prospects.json still update.")
