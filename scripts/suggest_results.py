@@ -5,8 +5,8 @@ after prospects.py; free sources only, no Claude, no Live Tennis API).
 The suggestions themselves are picked by the page (sgPick in index.html). This script picks the same way from
 scouting.json / terank.json / best.json, takes the top SHOW of each list (a few more than the page shows, because
 the page also leaves out 72 players and the watch list), and reads each one's singles matches of the last 12 months:
-  - ATP/WTA lists: the ITF player found by exact full name + nationality (exactly one, else left blank, never a
-    guess), then ITF GetPlayerActivity on the men's / women's circuit (which includes ATP/WTA events), plus
+  - ATP/WTA lists: the ITF player found by name + nationality (exactly one, else left blank, never a
+    guess; itf_id), then ITF GetPlayerActivity on the men's / women's circuit (which includes ATP/WTA events), plus
     junior matches for anyone 18 or under;
   - Tennis Europe U14 lists: the Tennis Europe profile linked in terank.json, its tournaments pages.
 Writes suggest.json: players{"atp:<name words sorted>"} = {results, w, l, day, ...}. Each player is refreshed at most
@@ -82,14 +82,23 @@ def pick(L, files, best):
 
 
 def itf_id(c):
-    """ITF id by exact full name + nationality (+ the right circuit): exactly one, else None."""
-    hits = {}
-    for x in P.itf("/PlayerApi/GetPlayerSearch", searchString=c["name"]).get("players") or []:
+    """ITF id: exactly one ITF player with this nationality (and the right circuit) whose name is the same, else None.
+    Not found under the full name: each surname word is searched, and a name with extra or fewer words is accepted
+    ("Daniel Merida" for "Daniel Merida Aguilar") if at least two words match and it is still the only one."""
+    def fits(x):
         circ = {v.get("value") for v in x.get("playedCircuits") or []}
-        if P.same_name(P.itf_name(x), c["name"]) and (x.get("playerNationalityCode") or "").upper() == (c["nat"] or "").upper() \
-                and ("WT" if c["g"] == "M" else "MT") not in circ:
-            hits[x["playerId"]] = x
-    return next(iter(hits)) if len(hits) == 1 else None
+        return (x.get("playerNationalityCode") or "").upper() == (c["nat"] or "").upper() and ("WT" if c["g"] == "M" else "MT") not in circ
+
+    hits = {x["playerId"]: "exact name" for x in P.itf("/PlayerApi/GetPlayerSearch", searchString=c["name"]).get("players") or []
+            if fits(x) and P.same_name(P.itf_name(x), c["name"])}
+    if not hits:
+        mine = set(P.norm(c["name"]).split())
+        for word in [w for w in P.norm(c["name"]).split()[1:] if len(w) >= 4][-2:]:
+            for x in P.itf("/PlayerApi/GetPlayerSearch", searchString=word).get("players") or []:
+                theirs = set(P.norm(P.itf_name(x)).split())
+                if fits(x) and len(mine & theirs) >= 2 and (mine <= theirs or theirs <= mine):
+                    hits[x["playerId"]] = "name words + nationality"
+    return next(iter(hits.items())) if len(hits) == 1 else (None, None)
 
 
 def main():
@@ -130,9 +139,9 @@ def main():
                     P.TE.consent(); te_ok = True
                 res = P.te_results(m[1].upper(), c["name"])
             else:
-                if not rec.get("itf") and P.ago(rec.get("tried")) > P.RECHECK:
+                if not rec.get("itf") and (P.ago(rec.get("tried")) > P.RECHECK or "how" not in rec):
                     rec["tried"] = P.iso(NOW)
-                    rec["itf"] = itf_id(c)
+                    rec["itf"], rec["how"] = itf_id(c)
                 if not rec.get("itf"):
                     rec.update({"name": c["name"], "day": T.isoformat(), "updated": P.iso(NOW)})
                     continue  # no single ITF player with this name and nationality: no results shown
