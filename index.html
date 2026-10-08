@@ -1128,6 +1128,10 @@ main.ptr-go,footer.ptr-go{transition:transform .35s cubic-bezier(.2,.8,.3,1)}
 .hp-team{display:flex;align-items:center;justify-content:center;gap:10px;margin:18px 0 0;padding:14px 20px;border-radius:16px;border:1px solid var(--line);background:rgba(255,255,255,.03);text-decoration:none;color:var(--white);font-family:var(--display);text-transform:uppercase;letter-spacing:.14em;font-size:14px}
 .hp-team:hover{border-color:var(--gold);color:var(--gold)}
 .hp-team svg{width:20px;height:20px;color:var(--gold)}
+/* Team in the top menu on computers and tablets; phones reach it from the Team Cards button on the home page (their menu is a full 3x2 grid) */
+@media (max-width:640px){nav a.nav-team{display:none}}
+/* small tablets: tighter menu so the seventh link still fits beside the logo */
+@media (max-width:900px) and (min-width:641px){nav{gap:2px}nav a{padding:9px 5px;font-size:11px;letter-spacing:.03em}}
 .tm-back{display:inline-block;margin:6px 0 0;font-size:12px;color:var(--muted);text-decoration:none}
 .tm-back:hover{color:var(--gold)}
 .tm-list{margin:6px 0 30px}
@@ -1193,6 +1197,7 @@ dialog.tmd[open]{animation:pop .28s ease}
       <a href="#scouting" data-tab="scouting"><span class="lg">Filtered Rankings</span><span class="sh">Filtered</span></a>
       <a href="#schedule" data-tab="schedule"><span class="lg">Tour Schedule</span><span class="sh">Schedule</span></a>
       <a href="#corner" data-tab="corner"><span class="lg">Scouting Corner</span><span class="sh">Scouting</span></a>
+      <a href="#team" data-tab="team" class="nav-team">Team</a>
     </nav>
     <button type="button" class="cog" id="cog" aria-label="Settings" title="Settings"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 1 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 1 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 1 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 1 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg></button>
   </div>
