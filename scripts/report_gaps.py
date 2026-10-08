@@ -142,6 +142,9 @@ def gaps():
                        f"It still shows the ranking week of {wk or 'an earlier week'}.")
         if wk and wk < ago(16):
             out.append(f"Scouting HQ: the {name} list is still on the ranking week of {wk} - no newer week has been picked up.")
+        e = (sq.get("errors") or {}).get(t + "Pts")
+        if e and ukday(e.get("at")) == TODAY:
+            out.append(f"Filtered Rankings: {name} ranking points for the week of {e.get('week')} are left blank ({e.get('msg')}).")
     if not sq:
         out.append("Scouting HQ has no data file (scouting.json is missing or unreadable).")
     # 6) Scouting Corner's over-21 suggestions: past best rankings (best.json) that couldn't be read today

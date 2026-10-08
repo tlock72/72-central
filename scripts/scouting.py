@@ -121,9 +121,10 @@ def tok_find(t, keys):
     return hits[0] if len(hits) == 1 else None
 
 
-def te_week(d):
-    """Every player in Tennis Explorer's ATP ranking of week d, as {tok(name): rank}. None if it has no list for that week."""
-    seen = {}
+def te_week(d, pts=None):
+    """Every player in Tennis Explorer's ATP ranking of week d, as {tok(name): rank}. None if it has no list for that week.
+    If pts is a dict, it is filled with {tok(name): ranking points} (the last number column of each row)."""
+    seen, got = {}, {}
     for p in range(1, 90):
         page = get(TE_URL.format(d=d, p=p))
         if p == 1 and not re.search(r'<option value="%s" selected' % d, page):
@@ -133,13 +134,42 @@ def te_week(d):
             m = re.search(r'class="rank first">\s*(\d+)\.\s*</td>.*?class="t-name"><a href="/player/[^"]*">([^<]+)</a>', tr, re.S)
             if m:
                 n += 1
-                seen.setdefault(tok(html.unescape(m.group(2))), []).append(int(m.group(1)))
+                t = tok(html.unescape(m.group(2)))
+                seen.setdefault(t, []).append(int(m.group(1)))
+                cells = [re.sub(r"[\s,.]|&nbsp;", "", re.sub(r"<[^>]+>", "", c)) for c in re.findall(r"<td[^>]*>(.*?)</td>", tr[m.end():], re.S)]
+                nums = [c for c in cells if c.isdigit()]
+                if nums:
+                    got[t] = int(nums[-1])
         if not n:
             break
         time.sleep(0.3)
     if len(seen) < 1000:
         raise RuntimeError(f"Tennis Explorer list for {d} looks short ({len(seen)} players)")
+    if pts is not None:
+        pts.update({k: got[k] for k, v in seen.items() if len(v) == 1 and k in got})
     return {k: v[0] for k, v in seen.items() if len(v) == 1}  # two players with the same name: leave both out
+
+
+def pts_ok(players, i):
+    """Points (row field i) must go down (or stay level) as the rank goes down, and the No. 1 must have some.
+    Anything else means the points were misread, so none are shown."""
+    got = [(p[0], p[i]) for p in players if len(p) > i and p[i] is not None]
+    got.sort()
+    return len(got) >= 0.9 * len(players) and got[0][1] >= 1000 and all(a[1] >= b[1] for a, b in zip(got, got[1:]))
+
+
+def atp_points(rows, week):
+    """{name: points} for this ATP week from Tennis Explorer, only for players it ranks exactly as Tennis Abstract does.
+    None if Tennis Explorer doesn't have the week yet (tried again next run)."""
+    pts = {}
+    lst = te_week(week, pts)
+    if lst is None:
+        return None
+    both = [r for r in rows if lst.get(tok(r["name"])) is not None]
+    same = [r for r in both if lst[tok(r["name"])] == r["rank"]]
+    if len(same) < 0.9 * len(rows):
+        raise RuntimeError(f"Tennis Explorer points: only {len(same)}/{len(rows)} players ranked the same as Tennis Abstract")
+    return {r["name"]: pts.get(tok(r["name"])) for r in same}
 
 
 def backfill_atp(hist, rows, priority):
@@ -274,8 +304,13 @@ def main():
             for r in rows:
                 y = int(r["dob"][:4]) if r["dob"][:4].isdigit() else None  # None: birth date not published
                 prev = {c: prev_rank(weeks[w], r, y) if w else None for c, w in cmp.items()}
-                players.append([r["rank"], r["name"], r["cty"], y, prev["w"], prev["m3"], prev["m12"], r["url"]])
-            data["atp"] = {"week": week, "cmp": cmp, "players": players, "v": ATP_V}
+                players.append([r["rank"], r["name"], r["cty"], y, prev["w"], prev["m3"], prev["m12"], r["url"], None, None])
+            old = data.get("atp") or {}
+            if old.get("week") == week and old.get("pts"):  # same week rebuilt (moves filled in): keep its points
+                had = {p[1]: p[9] for p in old["players"] if len(p) > 9}
+                for p in players:
+                    p[9] = had.get(p[1])
+            data["atp"] = {"week": week, "cmp": cmp, "players": players, "v": ATP_V, **({"pts": 1} if old.get("week") == week and old.get("pts") else {})}
             # trim history: last 60 weeks
             cutoff = (date.fromisoformat(week) - timedelta(weeks=60)).isoformat()
             for w in list(weeks):
@@ -287,6 +322,33 @@ def main():
         else:
             print("Scouting HQ: ATP unchanged", week)
         errors.pop("atp", None)
+        # ranking points (Tennis Abstract has none): from Tennis Explorer's list of the same week, tried every run until in
+        tried = data["atp"].get("ptsFailed")  # after a misread or a failed read, try again once a day
+        if not data["atp"].get("pts") and not (tried and NOW - datetime.fromisoformat(tried) < timedelta(hours=24)):
+            try:
+                pts = atp_points(rows, week)
+                if pts is None:
+                    print("Scouting HQ: Tennis Explorer has no ATP points for", week, "yet")
+                    if (NOW.date() - date.fromisoformat(week)).days >= 3 and (errors.get("atpPts") or {}).get("week") != week:
+                        errors["atpPts"] = {"at": NOW.isoformat(timespec="seconds"), "week": week,
+                                            "msg": "Tennis Explorer still has no list for this week"}
+                else:
+                    for p in data["atp"]["players"]:
+                        p[8:] = [None, pts.get(p[1])]
+                    if not pts_ok(data["atp"]["players"], 9):
+                        raise RuntimeError("the points don't go down with the ranking, so they were misread")
+                    data["atp"]["pts"] = 1
+                    data["atp"].pop("ptsFailed", None)
+                    errors.pop("atpPts", None)
+                    changed = True
+                    print(f"Scouting HQ: ATP points for {sum(p[9] is not None for p in data['atp']['players'])} players")
+            except Exception as e:
+                for p in data["atp"]["players"]:
+                    p[8:] = [None, None]
+                data["atp"]["ptsFailed"] = NOW.isoformat(timespec="seconds")
+                print("Scouting HQ: ATP points not shown:", e)
+                if (errors.get("atpPts") or {}).get("week") != week:
+                    errors["atpPts"] = {"at": NOW.isoformat(timespec="seconds"), "week": week, "msg": str(e)[:200]}
     except Exception as e:
         print("Scouting HQ: ATP failed:", e)
         errors["atp"] = {"at": NOW.isoformat(timespec="seconds"), "msg": str(e)[:200]}
@@ -295,7 +357,7 @@ def main():
     try:
         cur = wta_list()
         week = monday(date.fromisoformat(cur[0]["rankedAt"][:10])).isoformat()
-        if force or not data.get("wta") or data["wta"].get("week") != week:
+        if force or not data.get("wta") or data["wta"].get("week") != week or len(data["wta"]["players"][0]) < 10:
             cmp, prev_maps = {}, {}
             for c, d in BACK.items():
                 at = (date.fromisoformat(week) - timedelta(days=d)).isoformat()
@@ -311,8 +373,17 @@ def main():
                 slug = re.sub(r"[^a-z0-9]+", "-", unicodedata.normalize("NFKD", name).encode("ascii", "ignore").decode().lower()).strip("-")
                 players.append([r["ranking"], name, p.get("countryCode") or "", y,
                                 prev_maps["w"].get(p["id"]), prev_maps["m3"].get(p["id"]), prev_maps["m12"].get(p["id"]),
-                                f"https://www.wtatennis.com/players/{p['id']}/{slug}"])
+                                f"https://www.wtatennis.com/players/{p['id']}/{slug}", None,
+                                r["points"] if isinstance(r.get("points"), int) else None])
             data["wta"] = {"week": week, "cmp": cmp, "players": players}
+            if pts_ok(players, 9):
+                errors.pop("wtaPts", None)
+            else:
+                for p in players:
+                    p[9] = None
+                print("Scouting HQ: WTA points not shown (missing or out of order)")
+                errors["wtaPts"] = {"at": NOW.isoformat(timespec="seconds"), "week": week,
+                                    "msg": "the WTA feed's points are missing or don't go down with the ranking"}
             changed = True
             print(f"Scouting HQ: WTA week {week}, {len(players)} players, compared with {cmp}")
         else:
