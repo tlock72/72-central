@@ -1123,6 +1123,44 @@ main.ptr-go,footer.ptr-go{transition:transform .35s cubic-bezier(.2,.8,.3,1)}
   .cn-add .cn-ok button{height:26px;font-size:10px;padding:0 14px}
   .cn-natl{top:31px}
 }
+/* Team Cards (#team): a virtual business card for each member of staff. The QR code holds the contact itself (a vCard),
+   so a phone camera offers "Add to contacts" straight away, with no passcode or internet needed */
+.hp-team{display:flex;align-items:center;justify-content:center;gap:10px;margin:18px 0 0;padding:14px 20px;border-radius:16px;border:1px solid var(--line);background:rgba(255,255,255,.03);text-decoration:none;color:var(--white);font-family:var(--display);text-transform:uppercase;letter-spacing:.14em;font-size:14px}
+.hp-team:hover{border-color:var(--gold);color:var(--gold)}
+.hp-team svg{width:20px;height:20px;color:var(--gold)}
+.tm-back{display:inline-block;margin:6px 0 0;font-size:12px;color:var(--muted);text-decoration:none}
+.tm-back:hover{color:var(--gold)}
+.tm-list{display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:14px;margin:6px 0 30px}
+.tm-card{display:flex;align-items:center;gap:16px;padding:16px 18px;border-radius:18px;border:1px solid var(--line-2);background:linear-gradient(170deg,var(--navy-2),rgba(17,27,63,.6));text-decoration:none;color:inherit;transition:border-color .2s,transform .2s}
+.tm-card:hover{border-color:var(--gold);transform:translateY(-2px)}
+.tm-ph{flex:none;width:68px;height:68px;border-radius:50%;object-fit:cover;object-position:center 20%;background:var(--navy-3);border:2px solid var(--line);display:grid;place-items:center;font-family:var(--display);font-size:24px;color:var(--gold)}
+.tm-card .tx{min-width:0;flex:1}
+.tm-card b{display:block;font-family:var(--display);font-weight:600;text-transform:uppercase;letter-spacing:.05em;font-size:19px;color:var(--white);line-height:1.15}
+.tm-card .tx span{display:block;font-size:12.5px;color:var(--gold);margin-top:3px}
+.tm-card i{font-style:normal;color:var(--gold);font-size:18px}
+dialog.tmd{width:min(420px,calc(100vw - 20px));max-height:calc(100dvh - 24px);overflow-y:auto;overscroll-behavior:contain;padding:28px 24px 24px;border:1px solid var(--line);border-radius:24px;background:radial-gradient(500px 260px at 100% 0%,rgba(208,165,121,.2),transparent 60%),#0B1230;color:var(--text);text-align:center;box-shadow:0 30px 80px rgba(0,0,0,.6)}
+dialog.tmd::backdrop{background:rgba(5,9,25,.72);backdrop-filter:blur(6px);-webkit-backdrop-filter:blur(6px)}
+dialog.tmd[open]{animation:pop .28s ease}
+.tmd .x{position:absolute;top:14px;right:14px;width:36px;height:36px;border-radius:50%;border:1px solid var(--line);color:var(--gold);font-size:18px;line-height:1;display:grid;place-items:center;background:rgba(12,20,49,.6)}
+.tmd .tm-ph{width:112px;height:112px;margin:0 auto 14px;font-size:38px}
+.tmd h2{margin:0;font-family:var(--display);font-weight:600;text-transform:uppercase;letter-spacing:.05em;font-size:28px;color:var(--white);line-height:1.1}
+.tmd .ti{margin:4px 0 0;color:var(--gold);font-size:14px}
+.tmd .co{margin:2px 0 0;color:var(--muted);font-size:12px;letter-spacing:.08em;text-transform:uppercase}
+.tmd .lk{display:flex;flex-direction:column;gap:8px;margin:18px 0 0}
+.tmd .lk a{display:block;padding:11px 14px;border-radius:12px;border:1px solid var(--line-2);background:rgba(255,255,255,.03);color:var(--white);text-decoration:none;font-size:15px;overflow-wrap:anywhere}
+.tmd .lk a small{display:block;font-size:10px;letter-spacing:.14em;text-transform:uppercase;color:var(--muted);margin-bottom:2px}
+.tmd .qr{width:min(260px,70vw);margin:20px auto 0;padding:12px;border-radius:16px;background:#fff}
+.tmd .qr svg{display:block;width:100%;height:auto}
+.tmd .qn{margin:8px 0 0;font-size:12px;color:var(--muted)}
+.tmd .sv{margin:16px 0 0;height:42px;padding:0 24px;border-radius:999px;font-family:var(--display);text-transform:uppercase;letter-spacing:.12em;font-size:13px;font-weight:500;background:var(--gold);color:var(--navy)}
+.tmd .none{margin:20px 0 0;color:var(--muted);font-size:13px}
+@media (max-width:640px){
+  .hp-team{margin:10px 0 0;padding:10px 14px;font-size:12px;border-radius:14px}
+  .tm-list{grid-template-columns:1fr;gap:10px}
+  .tm-card{padding:12px 14px;gap:12px}
+  .tm-ph{width:56px;height:56px;font-size:20px}
+  .tm-card b{font-size:17px}
+}
 </style>
 </head>
 <body>
@@ -1189,6 +1227,7 @@ main.ptr-go,footer.ptr-go{transition:transform .35s cubic-bezier(.2,.8,.3,1)}
         <div class="hp-stat"><div><b id="hpT6">—</b><span id="hpS6">Loading the watch list…</span></div><span class="hp-go" aria-hidden="true">→</span></div>
       </a>
     </div>
+    <a class="hp-team" href="#team"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="2" y="5" width="20" height="14" rx="2"/><circle cx="8" cy="11" r="2.2"/><path d="M4.8 16c.6-1.6 1.8-2.4 3.2-2.4s2.6.8 3.2 2.4M14 10h5M14 13.5h4"/></svg>Team Cards</a>
     <p class="hp-foot">For SeventyTwo Sports Group staff only.</p>
   </div>
   <div id="page-scores" hidden>
@@ -1365,6 +1404,18 @@ main.ptr-go,footer.ptr-go{transition:transform .35s cubic-bezier(.2,.8,.3,1)}
     <div class="cn-list" id="cnList"><div class="sq-empty">Loading the watch list…</div></div>
     <p class="src" id="cnSrc"></p>
   </div>
+  <div id="page-team" hidden>
+    <div class="hero">
+      <div>
+        <div class="eyebrow">SeventyTwo Sports Group</div>
+        <h1>Team Cards</h1>
+        <p class="sub">Tap a name to open their card. Anyone can scan the QR code with a phone camera to save the contact.</p>
+        <a class="tm-back" href="#home">← Home</a>
+      </div>
+    </div>
+    <div class="tm-list" id="tmList"></div>
+  </div>
+  <dialog class="tmd" id="tmCard" aria-label="Business card"></dialog>
   <dialog class="prof" id="prof" aria-label="Player profile"></dialog>
   <dialog class="stg" id="sets" aria-label="Settings">
     <h2>Settings</h2>
@@ -1467,7 +1518,7 @@ let logoSpins = 0;
 window.spinLogo = () => { LOGO.src = "data:image/svg+xml;base64," + btoa(LOGO_SVG.replace("</svg>", "<!--" + (++logoSpins) + "--></svg>")); };
 function route(){
   const hash = location.hash;
-  const tab = hash === "#rankings" ? "rankings" : hash === "#scouting" ? "scouting" : hash === "#schedule" ? "schedule" : hash === "#corner" ? "corner" : hash === "#scores" ? "scores" : hash.startsWith("#players") ? "players" : "home";
+  const tab = hash === "#rankings" ? "rankings" : hash === "#scouting" ? "scouting" : hash === "#schedule" ? "schedule" : hash === "#corner" ? "corner" : hash === "#scores" ? "scores" : hash.startsWith("#players") ? "players" : hash.startsWith("#team") ? "team" : "home";
   $("#page-home").hidden = tab !== "home";
   document.body.classList.toggle("on-home", tab === "home");
   $("#page-scores").hidden = tab !== "scores";
@@ -1476,6 +1527,11 @@ function route(){
   $("#page-scouting").hidden = tab !== "scouting";
   $("#page-schedule").hidden = tab !== "schedule";
   $("#page-corner").hidden = tab !== "corner";
+  $("#page-team").hidden = tab !== "team";
+  if (tab === "team") renderTeam();
+  const sid = hash.startsWith("#team/") ? hash.slice(6) : null;
+  if (sid && STAFF.some(p => p.id === sid)) openCard(sid);
+  else if ($("#tmCard").open) $("#tmCard").close();
   const pid = hash.startsWith("#players/") ? hash.slice(9) : null;
   if (pid && profById[pid]) openProfile(pid);
   else if ($("#prof").open) { profLock(false); $("#prof").close(); }
@@ -2374,6 +2430,87 @@ function profLock(on){
   }
 }
 $("#prof").addEventListener("close", () => { campStop(); profLock(false); if (location.hash.startsWith("#players/")) history.replaceState(null, "", "#players"); });
+
+/* ---------- Team Cards (#team) ---------- */
+// One entry per member of staff. Fill in the details between the quotes; leave a field as "" if it's not wanted.
+// photo: a headshot file uploaded next to index.html (square-ish works best, e.g. "staff-tobey.webp"); "" = initials instead.
+// phone: written with the country code so it dials from abroad, e.g. "+44 7700 900123".
+const STAFF_COMPANY = "SeventyTwo Sports Group";
+const STAFF = [
+  { id:"tobey", first:"Tobey", last:"Lock", title:"Junior Agent", phone:"+44 7873 506 025", email:"tlock@72sportsgroup.com", photo:"staff-tobey.webp" },
+  { id:"staff2", first:"", last:"", title:"", phone:"", email:"", photo:"" },
+  { id:"staff3", first:"", last:"", title:"", phone:"", email:"", photo:"" },
+  { id:"staff4", first:"", last:"", title:"", phone:"", email:"", photo:"" },
+  { id:"staff5", first:"", last:"", title:"", phone:"", email:"", photo:"" },
+];
+const tmName = p => [p.first, p.last].filter(Boolean).join(" ") || "Name to add";
+const tmInit = p => (((p.first || "")[0] || "") + ((p.last || "")[0] || "")).toUpperCase() || "72";
+// headshot, or their initials if there's no photo (or the file is missing)
+const tmPhoto = p => p.photo
+  ? `<img class="tm-ph" src="${esc(p.photo)}" alt="" data-i="${esc(tmInit(p))}" onerror="this.replaceWith(Object.assign(document.createElement('span'),{className:'tm-ph',textContent:this.dataset.i}))">`
+  : `<span class="tm-ph">${esc(tmInit(p))}</span>`;
+function renderTeam(){
+  $("#tmList").innerHTML = STAFF.map(p => `<a class="tm-card" href="#team/${esc(p.id)}">${tmPhoto(p)}
+    <div class="tx"><b>${esc(tmName(p))}</b><span>${esc(p.title || "Job title to add")}</span></div><i aria-hidden="true">→</i></a>`).join("");
+}
+// the contact as a vCard (the format phones read from a QR code or a .vcf file); photo = base64 JPEG, only in the saved file
+function vcard(p, photo){
+  const v = s => String(s).replace(/\\/g, "\\\\").replace(/\n/g, "\\n").replace(/([,;])/g, "\\$1");
+  const L = ["BEGIN:VCARD", "VERSION:3.0", `N:${v(p.last)};${v(p.first)};;;`, `FN:${v(tmName(p))}`, `ORG:${v(STAFF_COMPANY)}`];
+  if (p.title) L.push(`TITLE:${v(p.title)}`);
+  if (p.phone) L.push(`TEL;TYPE=CELL:${p.phone.replace(/[^\d+]/g, "")}`);
+  if (p.email) L.push(`EMAIL;TYPE=INTERNET:${p.email}`);
+  if (photo) L.push(("PHOTO;ENCODING=b;TYPE=JPEG:" + photo).match(/.{1,74}/g).join("\r\n "));
+  L.push("END:VCARD");
+  return L.join("\r\n");
+}
+// QR library (qrcode.js, MIT, Kazuhiko Arase) is only loaded the first time a card is opened
+let qrLib = null;
+const loadQR = () => qrLib || (qrLib = new Promise((ok, no) => {
+  const s = document.createElement("script"); s.src = "qrcode.js";
+  s.onload = () => { qrcode.stringToBytes = qrcode.stringToBytesFuncs["UTF-8"]; ok(); };
+  s.onerror = () => { qrLib = null; no(); };
+  document.head.append(s);
+}));
+function qrSvg(text){
+  const q = qrcode(0, "M"); q.addData(text); q.make();
+  const n = q.getModuleCount(), m = 4; let d = "";
+  for (let r = 0; r < n; r++) for (let c = 0; c < n; c++) if (q.isDark(r, c)) d += `M${c + m} ${r + m}h1v1h-1z`;
+  return `<svg viewBox="0 0 ${n + 2 * m} ${n + 2 * m}" shape-rendering="crispEdges" role="img" aria-label="QR code"><path d="${d}" fill="#0C1431"/></svg>`;
+}
+function openCard(id){
+  const p = STAFF.find(x => x.id === id), d = $("#tmCard");
+  const has = p.phone || p.email;
+  d.innerHTML = `<button type="button" class="x" aria-label="Close">✕</button>${tmPhoto(p)}
+    <h2>${esc(tmName(p))}</h2>${p.title ? `<p class="ti">${esc(p.title)}</p>` : ""}<p class="co">${esc(STAFF_COMPANY)}</p>
+    <div class="lk">${p.phone ? `<a href="tel:${esc(p.phone.replace(/[^\d+]/g, ""))}"><small>Phone</small>${esc(p.phone)}</a>` : ""}${p.email ? `<a href="mailto:${esc(p.email)}"><small>Email</small>${esc(p.email)}</a>` : ""}</div>
+    ${has ? `<div class="qr" id="tmQr"></div><p class="qn">Scan with a phone camera to add ${esc(p.first || "this contact")} to contacts</p>
+    <button type="button" class="sv" id="tmSave">Save contact</button>` : `<p class="none">No phone number or email added yet, so there's no QR code.</p>`}`;
+  d.querySelector(".x").onclick = () => d.close();
+  if (has) {
+    loadQR().then(() => { const b = $("#tmQr"); if (b) b.innerHTML = qrSvg(vcard(p)); })
+      .catch(() => { const b = $("#tmQr"); if (b) b.outerHTML = `<p class="none">The QR code couldn't load. Check the connection and open the card again.</p>`; });
+    $("#tmSave").onclick = () => saveCard(p);
+  }
+  if (!d.open) d.showModal();
+}
+// "Save contact": downloads a .vcf (with the headshot, turned into a JPEG as phones' contacts don't read webp), which the phone opens in Contacts
+async function saveCard(p){
+  let photo = "";
+  if (p.photo) try {
+    const img = new Image(); img.src = p.photo; await img.decode();
+    const k = Math.min(1, 400 / Math.max(img.naturalWidth, img.naturalHeight)), c = document.createElement("canvas");
+    c.width = Math.round(img.naturalWidth * k); c.height = Math.round(img.naturalHeight * k);
+    c.getContext("2d").drawImage(img, 0, 0, c.width, c.height);
+    photo = c.toDataURL("image/jpeg", .85).split(",")[1];
+  } catch (e) {}
+  const a = document.createElement("a");
+  a.href = URL.createObjectURL(new Blob([vcard(p, photo)], { type: "text/vcard" }));
+  a.download = tmName(p).replace(/[^\p{L}\p{N} ]+/gu, "").trim().replace(/ +/g, "-") + ".vcf";
+  document.body.append(a); a.click(); a.remove();
+  setTimeout(() => URL.revokeObjectURL(a.href), 5000);
+}
+$("#tmCard").addEventListener("close", () => { if (location.hash.startsWith("#team/")) history.replaceState(null, "", "#team"); });
 
 function render(){ renderScores(); renderRankings(); renderPlayers(); renderHome(); }
 
@@ -3643,7 +3780,7 @@ setInterval(() => { if (!document.hidden) renderScores(); }, 5 * 60 * 1000);
   // (scripts/visit_log.gs, set up as in VISIT_LOG.md). Off while LOG_URL is empty.
   // Only time with the tab on screen counts; 30 minutes away starts a new visit.
   const LOG_URL = "https://script.google.com/macros/s/AKfycbwzEb0YNoDmZaaJ5fQg05ubEe_lowMLiGoYaXuclycqQikOngLQEmENPN5KoL_KJXu1kA/exec";
-  const PAGES = { home: "Home", scores: "Scores", rankings: "Rankings", players: "Roster", scouting: "Filtered Rankings", schedule: "Schedule", corner: "Scouting Corner" };
+  const PAGES = { home: "Home", scores: "Scores", rankings: "Rankings", players: "Roster", scouting: "Filtered Rankings", schedule: "Schedule", corner: "Scouting Corner", team: "Team Cards" };
   let visit = null, awayAt = 0;
   const pageNow = () => PAGES[location.hash.slice(1).split("/")[0]] || "Home";
   function newVisit(){ visit = { id: Date.now().toString(36) + Math.random().toString(36).slice(2, 8), start: Date.now(), secs: 0, since: document.hidden ? 0 : Date.now(), pages: [pageNow()] }; awayAt = Date.now(); }
