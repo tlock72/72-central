@@ -1130,7 +1130,15 @@ main.ptr-go,footer.ptr-go{transition:transform .35s cubic-bezier(.2,.8,.3,1)}
 .hp-team svg{width:20px;height:20px;color:var(--gold)}
 .tm-back{display:inline-block;margin:6px 0 0;font-size:12px;color:var(--muted);text-decoration:none}
 .tm-back:hover{color:var(--gold)}
-.tm-list{display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:14px;margin:6px 0 30px}
+.tm-list{margin:6px 0 30px}
+.tm-rest{display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:14px}
+.tm-h{margin:0 0 10px;text-align:center;font-family:var(--display);font-weight:500;text-transform:uppercase;letter-spacing:.2em;font-size:12px;color:var(--gold)}
+/* co-founders: two equal cards side by side (on phones too), photo on top, gold edge */
+.tm-top{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:14px;max-width:640px;margin:0 auto}
+.tm-card.top{flex-direction:column;justify-content:flex-start;text-align:center;padding:20px 14px 18px;border-color:var(--line);background:radial-gradient(300px 160px at 50% -20%,rgba(208,165,121,.22),transparent 70%),linear-gradient(170deg,var(--navy-3),var(--navy-2))}
+.tm-card.top .tm-ph{width:96px;height:96px;font-size:32px;border-color:var(--gold)}
+.tm-card.top .tx{flex:none;width:100%}
+.tm-stem{width:2px;height:26px;margin:4px auto 10px;background:linear-gradient(var(--gold),rgba(208,165,121,.25))}
 .tm-card{display:flex;align-items:center;gap:16px;padding:16px 18px;border-radius:18px;border:1px solid var(--line-2);background:linear-gradient(170deg,var(--navy-2),rgba(17,27,63,.6));text-decoration:none;color:inherit;transition:border-color .2s,transform .2s}
 .tm-card:hover{border-color:var(--gold);transform:translateY(-2px)}
 .tm-ph{flex:none;width:68px;height:68px;border-radius:50%;object-fit:cover;object-position:center 20%;background:var(--navy-3);border:2px solid var(--line);display:grid;place-items:center;font-family:var(--display);font-size:24px;color:var(--gold)}
@@ -1156,7 +1164,12 @@ dialog.tmd[open]{animation:pop .28s ease}
 .tmd .none{margin:20px 0 0;color:var(--muted);font-size:13px}
 @media (max-width:640px){
   .hp-team{margin:10px 0 0;padding:10px 14px;font-size:12px;border-radius:14px}
-  .tm-list{grid-template-columns:1fr;gap:10px}
+  .tm-rest{grid-template-columns:1fr;gap:10px}
+  .tm-top{gap:10px}
+  .tm-card.top{padding:16px 10px 14px}
+  .tm-card.top .tm-ph{width:80px;height:80px;font-size:26px}
+  .tm-card.top b{font-size:16px}
+  .tm-card.top .tx span{font-size:11.5px}
   .tm-card{padding:12px 14px;gap:12px}
   .tm-ph{width:56px;height:56px;font-size:20px}
   .tm-card b{font-size:17px}
@@ -2435,12 +2448,13 @@ $("#prof").addEventListener("close", () => { campStop(); profLock(false); if (lo
 // One entry per member of staff. Fill in the details between the quotes; leave a field as "" if it's not wanted.
 // photo: a headshot file uploaded next to index.html (square-ish works best, e.g. "staff-tobey.webp"); "" = initials instead.
 // phone: written with the country code so it dials from abroad, e.g. "+44 7700 900123".
+// founder:true puts them in the top row ("Co-founders"), side by side; everyone else is listed under "Team" in this order.
 const STAFF_COMPANY = "SeventyTwo Sports Group";
 const STAFF = [
-  { id:"tobey", first:"Tobey", last:"Lock", title:"Junior Agent", phone:"+44 7873 506 025", email:"tlock@72sportsgroup.com", photo:"staff-tobey.webp" },
+  { id:"galo", first:"Galo", last:"Blanco", title:"Co-founder and Director", phone:"+34 667 770 999", email:"gblanco@72sportsgroup.com", photo:"staff-galo.webp", founder:true },
+  { id:"john", first:"John", last:"Morris", title:"Co-founder and Managing Director", phone:"+44 7944 298545", email:"jmorris@72sportsgroup.com", photo:"staff-john.webp", founder:true },
   { id:"bryn", first:"Bryn", last:"Evans", title:"Head of Commercial", phone:"+44 7957 256974", email:"bevans@72sportsgroup.com", photo:"staff-bryn.webp" },
-  { id:"galo", first:"Galo", last:"Blanco", title:"Co-founder and Director", phone:"+34 667 770 999", email:"gblanco@72sportsgroup.com", photo:"staff-galo.webp" },
-  { id:"staff4", first:"", last:"", title:"", phone:"", email:"", photo:"" },
+  { id:"tobey", first:"Tobey", last:"Lock", title:"Junior Agent", phone:"+44 7873 506 025", email:"tlock@72sportsgroup.com", photo:"staff-tobey.webp" },
   { id:"staff5", first:"", last:"", title:"", phone:"", email:"", photo:"" },
 ];
 const tmName = p => [p.first, p.last].filter(Boolean).join(" ") || "Name to add";
@@ -2450,8 +2464,13 @@ const tmPhoto = p => p.photo
   ? `<img class="tm-ph" src="${esc(p.photo)}" alt="" data-i="${esc(tmInit(p))}" onerror="this.replaceWith(Object.assign(document.createElement('span'),{className:'tm-ph',textContent:this.dataset.i}))">`
   : `<span class="tm-ph">${esc(tmInit(p))}</span>`;
 function renderTeam(){
-  $("#tmList").innerHTML = STAFF.map(p => `<a class="tm-card" href="#team/${esc(p.id)}">${tmPhoto(p)}
-    <div class="tx"><b>${esc(tmName(p))}</b><span>${esc(p.title || "Job title to add")}</span></div><i aria-hidden="true">→</i></a>`).join("");
+  const card = (p, top) => `<a class="tm-card${top ? " top" : ""}" href="#team/${esc(p.id)}">${tmPhoto(p)}
+    <div class="tx"><b>${esc(tmName(p))}</b><span>${esc(p.title || "Job title to add")}</span></div>${top ? "" : `<i aria-hidden="true">→</i>`}</a>`;
+  const top = STAFF.filter(p => p.founder), rest = STAFF.filter(p => !p.founder);
+  // a simple tree: the co-founders side by side at the top, a gold line down, then the rest of the team
+  $("#tmList").innerHTML = (top.length ? `<h3 class="tm-h">Co-founders</h3><div class="tm-top">${top.map(p => card(p, true)).join("")}</div>
+    ${rest.length ? `<div class="tm-stem" aria-hidden="true"></div><h3 class="tm-h">Team</h3>` : ""}` : "")
+    + `<div class="tm-rest">${rest.map(p => card(p)).join("")}</div>`;
 }
 // the contact as a vCard (the format phones read from a QR code or a .vcf file); photo = base64 JPEG, only in the saved file
 function vcard(p, photo){
