@@ -897,6 +897,16 @@ body.on-home > footer{display:none}
   .hp-stat b{font-size:clamp(32px,4.6vh,44px)}
   #hpT2{font-size:clamp(32px,4.6vh,44px)}
   #page-home > .hp-team{margin-top:clamp(10px,1.8vh,18px);padding:clamp(8px,1.4vh,14px) 20px}
+  /* big screens: the home page (and the header above it) can use up to 1500px of width instead of 1180px */
+  body.on-home .wrap{max-width:1500px}
+  .hp-stat{gap:20px}
+  .hp-sep{margin:0 18px}
+}
+/* tall tiles (big monitors): bigger headline numbers, so the tile is filled rather than left with a gap in the middle */
+@container hptile (min-height:240px) and (min-width:300px){
+  .hp-stat b,.hp-stat #hpT2{font-size:clamp(44px,24cqh,72px)}
+  .hp-stat b small{font-size:17px;margin-top:6px}
+  .hp-ld .nmx{font-size:16px}
 }
 /* computers and iPads: the hero is one slim band, "72 Central" on the left and the greeting and update times beside it,
    so the tiles get the height */
@@ -1307,17 +1317,17 @@ dialog.tmd[open]{animation:pop .28s ease}
       </a>
       <a class="hp-tile" href="#scouting">
         <h2>Filtered Rankings</h2>
-        <p>72's scouting radar: every ranked ATP and WTA player aged 21 or under, plus the ITF junior and Tennis Europe U14 rankings by birth year, with their ranking moves over 1 week, 3 months and 12 months, to spot the next 72 signing early.</p>
+        <p>Young ATP/WTA, ITF junior and Tennis Europe U14 rankings by birth year, with 1-week, 3-month and 12-month moves.</p>
         <div class="hp-stat"><div><b id="hpT4">—</b><span id="hpS4">Loading the scouting list…</span></div><span class="hp-go" aria-hidden="true">→</span></div>
       </a>
       <a class="hp-tile" href="#schedule">
         <h2>Tour Schedule</h2>
-        <p>Every ATP, WTA, Challenger, ITF, ITF junior and Tennis Europe event to the end of the year, and where 72 players are entered.</p>
+        <p>Every event to the end of the year, from Grand Slams to Tennis Europe, and where 72 players are entered.</p>
         <div class="hp-stat"><div><b id="hpT5">—</b><span id="hpS5">Loading the schedule…</span></div><span class="hp-go" aria-hidden="true">→</span></div>
       </a>
       <a class="hp-tile" href="#corner">
         <h2>Scouting Corner</h2>
-        <p>Our watch list of prospects, followed from Tennis Europe to ITF juniors to the ATP and WTA: every ranking, its moves, and the last 12 months of results.</p>
+        <p>Our prospect watch list, from Tennis Europe to the ATP and WTA: rankings, moves and 12 months of results.</p>
         <div class="hp-stat"><div><b id="hpT6">—</b><span id="hpS6">Loading the watch list…</span></div><span class="hp-go" aria-hidden="true">→</span></div>
       </a>
     </div>
@@ -3589,8 +3599,8 @@ function renderHome(){
     }
     const top10 = mine.filter(m => m.pos <= 10).sort((a, b) => a.pos - b.pos || a.born - b.born);
     const short = n => { const r = ROSTER.find(x => sqKey(x.first + x.last) === sqKey(n)); return r ? `${r.first[0]}. ${r.last}` : n; };
-    $("#hpT4").innerHTML = `${top10.length}<small>of our players are world top 10 for their age</small>`;
-    $("#hpS4").innerHTML = top10.length ? top10.slice(0, 3).map(m => `<strong>${esc(short(m.name))}</strong> No.${m.pos} born ${m.born} (${m.tour})`).join(" · ") : "";
+    $("#hpT4").innerHTML = `${top10.length}<small>players top 10 for their age</small>`;
+    $("#hpS4").innerHTML = top10.length ? top10.slice(0, 3).map(m => `<strong>${esc(short(m.name))}</strong> No.${m.pos}`).join(" · ") : "";
   } else if (SCOUT) { $("#hpT4").textContent = "—"; $("#hpS4").textContent = "Scouting list not available yet"; }
   if (SCHED?.events?.length) {
     // 72 players playing in a week: everyone on an event that runs that week (two-week events count in both)
