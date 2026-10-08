@@ -158,7 +158,9 @@ def main():
             want.setdefault(key(c["tour"], c["name"]), c)
     for k in [k for k in players if k not in want and P.ago(players[k].get("updated")) > timedelta(days=21)]:
         del players[k]  # off the lists for 3 weeks
-    todo = sorted((k for k in want if (players.get(k) or {}).get("day") != T.isoformat()), key=lambda k: (k in players, (players.get(k) or {}).get("day") or ""))
+    # due: not refreshed today, or not linked to the ITF before the closest-name check existed (no "itfName" yet)
+    redo = lambda r: r.get("day") != T.isoformat() or ("itf" in r and not r["itf"] and "itfName" not in r)
+    todo = sorted((k for k in want if redo(players.get(k) or {})), key=lambda k: (k in players, (players.get(k) or {}).get("day") or ""))
     print(f"Suggestions: {len(want)} players, {len(todo)} to refresh")
     te_ok = False
     for k in todo:
