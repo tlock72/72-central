@@ -179,7 +179,8 @@ def main():
                     base = {"matchId": mid, "source": "itf", "tournament": name, "category": f"ITF Juniors · {t.get('tourCode') or ''}".strip(" ·"),
                             "link": "https://www.itftennis.com" + (t.get("tournamentLink") or ""), "time": ""}
                     if rc in ("W", "L"):
-                        date = o.get("date") or (previous.get(mid) or {}).get("date")
+                        prev = previous.get(mid) or {}
+                        date = o.get("date") or (None if prev.get("tbc") else prev.get("date"))
                         if not date:
                             continue  # can't tell which day it was played, so leave it out rather than guess
                         won = rc == "W"
@@ -195,16 +196,21 @@ def main():
                         if court:
                             found[mid]["court"] = court   # shown on the result tile
                     elif not rc:
+                        tbc = False
                         if o.get("date"):
                             date, slot = o["date"], o["slot"]
                         elif start <= T <= end:
-                            date, slot = T.isoformat(), ""   # draw is out but no order of play yet
+                            # draw is out but no order of play yet: the site shows it under "Coming up" as "Day TBC"
+                            # (today's date is kept so the hourly quick check keeps looking for its order of play)
+                            date, slot, tbc = T.isoformat(), "", T < end
                         elif start > T:
-                            date, slot = start.isoformat(), ""
+                            date, slot, tbc = start.isoformat(), "", True
                         else:
                             continue
                         found[mid] = dict(base, date=date, round=rnd, status="scheduled", score="", winner=None,
                                           p1="", p1Id=me, p2=oname, p2Id=None, slot=slot)
+                        if tbc:
+                            found[mid]["tbc"] = True
                         if o.get("court"):
                             found[mid]["court"] = o["court"]
         if blocked:

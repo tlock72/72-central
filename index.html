@@ -1602,8 +1602,13 @@ const myDate = (d = new Date()) => new Intl.DateTimeFormat("en-CA", { timeZone: 
 function md(m){
   if (m.time) return myDate(ukMoment(m.date, m.time));
   const off = Math.round((new Date(myDate() + "T12:00:00Z") - new Date(ukDate() + "T12:00:00Z")) / 864e5);
-  return off ? new Date(new Date(m.date + "T12:00:00Z").getTime() + off * 864e5).toISOString().slice(0, 10) : m.date;
+  const d = off ? new Date(new Date(m.date + "T12:00:00Z").getTime() + off * 864e5).toISOString().slice(0, 10) : m.date;
+  // ITF junior match in the draw with no order of play yet (tbc): never "today", always under "Coming up" as "Day TBC"
+  if (m.tbc && m.status !== "finished") { const tmw = new Date(new Date(myDate() + "T12:00:00Z").getTime() + 864e5).toISOString().slice(0, 10); return d > tmw ? d : tmw; }
+  return d;
 }
+// the day shown for a match: "Day TBC" while its day isn't set yet, otherwise Today / Tomorrow / the date
+const dayTxt = m => m.tbc && m.status !== "finished" ? "Day TBC" : dayLabel(md(m));
 function dayLabel(iso){
   const today = myDate();
   const t = new Date(today + "T12:00:00Z"), d = new Date(iso + "T12:00:00Z");
@@ -1860,7 +1865,7 @@ function card(m){
     : live ? `<span class="when live"><span class="pulse"></span>In progress</span>`
     : fin ? `<span class="when fin"><span class="rtag">${wl === "win72" ? "72 win" : wl === "loss72" ? "72 loss" : "Result"}</span>${esc(dayLabel(md(m)))}</span>`
     : pending ? `<span class="when fin">${esc(dayLabel(md(m)))} · result pending</span>`
-    : `<span class="when ${today ? "today" : ""}">${esc(dayLabel(md(m)))}</span>`;
+    : `<span class="when ${today ? "today" : ""}">${esc(dayTxt(m))}</span>`;
   const times = !fin && !live && !pending
     ? (m.source === "itf" || m.source === "te"
       ? `<div class="times"><span>Order of play</span><b>${m.slot ? esc(m.slot) + " (local time)" : "Time TBC"}</b></div>`
@@ -1949,7 +1954,7 @@ function renderScores(){
   const grp = m => m.status === "finished" ? 3 : isLive(m) ? 0 : m.status === "live" || md(m) < today ? 2 : 1;
   const tday = ms.filter(m => md(m) === today || (m.status === "live" && md(m) < today)).sort((a,b) => grp(a) - grp(b)
     || (grp(a) === 1 ? key(a).localeCompare(key(b)) || byTier(a, b) : grp(a) === 3 ? byTier(a, b) || key(b).localeCompare(key(a)) : byTier(a, b) || key(a).localeCompare(key(b))));
-  const next = ms.filter(m => md(m) > today && m.status === "scheduled").sort((a,b) => md(a).localeCompare(md(b)) || byTier(a, b) || key(a).localeCompare(key(b)));
+  const next = ms.filter(m => md(m) > today && m.status === "scheduled").sort((a,b) => md(a).localeCompare(md(b)) || !!a.tbc - !!b.tbc || byTier(a, b) || key(a).localeCompare(key(b)));
   // latest results this week (Monday up to yesterday, the viewer's own dates; on a Monday, last week): each player's most recent match only,
   // and on the same day the one furthest into the event - e.g. a quarter-final, not the round before it too
   const ydD = new Date(new Date(today + "T12:00:00Z").getTime() - 864e5), yday = ydD.toISOString().slice(0, 10);
@@ -1980,7 +1985,7 @@ function renderScores(){
     const up = mine.filter(m => (m.status !== "finished" || md(m) === today) && md(m) >= today).sort((a,b) => key(a).localeCompare(key(b)))[0];
     const last = mine.filter(m => m.status === "finished" && md(m) < today).sort((a,b) => key(b).localeCompare(key(a)))[0];
     let st = "No match scheduled", on = false;
-    if (up) { const opp = up.p1Id === p.id ? up.p2 : up.p1; st = `${dayLabel(md(up))}${up.time ? " ~" + clock(ukMoment(up.date, up.time), MYTZ, md(up)) + " your time" : ""} · vs ${opp} · ${up.tournament}`; on = md(up) === today; }
+    if (up) { const opp = up.p1Id === p.id ? up.p2 : up.p1; st = `${dayTxt(up)}${up.time ? " ~" + clock(ukMoment(up.date, up.time), MYTZ, md(up)) + " your time" : ""} · vs ${opp} · ${up.tournament}`; on = md(up) === today; }
     else if (last) { const w = (last.winner === 1 && last.p1Id === p.id) || (last.winner === 2 && last.p2Id === p.id); st = `${w ? "Won" : "Lost"} ${last.round || ""} · ${last.tournament} · ${dayLabel(md(last))}`; }
     if (STATE?.status?.[p.id]) st = STATE.status[p.id];
     const link = safeUrl(p.sofa);
@@ -3568,9 +3573,9 @@ function renderHome(){
   if (STATE) {
     const tday = ms.filter(m => md(m) === today);
     const nxt = ms.filter(m => m.status === "scheduled" && (md(m) > today || (md(m) === today && m.time)))
-      .sort((a, b) => `${a.date} ${a.time || "99"}`.localeCompare(`${b.date} ${b.time || "99"}`))[0];
+      .sort((a, b) => `${a.tbc ? "9" : a.date} ${a.time || "99"}`.localeCompare(`${b.tbc ? "9" : b.date} ${b.time || "99"}`))[0];
     $("#hpT1").innerHTML = `${tday.length}<small>${tday.length === 1 ? "match" : "matches"} today</small>`;
-    $("#hpS1").innerHTML = live.length ? `${live.length} in progress right now` : nxt ? `Next: ${nm(nxt)} · ${dayLabel(md(nxt))}${nxt.time ? " " + esc(clock(ukMoment(nxt.date, nxt.time), MYTZ, md(nxt))) + " your time" : ""}` : "Nothing else scheduled yet";
+    $("#hpS1").innerHTML = live.length ? `${live.length} in progress right now` : nxt ? `Next: ${nm(nxt)} · ${dayTxt(nxt)}${nxt.time ? " " + esc(clock(ukMoment(nxt.date, nxt.time), MYTZ, md(nxt))) + " your time" : ""}` : "Nothing else scheduled yet";
   }
   // 02 Rankings: the roster's highest-ranked player
   const ranked = ROSTER.map(p => ({ p, r: playerRank(p.id) })).filter(o => o.r).sort((a, b) => a.r - b.r);
