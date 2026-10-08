@@ -34,6 +34,8 @@ LISTS = [
     {"k": "g14", "src": "terank.json", "g": "F", "maxAge": 14, "maxRank": 300},
 ]
 SG_TOP = 35
+# a player wrongly linked to an ITF player on the closest name: add their name here (as on the site), e.g. {"Daniel Merida Aguilar"}
+NO_ITF_LINK = set()
 
 
 def key(tour, name):
@@ -77,28 +79,65 @@ def pick(L, files, best):
                 continue
         score = ((g12 or 0) + 1.5 * (g3 or 0)) * (1 if L.get("over") else 1 + 0.08 * (L["maxAge"] - age))
         if score >= 0.4:
-            out.append((score, {"tour": L["k"], "g": L["g"], "name": name, "nat": nat, "born": born, "url": url, "age": age}))
+            out.append((score, {"tour": L["k"], "g": L["g"], "name": name, "nat": nat, "born": born, "url": url, "age": age, "rank": rank, "w": w}))
     return [x for _, x in sorted(out, key=lambda x: -x[0])[:SHOW]]
 
 
+def one(d):
+    """(id, how, ITF name) when exactly one fits, else nothing."""
+    if len(d) != 1:
+        return None, None, None
+    k, (how, name) = next(iter(d.items()))
+    return k, how, name
+
+
 def itf_id(c):
-    """ITF id: exactly one ITF player with this nationality (and the right circuit) whose name is the same, else None.
-    Not found under the full name: each surname word is searched, and a name with extra or fewer words is accepted
-    ("Daniel Merida" for "Daniel Merida Aguilar") if at least two words match and it is still the only one."""
+    """(ITF id, how, ITF name): exactly one ITF player with this nationality (and the right circuit) that fits, else None.
+    1) the same name; 2) not found: each surname word is searched, and a name with extra or fewer words is accepted
+    ("Daniel Merida" for "Daniel Merida Aguilar") if at least two words match; 3) still nothing: the closest names
+    (sharing a word, or one letter out) are linked only if the ATP/WTA ranking the ITF shows for them matches this
+    player's official ranking (same rank, last week's, or within 20%) and the birth year, when the ITF gives one, agrees."""
     def fits(x):
         circ = {v.get("value") for v in x.get("playedCircuits") or []}
         return (x.get("playerNationalityCode") or "").upper() == (c["nat"] or "").upper() and ("WT" if c["g"] == "M" else "MT") not in circ
 
-    hits = {x["playerId"]: "exact name" for x in P.itf("/PlayerApi/GetPlayerSearch", searchString=c["name"]).get("players") or []
+    hits = {x["playerId"]: ("exact name", P.itf_name(x)) for x in P.itf("/PlayerApi/GetPlayerSearch", searchString=c["name"]).get("players") or []
             if fits(x) and P.same_name(P.itf_name(x), c["name"])}
-    if not hits:
-        mine = set(P.norm(c["name"]).split())
-        for word in [w for w in P.norm(c["name"]).split()[1:] if len(w) >= 4][-2:]:
-            for x in P.itf("/PlayerApi/GetPlayerSearch", searchString=word).get("players") or []:
-                theirs = set(P.norm(P.itf_name(x)).split())
-                if fits(x) and len(mine & theirs) >= 2 and (mine <= theirs or theirs <= mine):
-                    hits[x["playerId"]] = "name words + nationality"
-    return next(iter(hits.items())) if len(hits) == 1 else (None, None)
+    if hits:
+        return one(hits)
+    mine, near = set(P.norm(c["name"]).split()), {}
+    words = P.norm(c["name"]).split()
+    for word in [w for w in words[1:][::-1] + words[:1] if len(w) >= 3][:3]:  # surname words first, then the first name
+        for x in P.itf("/PlayerApi/GetPlayerSearch", searchString=word).get("players") or []:
+            theirs = set(P.norm(P.itf_name(x)).split())
+            if not fits(x):
+                continue
+            if len(mine & theirs) >= 2 and (mine <= theirs or theirs <= mine):
+                hits[x["playerId"]] = ("name words + nationality", P.itf_name(x))
+            elif mine & theirs or P.close(P.itf_name(x), c["name"]):
+                near[x["playerId"]] = P.itf_name(x)
+    if hits:
+        return one(hits)
+    # 3) closest name, checked against the official ranking (and birth year)
+    circ, ok = "MT" if c["g"] == "M" else "WT", {}
+    rank, w = c.get("rank"), c.get("w")
+    last = set(P.norm(c["name"]).split()[1:])
+    # surname shared or one letter out first; at most 6 looked at (each costs a request)
+    for pid, name in sorted(near.items(), key=lambda x: not (last & set(P.norm(x[1]).split()) or P.close(x[1], c["name"])))[:6]:
+        r = P.itf_overview(pid, circ).get("rank")
+        if not r or not rank or not (r in (rank, w) or abs(r - rank) <= max(5, 0.2 * rank)):
+            continue
+        if c.get("born"):
+            try:
+                y = P.itf_born(pid, [circ])
+            except P.Blocked:
+                raise
+            except Exception:
+                y = None
+            if y and y != c["born"]:
+                continue
+        ok[pid] = (f"closest name ({name}) + nationality + ranking (ITF shows No. {r})", name)
+    return one(ok)
 
 
 def main():
@@ -139,9 +178,13 @@ def main():
                     P.TE.consent(); te_ok = True
                 res = P.te_results(m[1].upper(), c["name"])
             else:
-                if not rec.get("itf") and (P.ago(rec.get("tried")) > P.RECHECK or "how" not in rec):
+                if c["name"] in NO_ITF_LINK:
+                    rec.pop("itf", None); rec.pop("results", None)
+                    rec.update({"name": c["name"], "itfName": None, "how": "left unlinked by hand", "day": T.isoformat(), "updated": P.iso(NOW)})
+                    continue
+                if not rec.get("itf") and (P.ago(rec.get("tried")) > P.RECHECK or "itfName" not in rec):
                     rec["tried"] = P.iso(NOW)
-                    rec["itf"], rec["how"] = itf_id(c)
+                    rec["itf"], rec["how"], rec["itfName"] = itf_id(c)
                 if not rec.get("itf"):
                     rec.update({"name": c["name"], "day": T.isoformat(), "updated": P.iso(NOW)})
                     continue  # no single ITF player with this name and nationality: no results shown
@@ -159,6 +202,10 @@ def main():
         res.sort(key=lambda r: (r["end"], r["start"]), reverse=True)
         rec.update({"name": c["name"], "results": res, "w": sum(r["res"] == "W" for r in res), "l": sum(r["res"] == "L" for r in res),
                     "day": T.isoformat(), "updated": P.iso(NOW)})
+    # links made on the closest name are alerted once each (report_gaps.py), so a wrong one can be spotted
+    data["checks"] = [f"Suggestions: {r['name']} linked to the ITF player {r['itfName']} (id {r['itf']}) by {r['how']}. "
+                      f"If that's the wrong player, add their name to NO_ITF_LINK in scripts/suggest_results.py."
+                      for k, r in players.items() if k in want and r.get("itf") and (r.get("how") or "").startswith("closest")]
     for s in ("itf", "te"):
         if not off[s]:
             blocked.pop(s, None)
