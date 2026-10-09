@@ -763,6 +763,31 @@ dialog.rsd[open]{animation:pop .28s ease}
   .rk.h span,.rk.h span:nth-child(-n+2){font-size:8px;letter-spacing:.05em;text-align:left}
   .rk .mv{font-size:11px}
 }
+/* phones: much smaller text and tiny trend arrows, so each half-width table has room to breathe */
+@media (max-width:640px){
+  .rk-facts,#itfFacts{gap:5px;margin-bottom:10px}
+  .rk-facts .fact{padding:5px 7px;border-radius:8px}
+  .rk-facts .k{font-size:7px;letter-spacing:.05em}
+  .rk-facts b{font-size:12px}
+  .rk-facts b.sm{font-size:10px}
+  .rk-facts .s{font-size:7.5px;line-height:1.3}
+  .tours{gap:5px}
+  #page-rankings .tour{border-radius:10px}
+  #page-rankings .tour-h{padding:6px 7px}
+  #page-rankings .tour-h h3{font-size:10px;letter-spacing:.06em}
+  #page-rankings .tour-h .k{font-size:7px;letter-spacing:.04em}
+  .rk-sep{padding:4px 7px;font-size:7px}
+  .rk{grid-template-columns:32px minmax(0,1fr) auto;gap:1px 4px;padding:6px 7px}
+  .rk.t6{grid-template-columns:32px repeat(3,minmax(0,1fr))}
+  .rk .no{font-size:12px}.rk .no.na{font-size:10px}.rk .no .hash{font-size:7px}
+  .rk .who .nm{font-size:10px;line-height:1.25}
+  .rk .who .ct{font-size:7.5px;letter-spacing:.02em;line-height:1.3}
+  .rk .tr{font-size:7.5px;line-height:1.2;margin-top:1px}
+  .rk .tr.new{font-size:6.5px}
+  .rk.h{padding-block:4px}
+  .rk.h span,.rk.h span:nth-child(-n+2){font-size:6.5px;letter-spacing:.04em}
+  .rk .mv{font-size:8px}
+}
 @media (max-width:640px){
   /* small tiles on phones (72 Rankings, ITF juniors, Filtered Rankings) */
   .stats{gap:6px;margin-bottom:14px}
