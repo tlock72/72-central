@@ -224,7 +224,7 @@ def main():
             print("not tennis, left out:", t)
             continue
         rows.append({"t": t, "u": u, "s": s, "d": d, "at": at, "img": img,
-                     "p72": p72, "sc": sc, "w": words(t), "who": words(t) & pros})
+                     "p72": p72, "sc": sc, "w": words(t), "who": words(t) & pros, "wd": words(t + " " + d)})
 
     # group the same story across outlets (within 36 hours of each other):
     #   the same two ranked players in the headline (e.g. "Hurkacz defeats Djokovic" / "Djokovic suffers Hurkacz loss"),
@@ -244,9 +244,28 @@ def main():
         else:
             groups.append([r])
 
+    # then fold together stories on the same event, even from the same outlet (e.g. three pieces on one final, or
+    #   an outlet's match report, quotes and ranking-points pieces), using headline + summary: within 36 hours and
+    #   the same two ranked players, or one ranked player plus 4+ key words in common. Groups covered by the most
+    #   outlets lead, so the best-covered version is the one shown and the rest become "Also" links.
+    def close(a, b):
+        wa, wb = a["wd"], b["wd"]
+        who = len(wa & wb & pros)
+        return abs((a["at"] - b["at"]).total_seconds()) < 36 * 3600 and (who >= 2 or (who >= 1 and len(wa & wb) >= 4))
+    groups.sort(key=lambda g: (-len({x["s"] for x in g}), -max(x["at"] for x in g).timestamp()))
+    folded = []
+    for g in groups:
+        for f in folded:
+            if any(close(a, b) for a in f for b in g):
+                f.extend(g)
+                break
+        else:
+            folded.append(list(g))
+    groups = folded
+
     out = []
     for g in groups:
-        lead = g[0]  # the newest copy leads
+        lead = g[0]  # the newest copy of the best-covered version leads
         n = len({x["s"] for x in g})
         age = (NOW - max(x["at"] for x in g)).total_seconds() / 3600
         p72 = sorted({p for x in g for p in x["p72"]})
