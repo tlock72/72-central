@@ -2331,7 +2331,8 @@ const JUNIOR_PROFILES = [
   { id:"ivanov", grp:"U18", born:2008, nat:"Bulgarian", ig:"ivan.ivanovofficial", head:["ITF junior ranking",1],
     hl:["US Open & Wimbledon junior champion 2025","Roland Garros junior semi-finalist 2025"],
     partners:["adidas","Mastercard","HEAD",RNA,"UBB","NEXO","Devin"],
-    res:{2026:["Tarragona, Spain ITF M25"],2025:["Roehampton, GB ITF J300 (RU)","Szentendre, Hungary ITF M15","Milan, Italy ITF J500 (RU)","Beaulieu-sur-Mer, France ITF J300","Porto Alegre, Brazil ITF J300 (RU)"],2024:["Sofia, Bulgaria ITF M15 (RU)","Bytom, Poland ITF J300 (RU)"],2023:["Lousada, Portugal ITF J100","Manacor, Spain ITF J100","Vilas Tennis Academy Trophy (U16)"]} },
+    res:{2026:["Tarragona, Spain ITF M25"],2025:["Roehampton, GB ITF J300 (RU)","Szentendre, Hungary ITF M15","Milan, Italy ITF J500 (RU)","Beaulieu-sur-Mer, France ITF J300","Porto Alegre, Brazil ITF J300 (RU)"],2024:["Sofia, Bulgaria ITF M15 (RU)","Bytom, Poland ITF J300 (RU)"],2023:["Lousada, Portugal ITF J100","Manacor, Spain ITF J100","Vilas Tennis Academy Trophy (U16)"]},
+    campaign:[["ivanov-c2.webp",2000,1315],["ivanov-c1.webp",2000,1315],["ivanov-c3.webp",2000,1314]] },
   { id:"bonding", grp:"U18", born:2007, nat:"British", ig:"oliverbonding", head:["Highest ITF junior ranking",8],
     partners:["Dunlop"],
     res:{2026:["Columbia, USA ITF M15","Lakewood, USA ITF M15"],2025:["Wimbledon (Doubles RU)","Roehampton, GB ITF J300","U18 British National Championships","Lannion, France ITF M15"],2024:["U18 British National Championships","Blumenau, Brazil ITF J500"],2023:["Barranquilla, Colombia ITF G1","Indian Wells, USA ITF G1 (RU)","Oslo, Norway ITF G5","Aldershot, GB ITF G4","Johannesburg, South Africa ITF G3","Pretoria, South Africa ITF G3","U16 Junior Davis Cup & European Championships"]} },
@@ -2582,7 +2583,7 @@ function latestResult(id){
   return (STATE?.matches || []).filter(m => m.status === "finished" && md(m) < today && (m.p1Id === id || m.p2Id === id))
     .sort((a, b) => b.date.localeCompare(a.date) || roundStage(b.round) - roundStage(a.round))[0] || null;
 }
-/* campaign gallery on a profile (only players with a campaign list, e.g. Svitolina, de Minaur): [file, width, height] each.
+/* campaign gallery on a profile (only players with a campaign list, e.g. Svitolina, de Minaur, Ivanov): [file, width, height] each.
    The images are listed twice so the strip can drift slowly to the left for ever (jumping back by one set when it reaches the copy).
    It keeps drifting while the profile is scrolled; a swipe, drag or the arrows take over and it picks up again 2 seconds after.
    It never drifts on its own if the device asks for less motion. */
