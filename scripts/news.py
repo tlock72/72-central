@@ -30,14 +30,13 @@ KEEP_H = 72          # top headlines: the last 3 days
 KEEP_72_H = 24 * 7   # stories on 72 players or prospects: the last week
 MAX_TOP = 40
 # (name shown on the site, feed addresses tried in order). All free and public; tennis sections only.
+# ESPN (empty reply) and Eurosport (no feed) were tried in October 2026 and don't serve GitHub.
 FEEDS = [
     ("BBC Sport", ["https://feeds.bbci.co.uk/sport/tennis/rss.xml"]),
     ("The Guardian", ["https://www.theguardian.com/sport/tennis/rss"]),
     ("Sky Sports", ["https://www.skysports.com/rss/12110"]),
-    ("ESPN", ["https://www.espn.com/espn/rss/tennis/news", "https://www.espn.co.uk/espn/rss/tennis/news"]),
     ("The Independent", ["https://www.independent.co.uk/sport/tennis/rss"]),
     ("The Telegraph", ["https://www.telegraph.co.uk/tennis/rss.xml"]),
-    ("Eurosport", ["https://www.eurosport.co.uk/tennis/rss.xml", "https://www.eurosport.com/rss.xml?s=22"]),
     ("Tennis Majors", ["https://www.tennismajors.com/feed"]),
     ("Tennis365", ["https://www.tennis365.com/feed"]),
     ("Ubitennis", ["https://www.ubitennis.net/feed/"]),
@@ -57,7 +56,8 @@ live latest update updates report reaction""".split())
 
 
 def norm(s):
-    s = unicodedata.normalize("NFD", s or "").encode("ascii", "ignore").decode().lower()
+    s = re.sub(r"[\u2019\u2018'`]", " ", s or "")  # "Svitolina’s" -> "svitolina s", so names still match
+    s = unicodedata.normalize("NFD", s).encode("ascii", "ignore").decode().lower()
     s = s.replace("ae", "a").replace("oe", "o").replace("ue", "u")
     return " " + re.sub(r"[^a-z0-9]+", " ", s).strip() + " "
 
@@ -127,7 +127,7 @@ def main():
         old = json.load(open(OUT))
     except Exception:
         old = {}
-    sources = old.get("sources") or {}
+    sources = {k: v for k, v in (old.get("sources") or {}).items() if k in dict(FEEDS)}  # outlets no longer read drop out
     names72 = [(rid, norm(n)) for rid, (n, _) in ROSTER.items()]
     try:
         corner = json.load(open("corner.json"))
