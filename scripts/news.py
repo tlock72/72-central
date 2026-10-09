@@ -120,6 +120,21 @@ def image(el, f):
     return best or ""
 
 
+def og_image(url):
+    """The share picture an article page names for itself (<meta property="og:image">), https only, else ""."""
+    try:
+        page = fetch(url)[:300000].decode("utf-8", "ignore")
+        for m in re.finditer(r"<meta\b[^>]*>", page, re.I):
+            tag = m.group(0)
+            if re.search(r"""(property|name)=["'](og:image|twitter:image)["']""", tag, re.I):
+                c = re.search(r"""content=["'](https://[^"']+)""", tag, re.I)
+                if c:
+                    return html.unescape(c.group(1))
+    except Exception as e:
+        print("no picture from", url, e)
+    return ""
+
+
 def items(raw):
     """RSS <item> or Atom <entry> -> (title, link, summary, time, picture)."""
     root = ET.fromstring(raw)
@@ -248,8 +263,20 @@ def main():
     keep = [x for x in out if x["p72"] or x["sc"]] + top
     keep.sort(key=lambda x: (-x["score"], [-ord(c) for c in x["at"]]))
 
-    new = {"updated": NOW.strftime("%Y-%m-%dT%H:%M:%SZ"), "items": keep, "sources": sources}
-    if old.get("items") == keep and old.get("sources") == sources:
+    # a story whose feed has no picture: the article page's own share picture (og:image), read once per link
+    #   (pics remembers what each link gave, "" = none, so a page is never read twice); at most 25 pages a run
+    pics, fetched = old.get("pics") or {}, 0
+    for x in keep:
+        if x["img"]:
+            continue
+        if x["u"] not in pics and fetched < 25:
+            fetched += 1
+            pics[x["u"]] = og_image(x["u"])
+        x["img"] = pics.get(x["u"]) or ""
+    pics = {u: pics[u] for u in {x["u"] for x in keep} if u in pics}
+
+    new = {"updated": NOW.strftime("%Y-%m-%dT%H:%M:%SZ"), "items": keep, "sources": sources, "pics": pics}
+    if old.get("items") == keep and old.get("sources") == sources and old.get("pics") == pics:
         print("No new headlines")
         return
     json.dump(new, open(OUT, "w"), ensure_ascii=False, indent=0)
