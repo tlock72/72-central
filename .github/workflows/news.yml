@@ -26,12 +26,17 @@ jobs:
         run: python3 scripts/market.py
         timeout-minutes: 4
         continue-on-error: true   # the headlines still save if the map fails (it is alerted)
+      - id: brands
+        name: Market map - brands on the move in each market (Google News searches, no Claude)
+        run: python3 scripts/brands.py
+        timeout-minutes: 4
+        continue-on-error: true
       - name: Save changes
         run: |
           git config user.name "72 Hub updater"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
           git add news.json
-          git add market.json market_pool.json 2>/dev/null || true
+          git add market.json market_pool.json brands.json brands_pool.json 2>/dev/null || true
           if git diff --cached --quiet; then echo "No changes"; exit 0; fi
           git commit -q -m "Update news"
           if git pull -q --rebase -X theirs; then git push

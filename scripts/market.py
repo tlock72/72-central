@@ -87,6 +87,10 @@ PLACES = {
     "UA": "ukraine|ukrainian|kyiv",
     "RU": "russia|russian|moscow|st petersburg",
     "MC": "monaco|monte carlo|monegasque",
+    "PE": "peru|peruvian|lima",
+    "TN": "tunisia|tunisian|tunis",
+    "BG": "bulgaria|bulgarian",
+    "UZ": "uzbekistan|uzbek|tashkent",
 }
 PLACES = {cc: [" " + w + " " for w in v.split("|")] for cc, v in PLACES.items()}
 # the searches: Google News, English (UK) edition; the country's own name is quoted in the search
