@@ -6,6 +6,10 @@ Only the headline, a short summary, the time and the link are kept; the site lin
 article and never copies the article itself.
 
 How "important" is decided (no guessing, no AI):
+  - business and tournament stories come first (topic(): investors, sponsors, broadcasters, the tours' and
+    federations' decisions and people; the calendar, venues, entry lists), ranking BONUS outlets higher than match
+    reports and kept for a week; they also come from sport-business outlets and Google News searches (BIZ_FEEDS),
+    which only ever add tennis business / tournament stories;
   - the same story covered by several outlets is grouped (headlines sharing most of their key words),
     and a story more outlets ran ranks higher; newer beats older (a day's age costs about one outlet);
   - a headline or summary naming a 72 player (full name, any accents) is tagged with their roster id (p72),
@@ -27,8 +31,9 @@ UK = ZoneInfo("Europe/London")
 NOW = datetime.now(timezone.utc)
 TODAY = NOW.astimezone(UK).date().isoformat()
 KEEP_H = 72          # top headlines: the last 3 days
-KEEP_72_H = 24 * 7   # stories on 72 players or prospects: the last week
-MAX_TOP = 40
+KEEP_72_H = 24 * 7   # stories on 72 players or prospects, and business / tournament stories: the last week
+MAX_TOP = 40         # match and player stories (business / tournament stories have their own 40)
+BONUS = {"biz": 3, "ev": 2}  # business and tournament stories rank this many "outlets" higher than match reports
 # (name shown on the site, feed addresses tried in order). All free and public; tennis sections only.
 # ESPN (empty reply) and Eurosport (no feed) were tried in October 2026 and don't serve GitHub.
 FEEDS = [
@@ -40,9 +45,30 @@ FEEDS = [
     ("Tennis Majors", ["https://www.tennismajors.com/feed"]),
     ("Tennis365", ["https://www.tennis365.com/feed"]),
     ("Ubitennis", ["https://www.ubitennis.net/feed/"]),
+    # the business of sport: only their tennis business / tournament stories are kept (BIZ_FEEDS below)
+    ("SportsPro", ["https://www.sportspromedia.com/feed/"]),
+    ("Sportico", ["https://www.sportico.com/feed/"]),
+    ("Front Office Sports", ["https://frontofficesports.com/feed/"]),
+    # Google News searches (free, public RSS) for tennis business news from any outlet (Sports Business Journal,
+    #   The Times, Reuters, the tours' own sites...). Each headline is shown under its own outlet's name.
+    ("Google News", [
+        "https://news.google.com/rss/search?hl=en-GB&gl=GB&ceid=GB:en&q=tennis+(sponsor+OR+sponsorship+OR+investment+OR+investor+OR+stake+OR+%22prize+money%22+OR+broadcast+OR+%22media+rights%22+OR+CEO+OR+acquisition+OR+partnership)+when:3d",
+        "https://news.google.com/rss/search?hl=en-GB&gl=GB&ceid=GB:en&q=(ATP+OR+WTA+OR+ITF+OR+PTPA+OR+%22Tennis+Europe%22+OR+LTA+OR+USTA+OR+%22Tennis+Australia%22)+(calendar+OR+tournament+OR+licence+OR+sanction+OR+deal+OR+governance+OR+rules+OR+chairman+OR+CEO)+when:3d",
+        "https://news.google.com/rss/search?hl=en-GB&gl=GB&ceid=GB:en&q=tennis+tournament+(venue+OR+%22new+event%22+OR+relocate+OR+upgrade+OR+%22wild+card%22+OR+%22entry+list%22+OR+host+OR+expansion)+when:3d",
+    ]),
 ]
+# "Google News" reads every address in its list (the others stop at the first that works)
+SEARCHES = {"Google News"}
 # outlets that only cover tennis: everything they publish is kept
 TENNIS_ONLY = {"Tennis Majors", "Tennis365", "Ubitennis"}
+# outlets covering every sport, or searches: a story is kept only if it is a business or tournament story (topic
+#   below) and, from the outlets, clearly tennis (STRICT, in the headline or summary): no match reports or other sports
+BIZ_FEEDS = {"SportsPro", "Sportico", "Front Office Sports"} | SEARCHES
+STRICT = ["tennis", "atp", "wta", "itf", "wimbledon", "roland garros", "ptpa", "lta", "usta", "davis cup",
+          "billie jean king cup", "australian open", "us open tennis", "laver cup"]
+# a search result from an outlet already read directly is left out (that outlet's own copy is used)
+DIRECT = {"bbc", "bbc sport", "the guardian", "sky sports", "the independent", "the telegraph", "tennis majors",
+          "tennis365", "ubitennis", "sportspro", "sportspro media", "sportico", "front office sports"}
 # from the others, a headline must be about tennis: one of these words, an "… Open", a ranked player's surname,
 #   or a 72 player / prospect named in it or its summary (their tennis feeds also carry general sport pieces)
 TENNIS = set("""tennis atp wta itf wimbledon slam roland garros masters challenger davis billie racket racquet
@@ -53,6 +79,51 @@ beaten loses lost lose says said say set sets match matches open tennis first se
 semifinal quarterfinal round title titles how why what who when where will can could would should has have had
 not no yes new more most than then them they she he him we our you your all just still back year years day week
 live latest update updates report reaction""".split())
+
+
+# What a story is about, from its headline (and, for the clearest phrases, its summary). The business and
+#   running of the game matters more to 72 than match reports, so these rank higher and are kept for a week:
+#   "biz" = money, owners, investors, sponsors, broadcasters, the tours' and federations' decisions and people;
+#   "ev"  = tournament info: the calendar, new or moved events, venues, dates, formats, entry lists, wild cards.
+BIZ = set("""invest invests invested investing investment investments investor investors stake stakes takeover
+acquire acquires acquired acquisition buyout merger merge sponsor sponsors sponsored sponsorship sponsorships
+partner partners partnership partnerships deal deals agreement agreements contract broadcast broadcaster broadcasters
+broadcasting streaming revenue revenues profit profits funding fund funds valuation billion owner owners
+ownership licence license licences licenses sanction sanctions sanctioned ceo chairman chairwoman chair chief
+executive executives president board boss bosses appoint appoints appointed appointment governance ptpa lawsuit
+antitrust legal union pif commercial brand brands endorsement endorsements apparel betting gambling integrity itia
+doping marketing media viewers viewership audience audiences tickets ticket attendance business industry economics
+finance financial budget pension pensions welfare council regulation regulations rule rules reform reforms vote
+voted ruling saudi strike boycott""".split())
+EV = set("""calendar calendars venue venues relocate relocates relocated relocation upgrade upgraded upgrades
+expansion expand expands expanded stadium roof dates wildcard wildcards exhibition hosts hosting hosted
+host""".split())
+BIZ_PH = ["prize money", "equal pay", "premium tour", "media rights", "tv rights", "chief executive",
+          "governing body", "players association", "players council", "player council", "saudi arabia",
+          "title sponsor", "sovereign wealth", "private equity", "tennis europe", "tennis federation"]
+EV_PH = ["entry list", "draw date", "wild card", "new tournament", "new event", "combined event", "tournament director",
+         "96 player", "draw size", "host city", "will host", "to host", "tournament will"]
+EV_T = ["davis cup", "billie jean king cup", "united cup", "laver cup", "hopman cup", "next gen", "six kings"]  # headline only
+# a match report: one of these in the headline keeps it a match story, whatever else it mentions (so do a player's
+#   "ranking points and prize money after…" pieces and "On this day" history pieces such as "October 7, 1999: …")
+PLAY = set("""beat beats beaten defeat defeats defeated stun stuns stunned crash crashes crashed reach reaches reached
+advance advances advanced knock knocks knocked oust ousts ousted edge edges edged rout routs thrash thrashes down
+downs overcome overcomes battle battles save saves survive survives withdraw withdraws retire retires rally rallies
+cruise cruises sweep sweeps outlast outlasts dispatch dispatches eliminate eliminates exit""".split())
+
+
+def topic(t, d):
+    """ "biz", "ev" or "" (a match or player story), see BIZ above."""
+    tw, tn, dn = set(norm(t).split()), norm(t), norm(d)
+    if (tw & PLAY and not any(f" {p} " in tn for p in BIZ_PH)) or " ranking points " in tn or re.match(r"[A-Z][a-z]+ \d{1,2}, \d{4}:", t):
+        return ""
+    if any(f" {p} " in tn for p in EV_PH + EV_T):
+        return "ev"
+    if tw & BIZ or any(f" {p} " in tn or f" {p} " in dn for p in BIZ_PH):
+        return "biz"
+    if tw & EV or any(f" {p} " in dn for p in EV_PH):
+        return "ev"
+    return ""
 
 
 def norm(s):
@@ -136,7 +207,7 @@ def og_image(url):
 
 
 def items(raw):
-    """RSS <item> or Atom <entry> -> (title, link, summary, time, picture)."""
+    """RSS <item> or Atom <entry> -> (title, link, summary, time, picture, outlet named in <source> or "")."""
     root = ET.fromstring(raw)
     out = []
     for el in root.iter():
@@ -155,7 +226,10 @@ def items(raw):
         d = when(f.get("pubDate") or f.get("published") or f.get("updated") or f.get("date"))
         if t and u.startswith("http") and d:
             sm = re.sub(r"\s*The post .* appeared first on .*$", "", text(f.get("description") or f.get("summary")))  # WordPress tag line
-            out.append((t, u, sm[:240], d, image(el, f)))
+            src = text(f.get("source"))  # Google News: the outlet that ran it ("Title - Outlet"; its summary is just links)
+            if src:
+                t, sm = re.sub(r"\s+[-\u2013|]\s+" + re.escape(src) + r"$", "", t), ""
+            out.append((t, u, sm[:240], d, image(el, f), src))
     return out
 
 
@@ -196,37 +270,48 @@ def main():
 
     got = []
     for name, urls in FEEDS:
-        errs = []
+        errs, n = [], 0
         for url in urls:
             try:
                 its = items(fetch(url))
                 if not its:
                     raise ValueError("no headlines in the feed")
-                sources[name] = {"ok": TODAY, "n": len(its)}
+                n += len(its)
+                sources[name] = {"ok": TODAY, "n": n}
                 got += [(name,) + it for it in its]
                 print(f"{name}: {len(its)} headlines ({url})")
-                break
+                if name not in SEARCHES:
+                    break
             except Exception as e:
                 errs.append(f"{url}: {e}")
-        else:
+        if not n:
             sources.setdefault(name, {})["err"] = "; ".join(errs)[:300]
             sources[name]["n"] = 0
             print(f"{name}: couldn't be read ({'; '.join(errs)})")
 
     # one copy per link, newest first
     seen, rows = set(), []
-    for s, t, u, d, at, img in sorted(got, key=lambda x: x[4], reverse=True):
-        if u in seen or at > NOW + timedelta(hours=1) or NOW - at > timedelta(hours=KEEP_72_H):
+    for feed, t, u, d, at, img, src in sorted(got, key=lambda x: x[4], reverse=True):
+        s = src or feed  # a search result is shown under the outlet that ran it
+        if u in seen or (s, t) in seen or at > NOW + timedelta(hours=1) or NOW - at > timedelta(hours=KEEP_72_H):
             continue
-        seen.add(u)
+        seen |= {u, (s, t)}
         blob = norm(t + " " + d)
         tw = set(norm(t).split())
         p72 = [rid for rid, n in names72 if n in blob]
         sc = [n for n, k in scouts if k in blob]
-        if not (s in TENNIS_ONLY or tw & TENNIS or tw & pros or re.search(r"\b[A-Z][a-z]+ Open\b", t) or p72 or sc):
+        k = topic(t, d)
+        tennis = tw & TENNIS or tw & pros or re.search(r"\b[A-Z][a-z]+ Open\b", t) or p72 or sc
+        if feed in BIZ_FEEDS:
+            # a search result's headline must look like tennis (as for the general outlets' feeds below)
+            if (not k or not (tennis if feed in SEARCHES else any(f" {w} " in blob for w in STRICT))
+                    or (src and s.lower() in DIRECT)
+                    or len(re.sub(r"[^A-Za-z]", "", t)) < 0.6 * len(t.replace(" ", ""))):  # not English
+                continue
+        elif not (s in TENNIS_ONLY or tennis):
             print("not tennis, left out:", t)
             continue
-        rows.append({"t": t, "u": u, "s": s, "d": d, "at": at, "img": img,
+        rows.append({"t": t, "u": u, "s": s, "d": d, "at": at, "img": img, "k": k,
                      "p72": p72, "sc": sc, "w": words(t), "who": words(t) & pros, "wd": words(t + " " + d)})
 
     # group the same story across outlets (within 36 hours of each other):
@@ -274,23 +359,25 @@ def main():
         age = (NOW - max(x["at"] for x in g)).total_seconds() / 3600
         p72 = sorted({p for x in g for p in x["p72"]})
         sc = sorted({p for x in g for p in x["sc"]})
-        if age > KEEP_H and not (p72 or sc):
+        k = lead["k"] or next((t for t in ("biz", "ev") if 2 * sum(x["k"] == t for x in g) >= len(g)), "")  # its lead's, or half the pieces
+        if age > KEEP_H and not (p72 or sc or k):
             continue
         out.append({"t": lead["t"], "u": lead["u"], "s": lead["s"], "d": lead["d"],
                     "img": next((x["img"] for x in g if x["img"]), ""),  # the lead's picture, else another outlet's
                     "at": lead["at"].strftime("%Y-%m-%dT%H:%M:%SZ"),
                     "also": [{"s": x["s"], "u": x["u"]} for x in g[1:]],
-                    "p72": p72, "sc": sc, "score": round(n - age / 24, 2)})
+                    "p72": p72, "sc": sc, "k": k, "score": round(n - age / 24 + BONUS.get(k, 0), 2)})
     out.sort(key=lambda x: (-x["score"], [-ord(c) for c in x["at"]]))
-    top = [x for x in out if not (x["p72"] or x["sc"])][:MAX_TOP]
-    keep = [x for x in out if x["p72"] or x["sc"]] + top
+    top = [x for x in out if not (x["p72"] or x["sc"] or x["k"])][:MAX_TOP]
+    biz = [x for x in out if x["k"] and not (x["p72"] or x["sc"])][:MAX_TOP]
+    keep = [x for x in out if x["p72"] or x["sc"]] + biz + top
     keep.sort(key=lambda x: (-x["score"], [-ord(c) for c in x["at"]]))
 
     # a story whose feed has no picture: the article page's own share picture (og:image), read once per link
     #   (pics remembers what each link gave, "" = none, so a page is never read twice); at most 25 pages a run
     pics, fetched = old.get("pics") or {}, 0
     for x in keep:
-        if x["img"]:
+        if x["img"] or "news.google." in x["u"]:  # a search link is Google's own page, not the article
             continue
         if x["u"] not in pics and fetched < 25:
             fetched += 1
