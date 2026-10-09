@@ -179,7 +179,7 @@ def main():
         scouts = []
 
     # surnames of the ranked ATP/WTA top 500 (scouting.json): the "who" words used to match stories across outlets
-    pros = set()
+    pros, names = set(), set()  # names: every word of those players' full names (first names too)
     try:
         sq = json.load(open("scouting.json"))
         for t in ("atp", "wta"):
@@ -187,9 +187,12 @@ def main():
                 w = norm(row[1]).split()
                 if row[0] <= 500 and w and len(w[-1]) >= 4 and w[-1] not in STOP:
                     pros.add(w[-1])
+                if row[0] <= 500:
+                    names |= set(w)
     except Exception:
         pass
     pros |= {norm(n).split()[-1] for n, _ in ROSTER.values()}
+    names |= pros | {w for n, _ in ROSTER.values() for w in norm(n).split()}
 
     got = []
     for name, urls in FEEDS:
@@ -244,19 +247,20 @@ def main():
         else:
             groups.append([r])
 
-    # then fold together stories on the same event, even from the same outlet (e.g. three pieces on one final, or
-    #   an outlet's match report, quotes and ranking-points pieces), using headline + summary: within 36 hours and
-    #   the same two ranked players, or one ranked player plus 4+ key words in common. Groups covered by the most
-    #   outlets lead, so the best-covered version is the one shown and the rest become "Also" links.
+    # then fold together pieces on the same match or moment, even from the same outlet (e.g. three pieces on one
+    #   final, or an outlet's match report and ranking-points piece), using headline + summary: within 12 hours of
+    #   the group's lead and the same two ranked players, or one ranked player plus 3+ other key words (not names).
+    #   Only the lead is compared, so stories can't chain together across a whole tournament. Groups covered by
+    #   the most outlets lead, so the best-covered version is shown and the rest become "Also" links.
     def close(a, b):
-        wa, wb = a["wd"], b["wd"]
-        who = len(wa & wb & pros)
-        return abs((a["at"] - b["at"]).total_seconds()) < 36 * 3600 and (who >= 2 or (who >= 1 and len(wa & wb) >= 4))
+        both = a["wd"] & b["wd"]
+        who = len(both & pros)
+        return abs((a["at"] - b["at"]).total_seconds()) < 12 * 3600 and (who >= 2 or (who >= 1 and len(both - names) >= 3))
     groups.sort(key=lambda g: (-len({x["s"] for x in g}), -max(x["at"] for x in g).timestamp()))
     folded = []
     for g in groups:
         for f in folded:
-            if any(close(a, b) for a in f for b in g):
+            if close(f[0], g[0]):
                 f.extend(g)
                 break
         else:
