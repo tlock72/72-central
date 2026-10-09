@@ -871,6 +871,7 @@ dialog.stg[open]{display:block;animation:pop .28s ease}
 .nw-m{display:flex;flex-wrap:wrap;align-items:center;gap:4px 10px;font-size:11px;color:var(--muted-2);text-transform:uppercase;letter-spacing:.08em;font-family:var(--display)}
 .nw-m .s{color:var(--gold)}
 .nw-m .nb{color:var(--navy);background:var(--gold);border-radius:999px;padding:1px 8px}
+.nw-m .kb{color:var(--gold);border:1px solid var(--gold);border-radius:999px;padding:0 7px}
 .nw h3{margin:6px 0 4px;font-size:17px;line-height:1.3;font-weight:600}
 .nw h3 a{color:var(--white);text-decoration:none}
 .nw h3 a:hover{color:var(--gold)}
@@ -1641,9 +1642,9 @@ dialog.tmd[open]{animation:pop .28s ease}
       <div>
         <div class="eyebrow">SeventyTwo Sports Group</div>
         <h1>News</h1>
-        <p class="sub">The top tennis stories from the last 3 days, from well-known outlets. Stories more outlets are running come first. Stories naming a 72 player or a Scouting Corner prospect are kept for a week. Tap a headline to read it on the outlet's own site.</p>
+        <p class="sub">The business of tennis first: investors, sponsors, broadcasters, the tours and federations, and tournament news (calendar, venues, entry lists) come before match reports, and are kept for a week. Then the top match and player stories from the last 3 days; stories more outlets are running come first. Stories naming a 72 player or a Scouting Corner prospect are kept for a week. Tap a headline to read it on the outlet's own site.</p>
       </div>
-      <div class="chips" role="group" aria-label="Show"><button class="chip nwf on" data-n="all">All</button><button class="chip nwf" data-n="72">72 players</button><button class="chip nwf" data-n="sc">Prospects</button></div>
+      <div class="chips" role="group" aria-label="Show"><button class="chip nwf on" data-n="all">All</button><button class="chip nwf" data-n="biz">Business</button><button class="chip nwf" data-n="ev">Tournaments</button><button class="chip nwf" data-n="72">72 players</button><button class="chip nwf" data-n="sc">Prospects</button></div>
     </div>
     <div class="nw-list" id="nwList"><div class="sq-empty">Loading the headlines…</div></div>
     <p class="src" id="nwSrc"></p>
@@ -3042,7 +3043,7 @@ function renderNews(){
   document.querySelectorAll(".nwf").forEach(b => b.classList.toggle("on", b.dataset.n === NW_F));
   if (!NEWS) return;
   const all = NEWS.items || [];
-  const its = NW_F === "72" ? all.filter(x => x.p72.length) : NW_F === "sc" ? all.filter(x => x.sc.length) : all;
+  const its = NW_F === "72" ? all.filter(x => x.p72.length) : NW_F === "sc" ? all.filter(x => x.sc.length) : NW_F === "biz" || NW_F === "ev" ? all.filter(x => x.k === NW_F) : all;
   const pName = id => { const p = ROSTER.find(r => r.id === id); return p ? p.first + " " + p.last : id; };
   const safe = u => /^https:\/\//.test(u || "") ? u : "#";
   $("#nwList").innerHTML = its.length ? its.map(x => {
@@ -3052,11 +3053,11 @@ function renderNews(){
       ...x.sc.map(nm => `<a href="#corner">Prospect · ${esc(nm)}</a>`),
       ...x.also.map(a => `<a href="${esc(safe(a.u))}" target="_blank" rel="noopener">Also: ${esc(lab(a))}</a>`)];
     return `<article class="nw${x.p72.length ? " k72" : ""}"><div class="nw-b">
-      <div class="nw-m"><span class="s">${esc(x.s)}</span><span>${esc(nwAgo(x.at))}</span>${n > 1 ? `<span class="nb">${n} outlets</span>` : ""}</div>
+      <div class="nw-m">${x.k ? `<span class="kb">${x.k === "biz" ? "Business" : "Tournament"}</span>` : ""}<span class="s">${esc(x.s)}</span><span>${esc(nwAgo(x.at))}</span>${n > 1 ? `<span class="nb">${n} outlets</span>` : ""}</div>
       <h3><a href="${esc(safe(x.u))}" target="_blank" rel="noopener">${esc(x.t)}</a></h3>
       ${x.d ? `<p>${esc(x.d)}</p>` : ""}${tags.length ? `<div class="nw-t">${tags.join("")}</div>` : ""}
     </div></article>`;
-  }).join("") : `<div class="sq-empty">${NW_F === "72" ? "No stories on 72 players this week." : NW_F === "sc" ? "No stories on Scouting Corner prospects this week." : "No headlines yet. They are read every hour."}</div>`;
+  }).join("") : `<div class="sq-empty">${NW_F === "72" ? "No stories on 72 players this week." : NW_F === "sc" ? "No stories on Scouting Corner prospects this week." : NW_F === "biz" ? "No business stories this week yet." : NW_F === "ev" ? "No tournament news this week yet." : "No headlines yet. They are read every hour."}</div>`;
   const ok = Object.entries(NEWS.sources || {}).filter(([, v]) => v.ok).map(([k]) => k);
   $("#nwSrc").innerHTML = `Headlines from ${ok.map(esc).join(", ") || "the outlets' feeds"}, read every hour${NEWS.updated ? ` (last change ${esc(nwAgo(NEWS.updated))})` : ""}. 72 Central only shows each outlet's headline and summary and links to the full story on its site.`;
 }
