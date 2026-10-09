@@ -68,7 +68,7 @@ Health & pharma: Novartis, Roche, Pfizer, AstraZeneca, GSK, Sanofi, Johnson & Jo
 """
 # names that would also catch everyday words or people, matched with their own pattern instead
 SPECIAL = {
-    "Visa": r"(?<!Golden )(?<!golden )(?<!Student )(?<!student )(?<!Work )(?<!work )(?<!Tourist )(?<!tourist )(?<!Travel )(?<!travel )\bVisa\b(?![- ](?:[Rr]ules?|[Aa]pplications?|[Hh]olders?|[Ff]ees?|[Pp]olic(?:y|ies)|[Bb]ans?|[Ff]ree|[Ww]aivers?|[Cc]aps?|[Ss]cheme))",
+    "Visa": r"(?<!Sponsored )(?<!sponsored )(?<!Golden )(?<!golden )(?<!Student )(?<!student )(?<!Work )(?<!work )(?<!Tourist )(?<!tourist )(?<!Travel )(?<!travel )\bVisa\b(?![- ](?:[Rr]ules?|[Aa]pplications?|[Hh]olders?|[Ff]ees?|[Pp]olic(?:y|ies)|[Bb]ans?|[Ff]ree|[Ww]aivers?|[Cc]aps?|[Ss]cheme))",
     "Emirates": r"(?<!Arab )(?<!United )\bEmirates\b(?! NBD)",
     "Mercedes-Benz": r"\bMercedes(?:-Benz|-AMG)?\b",
     "Amazon": r"\bAmazon\b(?! [Rr]ainforest| [Rr]iver| [Bb]asin)",
@@ -77,6 +77,7 @@ SPECIAL = {
     "Citigroup": r"\bCiti(?:group|bank)?\b",
     "Reliance": r"\bReliance (?:Industries|Retail|Group)\b",
     "BT": r"\bBT\b(?= (?:Group|Sport|chief|boss|Openreach)|'s)",
+    "Hermès": r"\bHerm(?:e|è)s\b(?! Transportes| Parcel| delivery)",
     "Omega": r"\bOmega\b(?!-?\d| fatty)",
     "Hilton": r"(?<!Paris )\bHilton\b",
     "Zara": r"(?<!Princess )\bZara\b(?! (?:Tindall|Larsson|McDermott|Phillips|Holland))",
@@ -104,9 +105,22 @@ W_ROLE = ["chief marketing officer", "cmo", "marketing director", "head of marke
           "brand director", "head of brand", "head of sponsorship", "chief commercial officer", "commercial director",
           "chief executive", "ceo", "managing director", "country manager"]
 W_HIRE = set("appoints appointed appointment names named hires hired joins promotes promoted taps new".split())
-W_EXPAND = set("""expands expand expansion enters entering launches launch launched opens opening unveils debut debuts
-rollout flagship arrives arrival invests""".split())
-W_EXPAND_PH = ["new store", "first store", "new market", "new plant", "new factory", "new hub", "new headquarters"]
+W_EXPAND = set("""expands expand expansion enters entering launches launch launched unveils debut debuts rollout flagship
+invests""".split())
+W_EXPAND_PH = ["new store", "first store", "new market", "new plant", "new factory", "new hub", "new headquarters",
+               "opens new", "opens first", "opens flagship", "opens store", "opens office", "opens plant", "opens hotel",
+               "opens factory", "opens hub", "opening of"]
+W_WEAK = set("opens opening".split())  # a known brand "opens" something counts; for other headlines it's too vague
+# not business moves: wars and politics, crime and courts, share-price notes; "employer-sponsored" visas
+W_NOISE = set("""drone drones strike strikes missile missiles war wars attack attacks military troops invasion ceasefire
+sanctions sanction criminal fraud police arrested arrest court lawsuit sues sued killed dies death shooting election
+minister ministry government stock stocks shares dividend analyst analysts outperform overweight underweight downgrade
+upgrade upgrades downgrades tariff tariffs migrate migration visas immigration sabotage assault putin zelensky kremlin
+trump nato army navy soldiers weapons arms nuclear terror terrorist protest protests riot president parliament outbreak
+plague quarantine virus disease propaganda""".split())
+W_NOISE_PH = ["price target", "raises target", "cuts target", "employer sponsored", "state sponsored", "target price",
+              "raises concerns", "raises questions", "raises fears", "raises alarm", "state control"]
+GLOBAL = set("global globally worldwide markets international countries".split())  # a story about many places
 W_MONEY = set("""raises raised funding investment invest investor investors ipo listing acquires acquired acquisition
 acquisitions buys bought merger merge stake valuation profit profits revenue revenues sales earnings""".split())
 W_COOL = set("""layoffs layoff cuts cutting losses loss slump plunge plunges falls bankruptcy insolvency
@@ -136,16 +150,18 @@ def load_brands():
     return out
 
 
-def signals(t):
-    """The signal keys a headline carries."""
+def signals(t, weak=True):
+    """The signal keys a headline carries ([] for one that isn't a business move). weak=False: "opens" alone doesn't count."""
     n = norm(t)
     w = set(n.split())
+    if w & W_NOISE or any(f" {p} " in n for p in W_NOISE_PH):
+        return []
     out = []
     if w & W_SPONSOR or any(f" {p} " in n for p in W_STRONG) or ((w & SPORT) and any(f" {p} " in n for p in W_PARTNER)):
         out.append("sponsor")
     if w & W_HIRE and any(f" {p} " in n for p in W_ROLE):
         out.append("people")
-    if w & W_EXPAND or any(f" {p} " in n for p in W_EXPAND_PH):
+    if w & W_EXPAND or any(f" {p} " in n for p in W_EXPAND_PH) or (weak and w & W_WEAK):
         out.append("expand")
     if w & W_MONEY:
         out.append("money")
@@ -168,6 +184,11 @@ def main():
     except Exception:
         names = {}
     brands = load_brands()
+    # every country's English name (worldmap.json) on top of market.PLACES: a headline about Costa Rica isn't France's
+    cnames = [(cc, norm(n)) for cc, n in names.items() if len(n) > 3]
+    def named_in(t):
+        tn = norm(t)
+        return places(tn) | {cc for cc, n in cnames if n in tn}
     cut = (NOW - timedelta(days=KEEP_D)).strftime("%Y-%m-%dT%H:%M:%SZ")
     try:
         pool = [x for x in json.load(open(POOL)) if x["at"] >= cut]
@@ -202,7 +223,7 @@ def main():
             a = at.strftime("%Y-%m-%dT%H:%M:%SZ")
             if a < cut or at > NOW + timedelta(hours=1) or not english(t):
                 continue
-            named = places(norm(t))
+            named = named_in(t)
             if named and cc not in named:
                 continue  # about somewhere else
             sig = signals(t)
@@ -214,6 +235,15 @@ def main():
 
     # 2) one copy per link and market; brands found in each headline (done again every run, so a brand added to
     #    BRANDS also shows on older headlines)
+    pool = [x for x in pool if x["local"] or not (named_in(x["t"]) - {x["cc"]})]  # re-checked with the full country list
+    spread = {}
+    for x in pool:
+        spread.setdefault(x["t"], set()).add(x["cc"])
+    # a headline naming no country at all is kept for the market searched only if no other market's search found it
+    #   and it doesn't speak of many places ("global", "180 markets"): otherwise it's world news, not that market's
+    pool = [x for x in pool if x["local"] or (len(spread[x["t"]]) == 1 and not set(norm(x["t"]).split()) & GLOBAL)]
+    pool = [dict(x, sig=signals(x["t"])) for x in pool]
+    pool = [x for x in pool if x["sig"]]
     seen, rows = set(), []
     for x in sorted(pool, key=lambda x: x["at"], reverse=True):
         if (x["u"], x["cc"]) in seen or (x["t"], x["cc"]) in seen:
@@ -234,7 +264,8 @@ def main():
             pts = sum(wt[s] for s in x["sig"] if s != "cool") + (1.5 if x["local"] else 0) - age * 0.3
             h = {"t": x["t"], "u": x["u"], "s": x["s"], "at": x["at"], "sig": x["sig"]}
             if not hit:
-                other.append((pts, h))
+                if [g for g in signals(x["t"], weak=False) if g != "cool"]:  # a clear move (not just bad news)
+                    other.append((pts, h))
                 continue
             for b, sec in hit:
                 c = cards.setdefault(b, {"b": b, "sec": sec, "sig": [], "h": [], "pts": 0.0, "local": False})
