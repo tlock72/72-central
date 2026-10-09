@@ -3046,10 +3046,11 @@ function renderNews(){
   const pName = id => { const p = ROSTER.find(r => r.id === id); return p ? p.first + " " + p.last : id; };
   const safe = u => /^https:\/\//.test(u || "") ? u : "#";
   $("#nwList").innerHTML = its.length ? its.map(x => {
-    const n = 1 + x.also.length;
+    const n = new Set([x.s, ...x.also.map(a => a.s)]).size;  // outlets, not links (one outlet can have several pieces on a story)
+    const cnt = {}, lab = a => { cnt[a.s] = (cnt[a.s] || (a.s === x.s ? 1 : 0)) + 1; return cnt[a.s] > 1 ? `${a.s} (${cnt[a.s]})` : a.s; };
     const tags = [...x.p72.map(id => profById[id] ? `<a class="p72" href="#players/${esc(id)}">72 · ${esc(pName(id))}</a>` : `<span class="p72">72 · ${esc(pName(id))}</span>`),
       ...x.sc.map(nm => `<a href="#corner">Prospect · ${esc(nm)}</a>`),
-      ...x.also.map(a => `<a href="${esc(safe(a.u))}" target="_blank" rel="noopener">Also: ${esc(a.s)}</a>`)];
+      ...x.also.map(a => `<a href="${esc(safe(a.u))}" target="_blank" rel="noopener">Also: ${esc(lab(a))}</a>`)];
     return `<article class="nw${x.p72.length ? " k72" : ""}"><div class="nw-b">
       <div class="nw-m"><span class="s">${esc(x.s)}</span><span>${esc(nwAgo(x.at))}</span>${n > 1 ? `<span class="nb">${n} outlets</span>` : ""}</div>
       <h3><a href="${esc(safe(x.u))}" target="_blank" rel="noopener">${esc(x.t)}</a></h3>
