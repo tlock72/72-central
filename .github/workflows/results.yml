@@ -1,0 +1,30 @@
+name: Last 12 months on request
+on:
+  schedule:
+    - cron: "22,52 * * * *"   # every 30 minutes, in case the Sheet's start was missed
+  workflow_dispatch:           # started by the Google Sheet when someone presses "12 months" on Filtered Rankings
+concurrency:
+  group: results-lookup        # its own queue: it must not hold up the live score updates or the Scouting Corner
+  cancel-in-progress: false
+permissions:
+  contents: write
+jobs:
+  lookup:
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+    steps:
+      - uses: actions/checkout@v6
+        with:
+          ref: main
+      - name: Read the last 12 months for the players asked for (ITF / Tennis Europe, free, no Claude)
+        run: pip install -q beautifulsoup4 && python3 scripts/lookup_results.py
+        timeout-minutes: 20
+      - name: Save changes
+        run: |
+          git config user.name "72 Hub updater"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add -A results
+          if git diff --cached --quiet; then echo "No changes"; exit 0; fi
+          git commit -q -m "Update results on request"
+          if git pull -q --rebase -X theirs; then git push
+          else git rebase --abort; echo "Another update saved first - skipping, the next run catches up"; fi

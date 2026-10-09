@@ -14,6 +14,9 @@
 // automatically with the first comment). The writer can undo one from the same device for an hour ("Undone");
 // anyone can ask for one to be deleted, and Tobey gets an email to approve ("Deleted") or decline ("Kept").
 // To delete a comment straight away yourself, set its Status to "Deleted".
+// Filtered Rankings' "12 months" button asks GitHub for a player's last 12 months of results: each request is a row
+// on the "Lookups" tab (made automatically), GitHub reads the last 3 days of them (?kind=lookups) and, if GH_TOKEN
+// is set, is started straight away. Rows older than 3 days can be deleted at any time.
 
 const TZ = "Europe/London";
 
@@ -69,6 +72,7 @@ function doPost(e) {
   if (d.kind === "comment") return addComment(d);
   if (d.kind === "uncomment") return undoComment(d);
   if (d.kind === "delcomment") return askDeleteComment(d);
+  if (d.kind === "results") return askResults(d);
   const id = String(d.id || "").slice(0, 40), start = new Date(Number(d.start));
   if (!id || isNaN(start)) return out("bad");
   // text starting with = + - @ would be read as a formula, so it's kept as plain text
@@ -405,6 +409,62 @@ function decideComment(id, code, yes) {
   }
 }
 
+// ---------- Last 12 months on request (Filtered Rankings) ----------
+const LOOKUP_TOURS = ["atp", "wta", "itfb", "itfg", "teb14", "teg14"];
+
+// Someone pressed "12 months" on a Filtered Rankings row for a player with no results saved yet (or not today).
+// One row per request; the same player asked again within 10 minutes is skipped. GitHub checks the name against
+// its own ranking list, so nothing typed here is trusted.
+function askResults(d) {
+  const clean = x => String(x || "").replace(/[\u0000-\u001f]/g, "").trim();
+  const tour = clean(d.tour);
+  const name = clean(d.name).replace(/\s+/g, " ").slice(0, 80);
+  if (!LOOKUP_TOURS.includes(tour) || name.length < 2 || !/^[\p{L}][\p{L} .'\-]+$/u.test(name)) return out("bad");
+  const url = /^https:\/\/(www\.itftennis\.com|www\.tennisabstract\.com|te\.tournamentsoftware\.com|www\.wtatennis\.com)\/[^\s"<>]{1,200}$/.test(clean(d.url)) ? clean(d.url) : "";
+  const lock = LockService.getScriptLock();
+  lock.waitLock(10000);
+  try {
+    const ss = SpreadsheetApp.getActiveSpreadsheet();
+    let sh = ss.getSheetByName("Lookups");
+    if (!sh) {
+      sh = ss.insertSheet("Lookups");
+      sh.getRange(1, 1, 1, 4).setValues([["Asked", "List", "Player", "Link"]]).setFontWeight("bold");
+      sh.setFrozenRows(1);
+      sh.getRange("A:A").setNumberFormat("ddd d mmm yyyy HH:mm");
+    }
+    const n = sh.getLastRow() - 1, recent = n > 0 ? sh.getRange(Math.max(2, n - 48), 1, Math.min(n, 50), 3).getValues() : [];
+    if (recent.some(r => r[0] instanceof Date && Date.now() - r[0] < 6e5 && r[1] === tour && r[2] === name)) return out("dup");
+    sh.appendRow([new Date(), tour, name, url]);
+  } finally {
+    lock.releaseLock();
+  }
+  startResults();
+  return out("ok");
+}
+
+// Starts GitHub's look-up straight away (needs GH_TOKEN, as for the Scouting Corner); without it, GitHub's
+// half-hourly run picks the request up.
+function startResults() {
+  const token = PropertiesService.getScriptProperties().getProperty("GH_TOKEN");
+  if (!token) return;
+  try {
+    UrlFetchApp.fetch("https://api.github.com/repos/tlock72/72-central/actions/workflows/results.yml/dispatches", {
+      method: "post", contentType: "application/json", muteHttpExceptions: true,
+      headers: { Authorization: "Bearer " + token, Accept: "application/vnd.github+json" },
+      payload: JSON.stringify({ ref: "main" })
+    });
+  } catch (err) {}
+}
+
+// Read by GitHub (scripts/lookup_results.py): the requests of the last 3 days.
+function listLookups() {
+  const sh = SpreadsheetApp.getActiveSpreadsheet().getSheetByName("Lookups");
+  const rows = sh && sh.getLastRow() > 1 ? sh.getRange(2, 1, sh.getLastRow() - 1, 4).getValues() : [];
+  const list = rows.filter(r => r[0] instanceof Date && Date.now() - r[0] < 3 * 864e5)
+    .map(r => ({ at: Utilities.formatDate(r[0], "UTC", "yyyy-MM-dd'T'HH:mm:ss'Z'"), tour: String(r[1]), name: String(r[2]), url: String(r[3] || "") }));
+  return ContentService.createTextOutput(JSON.stringify({ lookups: list })).setMimeType(ContentService.MimeType.JSON);
+}
+
 // Read by the site: every comment still showing (not undone or deleted). Undo and approval codes never leave the Sheet.
 function listComments() {
   const list = commentRows_().filter(x => x.status !== "Undone" && x.status !== "Deleted" && x.at instanceof Date).map(x => ({
@@ -420,6 +480,7 @@ function doGet(e) {
   if (kind === "decide") return decidePage(e);
   if (kind === "decidecomment") return decideCommentPage(e);
   if (kind === "comments") return listComments();
+  if (kind === "lookups") return listLookups();
   if (kind !== "prospects") return out("72 Central");
   const sh = SpreadsheetApp.getActiveSpreadsheet().getSheetByName("Prospects");
   const rows = sh && sh.getLastRow() > 1 ? sh.getRange(2, 1, sh.getLastRow() - 1, 6).getValues() : [];

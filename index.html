@@ -573,6 +573,17 @@ dialog.rsd[open]{animation:pop .28s ease}
 .rs-m .sc{font-variant-numeric:tabular-nums;font-size:12px;color:var(--text);text-align:right;white-space:nowrap}
 .rs-m.L .op,.rs-m.L .sc{color:var(--muted)}
 .rs-none{padding:20px 0;text-align:center;font-size:13px;color:var(--muted)}
+.rs-wait{padding:30px 28px 34px;text-align:center;font-size:13px;line-height:1.55;color:var(--muted)}
+.rs-wait b{display:block;margin-bottom:4px;font-size:15px;color:var(--text);font-weight:600}
+.rs-wait .sp{width:26px;height:26px;margin:0 auto 14px;border:2px solid var(--line-2);border-top-color:var(--gold);border-radius:50%;animation:rsSpin 1s linear infinite}
+@keyframes rsSpin{to{transform:rotate(360deg)}}
+.rs-asof{padding:8px 22px 0;font-size:11px;color:var(--muted-2)}
+/* Filtered Rankings: "12 months" on every row opens the same window (rsSq) */
+.rs-sq{display:inline-flex;align-items:center;gap:4px;margin-left:8px;font-size:10px;letter-spacing:.06em;color:var(--muted-2);border:1px solid var(--line-2);border-radius:999px;padding:1px 7px;vertical-align:1px;line-height:14px}
+.rs-sq:hover{color:var(--gold);border-color:var(--gold)}
+.rs-sq svg{width:11px;height:11px}
+.rs-sq.has{color:var(--gold);border-color:rgba(208,165,121,.45)}
+@media (max-width:640px){.rs-sq{margin-left:6px;padding:1px 6px}.rs-sq .lb{display:none}.rs-sq svg{width:12px;height:12px}}
 @media (max-width:640px){
   dialog.rsd{width:calc(100vw - 16px);max-height:calc(100dvh - 20px);border-radius:18px}
   .rs-hd{padding:14px 14px 12px}.rs-hd .x{top:10px;right:10px;width:32px;height:32px}
@@ -1480,7 +1491,7 @@ dialog.tmd[open]{animation:pop .28s ease}
       <div>
         <div class="eyebrow">SeventyTwo Sports Group</div>
         <h1>Filtered Rankings</h1>
-        <p class="sub" id="sqSub">72's scouting radar. Every ranked ATP and WTA singles player (filtered by age group or birth year) and every ITF junior and Tennis Europe U14 player (filtered by birth year), and by ranking, with ranking moves over the last week, 3 months and 12 months, so we can spot rising talent early and see how 72 players (marked <span class="sq-72">72</span>) compare with their age group. Players on the Scouting Corner watch list are marked <span class="sq-eye" title="On the Scouting Corner watch list"><svg viewBox="0 0 24 18" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linejoin="round" aria-hidden="true"><circle cx="6" cy="12.5" r="4.3"/><circle cx="18" cy="12.5" r="4.3"/><path d="M10.3 12.5h3.4M2.6 10 5.3 2h3.4l1.6 8.5M21.4 10 18.7 2h-3.4l-1.6 8.5"/></svg></span>; tap <b>Scout</b> next to anyone else to add them there.</p>
+        <p class="sub" id="sqSub">72's scouting radar. Every ranked ATP and WTA singles player (filtered by age group or birth year) and every ITF junior and Tennis Europe U14 player (filtered by birth year), and by ranking, with ranking moves over the last week, 3 months and 12 months, so we can spot rising talent early and see how 72 players (marked <span class="sq-72">72</span>) compare with their age group. Players on the Scouting Corner watch list are marked <span class="sq-eye" title="On the Scouting Corner watch list"><svg viewBox="0 0 24 18" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linejoin="round" aria-hidden="true"><circle cx="6" cy="12.5" r="4.3"/><circle cx="18" cy="12.5" r="4.3"/><path d="M10.3 12.5h3.4M2.6 10 5.3 2h3.4l1.6 8.5M21.4 10 18.7 2h-3.4l-1.6 8.5"/></svg></span>; tap <b>Scout</b> next to anyone else to add them there. Tap the calendar (<b>12 months</b>) next to anyone for their last 12 months of results.</p>
       </div>
       <div class="chips" role="group" aria-label="Choose tour"><button class="chip sqt on" data-t="atp">ATP</button><button class="chip sqt" data-t="wta">WTA</button><button class="chip sqt" data-t="itfb">ITF Boys</button><button class="chip sqt" data-t="itfg">ITF Girls</button><button class="chip sqt" data-t="teb14">TE U14 Boys</button><button class="chip sqt" data-t="teg14">TE U14 Girls</button></div>
     </div>
@@ -2725,7 +2736,7 @@ function sqRows(){
   if (!T) return [];
   const year = (SCOUT.minYear || new Date().getFullYear() - 21) + 21;
   const q = sqKey(SQ.q);
-  return T.players.map(p => ({ rank:p[0], name:p[1], cty:p[2], born:p[3], w:p[4], m3:p[5], m12:p[6], url:p[7], pts:p[9] ?? null,
+  return T.players.map(p => ({ rank:p[0], name:p[1], raw:p[1], cty:p[2], born:p[3], w:p[4], m3:p[5], m12:p[6], url:p[7], pts:p[9] ?? null,
       is72: sqJr() ? !!p[8] : SQ72.has(SQ.t + ":" + sqKey(p[1])), rid: p[8] }))
     .map(p => { if (p.rid && byId[p.rid]) p.name = `${byId[p.rid].first} ${byId[p.rid].last}`;  // ITF juniors: 72 players matched by ITF id
       else if (p.is72 && !sqJr()) { const r = ROSTER.find(x => x.tour.toLowerCase() === SQ.t && sqKey(x.first + x.last) === sqKey(p.name)); if (r) p.name = `${r.first} ${r.last}`; } return p; })
@@ -2771,6 +2782,8 @@ function sqAddBtn(p, wl){
     <button class="go" data-addgo="${esc(k)}">Add</button><button data-addx="1">Cancel</button></span>`;
 }
 $("#sqTbl").addEventListener("click", e => {
+  const rq = e.target.closest("[data-rsq]");
+  if (rq) { const p = sqRows().find(r => sqRowKey(r) === rq.dataset.rsq); if (p) rsSq(p); return; }
   const a = e.target.closest("[data-add]"), go = e.target.closest("[data-addgo]");
   if (a) { SQ.add = a.dataset.add; renderScouting(); return; }
   if (e.target.closest("[data-addx]")) { SQ.add = ""; renderScouting(); return; }
@@ -2831,7 +2844,7 @@ function renderScouting(){
   const cmx = p => "sq:" + SQ.t + ":" + cnSorted(p.name);
   $("#sqTbl").innerHTML = head + (shown.length ? shown.map(p => `<div class="sq-row">
       <div class="no">${p.rank}</div>
-      <div style="min-width:0">${p.url ? `<a class="nm fx" href="${esc(p.url)}" target="_blank" rel="noopener">` : `<span class="nm fx">`}<span class="nt">${esc(p.name)}</span>${p.is72 ? `<span class="sq-72">72</span>` : ""}${sqEye(p, wl)}${p.url ? "</a>" : "</span>"}<div class="ct">${esc(p.cty)}${wp && ptx(p) ? `<span class="ptm"> · ${ptx(p)} pts</span>` : ""}${cmBtn(cmx(p), [p.name])}${sqAddBtn(p, wl)}</div></div>
+      <div style="min-width:0">${p.url ? `<a class="nm fx" href="${esc(p.url)}" target="_blank" rel="noopener">` : `<span class="nm fx">`}<span class="nt">${esc(p.name)}</span>${p.is72 ? `<span class="sq-72">72</span>` : ""}${sqEye(p, wl)}${p.url ? "</a>" : "</span>"}<div class="ct">${esc(p.cty)}${wp && ptx(p) ? `<span class="ptm"> · ${ptx(p)} pts</span>` : ""}${cmBtn(cmx(p), [p.name])}${rsSqBtn(p)}${sqAddBtn(p, wl)}</div></div>
       ${wp ? `<div class="pt">${ptx(p) || "—"}</div>` : ""}<div class="by">${p.born || "—"}${p.born && !jr ? `<small>U${year - p.born}</small>` : ""}</div>
       ${sqCell(p.rank, p.w)}${sqCell(p.rank, p.m3)}${sqCell(p.rank, p.m12)}
     </div>${cmLog(cmx(p), cnTidy(p.name), [p.name])}`).join("") : `<div class="sq-empty">No players match these filters.</div>`);
@@ -3052,6 +3065,23 @@ const rsRd = r => String(r || "–").replace(/^Q-R(\d)$/, "Q$1").replace(/^Q-Qua
 function rsOpen(k){
   const P = RS.all[k]; if (!P) return;
   if (RS.k !== k) { RS.k = k; RS.f = ""; RS.src = ""; }
+  const d = $("#resd");
+  const head = `<div class="rs-hd"><button type="button" class="x" data-rsx="1" aria-label="Close">✕</button>
+    <div class="k">Last 12 months</div><h2>${esc(P.name)}</h2>${P.meta ? `<div class="mt">${esc(P.meta)}</div>` : ""}`;
+  // Filtered Rankings players with nothing saved yet: GitHub is fetching them (rsSq)
+  if (!P.res?.length) {
+    const msg = {
+      load: `<div class="sp"></div>Checking for saved results…`,
+      wait: `<div class="sp"></div><b>Fetching ${esc(P.name)}'s results</b>Read from the ${P.site} for you now. This usually takes 2 to 5 minutes, and this window fills in by itself. You can close it and come back.`,
+      slow: `<b>Still waiting</b>GitHub hasn't finished yet. It runs at least every 30 minutes, so try again a little later.`,
+      blocked: `<b>The ${P.site} is busy</b>Its website asked us to slow down, so we leave it alone for 3 hours. Try again later.`,
+      none: `<b>No matches in the last 12 months</b>${esc(P.note || "")}`,
+      fail: `<b>The request couldn't be sent</b>Check the connection and try again.`,
+    }[P.state] || "";
+    d.innerHTML = head + `</div><div class="rs-wait">${msg}</div>`;
+    if (!d.open) { profLock(true); d.showModal(); }
+    return;
+  }
   const all = P.res, srcs = [...new Set(all.map(r => r.src))];
   const won = all.filter(r => r.res === "W").length, lost = all.filter(r => r.res === "L").length;
   const groups = [];
@@ -3081,13 +3111,12 @@ function rsOpen(k){
       ${g.m.map(m => `<div class="rs-m ${m.res}"><span class="rd" title="${esc(m.r)}">${esc(rsRd(m.r))}</span><span class="wl ${m.res}">${m.res || "–"}</span><span class="op">${m.res === "W" ? "def." : m.res === "L" ? "lost to" : "v"} ${esc(m.o)}${m.on ? `<small>${esc(m.on)}</small>` : ""}</span><span class="sc">${esc(m.s)}</span></div>`).join("")}</div>`;
   };
   const chip = (attr, v, txt, on) => `<button type="button" data-${attr}="${v}" class="${on ? "on" : ""}">${txt}</button>`;
-  const d = $("#resd");
-  d.innerHTML = `<div class="rs-hd"><button type="button" class="x" data-rsx="1" aria-label="Close">✕</button>
-    <div class="k">Last 12 months</div><h2>${esc(P.name)}</h2>${P.meta ? `<div class="mt">${esc(P.meta)}</div>` : ""}
+  d.innerHTML = head + `
     <div class="rs-st"><div><b>${won}-${lost}</b><span>Won-lost</span></div><div><b>${pct}</b><span>Win rate</span></div><div><b>${groups.length}</b><span>Tournament${groups.length === 1 ? "" : "s"}</span></div><div><b class="${titles ? "g" : ""}">${titles}</b><span>Title${titles === 1 ? "" : "s"}${finals > titles ? ` · ${finals} final${finals === 1 ? "" : "s"}` : ""}</span></div></div>
     <div class="rs-ln">${cnYears(all) ? `<span>By year: ${cnYears(all)}</span>` : ""}${form ? `<span>Last ${form.split("<i").length - 1}<span class="rs-fm">${form}</span></span>` : ""}</div></div>
     <div class="rs-ch">${chip("rsf", "", "All matches", !RS.f)}${chip("rsf", "W", `Wins (${won})`, RS.f === "W")}${chip("rsf", "L", `Losses (${lost})`, RS.f === "L")}
     ${srcs.length > 1 ? chip("rss", "", "All levels", !RS.src) + srcs.map(x => chip("rss", x, esc(CN_SRC[x] || x), RS.src === x)).join("") : ""}</div>
+    ${P.asOf ? `<div class="rs-asof">${esc(P.asOf)}</div>` : ""}
     <div class="rs-bd">${shown.map(card).join("") || `<div class="rs-none">No matches to show.</div>`}</div>`;
   if (!d.open) { profLock(true); d.showModal(); d.scrollTop = 0; }
 }
@@ -3098,7 +3127,70 @@ $("#resd").addEventListener("click", e => {
   if (f) RS.f = f.dataset.rsf; else if (s) RS.src = s.dataset.rss; else return;
   const y = d.scrollTop; rsOpen(RS.k); d.scrollTop = y;
 });
-$("#resd").addEventListener("close", () => profLock(false));
+$("#resd").addEventListener("close", () => { profLock(false); clearTimeout(RS.poll); });
+/* Filtered Rankings: "12 months" on every row. Results already on the site (watch list, suggestions, or someone
+   asked for this player before: results/<list>-<name words sorted>.json) open at once. Otherwise, or if they're
+   not from today, the Sheet asks GitHub (results.yml, scripts/lookup_results.py) to read them, and this window
+   checks for the file every 30 seconds while it's open. */
+const RS_ICON = `<svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6" aria-hidden="true"><rect x="2" y="3" width="12" height="11" rx="2"/><path d="M2 6.5h12M5.5 1.5v3M10.5 1.5v3"/></svg>`;
+const rsFile = p => `results/${SQ.t}-${cnSorted(p.raw).replace(/ /g, "-")}.json`;
+const RS_SG = { atp: "atp", wta: "wta", teb14: "b14", teg14: "g14" };
+// results already on the page: the watch list (matched by link, else name) or the computerised suggestions
+function rsLocal(p){
+  const u = (p.url || "").toLowerCase();
+  for (const c of Object.values(CORNER ? cnShown() : {})) {
+    const L = c.links || {};
+    if (!c.results?.length) continue;
+    if ((L.pro?.url && u === L.pro.url.toLowerCase()) || (L.itf?.id && u.includes("/" + L.itf.id + "/")) || (L.te?.id && u.includes(String(L.te.id).toLowerCase()))
+      || [c.name, c.typed].some(n => n && cnSorted(n) === cnSorted(p.raw))) return c.results;
+  }
+  const S = RS_SG[SQ.t] && SUGG?.players?.[RS_SG[SQ.t] + ":" + cnSorted(p.raw)];
+  return S?.results?.length ? S.results : null;
+}
+function rsSqBtn(p){
+  return `<button type="button" class="rs-sq${rsLocal(p) ? " has" : ""}" data-rsq="${esc(sqRowKey(p))}" title="Last 12 months of results">${RS_ICON}<span class="lb">12 months</span></button>`;
+}
+const rsUkDay = () => new Date().toLocaleDateString("en-CA", { timeZone: "Europe/London" });
+async function rsSq(p){
+  const k = "sq:" + SQ.t + ":" + cnSorted(p.raw), tour = SQ.t, file = rsFile(p);
+  const site = /^te/.test(tour) ? "Tennis Europe website" : "ITF website";
+  const meta = [p.cty, p.born ? "born " + p.born : "", `${SQ_SHORT[tour] || tour.toUpperCase()} No. ${p.rank}`].filter(Boolean).join(" · ");
+  const local = rsLocal(p);
+  RS.all[k] = { name: p.name, meta, res: local, state: "load", site };
+  clearTimeout(RS.poll);
+  rsOpen(k);
+  if (local) return;
+  const read = async () => { try { const r = await fetch(file + "?t=" + Date.now(), { cache: "no-store" }); return r.ok ? await r.json() : null; } catch (e) { return null; } };
+  const ask = () => fetch(CORNER_URL, { method: "POST", mode: "no-cors", body: JSON.stringify({ kind: "results", tour, name: p.raw, url: p.url || "" }) });
+  const show = j => {
+    const P = RS.all[k];
+    P.res = j.results || []; P.note = j.note; P.state = P.res.length ? "" : "none";
+    const at = j.updated ? new Date(j.updated).toLocaleString("en-GB", { timeZone: MYTZ, day: "numeric", month: "short", hour: "2-digit", minute: "2-digit" }) : "";
+    P.asOf = at ? `Read from the ${site} on ${at} your time.` : "";
+    if (RS.k === k && $("#resd").open) rsOpen(k);
+  };
+  let j = await read();
+  if (j && j.day === rsUkDay()) return show(j);
+  // nothing saved, or not from today: ask GitHub for a fresh read
+  let sent = true;
+  try { await ask(); } catch (e) { sent = false; }
+  if (j) { show(j); if (sent) RS.all[k].asOf += " Refreshing now: reopen in a few minutes for today's."; if (RS.k === k && $("#resd").open) rsOpen(k); return; }
+  RS.all[k].state = sent ? "wait" : "fail";
+  if (RS.k === k && $("#resd").open) rsOpen(k);
+  if (!sent) return;
+  const t0 = Date.now();
+  const tick = async () => {
+    if (RS.k !== k || !$("#resd").open) return;
+    const j = await read();
+    if (j && j.day === rsUkDay()) return show(j);
+    let st = null; try { const r = await fetch("results/status.json?t=" + Date.now(), { cache: "no-store" }); if (r.ok) st = await r.json(); } catch (e) {}
+    const b = st?.blocked?.[/^te/.test(tour) ? "te" : "itf"];
+    if (b && Date.now() - new Date(b) < 3 * 36e5) { RS.all[k].state = "blocked"; return rsOpen(k); }
+    if (Date.now() - t0 > 15 * 6e4) { RS.all[k].state = "slow"; return rsOpen(k); }
+    RS.poll = setTimeout(tick, 30000);
+  };
+  RS.poll = setTimeout(tick, 30000);
+}
 // a calendar-year W-L line ("2026 30-12 · 2025 8-4") for the last 12 months of results
 function cnYears(res){
   const y = {};
