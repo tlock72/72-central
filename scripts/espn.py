@@ -17,15 +17,6 @@ ROUNDS = {"final": "Final", "semifinal": "SF", "quarterfinal": "QF", "round 1": 
           "round 4": "4R", "round of 16": "R16", "qualifying 1st round": "Q1", "qualifying 2nd round": "Q2",
           "qualifying 3rd round": "Q3", "qualifying final": "Q final"}
 
-# Hand corrections for ESPN mistakes, by ESPN match id (the "apiId" in data.json, e.g. "e184927").
-#   "winner": surname of who really won (e.g. the player who got a walkover ESPN gave the wrong way round)
-#   "drop": True leaves the match off the site (e.g. a next round ESPN made up from its own mistake)
-# Delete a line once the match is more than a week old.
-FIXES = {
-    "e184927": {"winner": "Molcan"},  # Shanghai 2R, 9 Oct 2026: De Minaur withdrew, ESPN gave him the walkover
-    "e184929": {"drop": True},        # Shanghai 3R: ESPN still has De Minaur v Sakamoto
-}
-
 
 def fold(s):
     """Lower-case words without accents; umlauts written as 'ae' count as the plain letter (Schwaerzler = Schwärzler)."""
@@ -148,17 +139,4 @@ def fetch(roster, events, now, matches=()):
                         elif state == "post" and re.search(r"cancel", detail, re.I):
                             m["status"] = "cancelled"
                         out[key] = m
-    for key, fix in FIXES.items():
-        m = out.get(key)
-        if not m:
-            continue
-        if fix.get("drop"):
-            del out[key]
-        elif fix.get("winner") and m["status"] == "finished":
-            w = fold(fix["winner"])
-            if all(x in fold(m["p2"]) for x in w):  # the site lists the winner first, with the score from their side
-                sc = m["score"][:-5] if m["score"].endswith(" ret.") else m["score"]
-                sc = ", ".join(re.sub(r"^(\d+)-(\d+)", r"\2-\1", x) for x in sc.split(", ")) if sc else ""
-                m.update(p1=m["p2"], p2=m["p1"], p1Id=m["p2Id"], p2Id=m["p1Id"], winner=1,
-                         score=sc + (" ret." if m["score"].endswith(" ret.") else ""))
     return out
