@@ -469,6 +469,22 @@ select.sq-in option{background:var(--navy-2);color:var(--white)}
 .cn-ok .bt{display:flex;gap:8px;flex-wrap:wrap}
 .cn-add .cn-ok button.no{background:transparent;color:var(--muted);border:1px solid var(--line)}
 .cn-list{display:grid;gap:12px}
+/* Watch list: two tiles side by side (cnTile); a tap opens the full profile in its own window (cnOpen, #cnd) */
+.cn-two{grid-template-columns:repeat(2,minmax(0,1fr))}
+.cn-two>.sq-empty,.cn-two>.cn-wait:has(.cm-log){grid-column:1/-1}
+.cn-tile{display:flex;flex-direction:column;cursor:pointer;transition:border-color .15s}
+.cn-tile:hover,.cn-tile:focus-visible{border-color:var(--gold);outline:none}
+.cn-tile .sg-why{flex:1 1 auto;align-content:flex-start}
+.sg-why span.dn{color:var(--down);border-color:currentColor}
+.sg-why span.cm{display:inline-flex;align-items:center;gap:4px;color:var(--gold);border-color:var(--gold)}
+.sg-why span.cm svg{width:12px;height:11px;fill:currentColor}
+.cn-open{padding:9px 20px;border-top:1px solid var(--line-2);font-family:var(--display);text-transform:uppercase;letter-spacing:.14em;font-size:11px;color:var(--gold)}
+.cn-open .ar{display:inline-grid;place-items:center;width:18px;height:18px;margin-right:8px;border:1px solid var(--gold);border-radius:50%;font-size:11px;line-height:1;letter-spacing:0;vertical-align:-3px;transition:transform .2s}
+.cn-tile:hover .cn-open{background:var(--gold-dim)}
+.cn-tile:hover .cn-open .ar{transform:translateX(3px)}
+dialog.cnd .cn-pf{border:0;border-radius:0;background:none;overflow:visible}
+.cn-pf h4{font-family:var(--display);font-weight:500;text-transform:uppercase;letter-spacing:.16em;font-size:11px;color:var(--gold);margin:0;padding:14px 20px 8px}
+.cn-pf .cn-acts{margin-top:10px}
 .cn-view{margin:0 0 16px}
 .sg-sec{display:grid;gap:10px;grid-template-columns:repeat(2,minmax(0,1fr));align-items:stretch}
 /* every suggestion tile the same size: the Scout button sits in the top corner, and all tiles get the height of the fullest one */
@@ -1100,6 +1116,14 @@ body.on-home > footer{display:none}
   .cn-msg{font-size:11px;margin:6px 14px 12px}
   .cn-ok{padding:10px 12px;font-size:12px;margin-bottom:12px}
   .cn-list{gap:8px}
+  .cn-two{gap:6px}
+  .cn-tile .cn-h{padding:8px 10px 5px;gap:1px 6px}
+  .cn-tile .cn-h .nm{flex:1 1 100%;font-size:14px;line-height:1.2}
+  .cn-tile .cn-h .mt{font-size:10px;letter-spacing:.02em}
+  .cn-open{padding:7px 10px;font-size:10px;letter-spacing:.08em}
+  .cn-open .lg{display:none}
+  .cn-open .ar{width:16px;height:16px;margin-right:6px}
+  .cn-pf h4{padding:12px 12px 6px}
   .cn{border-radius:14px}
   .cn-h{padding:10px 12px 7px;gap:2px 8px}
   .cn-h .nm{font-size:16px}
@@ -1615,6 +1639,7 @@ dialog.tmd[open]{animation:pop .28s ease}
   </div>
   <dialog class="tmd" id="tmCard" aria-label="Business card"></dialog>
   <dialog class="prof" id="prof" aria-label="Player profile"></dialog>
+  <dialog class="rsd cnd" id="cnd" aria-label="Prospect profile"></dialog>
   <dialog class="rsd" id="resd" aria-label="Last 12 months of results"></dialog>
   <dialog class="stg" id="sets" aria-label="Settings">
     <h2>Settings</h2>
@@ -3036,7 +3061,7 @@ async function loadScouting(){
 const CORNER_URL = "https://script.google.com/macros/s/AKfycbwzEb0YNoDmZaaJ5fQg05ubEe_lowMLiGoYaXuclycqQikOngLQEmENPN5KoL_KJXu1kA/exec";  // same as LOG_URL
 let SUGG = null;  // suggest.json: the suggestions' last 12 months of results
 let CORNER = null, CN_SHEET = [], CN_SHEET_OK = false, CN_REMOVED = [], CN_ASKED = [];
-const CN = { g: "", q: "", s: "", rm: "", view: "", add: "" };
+const CN = { g: "", q: "", s: "", rm: "", view: "", add: "", open: "" };
 try { CN.view = localStorage.getItem("72c-cnview") === "sug" ? "sug" : ""; } catch (e) {}
 const cnKey = s => String(s || "").split("|")[0].normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLowerCase().replace(/[^a-z]/g, "");
 const CN_SRC = { te: "Tennis Europe", "itf-jr": "ITF Juniors", "itf-pro": "Pro: ATP/WTA, Challenger, ITF" };
@@ -3067,12 +3092,13 @@ function cnRow(level, sub, rank, high, w, m3, m12, note){
   const moves = vals.slice(0, i).map(mv).join("") + (gap ? `<div class="ch note" style="grid-column:span ${gap}" title="${esc(note)}"><span class="lg">${esc(txt)}</span><span class="sh">Fills in weekly</span></div>` : "");
   return `<div class="sq-row"><div class="lv">${esc(level)}${sub ? `<small>${esc(sub)}</small>` : ""}</div><div class="by">${rank ?? "—"}</div><div class="by">${high ?? "—"}</div>${moves}</div>`;
 }
-function cnCard(k, p){
+// the full profile, shown in its own window (cnOpen): pathway, ranking table, last 12 months, comments, removal
+function cnProf(k, p){
   const L = p.links || {}, tourName = p.g === "F" ? "WTA" : "ATP";
   const te = [...(p.te || [])].sort((a, b) => a.rank - b.rank)[0], jr = p.itfJr, pro = p.pro;  // best Tennis Europe category
   // most important first: ATP/WTA, then ITF Juniors, then Tennis Europe
   const path = cnStage(tourName, L.pro, (pro?.rank || p.itfPro?.rank) ? `No. ${pro?.rank || p.itfPro.rank}` : "", L.pro?.url)
-    + cnStage("ITF Juniors", L.itf, jr?.rank ? `No. ${jr.rank}` : jr?.high ? `Best ${jr.high}` : "", L.itf?.id ? `https://www.itftennis.com/en/players/${cnKey(p.name) && p.name.normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLowerCase().replace(/[^a-z]+/g, "-").replace(/^-|-$/g, "")}/${L.itf.id}/${(L.itf.nat || "").toLowerCase()}/` : "")
+    + cnStage("ITF Juniors", L.itf, jr?.rank ? `No. ${jr.rank}` : jr?.high ? `Best ${jr.high}` : "", L.itf?.id ? `https://www.itftennis.com/en/players/${cnKey(p.name) && p.name.normalize("NFD").replace(/[̀-ͯ]/g, "").toLowerCase().replace(/[^a-z]+/g, "-").replace(/^-|-$/g, "")}/${L.itf.id}/${(L.itf.nat || "").toLowerCase()}/` : "")
     + (L.te?.status === "skip" ? "" : cnStage("Tennis Europe", L.te, te ? `No. ${te.rank} ${te.cat}` : "", L.te?.id ? `https://te.tournamentsoftware.com/player-profile/${L.te.id}` : ""));  // not shown for anyone over 16
   const rows = [];
   if (pro) rows.push(cnRow(tourName, pro.week ? "week of " + sqFmt(pro.week) : "", pro.rank, pro.high, pro.w, pro.m3, pro.m12));
@@ -3084,15 +3110,61 @@ function cnCard(k, p){
     "ITF won't let us pull past junior rankings, so these moves fill in week by week"));
   for (const r of p.te || []) rows.push(cnRow("Tennis Europe", r.cat, r.rank, r.high, r.w, r.m3, r.m12));
   const res = p.results || [];
-  const won = res.filter(r => r.res === "W").length, lost = res.filter(r => r.res === "L").length;
-  const meta = [p.nat, p.born ? "born " + p.born : "", p.by ? "added by " + p.by : "", p.typed ? `typed as "${p.typed}", spelling corrected from the ITF` : ""].filter(Boolean).join(" · ");
+  const meta = cnMeta(p);
   const unsure = ["itf", "te"].filter(s => L[s]?.status === "unsure").map(s => `${s === "te" ? "Tennis Europe" : "ITF"}: ${L[s].note || "more than one player fits"}`);
-  return `<div class="cn"><div class="cn-h"><span class="nm">${esc(p.name)}</span><span class="mt">${esc(meta)}</span>${res.length ? `<span class="wl">Last 12 months <b>${won}-${lost}</b><small>${cnYears(res)}</small></span>` : ""}</div>
-    ${path ? `<div class="cn-path">${path}</div>` : ""}
+  return `<div class="rs-hd"><button type="button" class="x" data-cnx="1" aria-label="Close">✕</button>
+    <div class="k">Watch list</div><h2>${esc(p.name)}</h2>${meta ? `<div class="mt">${esc(meta)}</div>` : ""}
+    ${res.length ? rsSum(res) : `<div class="rs-ln"><span>No results in the last 12 months yet.</span></div>`}</div>
+    <div class="cn cn-pf">
+    ${path ? `<h4>Pathway</h4><div class="cn-path">${path}</div>` : ""}
     ${unsure.length ? `<div class="cn-note">${unsure.map(esc).join("<br>")}. Add the right id in prospects.json.</div>` : ""}
-    ${rows.length ? `<div class="sq-row h"><span>Ranking</span><span>Rank</span><span>Best</span><span>1 wk</span><span>3 mo</span><span>12 mo</span></div>${rows.join("")}` : ""}
+    ${rows.length ? `<h4>Rankings</h4><div class="sq-row h"><span>Ranking</span><span>Rank</span><span>Best</span><span>1 wk</span><span>3 mo</span><span>12 mo</span></div>${rows.join("")}` : ""}
     <div class="cn-acts">${cmBtn("cn:" + k, [p.name, p.typed], "lg")}${res.length ? rsBtn("cn:" + k, p.name, meta, res) : ""}${cnRemoval(k, p.typed || p.name)}</div>
     ${cmLog("cn:" + k, p.name, [p.name, p.typed])}</div>`;
+}
+const cnMeta = p => [p.nat, p.born ? "born " + p.born : "", p.by ? "added by " + p.by : "", p.typed ? `typed as "${p.typed}", spelling corrected from the ITF` : ""].filter(Boolean).join(" · ");
+// the ranking a tile leads with: ATP/WTA, else ITF Juniors, else the best Tennis Europe category ("Girls 14 & Under" → "U14")
+function cnMain(p){
+  const tour = p.g === "F" ? "WTA" : "ATP", te = [...(p.te || [])].sort((a, b) => a.rank - b.rank)[0];
+  if (p.pro?.rank) return { lb: tour, rank: p.pro.rank, w: p.pro.w, m3: p.pro.m3, m12: p.pro.m12 };
+  if (p.itfPro?.rank) return { lb: tour, rank: p.itfPro.rank };
+  if (p.itfJr?.rank) return { lb: "ITF Jr", rank: p.itfJr.rank, w: p.itfJr.w, m3: p.itfJr.m3, m12: p.itfJr.m12 };
+  if (te) return { lb: "TE " + String(te.cat || "").replace(/^\w+ (\d+) & Under$/, "U$1"), rank: te.rank, w: te.w, m3: te.m3, m12: te.m12 };
+  return null;
+}
+// Watch list tile: the key facts at a glance, like the suggestions (two side by side). A tap opens the full profile.
+function cnTile(k, p){
+  const M = cnMain(p), why = [];
+  const mv = (was, t) => {
+    if (was === -1 || was === undefined || !M) return "";
+    const tt = t.replace(/ (months)$/, ' <i class="lg">$1</i><i class="sh">mo</i>');
+    if (was === null) return `<span class="up">Not ranked ${tt} ago</span>`;
+    const d = was - M.rank;
+    return d > 0 ? `<span class="up">▲${d} in ${tt} <i class="nw">(${was} → ${M.rank})</i></span>` : d < 0 ? `<span class="dn">▼${-d} in ${tt} <i class="nw">(${was} → ${M.rank})</i></span>` : "";
+  };
+  if (M) why.push(mv(M.m12, "12 months"), mv(M.m3, "3 months"));
+  // the other stages they're ranked at, after the lead one
+  const te = [...(p.te || [])].sort((a, b) => a.rank - b.rank)[0];
+  if (p.itfJr?.rank && M?.lb !== "ITF Jr") why.push(`<span>ITF Jr No. ${p.itfJr.rank}</span>`);
+  else if (!p.itfJr?.rank && p.itfJr?.high && M?.lb !== "ITF Jr") why.push(`<span>ITF Jr best ${p.itfJr.high}</span>`);
+  if (te && M && !M.lb.startsWith("TE")) why.push(`<span>TE ${esc(String(te.cat || "").replace(/^\w+ (\d+) & Under$/, "U$1"))} No. ${te.rank}</span>`);
+  const n = cmFor([p.name, p.typed]).length;
+  if (n) why.push(`<span class="cm">${CM_ICON}${n}</span>`);
+  const meta = [p.nat, p.born ? "born " + p.born : "", M ? `${M.lb} No. ${M.rank}`.replace(/ /g, " ") : "Not ranked yet"].filter(Boolean).join(" · ");
+  const res = p.results || [], won = res.filter(r => r.res === "W").length, lost = res.filter(r => r.res === "L").length;
+  return `<div class="cn cn-tile" data-cnp="${esc(k)}" role="button" tabindex="0" aria-label="Open ${esc(p.name)}'s profile"><div class="cn-h"><span class="nm">${esc(p.name)}</span><span class="mt">${esc(meta)}</span></div>
+    <div class="sg-why">${why.filter(Boolean).join("")}</div>
+    ${res.length ? `<div class="sg-wl">Last 12 months <b>${won}-${lost}</b><span>${cnYears(res)}</span></div>` : ""}
+    <div class="cn-open"><span class="ar" aria-hidden="true">›</span>Profile<span class="lg">, results &amp; comments</span></div></div>`;
+}
+// the profile window: opened from a tile, redrawn whenever the watch list or comments change (keeping the scroll)
+function cnOpen(k){
+  const d = $("#cnd"), p = cnShown()[k];
+  if (!p) { if (d.open) d.close(); return; }
+  if (CN.open !== k) { CN.open = k; CN.rm = ""; CM.open = "cn:" + k; CM.del = ""; }  // comments open straight away
+  const y = d.scrollTop;
+  d.innerHTML = cnProf(k, p);
+  if (!d.open) { profLock(true); d.showModal(); d.scrollTop = 0; } else d.scrollTop = y;
 }
 // "View the last 12 months" button (watch list cards and suggestions): opens the results window in front (rsOpen)
 const RS = { k: "", f: "", src: "", all: {} };
@@ -3103,6 +3175,21 @@ function rsBtn(k, name, meta, res){
 const RS_FINAL = /^(F|Final|Finals|Playoff Final)$/;
 // shorter round names for the narrow column: "Q-R1" → "Q1", "Q-Qualification round of 16" → "Q R16"
 const rsRd = r => String(r || "–").replace(/^Q-R(\d)$/, "Q$1").replace(/^Q-Qualification round of (\d+)$/, "Q R$1").replace(/^Q-/, "Q ").replace(/ \(walkover\)$/, " w/o").replace(/^Round Robin /, "RR ");
+// the totals across the top of the results window and the watch list profile: won-lost, win rate, tournaments,
+// titles, W-L by year and the last 10 results
+function rsSum(all){
+  const groups = [];
+  for (const r of all) if (!groups.some(x => x.src === r.src && x.t === r.t && x.start === r.start)) groups.push({ src: r.src, t: r.t, start: r.start, top: r });
+  const won = all.filter(r => r.res === "W").length, lost = all.filter(r => r.res === "L").length;
+  // the first match listed for a tournament is their last one there
+  const titles = groups.filter(g => RS_FINAL.test(g.top.r) && g.top.res === "W").length;
+  const finals = groups.filter(g => RS_FINAL.test(g.top.r)).length;
+  // last 10 results, oldest on the left so the newest is at the right-hand end
+  const form = all.filter(r => r.res === "W" || r.res === "L").slice(0, 10).reverse().map(r => `<i class="${r.res}" title="${esc(rsRd(r.r) + " " + (r.res === "W" ? "won" : "lost") + " v " + r.o)}">${r.res}</i>`).join("");
+  const pct = won + lost ? Math.round(100 * won / (won + lost)) + "%" : "–";
+  return `<div class="rs-st"><div><b>${won}-${lost}</b><span>Won-lost</span></div><div><b>${pct}</b><span>Win rate</span></div><div><b>${groups.length}</b><span>Tournament${groups.length === 1 ? "" : "s"}</span></div><div><b class="${titles ? "g" : ""}">${titles}</b><span>Title${titles === 1 ? "" : "s"}${finals > titles ? ` · ${finals} final${finals === 1 ? "" : "s"}` : ""}</span></div></div>
+    <div class="rs-ln">${cnYears(all) ? `<span>By year: ${cnYears(all)}</span>` : ""}${form ? `<span>Last ${form.split("<i").length - 1}<span class="rs-fm">${form}</span></span>` : ""}</div>`;
+}
 // the results window: totals across the top, then one card per tournament (newest first, deepest round first),
 // each with how far the player went. Filters: all / wins / losses, and by level when there's more than one.
 function rsOpen(k){
@@ -3138,11 +3225,6 @@ function rsOpen(k){
     if (RS_FINAL.test(top.r)) return top.res === "W" ? `<em class="ch">Champion</em>` : top.res === "L" ? `<em class="ru">Runner-up</em>` : `<em>Final</em>`;
     return top.res === "L" ? `<em>Out in ${esc(rsRd(top.r))}</em>` : top.res === "W" ? `<em>Won ${esc(rsRd(top.r))}</em>` : "";
   };
-  const titles = groups.filter(g => RS_FINAL.test(g.m[0].r) && g.m[0].res === "W").length;
-  const finals = groups.filter(g => RS_FINAL.test(g.m[0].r)).length;
-  // last 10 results, oldest on the left so the newest is at the right-hand end
-  const form = all.filter(r => r.res === "W" || r.res === "L").slice(0, 10).reverse().map(r => `<i class="${r.res}" title="${esc(rsRd(r.r) + " " + (r.res === "W" ? "won" : "lost") + " v " + r.o)}">${r.res}</i>`).join("");
-  const pct = won + lost ? Math.round(100 * won / (won + lost)) + "%" : "–";
   const shown = groups.filter(g => !RS.src || g.src === RS.src).map(g => ({ ...g, m: g.m.filter(m => !RS.f || m.res === RS.f) })).filter(g => g.m.length);
   const fmt = d => d ? new Date(d + "T12:00:00Z").toLocaleDateString("en-GB", { day: "numeric", month: "short", year: "numeric", timeZone: "UTC" }) : "";
   const card = g => {
@@ -3155,8 +3237,7 @@ function rsOpen(k){
   };
   const chip = (attr, v, txt, on) => `<button type="button" data-${attr}="${v}" class="${on ? "on" : ""}">${txt}</button>`;
   d.innerHTML = head + `
-    <div class="rs-st"><div><b>${won}-${lost}</b><span>Won-lost</span></div><div><b>${pct}</b><span>Win rate</span></div><div><b>${groups.length}</b><span>Tournament${groups.length === 1 ? "" : "s"}</span></div><div><b class="${titles ? "g" : ""}">${titles}</b><span>Title${titles === 1 ? "" : "s"}${finals > titles ? ` · ${finals} final${finals === 1 ? "" : "s"}` : ""}</span></div></div>
-    <div class="rs-ln">${cnYears(all) ? `<span>By year: ${cnYears(all)}</span>` : ""}${form ? `<span>Last ${form.split("<i").length - 1}<span class="rs-fm">${form}</span></span>` : ""}</div></div>
+    ${rsSum(all)}</div>
     <div class="rs-ch">${chip("rsf", "", "All matches", !RS.f)}${chip("rsf", "W", `Wins (${won})`, RS.f === "W")}${chip("rsf", "L", `Losses (${lost})`, RS.f === "L")}
     ${srcs.length > 1 ? chip("rss", "", "All levels", !RS.src) + srcs.map(x => chip("rss", x, esc(CN_SRC[x] || x), RS.src === x)).join("") : ""}</div>
     ${P.asOf ? `<div class="rs-asof">${esc(P.asOf)}</div>` : ""}
@@ -3170,7 +3251,7 @@ $("#resd").addEventListener("click", e => {
   if (f) RS.f = f.dataset.rsf; else if (s) RS.src = s.dataset.rss; else return;
   const y = d.scrollTop; rsOpen(RS.k); d.scrollTop = y;
 });
-$("#resd").addEventListener("close", () => { profLock(false); clearTimeout(RS.poll); });
+$("#resd").addEventListener("close", () => { if (!$("#cnd").open) profLock(false); clearTimeout(RS.poll); });
 /* Filtered Rankings: "12 months" on every row. Results already on the site (watch list, suggestions, or someone
    asked for this player before: results/<list>-<name words sorted>.json) open at once. Otherwise, or if they're
    not from today, the Sheet asks GitHub (results.yml, scripts/lookup_results.py) to read them, and this window
@@ -3388,8 +3469,10 @@ function renderCorner(){
   document.querySelectorAll(".cnv").forEach(b => b.classList.toggle("on", b.dataset.v === CN.view));
   $(".cn-add").hidden = sug; $("#cnSortLine").hidden = sug;
   $("#cnQ").placeholder = sug ? "Search players" : "Search prospect";
+  $("#cnList").classList.toggle("cn-two", !sug);  // watch list: two tiles side by side
   if (sug) {
     document.querySelectorAll(".cng").forEach(b => b.classList.toggle("on", b.dataset.g === CN.g));
+    if ($("#cnd").open) $("#cnd").close();
     return renderSuggest();
   }
   const P = cnShown(), gone = new Set(CN_REMOVED.map(cnKey));
@@ -3402,11 +3485,12 @@ function renderCorner(){
   const cards = Object.entries(P).filter(([k, p]) => keep(p.name, p.g))
     // the picked sort first (age or day added), then ATP/WTA rank, then ITF Juniors, then best Tennis Europe rank, then name
     .sort((a, b) => cnPick(a[1], b[1]) || cnOrd(a[1].pro?.rank || a[1].itfPro?.rank) - cnOrd(b[1].pro?.rank || b[1].itfPro?.rank) || cnOrd(a[1].itfJr?.rank) - cnOrd(b[1].itfJr?.rank) || cnOrd(cnTeBest(a[1])) - cnOrd(cnTeBest(b[1])) || a[1].name.localeCompare(b[1].name))
-    .map(([k, p]) => cnCard(k, p));
+    .map(([k, p]) => cnTile(k, p));
   const wait = waiting.filter(x => keep(x.name, x.g)).map(x => `<div class="cn cn-wait"><div class="cn-h"><span class="nm">${esc(cnTidy(x.name))}</span><span class="mt">Looking up… usually within 10 minutes${x.by ? " · added by " + esc(x.by) : ""}</span></div>
     <div class="cn-acts" style="padding:8px 0">${cmBtn("cnw:" + cnKey(x.name), [x.name], "lg")}</div>${cmLog("cnw:" + cnKey(x.name), cnTidy(x.name), [x.name])}</div>`);
   $("#cnList").innerHTML = [...wait, ...cards].join("") || `<div class="sq-empty">${CORNER ? (Object.keys(P).length ? "No prospect matches." : "No prospects yet. Add the first one above.") : "Loading the watch list…"}</div>`;
   $("#cnSrc").textContent = CORNER?.checked ? `Sources: Tennis Europe (internal use only), the ITF and the official ATP/WTA rankings. Last updated ${new Date(CORNER.checked).toLocaleString("en-GB", { timeZone: MYTZ, day:"numeric", month:"short", hour:"2-digit", minute:"2-digit" })} your time.` : "";
+  if ($("#cnd").open) cnOpen(CN.open);
 }
 $("#cnList").addEventListener("click", e => {
   // Suggestions: "Scout" adds the player to the watch list (the same as the "Add a prospect" box)
@@ -3422,6 +3506,26 @@ $("#cnList").addEventListener("click", e => {
     }
     renderCorner(); return;
   }
+  // a watch list tile: open the full profile (comment buttons inside a "Looking up…" tile are handled with the comments)
+  const t = e.target.closest("[data-cnp]");
+  if (t) { cnOpen(t.dataset.cnp); return; }
+  cnRmClick(e);
+});
+$("#cnList").addEventListener("keydown", e => {
+  const t = e.target.closest?.("[data-cnp]");
+  if (t && (e.key === "Enter" || e.key === " ")) { e.preventDefault(); cnOpen(t.dataset.cnp); }
+});
+// the profile window: close (✕ or outside it), "View the last 12 months" (opens in front of it) and the removal request
+$("#cnd").addEventListener("click", e => {
+  const d = $("#cnd");
+  if (e.target === d || e.target.closest("[data-cnx]")) return d.close();
+  cnRmClick(e);
+});
+$("#cnd").addEventListener("close", () => {
+  if (CM.open === "cn:" + CN.open) CM.open = "";
+  CN.open = ""; CN.rm = ""; profLock(false);
+});
+function cnRmClick(e){
   const r = e.target.closest("[data-rm]");
   if (r) { CN.rm = r.dataset.rm; renderCorner(); document.querySelector(".cn-rmf input")?.focus(); return; }
   if (e.target.closest("[data-rmx]")) { CN.rm = ""; renderCorner(); return; }
@@ -3437,8 +3541,8 @@ $("#cnList").addEventListener("click", e => {
     renderCorner(); return;
   }
   const b = e.target.closest("[data-rs]"); if (b) rsOpen(b.dataset.rs);
-});
-$("#cnList").addEventListener("submit", e => {
+}
+const cnRmSubmit = e => {
   const f = e.target.closest(".cn-rmf"); if (!f) return;
   e.preventDefault();
   const name = f.dataset.n, reason = f.elements.why.value.trim();
@@ -3448,7 +3552,9 @@ $("#cnList").addEventListener("submit", e => {
   cnAskedSave([...cnAskedAll().filter(x => cnKey(x.name) !== cnKey(name)), { name, at: Date.now(), undo }]);
   CN.rm = "";
   renderCorner();
-});
+};
+$("#cnList").addEventListener("submit", cnRmSubmit);
+$("#cnd").addEventListener("submit", cnRmSubmit);
 document.querySelectorAll(".cng").forEach(b => b.addEventListener("click", () => { CN.g = b.dataset.g; renderCorner(); }));
 document.querySelectorAll(".cns").forEach(b => b.addEventListener("click", () => { CN.s = b.dataset.s; renderCorner(); }));
 document.querySelectorAll(".cnv").forEach(b => b.addEventListener("click", () => { CN.view = b.dataset.v; CN.add = ""; try { localStorage.setItem("72c-cnview", CN.view); } catch (e) {} renderCorner(); }));
