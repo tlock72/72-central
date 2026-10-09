@@ -882,6 +882,28 @@ dialog.stg[open]{display:block;animation:pop .28s ease}
 .nw-t a:hover{color:var(--white)}
 .nw-t .nw-oth{font:inherit;font-size:11px;background:none;border:1px solid var(--gold);border-radius:999px;padding:2px 9px;color:var(--gold);cursor:pointer}
 .nw-t .nw-oth::after{content:" ▾"}.nw-t .nw-oth.on::after{content:" ▴"}
+.nw-list[hidden],.nw-also[hidden]{display:none}
+/* News "Market map" (market.json + worldmap.json): countries shaded by business stories this week; zooms to the one picked */
+.nwf-map::before{content:"◍ "}
+.mk-bar{display:flex;flex-wrap:wrap;align-items:center;gap:8px 14px;margin-bottom:10px}
+.mk-bar label{font-family:var(--display);font-size:11px;letter-spacing:.1em;text-transform:uppercase;color:var(--muted-2)}
+.mk-bar select{background:var(--navy-2);color:var(--white);border:1px solid var(--line);border-radius:10px;padding:7px 10px;font:inherit;font-size:14px;max-width:100%}
+.mk-key{display:flex;align-items:center;gap:5px;font-size:11px;color:var(--muted)}
+.mk-key i{display:inline-block;width:12px;height:12px;border-radius:3px;margin-left:6px}
+.mk-box{position:relative;border:1px solid var(--line-2);border-radius:16px;overflow:hidden;background:#0a1230}
+#mkSvg{display:block;width:100%;height:auto;aspect-ratio:16/7;touch-action:manipulation}
+#mkSvg path,#mkSvg circle{fill:#26325c;stroke:#0a1230;stroke-width:.6;vector-effect:non-scaling-stroke;cursor:pointer;transition:fill .2s}
+#mkSvg circle{stroke:var(--gold);stroke-width:.8}
+#mkSvg .mk1,.mk-key .mk1{fill:rgba(208,165,121,.3);background:rgba(208,165,121,.3)}
+#mkSvg .mk2,.mk-key .mk2{fill:rgba(208,165,121,.5);background:rgba(208,165,121,.5)}
+#mkSvg .mk3,.mk-key .mk3{fill:rgba(208,165,121,.72);background:rgba(208,165,121,.72)}
+#mkSvg .mk4,.mk-key .mk4{fill:rgba(208,165,121,.95);background:rgba(208,165,121,.95)}
+#mkSvg .on{fill:#fff;stroke:var(--gold);stroke-width:1.5}
+#mkSvg path:hover,#mkSvg circle:hover{stroke:#fff;stroke-width:1.2}
+.mk-out{position:absolute;right:10px;top:10px;background:var(--navy);color:var(--gold);border:1px solid var(--gold);border-radius:999px;padding:4px 12px;font:inherit;font-size:12px;cursor:pointer}
+.mk-h{font-family:var(--display);font-size:18px;letter-spacing:.04em;margin:16px 0 10px;color:var(--white)}
+.mk-h small{color:var(--muted-2);font-size:12px;margin-left:8px;font-family:inherit;letter-spacing:0}
+@media (max-width:640px){.mk-key{width:100%;margin-left:-6px}.mk-bar select{flex:1}#mkSvg{aspect-ratio:4/3}}
 .nw-also{display:flex;flex-wrap:wrap;gap:6px;margin-top:8px;padding-top:8px;border-top:1px solid var(--line-2)}
 .nw-also a{font-size:12px;border:1px solid var(--line);border-radius:999px;padding:3px 10px;color:var(--white);text-decoration:none}
 .nw-also a::after{content:" ↗";color:var(--muted)}
@@ -1650,9 +1672,16 @@ dialog.tmd[open]{animation:pop .28s ease}
         <h1>News</h1>
         <p class="sub">The business of tennis first: investors, sponsors, broadcasters, the tours and federations, and tournament news (calendar, venues, entry lists) come before match reports, and are kept for a week. Then the top match and player stories from the last 3 days; stories more outlets are running come first. Stories naming a 72 player or a Scouting Corner prospect are kept for a week. Tap a headline to read it on the outlet's own site.</p>
       </div>
-      <div class="chips" role="group" aria-label="Show"><button class="chip nwf on" data-n="all">All</button><button class="chip nwf" data-n="biz">Business</button><button class="chip nwf" data-n="ev">Tournaments</button><button class="chip nwf" data-n="72">72 players</button><button class="chip nwf" data-n="sc">Prospects</button></div>
+      <div class="chips" role="group" aria-label="Show"><button class="chip nwf on" data-n="all">All</button><button class="chip nwf" data-n="biz">Business</button><button class="chip nwf" data-n="ev">Tournaments</button><button class="chip nwf" data-n="72">72 players</button><button class="chip nwf" data-n="sc">Prospects</button><button class="chip nwf nwf-map" data-n="map">Market map</button></div>
     </div>
     <div class="nw-list" id="nwList"><div class="sq-empty">Loading the headlines…</div></div>
+    <div id="mkMap" hidden>
+      <div class="mk-bar"><label for="mkSel">Country</label><select id="mkSel"><option value="">Whole world</option></select>
+        <span class="mk-key"><i class="mk1"></i>1<i class="mk2"></i>2–3<i class="mk3"></i>4–6<i class="mk4"></i>7+ stories this week</span></div>
+      <div class="mk-box"><svg id="mkSvg" role="img" aria-label="World map of tennis business news"></svg><button type="button" class="mk-out" id="mkOut" hidden>Whole world</button></div>
+      <h2 class="mk-h" id="mkH"></h2>
+      <div class="nw-list" id="mkList"><div class="sq-empty">Loading the map…</div></div>
+    </div>
     <p class="src" id="nwSrc"></p>
   </div>
   <div id="page-corner" hidden>
@@ -3047,6 +3076,9 @@ function nwAgo(iso){
 function renderNews(){
   if (!$("#page-news")) return;
   document.querySelectorAll(".nwf").forEach(b => b.classList.toggle("on", b.dataset.n === NW_F));
+  const map = NW_F === "map";
+  $("#nwList").hidden = map; $("#mkMap").hidden = !map;
+  if (map) { mkOpen(); return; }
   if (!NEWS) return;
   const all = NEWS.items || [];
   const its = NW_F === "72" ? all.filter(x => x.p72.length) : NW_F === "sc" ? all.filter(x => x.sc.length) : NW_F === "biz" || NW_F === "ev" ? all.filter(x => x.k === NW_F) : all;
@@ -3073,6 +3105,74 @@ document.addEventListener("click", e => { const b = e.target.closest(".nwf"); if
 document.addEventListener("click", e => { const b = e.target.closest(".nw-oth"); if (!b) return;
   const box = b.closest(".nw-b").querySelector(".nw-also"), open = box.hidden;
   box.hidden = !open; b.setAttribute("aria-expanded", open); b.classList.toggle("on", open); });
+/* Market map: market.json (scripts/market.py, after every News update) and worldmap.json (country shapes, Natural Earth),
+   both only read when the map is opened. Picking a country (list or map) zooms in and lists its top 10 business stories. */
+let MKT = null, WMAP = null, MK_C = "", MK_VB = null, MK_ANIM = 0;
+async function mkOpen(){
+  if (!WMAP || !MKT) {
+    try {
+      const [a, b] = await Promise.all([fetch("worldmap.json").then(r => r.json()), fetch("market.json?t=" + Date.now(), { cache: "no-store" }).then(r => r.ok ? r.json() : { stories: [], top: {}, count: {}, world: [] })]);
+      WMAP = a; MKT = b;
+    } catch (e) { $("#mkList").innerHTML = `<div class="sq-empty">The map couldn't be loaded. Try again in a minute.</div>`; return; }
+    const lvl = n => n >= 7 ? 4 : n >= 4 ? 3 : n >= 2 ? 2 : n ? 1 : 0;
+    const shapes = Object.entries(WMAP.c).sort((x, y) => !!x[1].p - !!y[1].p).map(([cc, c]) => {
+      const n = MKT.count[cc] || 0, cl = lvl(n) ? ` class="mk${lvl(n)}"` : "", tip = `<title>${esc(c.n)}${n ? ` · ${n} stor${n === 1 ? "y" : "ies"}` : ""}</title>`;
+      // small countries (Monaco, Singapore...) are a dot, drawn only when they have stories
+      return c.d ? `<path data-c="${cc}"${cl} d="${c.d}">${tip}</path>` : n ? `<circle data-c="${cc}"${cl} cx="${c.p[0]}" cy="${c.p[1]}" r="4">${tip}</circle>` : "";
+    });
+    $("#mkSvg").innerHTML = shapes.join("");
+    const has = Object.keys(MKT.count).filter(cc => WMAP.c[cc]).sort((x, y) => MKT.count[y] - MKT.count[x] || WMAP.c[x].n.localeCompare(WMAP.c[y].n));
+    const rest = Object.keys(WMAP.c).filter(cc => !MKT.count[cc]).sort((x, y) => WMAP.c[x].n.localeCompare(WMAP.c[y].n));
+    $("#mkSel").innerHTML = `<option value="">Whole world</option><optgroup label="Business news this week">${has.map(cc => `<option value="${cc}">${esc(WMAP.c[cc].n)} (${MKT.count[cc]})</option>`).join("")}</optgroup><optgroup label="Other countries">${rest.map(cc => `<option value="${cc}">${esc(WMAP.c[cc].n)}</option>`).join("")}</optgroup>`;
+    MK_VB = [0, 0, WMAP.w, WMAP.h];
+    $("#mkSvg").setAttribute("viewBox", MK_VB.join(" "));
+  }
+  mkPick(MK_C, true);
+}
+// the box to show: the country's main landmass (or its dot), with room around it, in the map's shape on screen
+function mkBox(cc){
+  const svg = $("#mkSvg"), ar = svg.clientWidth && svg.clientHeight ? svg.clientWidth / svg.clientHeight : WMAP.w / WMAP.h;
+  const c = cc && WMAP.c[cc];
+  if (!c) return ar > 1.9 ? [0, (WMAP.h - WMAP.w / ar) / 2, WMAP.w, WMAP.w / ar] : [(WMAP.w - WMAP.h * ar) / 2, 0, WMAP.h * ar, WMAP.h];
+  let [x, y, w, h] = c.b || [c.p[0] - 1, c.p[1] - 1, 2, 2];
+  const pad = Math.max(w, h) * 0.5 + 25;
+  x -= pad; y -= pad; w += 2 * pad; h += 2 * pad;
+  if (w / h > ar) { const nh = w / ar; y -= (nh - h) / 2; h = nh; } else { const nw = h * ar; x -= (nw - w) / 2; w = nw; }
+  return [x, y, w, h];
+}
+function mkZoom(to, now){
+  const svg = $("#mkSvg"), from = MK_VB.slice(), t0 = performance.now(), id = ++MK_ANIM;
+  const set = v => { MK_VB = v; svg.setAttribute("viewBox", v.map(n => n.toFixed(1)).join(" "));
+    svg.querySelectorAll("circle").forEach(c => c.setAttribute("r", (v[2] / 300).toFixed(2))); };
+  if (now || matchMedia("(prefers-reduced-motion: reduce)").matches) return set(to);
+  const step = t => { if (id !== MK_ANIM) return; const k = Math.min(1, (t - t0) / 700), e = k < .5 ? 2 * k * k : 1 - (-2 * k + 2) ** 2 / 2;
+    set(from.map((f, i) => f + (to[i] - f) * e)); if (k < 1) requestAnimationFrame(step); };
+  requestAnimationFrame(step);
+}
+function mkPick(cc, now){
+  MK_C = cc && WMAP.c[cc] ? cc : "";
+  $("#mkSel").value = MK_C;
+  $("#mkSvg").querySelectorAll(".on").forEach(e => e.classList.remove("on"));
+  const el = MK_C && $("#mkSvg").querySelector(`[data-c="${MK_C}"]`);
+  if (el) { el.classList.add("on"); el.parentNode.appendChild(el); }  // drawn last so its outline shows
+  $("#mkOut").hidden = !MK_C;
+  mkZoom(mkBox(MK_C), now);
+  const ids = MK_C ? MKT.top[MK_C] || [] : MKT.world || [], st = ids.map(i => MKT.stories[i]).filter(Boolean);
+  $("#mkH").innerHTML = `${esc(MK_C ? WMAP.c[MK_C].n : "Whole world")}<small>top ${st.length || ""} business stor${st.length === 1 ? "y" : "ies"}, last 7 days</small>`;
+  const safe = u => /^https:\/\//.test(u || "") ? u : "#";
+  $("#mkList").innerHTML = st.length ? st.map(x => {
+    const n = new Set([x.s, ...x.also.map(a => a.s)]).size;
+    return `<article class="nw"><div class="nw-b">
+      <div class="nw-m"><span class="kb">${x.k === "biz" ? "Business" : "Tournament"}</span><span class="s">${esc(x.s)}</span><span>${esc(nwAgo(x.at))}</span>${n > 1 ? `<span class="nb">${n} outlets</span>` : ""}</div>
+      <h3><a href="${esc(safe(x.u))}" target="_blank" rel="noopener">${esc(x.t)}</a></h3>
+      ${x.also.length ? `<div class="nw-t"><button type="button" class="nw-oth" aria-expanded="false">Other outlets (${x.also.length})</button></div><div class="nw-also" hidden>${x.also.map(a => `<a href="${esc(safe(a.u))}" target="_blank" rel="noopener">${esc(a.s)}</a>`).join("")}</div>` : ""}
+    </div></article>`;
+  }).join("") : `<div class="sq-empty">No tennis business stories found for ${esc(MK_C ? WMAP.c[MK_C].n : "anywhere")} in the last 7 days.</div>`;
+}
+$("#mkSel")?.addEventListener("change", e => mkPick(e.target.value));
+$("#mkOut")?.addEventListener("click", () => mkPick(""));
+$("#mkSvg")?.addEventListener("click", e => { const el = e.target.closest("[data-c]"); if (el) mkPick(el.dataset.c === MK_C ? "" : el.dataset.c); });
+addEventListener("resize", () => { if (WMAP && NW_F === "map") mkZoom(mkBox(MK_C), true); });
 async function loadNews(){
   try { const r = await fetch("news.json?t=" + Date.now(), { cache: "no-store" }); if (r.ok) NEWS = await r.json(); else if (!NEWS) NEWS = { items: [] }; } catch (e) { if (!NEWS) NEWS = { items: [] }; }
   renderNews(); renderHome();

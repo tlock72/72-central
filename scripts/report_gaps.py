@@ -33,6 +33,7 @@ STEP_NAMES = {
     "corner": "Scouting Corner",
     "terank": "the Tennis Europe U14 rankings (Filtered Rankings)",
     "news": "the News headlines",
+    "market": "the News market map",
 }
 
 
