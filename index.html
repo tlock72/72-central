@@ -471,7 +471,6 @@ select.sq-in option{background:var(--navy-2);color:var(--white)}
 .sg-sec{display:grid;gap:10px;grid-template-columns:repeat(2,minmax(0,1fr));align-items:stretch}
 /* every suggestion tile the same size: the Scout button sits in the top corner, and all tiles get the height of the fullest one */
 .sg-sec .cn{position:relative;min-height:var(--sg-h,0);display:flex;flex-direction:column}
-.sg-col{display:flex;flex-direction:column;gap:10px;min-width:0}  /* the two columns while a results list is open */
 .sg-wl{margin-top:auto;padding:0 20px 10px;font-size:12px;color:var(--muted)}
 .sg-wl b{color:var(--text);font-family:var(--display);font-size:15px;font-weight:500}
 .sg-wl span{margin-left:10px;color:var(--muted-2)}.sg-wl span b{font-size:12px}
@@ -526,17 +525,66 @@ a.cn-st.ok:hover{border-color:var(--gold)}
 .cn .ch.note .sh{display:none}
 .cn-more{flex:1 1 auto;display:block;padding:10px 20px;font-family:var(--display);text-transform:uppercase;letter-spacing:.14em;font-size:11px;color:var(--gold);text-align:left}
 .cn-more:hover{background:var(--gold-dim)}
-/* drop-down arrow: points down when closed, flips up when the matches are showing */
+/* arrow in a circle: the results open in their own window in front (rsOpen) */
 .cn-more .ar{display:inline-grid;place-items:center;width:18px;height:18px;margin-right:8px;border:1px solid var(--gold);border-radius:50%;font-size:11px;line-height:1;letter-spacing:0;vertical-align:-3px;transition:transform .2s}
-.cn-more.on .ar{transform:rotate(180deg)}
-.cn-res{padding:4px 20px 14px;border-top:1px solid var(--line-2)}
-.cn-res[hidden]{display:none}
-.cn-tn{margin:12px 0 4px;font-size:12px;color:var(--text);font-weight:600}
-.cn-tn a{color:inherit;text-decoration:none}.cn-tn a:hover{color:var(--gold)}
-.cn-tn small{font-weight:400;color:var(--muted-2);margin-left:6px;letter-spacing:.04em}
-.cn-m{display:grid;grid-template-columns:52px 22px minmax(0,1fr) auto;gap:8px;font-size:12px;color:var(--muted);padding:2px 0}
-.cn-m .r{font-weight:700}.cn-m .r.W{color:var(--up)}.cn-m .r.L{color:var(--down)}
-.cn-m .s{font-variant-numeric:tabular-nums;color:var(--text);text-align:right}
+.cn-more:hover .ar{transform:translateX(3px)}
+/* "Last 12 months" window: summary across the top, then one card per tournament, newest first */
+dialog.rsd{width:min(760px,calc(100vw - 32px));max-height:calc(100dvh - 40px);padding:0;overflow-x:hidden;overflow-y:auto;overscroll-behavior:contain;border:1px solid var(--line);border-radius:24px;background:#0B1230;color:var(--text);box-shadow:0 30px 80px rgba(0,0,0,.6)}
+dialog.rsd::backdrop{background:rgba(5,9,25,.72);backdrop-filter:blur(6px);-webkit-backdrop-filter:blur(6px)}
+dialog.rsd[open]{animation:pop .28s ease}
+.rs-hd{position:relative;padding:26px 28px 20px;border-bottom:1px solid var(--line);background:radial-gradient(600px 260px at 100% 0%,rgba(208,165,121,.2),transparent 60%),linear-gradient(160deg,var(--navy-3),#0B1230)}
+.rs-hd .k{font-family:var(--display);text-transform:uppercase;letter-spacing:.2em;font-size:11px;color:var(--gold)}
+.rs-hd h2{margin:4px 60px 0 0;font-family:var(--display);font-weight:600;text-transform:uppercase;letter-spacing:.03em;font-size:clamp(26px,5vw,38px);line-height:1.05;color:var(--white);overflow-wrap:anywhere}
+.rs-hd .mt{margin-top:6px;font-size:12px;color:var(--muted)}
+.rs-hd .x{position:absolute;top:18px;right:18px;width:38px;height:38px;border-radius:50%;border:1px solid var(--line);color:var(--gold);font-size:18px;line-height:1;display:grid;place-items:center;background:rgba(12,20,49,.6)}
+.rs-hd .x:hover{background:var(--gold-dim)}
+.rs-st{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:8px;margin-top:18px}
+.rs-st div{border:1px solid var(--line-2);border-radius:14px;padding:10px 12px;background:rgba(255,255,255,.03)}
+.rs-st b{display:block;font-family:var(--display);font-size:26px;font-weight:600;line-height:1;color:var(--white);font-variant-numeric:tabular-nums}
+.rs-st b.g{color:var(--gold)}
+.rs-st span{display:block;margin-top:4px;font-size:10px;letter-spacing:.12em;text-transform:uppercase;color:var(--muted)}
+.rs-ln{display:flex;flex-wrap:wrap;align-items:center;gap:6px 14px;margin-top:14px;font-size:12px;color:var(--muted)}
+.rs-ln b{color:var(--text)}
+.rs-fm{display:inline-flex;gap:3px;vertical-align:middle;margin-left:6px}
+.rs-fm i{width:16px;height:16px;border-radius:4px;display:grid;place-items:center;font-style:normal;font-size:9px;font-weight:700;color:#0B1230}
+.rs-fm i.W{background:var(--up)}.rs-fm i.L{background:var(--down)}
+.rs-ch{display:flex;flex-wrap:wrap;gap:6px;padding:14px 28px 0}
+.rs-ch button{font-size:11px;letter-spacing:.06em;border:1px solid var(--line-2);border-radius:999px;padding:4px 12px;color:var(--muted)}
+.rs-ch button.on{border-color:var(--gold);color:var(--navy);background:var(--gold)}
+.rs-bd{padding:14px 28px 26px;display:flex;flex-direction:column;gap:12px}
+.rs-tn{border:1px solid var(--line-2);border-radius:16px;background:rgba(255,255,255,.025);overflow:hidden}
+.rs-th{display:flex;align-items:flex-start;gap:10px;padding:12px 16px;border-bottom:1px solid var(--line-2)}
+.rs-th .t{flex:1 1 auto;min-width:0}
+.rs-th .t b{display:block;font-size:14px;font-weight:600;color:var(--white);line-height:1.3}
+.rs-th .t a{color:inherit;text-decoration:none}.rs-th .t a:hover{color:var(--gold)}
+.rs-th .t small{display:block;margin-top:2px;font-size:11px;color:var(--muted-2);letter-spacing:.03em}
+.rs-th .o{flex:none;text-align:right}
+.rs-th .o em{display:inline-block;font-style:normal;font-size:10px;letter-spacing:.1em;text-transform:uppercase;border:1px solid var(--line-2);border-radius:999px;padding:3px 9px;color:var(--muted)}
+.rs-th .o em.ch{color:var(--navy);background:var(--gold);border-color:var(--gold);font-weight:700}
+.rs-th .o em.ru{color:var(--gold);border-color:var(--gold)}
+.rs-th .o small{display:block;margin-top:4px;font-size:11px;color:var(--muted);font-variant-numeric:tabular-nums}
+.rs-m{display:grid;grid-template-columns:56px 26px minmax(0,1fr) auto;align-items:center;gap:10px;padding:8px 16px;font-size:13px}
+.rs-m+.rs-m{border-top:1px solid rgba(255,255,255,.05)}
+.rs-m .rd{font-size:11px;color:var(--muted);letter-spacing:.04em;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.rs-m .wl{width:22px;height:22px;border-radius:6px;display:grid;place-items:center;font-size:11px;font-weight:700;color:#0B1230;background:var(--muted-2)}
+.rs-m .wl.W{background:var(--up)}.rs-m .wl.L{background:var(--down)}
+.rs-m .op{min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;color:var(--text)}
+.rs-m .op small{margin-left:6px;font-size:10px;letter-spacing:.08em;color:var(--muted-2)}
+.rs-m .sc{font-variant-numeric:tabular-nums;font-size:12.5px;color:var(--text);text-align:right;white-space:nowrap}
+.rs-m.L .op,.rs-m.L .sc{color:var(--muted)}
+.rs-none{padding:20px 0;text-align:center;font-size:13px;color:var(--muted)}
+@media (max-width:640px){
+  dialog.rsd{width:calc(100vw - 16px);max-height:calc(100dvh - 20px);border-radius:18px}
+  .rs-hd{padding:18px 16px 14px}.rs-hd .x{top:12px;right:12px;width:34px;height:34px}
+  .rs-st{grid-template-columns:repeat(2,minmax(0,1fr));gap:6px;margin-top:14px}
+  .rs-st div{padding:8px 10px}.rs-st b{font-size:22px}
+  .rs-ch{padding:12px 16px 0}.rs-bd{padding:12px 12px 18px;gap:10px}
+  .rs-th{padding:10px 12px}.rs-th .t b{font-size:13px}
+  .rs-m{grid-template-columns:44px 22px minmax(0,1fr) auto;gap:8px;padding:7px 12px;font-size:12px}
+  .rs-m .wl{width:20px;height:20px;font-size:10px}
+  .rs-m .sc{font-size:11.5px}
+  .rs-m .op{white-space:normal;overflow-wrap:anywhere;line-height:1.3}
+}
 .cn-wait{opacity:.7}
 .cn-ft{display:flex;flex-wrap:wrap;align-items:center;justify-content:flex-end;gap:8px;padding:8px 20px 10px;border-top:1px solid var(--line-2);font-size:12px;color:var(--muted)}
 .cn-ft .rm{font-size:11px;color:var(--down);text-decoration:underline;text-underline-offset:2px}
@@ -580,8 +628,7 @@ a.cn-st.ok:hover{border-color:var(--gold)}
   .cn-path{padding:0 12px 10px;gap:4px}.cn-st{padding:6px 7px;font-size:10px}.cn-st b{font-size:9px;letter-spacing:.04em}
   .cn .sq-row{grid-template-columns:minmax(0,1fr) 40px 40px repeat(3,42px);padding:8px 12px}
   .cn .sq-row.h span{font-size:9px;letter-spacing:.04em}
-  .cn-res,.cn-more{padding-inline:12px}
-  .cn-m{grid-template-columns:40px 18px minmax(0,1fr) auto;font-size:11px}
+  .cn-more{padding-inline:12px}
 }
 .stat .v.nm{font-size:22px;line-height:1.15}
 @media (max-width:640px){
@@ -961,7 +1008,7 @@ body.on-home > footer{display:none}
   #page-schedule .hero .sub,#page-scouting .hero .sub,#page-corner .hero .sub{display:none}
   .sg-long{display:none}.sg-short{display:block;padding:8px 12px;font-size:11px;line-height:1.4}
   /* Computerised suggestions: two tiles side by side, with the Scout button shrunk to just the binoculars */
-  .sg-sec{gap:6px}.sg-col{gap:6px}
+  .sg-sec{gap:6px}
   .sg-sec .cn{min-height:0}  /* only the two tiles in a row match heights on phones */
   .sg-sec .cn-h{padding:8px 34px 5px 10px;gap:1px 6px}
   .sg-sec .cn-h .nm{flex:1 1 100%;font-size:14px;line-height:1.2}
@@ -1052,8 +1099,6 @@ body.on-home > footer{display:none}
   .cn-ft .sq-in{flex-basis:100%}
   .cn-ft .go,.cn-ft .no{height:30px;font-size:10px}
   .cn-note{padding:0 12px 8px}
-  .cn-tn{margin-top:9px;font-size:11px}
-  .cn-res{padding-bottom:10px}
   /* Tour Schedule */
   .sch-key{margin:0 0 12px;font-size:9.5px;gap:3px 9px}
   .sch-key i{width:8px;height:8px;border-radius:2px}
@@ -1521,6 +1566,7 @@ dialog.tmd[open]{animation:pop .28s ease}
   </div>
   <dialog class="tmd" id="tmCard" aria-label="Business card"></dialog>
   <dialog class="prof" id="prof" aria-label="Player profile"></dialog>
+  <dialog class="rsd" id="resd" aria-label="Last 12 months of results"></dialog>
   <dialog class="stg" id="sets" aria-label="Settings">
     <h2>Settings</h2>
     <label for="setName">Your first name</label>
@@ -2933,7 +2979,7 @@ async function loadScouting(){
 const CORNER_URL = "https://script.google.com/macros/s/AKfycbwzEb0YNoDmZaaJ5fQg05ubEe_lowMLiGoYaXuclycqQikOngLQEmENPN5KoL_KJXu1kA/exec";  // same as LOG_URL
 let SUGG = null;  // suggest.json: the suggestions' last 12 months of results
 let CORNER = null, CN_SHEET = [], CN_SHEET_OK = false, CN_REMOVED = [], CN_ASKED = [];
-const CN = { g: "", q: "", s: "", open: new Set(), rm: "", view: "", add: "" };
+const CN = { g: "", q: "", s: "", rm: "", view: "", add: "" };
 try { CN.view = localStorage.getItem("72c-cnview") === "sug" ? "sug" : ""; } catch (e) {}
 const cnKey = s => String(s || "").split("|")[0].normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLowerCase().replace(/[^a-z]/g, "");
 const CN_SRC = { te: "Tennis Europe", "itf-jr": "ITF Juniors", "itf-pro": "Pro: ATP/WTA, Challenger, ITF" };
@@ -2982,27 +3028,76 @@ function cnCard(k, p){
   for (const r of p.te || []) rows.push(cnRow("Tennis Europe", r.cat, r.rank, r.high, r.w, r.m3, r.m12));
   const res = p.results || [];
   const won = res.filter(r => r.res === "W").length, lost = res.filter(r => r.res === "L").length;
-  const open = CN.open.has(k), resHtml = cnResHtml(res);
   const meta = [p.nat, p.born ? "born " + p.born : "", p.by ? "added by " + p.by : "", p.typed ? `typed as "${p.typed}", spelling corrected from the ITF` : ""].filter(Boolean).join(" · ");
   const unsure = ["itf", "te"].filter(s => L[s]?.status === "unsure").map(s => `${s === "te" ? "Tennis Europe" : "ITF"}: ${L[s].note || "more than one player fits"}`);
   return `<div class="cn"><div class="cn-h"><span class="nm">${esc(p.name)}</span><span class="mt">${esc(meta)}</span>${res.length ? `<span class="wl">Last 12 months <b>${won}-${lost}</b><small>${cnYears(res)}</small></span>` : ""}</div>
     ${path ? `<div class="cn-path">${path}</div>` : ""}
     ${unsure.length ? `<div class="cn-note">${unsure.map(esc).join("<br>")}. Add the right id in prospects.json.</div>` : ""}
     ${rows.length ? `<div class="sq-row h"><span>Ranking</span><span>Rank</span><span>Best</span><span>1 wk</span><span>3 mo</span><span>12 mo</span></div>${rows.join("")}` : ""}
-    <div class="cn-acts">${cmBtn("cn:" + k, [p.name, p.typed], "lg")}${res.length ? `<button class="cn-more${open ? " on" : ""}" data-k="${esc(k)}" aria-expanded="${open}"><span class="ar" aria-hidden="true">▾</span>${open ? "Hide" : "Show"} the last 12 months <span class="n">(${res.length} match${res.length === 1 ? "" : "es"})</span></button>` : ""}${cnRemoval(k, p.typed || p.name)}</div>
-    ${cmLog("cn:" + k, p.name, [p.name, p.typed])}
-    ${res.length ? `<div class="cn-res"${open ? "" : " hidden"}>${resHtml}</div>` : ""}</div>`;
+    <div class="cn-acts">${cmBtn("cn:" + k, [p.name, p.typed], "lg")}${res.length ? rsBtn("cn:" + k, p.name, meta, res) : ""}${cnRemoval(k, p.typed || p.name)}</div>
+    ${cmLog("cn:" + k, p.name, [p.name, p.typed])}</div>`;
 }
-// last 12 months of results, grouped by tournament, newest first (watch list cards and suggestions)
-function cnResHtml(res){
+// "View the last 12 months" button (watch list cards and suggestions): opens the results window in front (rsOpen)
+const RS = { k: "", f: "", src: "", all: {} };
+function rsBtn(k, name, meta, res){
+  RS.all[k] = { name, meta, res };
+  return `<button class="cn-more" data-rs="${esc(k)}"><span class="ar" aria-hidden="true">›</span>View the last 12 months <span class="n">(${res.length} match${res.length === 1 ? "" : "es"})</span></button>`;
+}
+const RS_FINAL = /^(F|Final|Finals|Playoff Final)$/;
+// shorter round names for the narrow column: "Q-R1" → "Q1", "Q-Qualification round of 16" → "Q R16"
+const rsRd = r => String(r || "–").replace(/^Q-R(\d)$/, "Q$1").replace(/^Q-Qualification round of (\d+)$/, "Q R$1").replace(/^Q-/, "Q ").replace(/ \(walkover\)$/, " w/o").replace(/^Round Robin /, "RR ");
+// the results window: totals across the top, then one card per tournament (newest first, deepest round first),
+// each with how far the player went. Filters: all / wins / losses, and by level when there's more than one.
+function rsOpen(k){
+  const P = RS.all[k]; if (!P) return;
+  if (RS.k !== k) { RS.k = k; RS.f = ""; RS.src = ""; }
+  const all = P.res, srcs = [...new Set(all.map(r => r.src))];
+  const won = all.filter(r => r.res === "W").length, lost = all.filter(r => r.res === "L").length;
   const groups = [];
-  for (const r of res) {
+  for (const r of all) {
     const g = groups.find(x => x.src === r.src && x.t === r.t && x.start === r.start);
-    if (g) g.m.push(r); else groups.push({ src: r.src, t: r.t, start: r.start, end: r.end, cat: r.cat, link: r.link, m: [r] });
+    if (g) g.m.push(r); else groups.push({ src: r.src, t: r.t, start: r.start, end: r.end, cat: r.cat, where: r.where, link: r.link, m: [r] });
   }
-  return groups.map(g => `<div class="cn-tn">${g.link ? `<a href="${esc(g.link)}" target="_blank" rel="noopener">${esc(g.t)}</a>` : esc(g.t)}<small>${esc(sqFmt(g.end))} · ${esc(g.cat)} · ${esc(CN_SRC[g.src] || g.src)}</small></div>`
-    + g.m.map(m => `<div class="cn-m"><span>${esc(m.r)}</span><span class="r ${m.res}">${m.res || "–"}</span><span>${esc(m.o)}${m.on ? ` (${esc(m.on)})` : ""}</span><span class="s">${esc(m.s)}</span></div>`).join("")).join("");
+  // how far they went: the first match listed is their last one there
+  const outcome = g => {
+    const top = g.m[0];
+    if (RS_FINAL.test(top.r)) return top.res === "W" ? `<em class="ch">Champion</em>` : top.res === "L" ? `<em class="ru">Runner-up</em>` : `<em>Final</em>`;
+    return top.res === "L" ? `<em>Out in ${esc(rsRd(top.r))}</em>` : top.res === "W" ? `<em>Won ${esc(rsRd(top.r))}</em>` : "";
+  };
+  const titles = groups.filter(g => RS_FINAL.test(g.m[0].r) && g.m[0].res === "W").length;
+  const finals = groups.filter(g => RS_FINAL.test(g.m[0].r)).length;
+  // last 10 results, oldest on the left so the newest is at the right-hand end
+  const form = all.filter(r => r.res === "W" || r.res === "L").slice(0, 10).reverse().map(r => `<i class="${r.res}" title="${esc(rsRd(r.r) + " " + (r.res === "W" ? "won" : "lost") + " v " + r.o)}">${r.res}</i>`).join("");
+  const pct = won + lost ? Math.round(100 * won / (won + lost)) + "%" : "–";
+  const shown = groups.filter(g => !RS.src || g.src === RS.src).map(g => ({ ...g, m: g.m.filter(m => !RS.f || m.res === RS.f) })).filter(g => g.m.length);
+  const fmt = d => d ? new Date(d + "T12:00:00Z").toLocaleDateString("en-GB", { day: "numeric", month: "short", year: "numeric", timeZone: "UTC" }) : "";
+  const card = g => {
+    const w = g.m.filter(m => m.res === "W").length, l = g.m.filter(m => m.res === "L").length;
+    const when = g.start && g.end && g.start !== g.end ? `${fmt(g.start).replace(/ \d{4}$/, "")} – ${fmt(g.end)}` : fmt(g.end || g.start);
+    const sub = [when, g.cat, g.where, srcs.length > 1 ? CN_SRC[g.src] || g.src : ""].filter(Boolean).map(esc).join(" · ");
+    return `<div class="rs-tn"><div class="rs-th"><div class="t"><b>${g.link ? `<a href="${esc(g.link)}" target="_blank" rel="noopener">${esc(g.t)}</a>` : esc(g.t)}</b><small>${sub}</small></div>
+      <div class="o">${RS.f ? "" : outcome(g)}<small>${w}-${l}</small></div></div>
+      ${g.m.map(m => `<div class="rs-m ${m.res}"><span class="rd" title="${esc(m.r)}">${esc(rsRd(m.r))}</span><span class="wl ${m.res}">${m.res || "–"}</span><span class="op">${m.res === "W" ? "def." : m.res === "L" ? "lost to" : "v"} ${esc(m.o)}${m.on ? `<small>${esc(m.on)}</small>` : ""}</span><span class="sc">${esc(m.s)}</span></div>`).join("")}</div>`;
+  };
+  const chip = (attr, v, txt, on) => `<button type="button" data-${attr}="${v}" class="${on ? "on" : ""}">${txt}</button>`;
+  const d = $("#resd");
+  d.innerHTML = `<div class="rs-hd"><button type="button" class="x" data-rsx="1" aria-label="Close">✕</button>
+    <div class="k">Last 12 months</div><h2>${esc(P.name)}</h2>${P.meta ? `<div class="mt">${esc(P.meta)}</div>` : ""}
+    <div class="rs-st"><div><b>${won}-${lost}</b><span>Won-lost</span></div><div><b>${pct}</b><span>Matches won</span></div><div><b>${groups.length}</b><span>Tournament${groups.length === 1 ? "" : "s"}</span></div><div><b class="${titles ? "g" : ""}">${titles}</b><span>Title${titles === 1 ? "" : "s"}${finals > titles ? ` · ${finals} final${finals === 1 ? "" : "s"}` : ""}</span></div></div>
+    <div class="rs-ln">${cnYears(all) ? `<span>By year: ${cnYears(all)}</span>` : ""}${form ? `<span>Last ${form.split("<i").length - 1}<span class="rs-fm">${form}</span></span>` : ""}</div></div>
+    <div class="rs-ch">${chip("rsf", "", "All matches", !RS.f)}${chip("rsf", "W", `Wins (${won})`, RS.f === "W")}${chip("rsf", "L", `Losses (${lost})`, RS.f === "L")}
+    ${srcs.length > 1 ? chip("rss", "", "All levels", !RS.src) + srcs.map(x => chip("rss", x, esc(CN_SRC[x] || x), RS.src === x)).join("") : ""}</div>
+    <div class="rs-bd">${shown.map(card).join("") || `<div class="rs-none">No matches to show.</div>`}</div>`;
+  if (!d.open) { profLock(true); d.showModal(); d.scrollTop = 0; }
 }
+$("#resd").addEventListener("click", e => {
+  const d = $("#resd");
+  if (e.target === d || e.target.closest("[data-rsx]")) return d.close();
+  const f = e.target.closest("[data-rsf]"), s = e.target.closest("[data-rss]");
+  if (f) RS.f = f.dataset.rsf; else if (s) RS.src = s.dataset.rss; else return;
+  const y = d.scrollTop; rsOpen(RS.k); d.scrollTop = y;
+});
+$("#resd").addEventListener("close", () => profLock(false));
 // a calendar-year W-L line ("2026 30-12 · 2025 8-4") for the last 12 months of results
 function cnYears(res){
   const y = {};
@@ -3118,20 +3213,11 @@ function sgCard(x){
   }
   const nm = x.url ? `<a class="nm" href="${esc(x.url)}" target="_blank" rel="noopener">${esc(x.name)}</a>` : `<span class="nm">${esc(x.name)}</span>`;
   // last 12 months of results, read by scripts/suggest_results.py (suggest.json); left off when it has none yet
-  const S = SUGG?.players?.[x.L.k + ":" + cnSorted(x.name)], res = S?.results || [], k = "sg:" + x.key.replace(/:\d+:/, ":"), open = CN.open.has(k);
+  const S = SUGG?.players?.[x.L.k + ":" + cnSorted(x.name)], res = S?.results || [], k = "sg:" + x.key.replace(/:\d+:/, ":");
   const won = res.filter(r => r.res === "W").length, lost = res.filter(r => r.res === "L").length;
   const foot = res.length ? `<div class="sg-wl">Last 12 months <b>${won}-${lost}</b><span>${cnYears(res)}</span></div>
-    <div class="cn-acts"><button class="cn-more${open ? " on" : ""}" data-k="${esc(k)}" aria-expanded="${open}"><span class="ar" aria-hidden="true">▾</span>${open ? "Hide" : "Show"} the last 12 months <span class="n">(${res.length} match${res.length === 1 ? "" : "es"})</span></button></div>
-    <div class="cn-res"${open ? "" : " hidden"}>${cnResHtml(res)}</div>` : "";
-  return `<div class="cn${open ? " sg-open" : ""}">${bar}<div class="cn-h">${nm}<span class="mt">${esc(meta)}</span><span class="sg-act">${act}</span></div><div class="sg-why">${x.why.join("")}</div>${foot}</div>`;
-}
-// tiles two side by side; while a "last 12 months" list is open the section becomes two separate columns,
-// so the open tile grows down its own column and the other column carries on with its tiles
-function sgCols(list){
-  const open = list.some(x => CN.open.has("sg:" + x.key.replace(/:\d+:/, ":")));
-  if (!open) return list.map(sgCard).join("");
-  const col = r => `<div class="sg-col">${list.filter((x, i) => i % 2 === r).map(sgCard).join("")}</div>`;
-  return col(0) + col(1);
+    <div class="cn-acts">${rsBtn(k, x.name, meta.replace(/\u00a0/g, " "), res)}</div>` : "";
+  return `<div class="cn">${bar}<div class="cn-h">${nm}<span class="mt">${esc(meta)}</span><span class="sg-act">${act}</span></div><div class="sg-why">${x.why.join("")}</div>${foot}</div>`;
 }
 let SG_ROWS = [];
 function renderSuggest(){
@@ -3145,7 +3231,7 @@ function renderSuggest(){
     const list = P.list.filter(x => !q || cnKey(x.name).includes(q)).slice(0, L.show || SG_SHOW);
     SG_ROWS.push(...list);
     return `<section class="sg-sec">${head}
-      ${sgCols(list) || `<div class="sq-empty">No one stands out${q ? " with that name" : ""} this week.</div>`}</section>`;
+      ${list.map(sgCard).join("") || `<div class="sq-empty">No one stands out${q ? " with that name" : ""} this week.</div>`}</section>`;
   });
   $("#cnList").innerHTML = `<p class="sg-note sg-short">Picked by the computer from the official rankings: the fastest climbers. ATP/WTA top 35, 72 players and the watch list left out. A pointer, not a verdict.</p><p class="sg-note sg-long">Picked by the computer from the official rankings: young players climbing fastest over the last 3 and 12 months, with a little extra weight for younger players, plus exceptional climbs by over-21s who have never been this high before (so not comebacks from injury). No one in the ATP or WTA top 35 is ever suggested (they are already well known), and 72 players and anyone already on the watch list are left out. It's a pointer to look closer, not a verdict. <b>ITF juniors aren't included yet:</b> the ITF doesn't let us read past junior rankings, so climbs can only be measured from our own weekly records, which started on 5 Oct 2026. They can be added once there's 3 months of history.</p>` + secs.join("");
   $("#cnSrc").textContent = "Sources: the official ATP and WTA rankings, and Tennis Europe (internal use only). Recalculated whenever a new ranking week comes out.";
@@ -3153,7 +3239,7 @@ function renderSuggest(){
 }
 // all suggestion tiles as tall as the fullest one (re-measured when the window size changes)
 function sgSize(){
-  const box = $("#cnList"), cards = [...box.querySelectorAll(".sg-sec .cn:not(.sg-open)")];
+  const box = $("#cnList"), cards = [...box.querySelectorAll(".sg-sec .cn")];
   box.style.removeProperty("--sg-h");
   box.classList.add("sg-measure");  // measured at their natural height, not stretched to the tile beside them
   if (cards.length) box.style.setProperty("--sg-h", Math.max(...cards.map(c => c.offsetHeight - (c.querySelector(".sg-bar")?.offsetHeight || 0))) + "px");
@@ -3214,12 +3300,7 @@ $("#cnList").addEventListener("click", e => {
     }
     renderCorner(); return;
   }
-  const b = e.target.closest(".cn-more"); if (!b) return;
-  // only one "last 12 months" list open at a time (watch list and suggestions)
-  const was = CN.open.has(b.dataset.k);
-  CN.open.clear();
-  if (!was) CN.open.add(b.dataset.k);
-  renderCorner();
+  const b = e.target.closest("[data-rs]"); if (b) rsOpen(b.dataset.rs);
 });
 $("#cnList").addEventListener("submit", e => {
   const f = e.target.closest(".cn-rmf"); if (!f) return;
