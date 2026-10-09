@@ -66,6 +66,19 @@ TENNIS_ONLY = {"Tennis Majors", "Tennis365", "Ubitennis"}
 BIZ_FEEDS = {"SportsPro", "Sportico", "Front Office Sports"} | SEARCHES
 STRICT = ["tennis", "atp", "wta", "itf", "wimbledon", "roland garros", "ptpa", "lta", "usta", "davis cup",
           "billie jean king cup", "australian open", "us open tennis", "laver cup"]
+# when several outlets run a story, the best-known one leads (first in this list; outlets not listed come last,
+#   then the newest copy) and the rest sit behind the "Other outlets" button. Names as the feeds / Google give them.
+BEST = ["reuters", "bbc sport", "bbc", "the times", "the guardian", "financial times", "bloomberg", "associated press",
+        "ap news", "the new york times", "the athletic", "sports business journal", "sportico", "sportspro",
+        "sportspro media", "the telegraph", "the independent", "sky sports", "front office sports", "espn",
+        "tennis majors", "wta tennis", "atp tour", "itf", "tennis.com", "ubitennis", "tennis365"]
+
+
+def rank(o):
+    o = o.lower()
+    return BEST.index(o) if o in BEST else len(BEST)
+
+
 # a search result from an outlet already read directly is left out (that outlet's own copy is used)
 DIRECT = {"bbc", "bbc sport", "the guardian", "sky sports", "the independent", "the telegraph", "tennis majors",
           "tennis365", "ubitennis", "sportspro", "sportspro media", "sportico", "front office sports"}
@@ -341,7 +354,7 @@ def main():
     #   final, or an outlet's match report and ranking-points piece), using headline + summary: within 12 hours of
     #   the group's lead and the same two ranked players, or one ranked player plus 3+ other key words (not names).
     #   Only the lead is compared, so stories can't chain together across a whole tournament. Groups covered by
-    #   the most outlets lead, so the best-covered version is shown and the rest become "Also" links.
+    #   the most outlets come first; the best-known outlet's piece is then shown (BEST) and the rest go behind "Other outlets".
     def close(a, b):
         both = a["wd"] & b["wd"]
         who = len(both & pros)
@@ -359,7 +372,8 @@ def main():
 
     out = []
     for g in groups:
-        lead = g[0]  # the newest copy of the best-covered version leads
+        g = sorted(g, key=lambda x: (rank(x["s"]), -x["at"].timestamp()))  # the best-known outlet leads, see BEST
+        lead = g[0]
         n = len({x["s"] for x in g})
         age = (NOW - max(x["at"] for x in g)).total_seconds() / 3600
         p72 = sorted({p for x in g for p in x["p72"]})

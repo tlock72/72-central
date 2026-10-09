@@ -880,6 +880,12 @@ dialog.stg[open]{display:block;animation:pop .28s ease}
 .nw-t a,.nw-t span{font-size:11px;border:1px solid var(--line);border-radius:999px;padding:2px 9px;color:var(--muted);text-decoration:none}
 .nw-t .p72{border-color:var(--gold);color:var(--gold)}
 .nw-t a:hover{color:var(--white)}
+.nw-t .nw-oth{font:inherit;font-size:11px;background:none;border:1px solid var(--gold);border-radius:999px;padding:2px 9px;color:var(--gold);cursor:pointer}
+.nw-t .nw-oth::after{content:" ▾"}.nw-t .nw-oth.on::after{content:" ▴"}
+.nw-also{display:flex;flex-wrap:wrap;gap:6px;margin-top:8px;padding-top:8px;border-top:1px solid var(--line-2)}
+.nw-also a{font-size:12px;border:1px solid var(--line);border-radius:999px;padding:3px 10px;color:var(--white);text-decoration:none}
+.nw-also a::after{content:" ↗";color:var(--muted)}
+.nw-also a:hover{border-color:var(--gold);color:var(--gold)}
 @media (max-width:640px){.nw{padding:11px 13px;border-radius:13px}.nw h3{font-size:15px}.nw p{font-size:12px;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}}
 .hp-faces{display:flex;margin-top:16px}
 .hp-faces img{width:38px;height:38px;border-radius:50%;object-fit:cover;object-position:center 20%;border:2px solid var(--navy-2);margin-left:-10px;background:var(--navy-3)}
@@ -3051,17 +3057,22 @@ function renderNews(){
     const cnt = {}, lab = a => { cnt[a.s] = (cnt[a.s] || (a.s === x.s ? 1 : 0)) + 1; return cnt[a.s] > 1 ? `${a.s} (${cnt[a.s]})` : a.s; };
     const tags = [...x.p72.map(id => profById[id] ? `<a class="p72" href="#players/${esc(id)}">72 · ${esc(pName(id))}</a>` : `<span class="p72">72 · ${esc(pName(id))}</span>`),
       ...x.sc.map(nm => `<a href="#corner">Prospect · ${esc(nm)}</a>`),
-      ...x.also.map(a => `<a href="${esc(safe(a.u))}" target="_blank" rel="noopener">Also: ${esc(lab(a))}</a>`)];
+      ...(x.also.length ? [`<button type="button" class="nw-oth" aria-expanded="false">Other outlets (${x.also.length})</button>`] : [])];
+    const oth = x.also.length ? `<div class="nw-also" hidden>${x.also.map(a => `<a href="${esc(safe(a.u))}" target="_blank" rel="noopener">${esc(lab(a))}</a>`).join("")}</div>` : "";
     return `<article class="nw${x.p72.length ? " k72" : ""}"><div class="nw-b">
       <div class="nw-m">${x.k ? `<span class="kb">${x.k === "biz" ? "Business" : "Tournament"}</span>` : ""}<span class="s">${esc(x.s)}</span><span>${esc(nwAgo(x.at))}</span>${n > 1 ? `<span class="nb">${n} outlets</span>` : ""}</div>
       <h3><a href="${esc(safe(x.u))}" target="_blank" rel="noopener">${esc(x.t)}</a></h3>
-      ${x.d ? `<p>${esc(x.d)}</p>` : ""}${tags.length ? `<div class="nw-t">${tags.join("")}</div>` : ""}
+      ${x.d ? `<p>${esc(x.d)}</p>` : ""}${tags.length ? `<div class="nw-t">${tags.join("")}</div>` : ""}${oth}
     </div></article>`;
   }).join("") : `<div class="sq-empty">${NW_F === "72" ? "No stories on 72 players this week." : NW_F === "sc" ? "No stories on Scouting Corner prospects this week." : NW_F === "biz" ? "No business stories this week yet." : NW_F === "ev" ? "No tournament news this week yet." : "No headlines yet. They are read every hour."}</div>`;
   const ok = Object.entries(NEWS.sources || {}).filter(([, v]) => v.ok).map(([k]) => k);
   $("#nwSrc").innerHTML = `Headlines from ${ok.map(esc).join(", ") || "the outlets' feeds"}, read every hour${NEWS.updated ? ` (last change ${esc(nwAgo(NEWS.updated))})` : ""}. 72 Central only shows each outlet's headline and summary and links to the full story on its site.`;
 }
 document.addEventListener("click", e => { const b = e.target.closest(".nwf"); if (b) { NW_F = b.dataset.n; renderNews(); } });
+// "Other outlets (n)": shows / hides the other outlets' links under a story
+document.addEventListener("click", e => { const b = e.target.closest(".nw-oth"); if (!b) return;
+  const box = b.closest(".nw-b").querySelector(".nw-also"), open = box.hidden;
+  box.hidden = !open; b.setAttribute("aria-expanded", open); b.classList.toggle("on", open); });
 async function loadNews(){
   try { const r = await fetch("news.json?t=" + Date.now(), { cache: "no-store" }); if (r.ok) NEWS = await r.json(); else if (!NEWS) NEWS = { items: [] }; } catch (e) { if (!NEWS) NEWS = { items: [] }; }
   renderNews(); renderHome();
