@@ -787,6 +787,10 @@ dialog.rsd[open]{animation:pop .28s ease}
   .rk.h{padding-block:4px}
   .rk.h span,.rk.h span:nth-child(-n+2){font-size:6.5px;letter-spacing:.04em}
   .rk .mv{font-size:8px}
+  /* each table scrolls on its own inside a screen-high box; its title and column labels stay put at the top */
+  #page-rankings .tour{display:flex;flex-direction:column;max-height:calc(100dvh - 140px)}
+  #page-rankings .tour>div:last-child{overflow-y:auto;overscroll-behavior:contain;-webkit-overflow-scrolling:touch;min-height:0}
+  #page-rankings .rk.h{position:sticky;top:0;z-index:1;background:#111B40}
 }
 @media (max-width:640px){
   /* small tiles on phones (72 Rankings, ITF juniors, Filtered Rankings) */
@@ -2213,7 +2217,7 @@ function renderRankings(){
   const fmr = list => list.length ? `<div class="rk-sep">Previously ranked</div>` + html(list) : "";
   const fA = former("ATP"), fW = former("WTA");
   $("#atpList").innerHTML = head + html(atp) + fmr(fA); $("#wtaList").innerHTML = head + html(wta) + fmr(fW);
-  $("#atpN").textContent = atp.length + " ranked" + (fA.length ? ` · ${fA.length} previously` : ""); $("#wtaN").textContent = wta.length + " ranked" + (fW.length ? ` · ${fW.length} previously` : "");
+  $("#atpN").textContent = atp.length + " ranked"; $("#wtaN").textContent = wta.length + " ranked";
   const ranked = [...atp, ...wta].filter(x => x.d.rank);
   // the small tiles at the top: the first one counts the pros on the ATP & WTA view and the juniors on the ITF view
   const year = new Date().getFullYear();
