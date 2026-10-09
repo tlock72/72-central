@@ -13,7 +13,7 @@ How "important" is decided (no guessing, no AI):
 A feed that can't be read keeps nothing from this run (its stories drop out once they are old anyway);
 sources{name}.ok is the last UK date it was read, and report_gaps.py alerts a feed unreadable for 2 days.
 """
-import html, json, math, os, re, sys, unicodedata, urllib.request
+import gzip, html, json, os, re, sys, unicodedata, urllib.request, zlib
 import xml.etree.ElementTree as ET
 from datetime import datetime, timedelta, timezone
 from email.utils import parsedate_to_datetime
@@ -29,17 +29,25 @@ TODAY = NOW.astimezone(UK).date().isoformat()
 KEEP_H = 72          # top headlines: the last 3 days
 KEEP_72_H = 24 * 7   # stories on 72 players or prospects: the last week
 MAX_TOP = 40
-# (name shown on the site, feed). All free and public; tennis sections only.
+# (name shown on the site, feed addresses tried in order). All free and public; tennis sections only.
 FEEDS = [
-    ("BBC Sport", "https://feeds.bbci.co.uk/sport/tennis/rss.xml"),
-    ("The Guardian", "https://www.theguardian.com/sport/tennis/rss"),
-    ("ESPN", "https://www.espn.com/espn/rss/tennis/news"),
-    ("Sky Sports", "https://www.skysports.com/rss/12110"),
-    ("The Independent", "https://www.independent.co.uk/sport/tennis/rss"),
-    ("Eurosport", "https://www.eurosport.com/tennis/rss.xml"),
-    ("Tennis Majors", "https://www.tennismajors.com/feed"),
-    ("Ubitennis", "https://www.ubitennis.net/feed/"),
+    ("BBC Sport", ["https://feeds.bbci.co.uk/sport/tennis/rss.xml"]),
+    ("The Guardian", ["https://www.theguardian.com/sport/tennis/rss"]),
+    ("Sky Sports", ["https://www.skysports.com/rss/12110"]),
+    ("ESPN", ["https://www.espn.com/espn/rss/tennis/news", "https://www.espn.co.uk/espn/rss/tennis/news"]),
+    ("The Independent", ["https://www.independent.co.uk/sport/tennis/rss"]),
+    ("The Telegraph", ["https://www.telegraph.co.uk/tennis/rss.xml"]),
+    ("Eurosport", ["https://www.eurosport.co.uk/tennis/rss.xml", "https://www.eurosport.com/rss.xml?s=22"]),
+    ("Tennis Majors", ["https://www.tennismajors.com/feed"]),
+    ("Tennis365", ["https://www.tennis365.com/feed"]),
+    ("Ubitennis", ["https://www.ubitennis.net/feed/"]),
 ]
+# outlets that only cover tennis: everything they publish is kept
+TENNIS_ONLY = {"Tennis Majors", "Tennis365", "Ubitennis"}
+# from the others, a headline must be about tennis: one of these words, an "… Open", a ranked player's surname,
+#   or a 72 player / prospect named in it or its summary (their tennis feeds also carry general sport pieces)
+TENNIS = set("""tennis atp wta itf wimbledon slam roland garros masters challenger davis billie racket racquet
+lta usta seed seeded seeds tiebreak tie break""".split())
 STOP = set("""a an the and or but of to in on at for from by with as is are was were be been it its his her their
 this that these those after before over under into out up down off about against v vs win wins won beat beats
 beaten loses lost lose says said say set sets match matches open tennis first second third final finals semi
@@ -75,10 +83,16 @@ def when(s):
 
 
 def fetch(url):
-    req = urllib.request.Request(url, headers={"User-Agent": "Mozilla/5.0 (72 Central news reader)",
-                                               "Accept": "application/rss+xml, application/xml, text/xml, */*"})
+    req = urllib.request.Request(url, headers={"User-Agent": "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/126.0 Safari/537.36",
+                                               "Accept": "application/rss+xml, application/xml, text/xml, */*",
+                                               "Accept-Encoding": "gzip, deflate"})
     with urllib.request.urlopen(req, timeout=25) as r:
-        return r.read()
+        raw, enc = r.read(), (r.headers.get("Content-Encoding") or "").lower()
+    if enc == "gzip" or raw[:2] == b"\x1f\x8b":
+        raw = gzip.decompress(raw)
+    elif enc == "deflate":
+        raw = zlib.decompress(raw, -zlib.MAX_WBITS)
+    return raw.lstrip(b"\xef\xbb\xbf \r\n\t")
 
 
 def items(raw):
@@ -123,19 +137,37 @@ def main():
     except Exception:
         scouts = []
 
+    # surnames of the ranked ATP/WTA top 500 (scouting.json): the "who" words used to match stories across outlets
+    pros = set()
+    try:
+        sq = json.load(open("scouting.json"))
+        for t in ("atp", "wta"):
+            for row in (sq.get(t) or {}).get("players") or []:
+                w = norm(row[1]).split()
+                if row[0] <= 500 and w and len(w[-1]) >= 4 and w[-1] not in STOP:
+                    pros.add(w[-1])
+    except Exception:
+        pass
+    pros |= {norm(n).split()[-1] for n, _ in ROSTER.values()}
+
     got = []
-    for name, url in FEEDS:
-        try:
-            its = items(fetch(url))
-            if not its:
-                raise ValueError("no headlines in the feed")
-            sources[name] = {"ok": TODAY, "n": len(its)}
-            got += [(name,) + it for it in its]
-            print(f"{name}: {len(its)} headlines")
-        except Exception as e:
-            sources.setdefault(name, {})["err"] = str(e)[:120]
+    for name, urls in FEEDS:
+        errs = []
+        for url in urls:
+            try:
+                its = items(fetch(url))
+                if not its:
+                    raise ValueError("no headlines in the feed")
+                sources[name] = {"ok": TODAY, "n": len(its)}
+                got += [(name,) + it for it in its]
+                print(f"{name}: {len(its)} headlines ({url})")
+                break
+            except Exception as e:
+                errs.append(f"{url}: {e}")
+        else:
+            sources.setdefault(name, {})["err"] = "; ".join(errs)[:300]
             sources[name]["n"] = 0
-            print(f"{name}: couldn't be read ({e})")
+            print(f"{name}: couldn't be read ({'; '.join(errs)})")
 
     # one copy per link, newest first
     seen, rows = set(), []
@@ -144,17 +176,28 @@ def main():
             continue
         seen.add(u)
         blob = norm(t + " " + d)
+        tw = set(norm(t).split())
+        p72 = [rid for rid, n in names72 if n in blob]
+        sc = [n for n, k in scouts if k in blob]
+        if not (s in TENNIS_ONLY or tw & TENNIS or tw & pros or re.search(r"\b[A-Z][a-z]+ Open\b", t) or p72 or sc):
+            print("not tennis, left out:", t)
+            continue
         rows.append({"t": t, "u": u, "s": s, "d": d, "at": at,
-                     "p72": [rid for rid, n in names72 if n in blob],
-                     "sc": [n for n, k in scouts if k in blob], "w": words(t)})
+                     "p72": p72, "sc": sc, "w": words(t), "who": words(t) & pros})
 
-    # group the same story across outlets: most of the shorter headline's key words in common (at least 3)
+    # group the same story across outlets (within 36 hours of each other):
+    #   the same two ranked players in the headline (e.g. "Hurkacz defeats Djokovic" / "Djokovic suffers Hurkacz loss"),
+    #   or one ranked player plus 3+ key words in common, or 3+ key words that are most of the shorter headline
+    def same(a, r):
+        common = len(a["w"] & r["w"])
+        who = len(a["who"] & r["who"])
+        return (who >= 2 or (who >= 1 and common >= 3)
+                or (common >= 3 and common >= 0.6 * min(len(a["w"]), len(r["w"]))))
     groups = []
     for r in rows:
         for g in groups:
-            a = g[0]["w"]
-            common = len(a & r["w"])
-            if common >= 3 and common >= 0.6 * min(len(a), len(r["w"])) and r["s"] not in {x["s"] for x in g}:
+            if (r["s"] not in {x["s"] for x in g} and abs((g[0]["at"] - r["at"]).total_seconds()) < 36 * 3600
+                    and same(g[0], r)):
                 g.append(r)
                 break
         else:
