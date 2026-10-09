@@ -509,7 +509,7 @@ dialog.cnd .cn-pf{border:0;border-radius:0;background:none;overflow:visible}
 .sg-why span{font-size:12px;border:1px solid var(--line-2);border-radius:999px;padding:3px 10px;color:var(--text)}
 .sg-why span.up{color:var(--up);border-color:currentColor}
 .sg-why span.ms{color:var(--gold);border-color:var(--gold)}
-.sg-why i{font-style:normal}.sg-why .nw{white-space:nowrap}.sg-why .sh{display:none}
+.sg-why i{font-style:normal}.sg-why .mvr{white-space:nowrap}.sg-why .sh{display:none}
 .cn-h .sg-act{margin-left:auto}
 #page-corner .sq-line[hidden],.cn-add[hidden]{display:none!important}
 .cn-h a.nm{text-decoration:none}
@@ -3249,7 +3249,7 @@ function cnTile(k, p){
     const tt = t.replace(/ (months)$/, ' <i class="lg">$1</i><i class="sh">mo</i>');
     if (was === null) return `<span class="up">Not ranked ${tt} ago</span>`;
     const d = was - M.rank;
-    return d > 0 ? `<span class="up">▲${d} in ${tt} <i class="nw">(${was} → ${M.rank})</i></span>` : d < 0 ? `<span class="dn">▼${-d} in ${tt} <i class="nw">(${was} → ${M.rank})</i></span>` : "";
+    return d > 0 ? `<span class="up">▲${d} in ${tt} <i class="mvr">(${was} → ${M.rank})</i></span>` : d < 0 ? `<span class="dn">▼${-d} in ${tt} <i class="mvr">(${was} → ${M.rank})</i></span>` : "";
   };
   if (M) why.push(mv(M.m12, "12 months"), mv(M.m3, "3 months"));
   // the other stages they're ranked at, after the lead one
@@ -3515,7 +3515,7 @@ function sgPick(L, wl){
     const score = ((g12 ?? 0) + 1.5 * (g3 ?? 0)) * (L.over ? 1 : 1 + 0.08 * (L.maxAge - age));
     if (score < 0.4) continue;
     const why = [];
-    const mv = (p, t) => p === null ? `<span class="up">Not ranked ${t.replace(/ (months)$/, ' <i class="lg">$1</i><i class="sh">mo</i>')} ago</span>` : p - rank > 0 ? `<span class="up">▲${p - rank} in ${t.replace(/ (months)$/, ' <i class="lg">$1</i><i class="sh">mo</i>')} <i class="nw">(${p} → ${rank})</i></span>` : "";
+    const mv = (p, t) => p === null ? `<span class="up">Not ranked ${t.replace(/ (months)$/, ' <i class="lg">$1</i><i class="sh">mo</i>')} ago</span>` : p - rank > 0 ? `<span class="up">▲${p - rank} in ${t.replace(/ (months)$/, ' <i class="lg">$1</i><i class="sh">mo</i>')} <i class="mvr">(${p} → ${rank})</i></span>` : "";
     if (m12 !== -1 && m12 !== undefined) why.push(mv(m12, "12 months"));
     if (m3 !== -1 && m3 !== undefined) why.push(mv(m3, "3 months"));
     // a milestone reached in the last 3 months: "Into the top 100"
