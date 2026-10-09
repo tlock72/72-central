@@ -3636,7 +3636,7 @@ $("#cnd").addEventListener("close", () => {
 });
 function cnRmClick(e){
   const r = e.target.closest("[data-rm]");
-  if (r) { CN.rm = r.dataset.rm; renderCorner(); document.querySelector(".cn-rmf input")?.focus(); return; }
+  if (r) { CN.rm = r.dataset.rm; renderCorner(); kbFocus(document.querySelector(".cn-rmf input")); return; }
   if (e.target.closest("[data-rmx]")) { CN.rm = ""; renderCorner(); return; }
   // "Undo": withdraw a removal request made from this device (the Sheet only accepts it with this device's undo code)
   const u = e.target.closest("[data-rmu]");
@@ -3881,9 +3881,16 @@ function cmLog(ctx, name, names){
 function cmRender(){ renderScouting(); renderCorner(); }
 document.addEventListener("click", e => {
   const b = e.target.closest("[data-cm]");
-  if (b) { CM.open = CM.open === b.dataset.cm ? "" : b.dataset.cm; CM.del = ""; cmRender(); document.querySelector(".cm-f textarea")?.focus(); return; }
+  if (b) {
+    CM.open = CM.open === b.dataset.cm ? "" : b.dataset.cm; CM.del = ""; cmRender();
+    // phones: if there are comments to read, show the log without the keyboard (tap the box to write);
+    // if there are none yet, go straight to the box. The keyboard code below keeps it in sight either way.
+    const log = document.querySelector(".cm-log"), ta = log?.querySelector(".cm-f textarea");
+    if (ta && KB.touch() && log.querySelector(".cm-e")) kbShow(log, true); else if (ta) kbFocus(ta);
+    return;
+  }
   const d = e.target.closest("[data-cmd]");
-  if (d) { CM.del = d.dataset.cmd; cmRender(); document.querySelector(".cm-df input")?.focus(); return; }
+  if (d) { CM.del = d.dataset.cmd; cmRender(); kbFocus(document.querySelector(".cm-df input")); return; }
   if (e.target.closest("[data-cmdx]")) { CM.del = ""; cmRender(); return; }
   // "Undo": the Sheet only takes it back with this device's undo code, and only within the hour
   const u = e.target.closest("[data-cmu]");
@@ -3897,6 +3904,72 @@ document.addEventListener("click", e => {
     cmRender();
   }
 });
+/* Comment boxes and the phone keyboard. Phones don't shrink the page when the keyboard opens, so on their own they
+   guess where to scroll and sometimes overshoot, leaving the box hidden above or behind the keyboard. Instead:
+   - while the keyboard is up, an open profile/results window is fitted to the part of the screen above it (kbFit)
+   - the box being typed in is then scrolled so the whole form (box + button) sits just above the keyboard, or,
+     if it doesn't fit, the box itself at the top (kbShow), both inside the window or on the page under the menu
+   - a background refresh (comments, watch list) redraws the cards: the box keeps its focus, text and cursor (cmKeep) */
+const KB = { el: null, until: 0, touch: () => matchMedia("(pointer:coarse)").matches };
+const KB_SEL = ".cm-log input, .cm-log textarea, dialog.rsd input, dialog.rsd textarea";
+function kbFocus(el){
+  if (!el) return;
+  el.focus({ preventScroll: true });
+  KB.el = el; KB.until = Date.now() + 1500;
+  kbShow(el); setTimeout(() => kbShow(KB.el), 350); setTimeout(() => kbShow(KB.el), 750);
+}
+// scroll el (or, with top = true, the comment log's heading) into the visible part of the screen
+function kbShow(el, top){
+  if (!el || !el.isConnected) return;
+  const v = window.visualViewport, dlg = el.closest("dialog[open]");
+  const vTop = v ? v.offsetTop : 0, vBot = vTop + (v ? v.height : innerHeight);
+  const lo = Math.max(vTop, dlg ? dlg.getBoundingClientRect().top : $("header").getBoundingClientRect().bottom) + 10;
+  const hi = Math.min(vBot, dlg ? dlg.getBoundingClientRect().bottom : vBot) - 10;
+  const r = el.getBoundingClientRect(), f = top ? r : (el.closest("form") || el).getBoundingClientRect();
+  let dy = 0;
+  if (top) dy = r.top - lo;
+  else if (f.bottom > hi) dy = f.bottom - hi;
+  if (r.top - dy < lo) dy = r.top - lo;  // never past the top of the box
+  if (Math.abs(dy) < 2) return;
+  if (dlg) dlg.scrollTop += dy; else window.scrollBy(0, dy);
+}
+// keyboard up: fit the open window to the space above it; keyboard down: back to normal
+function kbFit(){
+  const v = window.visualViewport; if (!v) return;
+  const up = innerHeight - v.height > 120;
+  document.querySelectorAll("dialog.rsd[open], dialog.prof[open]").forEach(d => {
+    if (up) Object.assign(d.style, { top: v.offsetTop + 8 + "px", bottom: "auto", marginTop: "0", maxHeight: v.height - 16 + "px" });
+    else ["top", "bottom", "marginTop", "maxHeight"].forEach(k => d.style[k] = "");
+  });
+}
+if (window.visualViewport) {
+  visualViewport.addEventListener("resize", () => { kbFit(); if (KB.el && Date.now() < KB.until + 1500) kbShow(KB.el); });
+  visualViewport.addEventListener("scroll", kbFit);
+}
+document.addEventListener("focusin", e => {
+  if (!KB.touch() || !e.target.matches?.(KB_SEL)) return;
+  KB.el = e.target; KB.until = Date.now() + 1500;
+  setTimeout(() => kbShow(KB.el), 350); setTimeout(() => kbShow(KB.el), 750);
+});
+document.addEventListener("focusout", e => { if (e.target === KB.el) setTimeout(() => { if (!document.activeElement?.matches?.(KB_SEL)) { KB.el = null; kbFit(); } }, 100); });
+// a redraw while typing: note the box's form, its fields and the cursor, then put them back on the new copy
+function cmKeep(){
+  const a = document.activeElement, f = a?.closest?.(".cm-f, .cm-df");
+  if (!f) return null;
+  return { cls: f.classList.contains("cm-f") ? ".cm-f" : ".cm-df", key: f.dataset.ctx || f.dataset.id, name: a.name,
+    vals: [...f.elements].filter(x => x.name).map(x => [x.name, x.value]), s: a.selectionStart, e: a.selectionEnd, el: a };
+}
+function cmBack(k){
+  if (!k || k.el.isConnected) return;
+  const f = [...document.querySelectorAll(k.cls)].find(x => (x.dataset.ctx || x.dataset.id) === k.key);
+  if (!f) return;
+  for (const [n, v] of k.vals) if (f.elements[n]) f.elements[n].value = v;
+  const el = f.elements[k.name]; if (!el) return;
+  el.focus({ preventScroll: true });
+  try { el.setSelectionRange(k.s, k.e); } catch (err) {}
+  if (KB.el === k.el) KB.el = el;
+}
+for (const fn of ["renderScouting", "renderCorner"]) { const was = window[fn]; window[fn] = (...a) => { const k = cmKeep(), r = was(...a); cmBack(k); return r; }; }
 document.addEventListener("input", e => { const f = e.target.closest(".cm-f"); if (f && e.target.name === "t") CM.draft[f.dataset.ctx] = e.target.value; });
 document.addEventListener("submit", e => {
   const f = e.target.closest(".cm-f, .cm-df"); if (!f) return;
