@@ -1,0 +1,11 @@
+name: Probe news feeds (temporary)
+on:
+  push:
+    branches: [claude/news-feed-probe]
+jobs:
+  probe:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v6
+      - run: python3 probe/probe.py
