@@ -868,10 +868,16 @@ dialog.stg[open]{display:block;animation:pop .28s ease}
 .nw-list{display:flex;flex-direction:column;gap:10px}
 .nw{border:1px solid var(--line-2);border-radius:16px;padding:14px 18px;background:linear-gradient(170deg,var(--navy-2),rgba(17,27,63,.6))}
 .nw.k72{border-color:var(--gold)}
-.nw{display:flex;gap:16px;align-items:flex-start}
+.nw{display:flex;gap:18px;align-items:flex-start;overflow:hidden}
 .nw-b{flex:1;min-width:0}
-.nw-i{flex:none;width:180px;aspect-ratio:16/10;border-radius:10px;overflow:hidden;background:var(--navy-3)}
-.nw-i img{display:block;width:100%;height:100%;object-fit:cover}
+/* News pictures: a full-height panel flush to the card's left edge. Outlets often add borders, logos or captions
+   round the edges of their pictures, so the picture is zoomed in a little (edges cropped off), aimed slightly
+   above centre (faces), and faded into the card on the right so it blends with the site's frame. */
+.nw-i{flex:none;align-self:stretch;position:relative;width:200px;min-height:124px;margin:-14px 0 -14px -18px;overflow:hidden;background:var(--navy-3)}
+.nw-i img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;object-position:50% 30%;transform:scale(1.16);transition:transform .5s ease,opacity .4s ease;opacity:0}
+.nw-i img.ok{opacity:1}
+.nw-i::after{content:"";position:absolute;inset:0;pointer-events:none;background:linear-gradient(90deg,rgba(17,27,63,0) 62%,rgba(17,27,63,.85) 100%);box-shadow:inset 0 0 28px rgba(5,10,28,.45)}
+.nw:hover .nw-i img.ok{transform:scale(1.21)}
 .nw-m{display:flex;flex-wrap:wrap;align-items:center;gap:4px 10px;font-size:11px;color:var(--muted-2);text-transform:uppercase;letter-spacing:.08em;font-family:var(--display)}
 .nw-m .s{color:var(--gold)}
 .nw-m .nb{color:var(--navy);background:var(--gold);border-radius:999px;padding:1px 8px}
@@ -883,7 +889,7 @@ dialog.stg[open]{display:block;animation:pop .28s ease}
 .nw-t a,.nw-t span{font-size:11px;border:1px solid var(--line);border-radius:999px;padding:2px 9px;color:var(--muted);text-decoration:none}
 .nw-t .p72{border-color:var(--gold);color:var(--gold)}
 .nw-t a:hover{color:var(--white)}
-@media (max-width:640px){.nw{padding:11px 13px;border-radius:13px;gap:11px}.nw-i{width:92px;aspect-ratio:1;border-radius:8px}.nw h3{font-size:15px}.nw p{font-size:12px;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}}
+@media (max-width:640px){.nw{padding:11px 13px;border-radius:13px;gap:12px}.nw-i{width:96px;min-height:96px;margin:-11px 0 -11px -13px}.nw-i img,.nw:hover .nw-i img.ok{transform:scale(1.26)}.nw h3{font-size:15px}.nw p{font-size:12px;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}}
 .hp-faces{display:flex;margin-top:16px}
 .hp-faces img{width:38px;height:38px;border-radius:50%;object-fit:cover;object-position:center 20%;border:2px solid var(--navy-2);margin-left:-10px;background:var(--navy-3)}
 .hp-faces img:first-child{margin-left:0}
@@ -3041,6 +3047,11 @@ function nwAgo(iso){
   if (h < 24) return Math.round(h) + "h ago";
   return new Date(iso).toLocaleDateString("en-GB", { weekday: "short", day: "numeric", month: "short", timeZone: MYTZ });
 }
+// a news picture that loaded: shown (faded in), unless it is a small logo/icon or a thin banner, which never fit the panel
+function nwPic(im){
+  const w = im.naturalWidth, h = im.naturalHeight, r = w / (h || 1);
+  if (w < 160 || h < 100 || r > 2.6 || r < 0.45) im.parentNode.remove(); else im.classList.add("ok");
+}
 function renderNews(){
   if (!$("#page-news")) return;
   document.querySelectorAll(".nwf").forEach(b => b.classList.toggle("on", b.dataset.n === NW_F));
@@ -3055,7 +3066,7 @@ function renderNews(){
       ...x.sc.map(nm => `<a href="#corner">Prospect · ${esc(nm)}</a>`),
       ...x.also.map(a => `<a href="${esc(safe(a.u))}" target="_blank" rel="noopener">Also: ${esc(a.s)}</a>`)];
     // the outlet's own picture (loaded from their site, no referrer sent); a picture that fails to load is removed
-    const img = /^https:\/\//.test(x.img || "") ? `<a class="nw-i" href="${esc(safe(x.u))}" target="_blank" rel="noopener" tabindex="-1" aria-hidden="true"><img src="${esc(x.img)}" alt="" loading="lazy" referrerpolicy="no-referrer" onerror="this.parentNode.remove()"></a>` : "";
+    const img = /^https:\/\//.test(x.img || "") ? `<a class="nw-i" href="${esc(safe(x.u))}" target="_blank" rel="noopener" tabindex="-1" aria-hidden="true"><img src="${esc(x.img)}" alt="" loading="lazy" referrerpolicy="no-referrer" onload="nwPic(this)" onerror="this.parentNode.remove()"></a>` : "";
     return `<article class="nw${x.p72.length ? " k72" : ""}">${img}<div class="nw-b">
       <div class="nw-m"><span class="s">${esc(x.s)}</span><span>${esc(nwAgo(x.at))}</span>${n > 1 ? `<span class="nb">${n} outlets</span>` : ""}</div>
       <h3><a href="${esc(safe(x.u))}" target="_blank" rel="noopener">${esc(x.t)}</a></h3>
