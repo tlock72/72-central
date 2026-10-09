@@ -1,0 +1,39 @@
+name: News
+on:
+  schedule:
+    - cron: "27 5-22 * * *"   # every hour, 06:27 to 23:27 UK summer time
+  workflow_dispatch:
+concurrency:
+  group: news                 # its own queue: it must not hold up the live score updates
+  cancel-in-progress: false
+permissions:
+  contents: write
+  issues: write
+jobs:
+  news:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v6
+        with:
+          ref: main
+      - id: news
+        name: Tennis headlines from the outlets' free RSS feeds (no Claude)
+        run: python3 scripts/news.py
+        timeout-minutes: 5
+      - name: Save changes
+        run: |
+          git config user.name "72 Hub updater"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add news.json
+          if git diff --cached --quiet; then echo "No changes"; exit 0; fi
+          git commit -q -m "Update news"
+          if git pull -q --rebase -X theirs; then git push
+          else git rebase --abort; echo "Another update saved first - skipping, the next run catches up"; fi
+      - name: Tell Tobey about anything missed (GitHub issue + email)
+        if: always()
+        continue-on-error: true
+        run: python3 scripts/report_gaps.py
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          STEPS_JSON: ${{ toJSON(steps) }}

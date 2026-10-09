@@ -32,6 +32,7 @@ STEP_NAMES = {
     "schedule": "the tour schedule",
     "corner": "Scouting Corner",
     "terank": "the Tennis Europe U14 rankings (Filtered Rankings)",
+    "news": "the News headlines",
 }
 
 
@@ -189,6 +190,13 @@ def gaps():
     for k, e in (co.get("errors") or {}).items():
         if ukday(e.get("at")) == TODAY:
             out.append(f"Scouting Corner: the {(e.get('msg') or '').split(' (')[0]} on {TODAY}. Names on prospects.json still update.")
+    # 6c) News (news.json, hourly): an outlet's feed that hasn't been readable for 2 days (moved or blocked)
+    for name, src in (load("news.json").get("sources") or {}).items():
+        ok = src.get("ok")
+        if not ok:
+            out.append(f"News: {name}'s headlines have never been readable. The feed may have moved; the other outlets still show.")
+        elif ok < (TODAY - timedelta(days=2)).isoformat():
+            out.append(f"News: {name}'s headlines haven't been readable since {ok}. The feed may have moved; the other outlets still show.")
     # 7) updates have stopped: live scores normally refresh every 30 minutes from 07:13 to 23:43 UK
     lc = when(d.get("lastChecked"))
     if UK_NOW.hour >= 9 and lc and NOW - lc > timedelta(hours=2):
