@@ -903,6 +903,34 @@ dialog.stg[open]{display:block;animation:pop .28s ease}
 .mk-out{position:absolute;right:10px;top:10px;background:var(--navy);color:var(--gold);border:1px solid var(--gold);border-radius:999px;padding:4px 12px;font:inherit;font-size:12px;cursor:pointer}
 .mk-h{font-family:var(--display);font-size:18px;letter-spacing:.04em;margin:16px 0 10px;color:var(--white)}
 .mk-h small{color:var(--muted-2);font-size:12px;margin-left:8px;font-family:inherit;letter-spacing:0}
+#mkSvg .mkx{fill:#18213f;cursor:default}
+.mk-view{margin-bottom:12px}
+/* Brands on the move: one card per brand (sector, what it's doing, its headlines, Shortlist) */
+.bd-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(290px,1fr));gap:10px}
+.bd{display:flex;flex-direction:column;gap:8px;border:1px solid var(--line-2);border-radius:16px;padding:14px 16px;background:linear-gradient(170deg,var(--navy-2),rgba(17,27,63,.6))}
+.bd.cool{opacity:.55}
+.bd-top{display:flex;flex-wrap:wrap;align-items:baseline;gap:6px 10px}
+.bd-top h3{margin:0;font-size:19px;font-family:var(--display);letter-spacing:.03em;color:var(--white)}
+.bd-sec,.bd-mk{font-size:11px;color:var(--muted);border:1px solid var(--line);border-radius:999px;padding:1px 8px}
+.bd-mk{color:var(--gold);border-color:var(--gold)}
+.bd-sig{display:flex;flex-wrap:wrap;gap:5px}
+.bd-sig span{font-size:10.5px;text-transform:uppercase;letter-spacing:.07em;font-family:var(--display);border-radius:999px;padding:1px 8px}
+.bd-sig .s1{background:var(--gold);color:var(--navy)}
+.bd-sig .s2{border:1px solid var(--gold);color:var(--gold)}
+.bd-sig .s0{border:1px solid var(--line);color:var(--muted-2)}
+.bd-h{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:7px}
+.bd-h li{font-size:13.5px;line-height:1.35}
+.bd-h a,.bd-oth a{color:var(--white);text-decoration:none}
+.bd-h a:hover,.bd-oth a:hover{color:var(--gold)}
+.bd-h small,.bd-oth small{display:block;color:var(--muted-2);font-size:11px;margin-top:2px}
+.bd-more{color:var(--muted-2);font-size:11px}
+.bd-sl{margin-top:auto;align-self:flex-start;font:inherit;font-size:12px;background:none;border:1px solid var(--gold);color:var(--gold);border-radius:999px;padding:4px 12px;cursor:pointer}
+.bd-sl.on{background:var(--gold);color:var(--navy)}
+.bd-sub{font-family:var(--display);font-size:15px;letter-spacing:.05em;text-transform:uppercase;color:var(--muted);margin:22px 0 10px}
+.bd-oth{display:flex;flex-direction:column;gap:8px}
+.bd-oth>div{border:1px solid var(--line-2);border-radius:12px;padding:10px 14px;font-size:13.5px;line-height:1.4}
+.bd-oth .bd-sig{margin-bottom:4px}
+@media (max-width:640px){.bd-grid{grid-template-columns:1fr}.bd{padding:12px 13px}.bd-top h3{font-size:17px}}
 @media (max-width:640px){.mk-key{width:100%;margin-left:-6px}.mk-bar select{flex:1}#mkSvg{aspect-ratio:4/3}}
 .nw-also{display:flex;flex-wrap:wrap;gap:6px;margin-top:8px;padding-top:8px;border-top:1px solid var(--line-2)}
 .nw-also a{font-size:12px;border:1px solid var(--line);border-radius:999px;padding:3px 10px;color:var(--white);text-decoration:none}
@@ -1676,8 +1704,9 @@ dialog.tmd[open]{animation:pop .28s ease}
     </div>
     <div class="nw-list" id="nwList"><div class="sq-empty">Loading the headlines…</div></div>
     <div id="mkMap" hidden>
+      <div class="chips mk-view" role="group" aria-label="Show"><button class="chip mkv on" data-v="tennis">Tennis business</button><button class="chip mkv" data-v="brands">Brands on the move</button></div>
       <div class="mk-bar"><label for="mkSel">Country</label><select id="mkSel"><option value="">Whole world</option></select>
-        <span class="mk-key"><i class="mk1"></i>1<i class="mk2"></i>2–3<i class="mk3"></i>4–6<i class="mk4"></i>7+ stories this week</span></div>
+        <span class="mk-key"><i class="mk1"></i>1<i class="mk2"></i>2–3<i class="mk3"></i>4–6<i class="mk4"></i>7+ <span id="mkKeyTxt">stories this week</span></span></div>
       <div class="mk-box"><svg id="mkSvg" role="img" aria-label="World map of tennis business news"></svg><button type="button" class="mk-out" id="mkOut" hidden>Whole world</button></div>
       <h2 class="mk-h" id="mkH"></h2>
       <div class="nw-list" id="mkList"><div class="sq-empty">Loading the map…</div></div>
@@ -3105,29 +3134,54 @@ document.addEventListener("click", e => { const b = e.target.closest(".nwf"); if
 document.addEventListener("click", e => { const b = e.target.closest(".nw-oth"); if (!b) return;
   const box = b.closest(".nw-b").querySelector(".nw-also"), open = box.hidden;
   box.hidden = !open; b.setAttribute("aria-expanded", open); b.classList.toggle("on", open); });
-/* Market map: market.json (scripts/market.py, after every News update) and worldmap.json (country shapes, Natural Earth),
-   both only read when the map is opened. Picking a country (list or map) zooms in and lists its top 10 business stories. */
-let MKT = null, WMAP = null, MK_C = "", MK_VB = null, MK_ANIM = 0;
+/* Market map: market.json (scripts/market.py) and brands.json (scripts/brands.py), both rebuilt after every News update,
+   and worldmap.json (country shapes, Natural Earth); all only read when the map is opened. Two views: "Tennis business"
+   (the country's top 10 tennis business stories) and "Brands" (companies making moves there, one card per brand, plus a
+   shared shortlist on the visit-log Sheet's "Brands" tab). Picking a country (list or map) zooms in. */
+let MKT = null, WMAP = null, BRD = null, MK_C = "", MK_VB = null, MK_ANIM = 0, MK_V = "tennis", MK_SL = null, MK_SLOK = true;
+const mkLvl = n => n >= 7 ? 4 : n >= 4 ? 3 : n >= 2 ? 2 : n ? 1 : 0;
+const mkN = cc => MK_V === "brands" ? BRD?.markets?.[cc]?.n || 0 : MKT?.count?.[cc] || 0;
 async function mkOpen(){
   if (!WMAP || !MKT) {
     try {
-      const [a, b] = await Promise.all([fetch("worldmap.json").then(r => r.json()), fetch("market.json?t=" + Date.now(), { cache: "no-store" }).then(r => r.ok ? r.json() : { stories: [], top: {}, count: {}, world: [] })]);
-      WMAP = a; MKT = b;
+      const j = (f, empty) => fetch(f + "?t=" + Date.now(), { cache: "no-store" }).then(r => r.ok ? r.json() : empty).catch(() => empty);
+      const [a, b, c] = await Promise.all([fetch("worldmap.json").then(r => r.json()), j("market.json", { stories: [], top: {}, count: {}, world: [] }), j("brands.json", { markets: {}, roster: [], signals: {} })]);
+      WMAP = a; MKT = b; BRD = c;
     } catch (e) { $("#mkList").innerHTML = `<div class="sq-empty">The map couldn't be loaded. Try again in a minute.</div>`; return; }
-    const lvl = n => n >= 7 ? 4 : n >= 4 ? 3 : n >= 2 ? 2 : n ? 1 : 0;
-    const shapes = Object.entries(WMAP.c).sort((x, y) => !!x[1].p - !!y[1].p).map(([cc, c]) => {
-      const n = MKT.count[cc] || 0, cl = lvl(n) ? ` class="mk${lvl(n)}"` : "", tip = `<title>${esc(c.n)}${n ? ` · ${n} stor${n === 1 ? "y" : "ies"}` : ""}</title>`;
-      // small countries (Monaco, Singapore...) are a dot, drawn only when they have stories
-      return c.d ? `<path data-c="${cc}"${cl} d="${c.d}">${tip}</path>` : n ? `<circle data-c="${cc}"${cl} cx="${c.p[0]}" cy="${c.p[1]}" r="4">${tip}</circle>` : "";
-    });
-    $("#mkSvg").innerHTML = shapes.join("");
-    const has = Object.keys(MKT.count).filter(cc => WMAP.c[cc]).sort((x, y) => MKT.count[y] - MKT.count[x] || WMAP.c[x].n.localeCompare(WMAP.c[y].n));
-    const rest = Object.keys(WMAP.c).filter(cc => !MKT.count[cc]).sort((x, y) => WMAP.c[x].n.localeCompare(WMAP.c[y].n));
-    $("#mkSel").innerHTML = `<option value="">Whole world</option><optgroup label="Business news this week">${has.map(cc => `<option value="${cc}">${esc(WMAP.c[cc].n)} (${MKT.count[cc]})</option>`).join("")}</optgroup><optgroup label="Other countries">${rest.map(cc => `<option value="${cc}">${esc(WMAP.c[cc].n)}</option>`).join("")}</optgroup>`;
+    // small countries (Monaco, Singapore, Hong Kong...) are a dot, drawn only when they have news or are a tracked market
+    $("#mkSvg").innerHTML = Object.entries(WMAP.c).sort((x, y) => !!x[1].p - !!y[1].p).map(([cc, c]) =>
+      c.d ? `<path data-c="${cc}" d="${c.d}"><title></title></path>` : MKT.count[cc] || BRD.markets[cc] ? `<circle data-c="${cc}" cx="${c.p[0]}" cy="${c.p[1]}" r="4"><title></title></circle>` : "").join("");
     MK_VB = [0, 0, WMAP.w, WMAP.h];
     $("#mkSvg").setAttribute("viewBox", MK_VB.join(" "));
   }
+  mkShade();
   mkPick(MK_C, true);
+  if (MK_V === "brands" && !MK_SL) mkLoadShort();
+}
+// colours and the country list for the view showing
+function mkShade(){
+  const brands = MK_V === "brands";
+  document.querySelectorAll(".mkv").forEach(b => b.classList.toggle("on", b.dataset.v === MK_V));
+  $("#mkKeyTxt").textContent = brands ? "brands making moves this week" : "stories this week";
+  $("#mkSvg").setAttribute("aria-label", brands ? "World map of brands making moves" : "World map of tennis business news");
+  $("#mkSvg").querySelectorAll("[data-c]").forEach(el => {
+    const cc = el.dataset.c, n = mkN(cc), l = mkLvl(n);
+    el.classList.remove("mk1", "mk2", "mk3", "mk4", "mkx");
+    if (l) el.classList.add("mk" + l);
+    if (brands && !BRD.markets[cc]) el.classList.add("mkx");
+    el.querySelector("title").textContent = WMAP.c[cc].n + (brands ? (BRD.markets[cc] ? ` · ${n} brand${n === 1 ? "" : "s"}` : " · not tracked yet") : n ? ` · ${n} stor${n === 1 ? "y" : "ies"}` : "");
+  });
+  const nm = cc => WMAP.c[cc].n, opt = (cc, n) => `<option value="${cc}">${esc(nm(cc))}${n ? ` (${n})` : ""}</option>`;
+  if (brands) {
+    const ros = new Set(BRD.roster || []), mk = Object.keys(BRD.markets).filter(cc => WMAP.c[cc]), by = (x, y) => mkN(y) - mkN(x) || nm(x).localeCompare(nm(y));
+    $("#mkSel").innerHTML = `<option value="">Whole world</option><optgroup label="Our players' nations">${mk.filter(cc => ros.has(cc)).sort(by).map(cc => opt(cc, mkN(cc))).join("")}</optgroup>`
+      + `<optgroup label="Other key markets">${mk.filter(cc => !ros.has(cc)).sort(by).map(cc => opt(cc, mkN(cc))).join("")}</optgroup>`;
+  } else {
+    const has = Object.keys(MKT.count).filter(cc => WMAP.c[cc]).sort((x, y) => MKT.count[y] - MKT.count[x] || nm(x).localeCompare(nm(y)));
+    const rest = Object.keys(WMAP.c).filter(cc => !MKT.count[cc]).sort((x, y) => nm(x).localeCompare(nm(y)));
+    $("#mkSel").innerHTML = `<option value="">Whole world</option><optgroup label="Business news this week">${has.map(cc => opt(cc, MKT.count[cc])).join("")}</optgroup><optgroup label="Other countries">${rest.map(cc => opt(cc)).join("")}</optgroup>`;
+  }
+  $("#mkSel").value = MK_C;
 }
 // the box to show: the country's main landmass (or its dot), with room around it, in the map's shape on screen
 function mkBox(cc){
@@ -3149,6 +3203,7 @@ function mkZoom(to, now){
     set(from.map((f, i) => f + (to[i] - f) * e)); if (k < 1) requestAnimationFrame(step); };
   requestAnimationFrame(step);
 }
+const mkSafe = u => /^https:\/\//.test(u || "") ? u : "#";
 function mkPick(cc, now){
   MK_C = cc && WMAP.c[cc] ? cc : "";
   $("#mkSel").value = MK_C;
@@ -3157,18 +3212,79 @@ function mkPick(cc, now){
   if (el) { el.classList.add("on"); el.parentNode.appendChild(el); }  // drawn last so its outline shows
   $("#mkOut").hidden = !MK_C;
   mkZoom(mkBox(MK_C), now);
+  if (MK_V === "brands") return mkBrands();
   const ids = MK_C ? MKT.top[MK_C] || [] : MKT.world || [], st = ids.map(i => MKT.stories[i]).filter(Boolean);
   $("#mkH").innerHTML = `${esc(MK_C ? WMAP.c[MK_C].n : "Whole world")}<small>top ${st.length || ""} business stor${st.length === 1 ? "y" : "ies"}, last 7 days</small>`;
-  const safe = u => /^https:\/\//.test(u || "") ? u : "#";
   $("#mkList").innerHTML = st.length ? st.map(x => {
     const n = new Set([x.s, ...x.also.map(a => a.s)]).size;
     return `<article class="nw"><div class="nw-b">
       <div class="nw-m"><span class="kb">${x.k === "biz" ? "Business" : "Tournament"}</span><span class="s">${esc(x.s)}</span><span>${esc(nwAgo(x.at))}</span>${n > 1 ? `<span class="nb">${n} outlets</span>` : ""}</div>
-      <h3><a href="${esc(safe(x.u))}" target="_blank" rel="noopener">${esc(x.t)}</a></h3>
-      ${x.also.length ? `<div class="nw-t"><button type="button" class="nw-oth" aria-expanded="false">Other outlets (${x.also.length})</button></div><div class="nw-also" hidden>${x.also.map(a => `<a href="${esc(safe(a.u))}" target="_blank" rel="noopener">${esc(a.s)}</a>`).join("")}</div>` : ""}
+      <h3><a href="${esc(mkSafe(x.u))}" target="_blank" rel="noopener">${esc(x.t)}</a></h3>
+      ${x.also.length ? `<div class="nw-t"><button type="button" class="nw-oth" aria-expanded="false">Other outlets (${x.also.length})</button></div><div class="nw-also" hidden>${x.also.map(a => `<a href="${esc(mkSafe(a.u))}" target="_blank" rel="noopener">${esc(a.s)}</a>`).join("")}</div>` : ""}
     </div></article>`;
   }).join("") : `<div class="sq-empty">No tennis business stories found for ${esc(MK_C ? WMAP.c[MK_C].n : "anywhere")} in the last 7 days.</div>`;
 }
+/* ---- Brands view ---- */
+const MK_SIG_CLS = { sponsor: "s1", people: "s2", expand: "s2", money: "s2", cool: "s0" };
+const mkShortFor = (b, m) => (MK_SL || []).find(x => x.brand === b && x.market === m);
+function mkCard(c, mname, showMarket){
+  const sl = mkShortFor(c.b, mname);
+  return `<article class="bd${c.cool ? " cool" : ""}">
+    <div class="bd-top"><h3>${esc(c.b)}</h3><span class="bd-sec">${esc(c.sec)}</span>${showMarket ? `<span class="bd-mk">${esc(mname)}</span>` : ""}</div>
+    <div class="bd-sig">${c.sig.map(s => `<span class="${MK_SIG_CLS[s] || "s2"}">${esc(BRD.signals[s] || s)}</span>`).join("")}</div>
+    <ul class="bd-h">${c.h.map(h => `<li><a href="${esc(mkSafe(h.u))}" target="_blank" rel="noopener">${esc(h.t)}</a><small>${esc(h.s)} · ${esc(nwAgo(h.at))}</small></li>`).join("")}</ul>
+    ${c.more ? `<small class="bd-more">+${c.more} more this week</small>` : ""}
+    <button type="button" class="bd-sl${sl ? " on" : ""}" data-b="${esc(c.b)}" data-m="${esc(mname)}" data-sec="${esc(c.sec)}" data-why="${esc(c.sig.map(s => BRD.signals[s] || s).join(", "))}" data-h="${esc(c.h[0]?.t || "")}" data-u="${esc(c.h[0]?.u || "")}">${sl ? `★ Shortlisted${sl.by ? ` · ${esc(sl.by)}` : ""}` : "☆ Shortlist"}</button>
+  </article>`;
+}
+function mkBrands(){
+  const m = MK_C && BRD.markets[MK_C], name = MK_C ? WMAP.c[MK_C].n : "";
+  let html = "";
+  if (MK_C && !m) {
+    $("#mkH").innerHTML = `${esc(name)}<small>not one of the tracked markets yet</small>`;
+    $("#mkList").innerHTML = `<div class="sq-empty">Brands are tracked in our players' nations and the key markets. Pick one from the list.</div>`;
+    return;
+  }
+  if (MK_C) {
+    const live = m.brands.filter(c => !c.cool).length;
+    $("#mkH").innerHTML = `${esc(name)}<small>${live} brand${live === 1 ? "" : "s"} making moves, last 7 days</small>`;
+    html = m.brands.length ? `<div class="bd-grid">${m.brands.map(c => mkCard(c, name)).join("")}</div>` : `<div class="sq-empty">No known brands in ${esc(name)}'s business news this week yet. Each market is searched a few times a day.</div>`;
+    if (m.other.length) html += `<h3 class="bd-sub">Other business moves in ${esc(name)}</h3><div class="bd-oth">${m.other.map(h => `<div><div class="bd-sig">${h.sig.map(s => `<span class="${MK_SIG_CLS[s] || "s2"}">${esc(BRD.signals[s] || s)}</span>`).join("")}</div><a href="${esc(mkSafe(h.u))}" target="_blank" rel="noopener">${esc(h.t)}</a><small>${esc(h.s)} · ${esc(nwAgo(h.at))}</small></div>`).join("")}</div>`;
+  } else {
+    // the whole world: the top brands across every market
+    const all = Object.entries(BRD.markets).flatMap(([cc, mm]) => mm.brands.filter(c => !c.cool).map(c => ({ c, cc }))).sort((x, y) => y.c.score - x.c.score).slice(0, 12);
+    $("#mkH").innerHTML = `Whole world<small>the top brand moves across our markets, last 7 days</small>`;
+    html = all.length ? `<div class="bd-grid">${all.map(x => mkCard(x.c, WMAP.c[x.cc]?.n || x.cc, true)).join("")}</div>` : `<div class="sq-empty">The brand searches are still running. Markets fill in through the day.</div>`;
+  }
+  // the team's shortlist for this market (or all of it)
+  const sl = (MK_SL || []).filter(x => !MK_C || x.market === name);
+  html += `<h3 class="bd-sub">Our shortlist${MK_C ? ` for ${esc(name)}` : ""}${sl.length ? ` (${sl.length})` : ""}</h3>`;
+  html += !MK_SLOK ? `<div class="sq-empty">The shortlist needs the updated Sheet script (scripts/visit_log.gs).</div>`
+    : MK_SL === null ? `<div class="sq-empty">Loading the shortlist…</div>`
+    : sl.length ? `<div class="bd-oth">${sl.map(x => `<div><b>${esc(x.brand)}</b>${MK_C ? "" : ` · ${esc(x.market)}`}${x.sector ? ` <span class="bd-sec">${esc(x.sector)}</span>` : ""}${x.link ? ` · <a href="${esc(mkSafe(x.link))}" target="_blank" rel="noopener">${esc(x.headline || "the story")}</a>` : ""}<small>${esc(x.why || "")}${x.by ? ` · added by ${esc(x.by)}` : ""}${x.at ? ` · ${esc(nwAgo(x.at))}` : ""}</small></div>`).join("")}</div>`
+    : `<div class="sq-empty">Nothing shortlisted${MK_C ? ` for ${esc(name)}` : ""} yet. Press "☆ Shortlist" on a brand.</div>`;
+  $("#mkList").innerHTML = html;
+}
+async function mkLoadShort(){
+  try {
+    const r = await fetch(CORNER_URL + "?kind=brands");
+    const d = JSON.parse(await r.text());
+    MK_SL = d.brands || []; MK_SLOK = true;
+  } catch (e) { MK_SL = []; MK_SLOK = false; }
+  if (NW_F === "map" && MK_V === "brands") mkBrands();
+}
+document.addEventListener("click", e => {
+  const b = e.target.closest(".bd-sl"); if (!b) return;
+  let by = ""; try { by = localStorage.getItem("72c-name") || ""; } catch (err) {}
+  const d = b.dataset, had = mkShortFor(d.b, d.m);
+  if (had && !confirm(`Take ${d.b} (${d.m}) off the shortlist?`)) return;
+  const body = had ? { kind: "unbrand", brand: d.b, market: d.m, by } : { kind: "brand", brand: d.b, market: d.m, sector: d.sec, why: d.why, headline: d.h, link: d.u, by };
+  try { fetch(CORNER_URL, { method: "POST", mode: "no-cors", body: JSON.stringify(body) }).catch(() => {}); } catch (err) {}
+  MK_SL = had ? (MK_SL || []).filter(x => x !== had) : [...(MK_SL || []), { brand: d.b, market: d.m, sector: d.sec, why: d.why, headline: d.h, link: d.u, by, at: new Date().toISOString() }];
+  mkBrands();
+});
+document.addEventListener("click", e => { const b = e.target.closest(".mkv"); if (!b || b.dataset.v === MK_V || !WMAP) return;
+  MK_V = b.dataset.v; mkShade(); mkPick(MK_C in (MK_V === "brands" ? BRD.markets : WMAP.c) ? MK_C : "", true); if (MK_V === "brands" && !MK_SL) mkLoadShort(); });
 $("#mkSel")?.addEventListener("change", e => mkPick(e.target.value));
 $("#mkOut")?.addEventListener("click", () => mkPick(""));
 $("#mkSvg")?.addEventListener("click", e => { const el = e.target.closest("[data-c]"); if (el) mkPick(el.dataset.c === MK_C ? "" : el.dataset.c); });

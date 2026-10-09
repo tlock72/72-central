@@ -34,6 +34,7 @@ STEP_NAMES = {
     "terank": "the Tennis Europe U14 rankings (Filtered Rankings)",
     "news": "the News headlines",
     "market": "the News market map",
+    "brands": "the market map's brands on the move",
 }
 
 

@@ -73,6 +73,8 @@ function doPost(e) {
   if (d.kind === "uncomment") return undoComment(d);
   if (d.kind === "delcomment") return askDeleteComment(d);
   if (d.kind === "results") return askResults(d);
+  if (d.kind === "brand") return addBrand(d);
+  if (d.kind === "unbrand") return removeBrand(d);
   const id = String(d.id || "").slice(0, 40), start = new Date(Number(d.start));
   if (!id || isNaN(start)) return out("bad");
   // text starting with = + - @ would be read as a formula, so it's kept as plain text
@@ -473,6 +475,73 @@ function listComments() {
   return ContentService.createTextOutput(JSON.stringify({ comments: list })).setMimeType(ContentService.MimeType.JSON);
 }
 
+// News > Market map > Brands: the team's shortlist of brands to approach, one row per brand and market, on the
+// "Brands" tab (made automatically). "Shortlist" adds a row (or brings back one taken off); pressing it again takes
+// it off (Status "Removed", who and when kept). Nothing else is ever deleted.
+function brandsTab_() {
+  const ss = SpreadsheetApp.getActiveSpreadsheet();
+  let sh = ss.getSheetByName("Brands");
+  if (!sh) {
+    sh = ss.insertSheet("Brands");
+    sh.getRange(1, 1, 1, 10).setValues([["Added", "Brand", "Market", "Sector", "Why", "Headline", "Link", "By", "Status", "Changed"]]).setFontWeight("bold");
+    sh.setFrozenRows(1);
+    sh.getRange("A:A").setNumberFormat("ddd d mmm yyyy HH:mm");
+    sh.getRange("J:J").setNumberFormat("ddd d mmm yyyy HH:mm");
+  }
+  return sh;
+}
+function brandText_(x, n) {
+  const t = String(x || "").replace(/[\u0000-\u001f]/g, "").replace(/\s+/g, " ").trim().slice(0, n);
+  return /^[=+\-@]/.test(t) ? "'" + t : t;  // never read as a formula
+}
+function addBrand(d) {
+  const brand = brandText_(d.brand, 60), market = brandText_(d.market, 40), by = brandText_(d.by, 30);
+  if (brand.length < 2 || market.length < 2 || !by) return out("bad");
+  const link = /^https:\/\/[^\s"<>]{1,500}$/.test(String(d.link || "")) ? String(d.link) : "";
+  const lock = LockService.getScriptLock();
+  lock.waitLock(10000);
+  try {
+    const sh = brandsTab_();
+    const rows = sh.getLastRow() > 1 ? sh.getRange(2, 1, sh.getLastRow() - 1, 10).getValues() : [];
+    const i = rows.findIndex(r => String(r[1]).replace(/^'/, "") === brand.replace(/^'/, "") && String(r[2]) === market);
+    if (i >= 0) {
+      if (rows[i][8] === "Shortlisted") return out("dup");
+      sh.getRange(i + 2, 8, 1, 3).setValues([[by, "Shortlisted", new Date()]]);
+      return out("ok");
+    }
+    sh.appendRow([new Date(), brand, market, brandText_(d.sector, 40), brandText_(d.why, 120), brandText_(d.headline, 300), link, by, "Shortlisted", ""]);
+  } finally {
+    lock.releaseLock();
+  }
+  return out("ok");
+}
+function removeBrand(d) {
+  const brand = brandText_(d.brand, 60), market = brandText_(d.market, 40), by = brandText_(d.by, 30);
+  const lock = LockService.getScriptLock();
+  lock.waitLock(10000);
+  try {
+    const sh = brandsTab_();
+    const rows = sh.getLastRow() > 1 ? sh.getRange(2, 1, sh.getLastRow() - 1, 10).getValues() : [];
+    const i = rows.findIndex(r => String(r[1]).replace(/^'/, "") === brand.replace(/^'/, "") && String(r[2]) === market && r[8] === "Shortlisted");
+    if (i < 0) return out("none");
+    sh.getRange(i + 2, 9, 1, 2).setValues([["Removed by " + by.replace(/^'/, ""), new Date()]]);
+  } finally {
+    lock.releaseLock();
+  }
+  return out("ok");
+}
+// Read by the site: every brand still shortlisted.
+function listBrands() {
+  const sh = SpreadsheetApp.getActiveSpreadsheet().getSheetByName("Brands");
+  const rows = sh && sh.getLastRow() > 1 ? sh.getRange(2, 1, sh.getLastRow() - 1, 10).getValues() : [];
+  const plain = x => String(x || "").replace(/^'/, "");
+  const list = rows.filter(r => r[8] === "Shortlisted").map(r => ({
+    brand: plain(r[1]), market: plain(r[2]), sector: plain(r[3]), why: plain(r[4]), headline: plain(r[5]), link: plain(r[6]),
+    by: plain(r[7]), at: r[0] instanceof Date ? r[0].toISOString() : ""
+  }));
+  return ContentService.createTextOutput(JSON.stringify({ brands: list })).setMimeType(ContentService.MimeType.JSON);
+}
+
 // Read by GitHub (scripts/prospects.py) and by the site: the names added on the site, plus removal requests
 // (names only; the request IDs and codes never leave the Sheet).
 function doGet(e) {
@@ -481,6 +550,7 @@ function doGet(e) {
   if (kind === "decidecomment") return decideCommentPage(e);
   if (kind === "comments") return listComments();
   if (kind === "lookups") return listLookups();
+  if (kind === "brands") return listBrands();
   if (kind !== "prospects") return out("72 Central");
   const sh = SpreadsheetApp.getActiveSpreadsheet().getSheetByName("Prospects");
   const rows = sh && sh.getLastRow() > 1 ? sh.getRange(2, 1, sh.getLastRow() - 1, 6).getValues() : [];
