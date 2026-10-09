@@ -430,6 +430,8 @@ select.sq-in option{background:var(--navy-2);color:var(--white)}
 .sq-addf{display:flex;flex-wrap:wrap;align-items:center;gap:6px;margin-top:6px;font-size:12px;letter-spacing:0;color:var(--text)}
 .sq-addf button{font-size:11px;border-radius:999px;padding:2px 10px;border:1px solid var(--gold);color:var(--gold)}
 .sq-addf button.go{background:var(--gold);color:var(--navy)}
+.sq-addf .sh{display:none}
+@media (max-width:640px){.sq-addf .lg{display:none}.sq-addf .sh{display:inline;flex:1 1 100%;font-size:11px}}
 .sq-72{display:inline-block;font-family:var(--display);font-size:10px;font-weight:600;color:var(--navy);background:var(--gold);border-radius:4px;padding:1px 5px;margin-left:6px;vertical-align:2px}
 .sq-more{display:block;margin:16px auto 0;font-family:var(--display);text-transform:uppercase;letter-spacing:.14em;font-size:12px;color:var(--gold);border:1px solid var(--line);border-radius:999px;padding:10px 22px}
 .sq-more:hover{background:var(--gold-dim)}
@@ -583,7 +585,16 @@ dialog.rsd[open]{animation:pop .28s ease}
 .rs-sq:hover{color:var(--gold);border-color:var(--gold)}
 .rs-sq svg{width:11px;height:11px}
 .rs-sq.has{color:var(--gold);border-color:rgba(208,165,121,.45)}
-@media (max-width:640px){.rs-sq{margin-left:6px;padding:1px 6px}.rs-sq .lb{display:none}.rs-sq svg{width:12px;height:12px}}
+@media (max-width:640px){
+  .rs-sq .lb{display:none}
+  .sq-row .ct .sq-acts{display:flex;width:max-content;margin-top:5px;border:1px solid var(--line-2);border-radius:8px;overflow:hidden}
+  .sq-acts>button{margin:0;border:0;border-radius:0;height:24px;min-width:30px;padding:0 8px;justify-content:center;gap:3px;font-size:10px;vertical-align:0}
+  .sq-acts>button+button{border-left:1px solid var(--line-2)}
+  .sq-acts>button svg{width:13px;height:12px}
+  .sq-acts .sq-add{font-size:0;gap:0}
+  .sq-acts .cm-btn:not(.has){border-style:solid}
+  .sq-acts .rs-sq.has{background:var(--gold-dim)}
+}
 @media (max-width:640px){
   dialog.rsd{width:calc(100vw - 16px);max-height:calc(100dvh - 20px);border-radius:18px}
   .rs-hd{padding:14px 14px 12px}.rs-hd .x{top:10px;right:10px;width:32px;height:32px}
@@ -2778,7 +2789,7 @@ function sqAddBtn(p, wl){
   const k = sqRowKey(p);
   if (SQ.add !== k) return `<button class="sq-add" data-add="${esc(k)}" title="Add to the Scouting Corner watch list">${SQ_BINO}Scout</button>`;
   let by = ""; try { by = localStorage.getItem("72c-name") || ""; } catch (err) {}
-  return `<span class="sq-addf"><span>Add <b>${esc(p.name)}</b> to Scouting Corner? Everyone will see ${by ? esc(by) : "you"} added them.</span>
+  return `<span class="sq-addf"><span class="lg">Add <b>${esc(p.name)}</b> to Scouting Corner? Everyone will see ${by ? esc(by) : "you"} added them.</span><span class="sh">Add to the watch list?</span>
     <button class="go" data-addgo="${esc(k)}">Add</button><button data-addx="1">Cancel</button></span>`;
 }
 $("#sqTbl").addEventListener("click", e => {
@@ -2798,6 +2809,12 @@ $("#sqTbl").addEventListener("click", e => {
   }
   renderScouting();
 });
+// comment, 12 months and Scout: inline on computers, one small joined bar of icons on phones
+// (the "Add … to Scouting Corner?" question goes under the bar, full width)
+function sqActs(p, wl, ctx){
+  const add = sqAddBtn(p, wl), btn = add.startsWith("<button");
+  return `<span class="sq-acts">${cmBtn(ctx, [p.name])}${rsSqBtn(p)}${btn ? add : ""}</span>${btn ? "" : add}`;
+}
 function renderScouting(){
   if (!$("#page-scouting")) return;
   const T = sqTour(), jr = sqJr(), by = sqBy();
@@ -2844,7 +2861,7 @@ function renderScouting(){
   const cmx = p => "sq:" + SQ.t + ":" + cnSorted(p.name);
   $("#sqTbl").innerHTML = head + (shown.length ? shown.map(p => `<div class="sq-row">
       <div class="no">${p.rank}</div>
-      <div style="min-width:0">${p.url ? `<a class="nm fx" href="${esc(p.url)}" target="_blank" rel="noopener">` : `<span class="nm fx">`}<span class="nt">${esc(p.name)}</span>${p.is72 ? `<span class="sq-72">72</span>` : ""}${sqEye(p, wl)}${p.url ? "</a>" : "</span>"}<div class="ct">${esc(p.cty)}${wp && ptx(p) ? `<span class="ptm"> · ${ptx(p)} pts</span>` : ""}${cmBtn(cmx(p), [p.name])}${rsSqBtn(p)}${sqAddBtn(p, wl)}</div></div>
+      <div style="min-width:0">${p.url ? `<a class="nm fx" href="${esc(p.url)}" target="_blank" rel="noopener">` : `<span class="nm fx">`}<span class="nt">${esc(p.name)}</span>${p.is72 ? `<span class="sq-72">72</span>` : ""}${sqEye(p, wl)}${p.url ? "</a>" : "</span>"}<div class="ct">${esc(p.cty)}${wp && ptx(p) ? `<span class="ptm"> · ${ptx(p)} pts</span>` : ""}${sqActs(p, wl, cmx(p))}</div></div>
       ${wp ? `<div class="pt">${ptx(p) || "—"}</div>` : ""}<div class="by">${p.born || "—"}${p.born && !jr ? `<small>U${year - p.born}</small>` : ""}</div>
       ${sqCell(p.rank, p.w)}${sqCell(p.rank, p.m3)}${sqCell(p.rank, p.m12)}
     </div>${cmLog(cmx(p), cnTidy(p.name), [p.name])}`).join("") : `<div class="sq-empty">No players match these filters.</div>`);
