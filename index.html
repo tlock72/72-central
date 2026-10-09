@@ -1332,6 +1332,32 @@ dialog.tmd[open]{animation:pop .28s ease}
   .tm-ph{width:56px;height:56px;font-size:20px}
   .tm-card b{font-size:17px}
 }
+/* Filtered Rankings on phones: two thin lines per player (name; nation · points + the icon bar), narrow number columns */
+@media (max-width:640px){
+  .sq-row,.sq-tbl.wp .sq-row{grid-template-columns:24px minmax(0,1fr) 30px repeat(3,34px);gap:4px;padding:6px 8px}
+  .sq-row.h{padding-block:7px}
+  .sq-row.h button{font-size:8.5px;letter-spacing:.03em}
+  .sq-row .no{font-size:15px}
+  .sq-row .nm.fx .nt{font-size:12.5px;line-height:1.2}
+  .sq-row .by{font-size:12px}
+  .sq-row .ch{font-size:12px}
+  .sq-row .ch.new{font-size:9px;letter-spacing:.04em}
+  .sq-row .ct{display:flex;flex-wrap:wrap;align-items:center;gap:3px 0;margin-top:2px;font-size:10px;letter-spacing:.02em;line-height:1.2;white-space:pre}
+  .sq-row .ct .ptm .u{display:none}
+  .sq-row .ct .sq-acts{margin:0 0 0 6px;border-radius:6px}
+  .sq-acts>button{height:19px;min-width:22px;padding:0 4px;font-size:9px;gap:2px}
+  .sq-acts>button svg{width:11px;height:10px}
+  .sq-row .sq-72{font-size:8px;padding:0 3px}
+  .sq-row .sq-eye{padding:0 3px;margin-left:4px}
+}
+@media (max-width:360px){
+  .sq-row,.sq-tbl.wp .sq-row{grid-template-columns:20px minmax(0,1fr) 28px repeat(3,30px);gap:3px;padding:6px 6px}
+  .sq-row .no{font-size:13px}.sq-row .by,.sq-row .ch{font-size:11px}
+  .sq-row .nm.fx .nt{font-size:12px}
+  .sq-row .ct{font-size:9.5px}.sq-row .ct .sq-acts{margin-left:4px}
+  .sq-acts>button{min-width:20px;padding:0 3px}
+  .sq-row.h button{font-size:7.5px;letter-spacing:0}
+}
 </style>
 </head>
 <body>
@@ -2861,7 +2887,7 @@ function renderScouting(){
   const cmx = p => "sq:" + SQ.t + ":" + cnSorted(p.name);
   $("#sqTbl").innerHTML = head + (shown.length ? shown.map(p => `<div class="sq-row">
       <div class="no">${p.rank}</div>
-      <div style="min-width:0">${p.url ? `<a class="nm fx" href="${esc(p.url)}" target="_blank" rel="noopener">` : `<span class="nm fx">`}<span class="nt">${esc(p.name)}</span>${p.is72 ? `<span class="sq-72">72</span>` : ""}${sqEye(p, wl)}${p.url ? "</a>" : "</span>"}<div class="ct">${esc(p.cty)}${wp && ptx(p) ? `<span class="ptm"> · ${ptx(p)} pts</span>` : ""}${sqActs(p, wl, cmx(p))}</div></div>
+      <div style="min-width:0">${p.url ? `<a class="nm fx" href="${esc(p.url)}" target="_blank" rel="noopener">` : `<span class="nm fx">`}<span class="nt">${esc(p.name)}</span>${p.is72 ? `<span class="sq-72">72</span>` : ""}${sqEye(p, wl)}${p.url ? "</a>" : "</span>"}<div class="ct">${esc(p.cty)}${wp && ptx(p) ? `<span class="ptm"> · ${ptx(p)}<span class="u"> pts</span></span>` : ""}${sqActs(p, wl, cmx(p))}</div></div>
       ${wp ? `<div class="pt">${ptx(p) || "—"}</div>` : ""}<div class="by">${p.born || "—"}${p.born && !jr ? `<small>U${year - p.born}</small>` : ""}</div>
       ${sqCell(p.rank, p.w)}${sqCell(p.rank, p.m3)}${sqCell(p.rank, p.m12)}
     </div>${cmLog(cmx(p), cnTidy(p.name), [p.name])}`).join("") : `<div class="sq-empty">No players match these filters.</div>`);
