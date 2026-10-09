@@ -905,7 +905,7 @@ dialog.stg[open]{display:block;animation:pop .28s ease}
 .mk-h small{color:var(--muted-2);font-size:12px;margin-left:8px;font-family:inherit;letter-spacing:0}
 #mkSvg .mkx{fill:#18213f;cursor:default}
 .mk-view{margin-bottom:12px}
-/* Brands on the move: one card per brand (sector, what it's doing, its headlines, Shortlist) */
+/* Brands on the move: one card per brand (sector, what it's doing, its headlines) */
 .bd-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(290px,1fr));gap:10px}
 .bd{display:flex;flex-direction:column;gap:8px;border:1px solid var(--line-2);border-radius:16px;padding:14px 16px;background:linear-gradient(170deg,var(--navy-2),rgba(17,27,63,.6))}
 .bd.cool{opacity:.55}
@@ -924,8 +924,6 @@ dialog.stg[open]{display:block;animation:pop .28s ease}
 .bd-h a:hover,.bd-oth a:hover{color:var(--gold)}
 .bd-h small,.bd-oth small{display:block;color:var(--muted-2);font-size:11px;margin-top:2px}
 .bd-more{color:var(--muted-2);font-size:11px}
-.bd-sl{margin-top:auto;align-self:flex-start;font:inherit;font-size:12px;background:none;border:1px solid var(--gold);color:var(--gold);border-radius:999px;padding:4px 12px;cursor:pointer}
-.bd-sl.on{background:var(--gold);color:var(--navy)}
 .bd-sub{font-family:var(--display);font-size:15px;letter-spacing:.05em;text-transform:uppercase;color:var(--muted);margin:22px 0 10px}
 .bd-oth{display:flex;flex-direction:column;gap:8px}
 .bd-oth>div{border:1px solid var(--line-2);border-radius:12px;padding:10px 14px;font-size:13.5px;line-height:1.4}
@@ -3136,9 +3134,9 @@ document.addEventListener("click", e => { const b = e.target.closest(".nw-oth");
   box.hidden = !open; b.setAttribute("aria-expanded", open); b.classList.toggle("on", open); });
 /* Market map: market.json (scripts/market.py) and brands.json (scripts/brands.py), both rebuilt after every News update,
    and worldmap.json (country shapes, Natural Earth); all only read when the map is opened. Two views: "Tennis business"
-   (the country's top 10 tennis business stories) and "Brands" (companies making moves there, one card per brand, plus a
-   shared shortlist on the visit-log Sheet's "Brands" tab). Picking a country (list or map) zooms in. */
-let MKT = null, WMAP = null, BRD = null, MK_C = "", MK_VB = null, MK_ANIM = 0, MK_V = "tennis", MK_SL = null, MK_SLOK = true;
+   (the country's top 10 tennis business stories) and "Brands" (companies making moves there, one card per brand).
+   Picking a country (list or map) zooms in. */
+let MKT = null, WMAP = null, BRD = null, MK_C = "", MK_VB = null, MK_ANIM = 0, MK_V = "tennis";
 const mkLvl = n => n >= 7 ? 4 : n >= 4 ? 3 : n >= 2 ? 2 : n ? 1 : 0;
 const mkN = cc => MK_V === "brands" ? BRD?.markets?.[cc]?.n || 0 : MKT?.count?.[cc] || 0;
 async function mkOpen(){
@@ -3156,7 +3154,6 @@ async function mkOpen(){
   }
   mkShade();
   mkPick(MK_C, true);
-  if (MK_V === "brands" && !MK_SL) mkLoadShort();
 }
 // colours and the country list for the view showing
 function mkShade(){
@@ -3226,15 +3223,12 @@ function mkPick(cc, now){
 }
 /* ---- Brands view ---- */
 const MK_SIG_CLS = { sponsor: "s1", people: "s2", expand: "s2", money: "s2", cool: "s0" };
-const mkShortFor = (b, m) => (MK_SL || []).find(x => x.brand === b && x.market === m);
 function mkCard(c, mname, showMarket){
-  const sl = mkShortFor(c.b, mname);
   return `<article class="bd${c.cool ? " cool" : ""}">
     <div class="bd-top"><h3>${esc(c.b)}</h3><span class="bd-sec">${esc(c.sec)}</span>${showMarket ? `<span class="bd-mk">${esc(mname)}</span>` : ""}</div>
     <div class="bd-sig">${c.sig.map(s => `<span class="${MK_SIG_CLS[s] || "s2"}">${esc(BRD.signals[s] || s)}</span>`).join("")}</div>
     <ul class="bd-h">${c.h.map(h => `<li><a href="${esc(mkSafe(h.u))}" target="_blank" rel="noopener">${esc(h.t)}</a><small>${esc(h.s)} · ${esc(nwAgo(h.at))}</small></li>`).join("")}</ul>
     ${c.more ? `<small class="bd-more">+${c.more} more this week</small>` : ""}
-    <button type="button" class="bd-sl${sl ? " on" : ""}" data-b="${esc(c.b)}" data-m="${esc(mname)}" data-sec="${esc(c.sec)}" data-why="${esc(c.sig.map(s => BRD.signals[s] || s).join(", "))}" data-h="${esc(c.h[0]?.t || "")}" data-u="${esc(c.h[0]?.u || "")}">${sl ? `★ Shortlisted${sl.by ? ` · ${esc(sl.by)}` : ""}` : "☆ Shortlist"}</button>
   </article>`;
 }
 function mkBrands(){
@@ -3256,35 +3250,10 @@ function mkBrands(){
     $("#mkH").innerHTML = `Whole world<small>the top brand moves across our markets, last 7 days</small>`;
     html = all.length ? `<div class="bd-grid">${all.map(x => mkCard(x.c, WMAP.c[x.cc]?.n || x.cc, true)).join("")}</div>` : `<div class="sq-empty">The brand searches are still running. Markets fill in through the day.</div>`;
   }
-  // the team's shortlist for this market (or all of it)
-  const sl = (MK_SL || []).filter(x => !MK_C || x.market === name);
-  html += `<h3 class="bd-sub">Our shortlist${MK_C ? ` for ${esc(name)}` : ""}${sl.length ? ` (${sl.length})` : ""}</h3>`;
-  html += !MK_SLOK ? `<div class="sq-empty">The shortlist needs the updated Sheet script (scripts/visit_log.gs).</div>`
-    : MK_SL === null ? `<div class="sq-empty">Loading the shortlist…</div>`
-    : sl.length ? `<div class="bd-oth">${sl.map(x => `<div><b>${esc(x.brand)}</b>${MK_C ? "" : ` · ${esc(x.market)}`}${x.sector ? ` <span class="bd-sec">${esc(x.sector)}</span>` : ""}${x.link ? ` · <a href="${esc(mkSafe(x.link))}" target="_blank" rel="noopener">${esc(x.headline || "the story")}</a>` : ""}<small>${esc(x.why || "")}${x.by ? ` · added by ${esc(x.by)}` : ""}${x.at ? ` · ${esc(nwAgo(x.at))}` : ""}</small></div>`).join("")}</div>`
-    : `<div class="sq-empty">Nothing shortlisted${MK_C ? ` for ${esc(name)}` : ""} yet. Press "☆ Shortlist" on a brand.</div>`;
   $("#mkList").innerHTML = html;
 }
-async function mkLoadShort(){
-  try {
-    const r = await fetch(CORNER_URL + "?kind=brands");
-    const d = JSON.parse(await r.text());
-    MK_SL = d.brands || []; MK_SLOK = true;
-  } catch (e) { MK_SL = []; MK_SLOK = false; }
-  if (NW_F === "map" && MK_V === "brands") mkBrands();
-}
-document.addEventListener("click", e => {
-  const b = e.target.closest(".bd-sl"); if (!b) return;
-  let by = ""; try { by = localStorage.getItem("72c-name") || ""; } catch (err) {}
-  const d = b.dataset, had = mkShortFor(d.b, d.m);
-  if (had && !confirm(`Take ${d.b} (${d.m}) off the shortlist?`)) return;
-  const body = had ? { kind: "unbrand", brand: d.b, market: d.m, by } : { kind: "brand", brand: d.b, market: d.m, sector: d.sec, why: d.why, headline: d.h, link: d.u, by };
-  try { fetch(CORNER_URL, { method: "POST", mode: "no-cors", body: JSON.stringify(body) }).catch(() => {}); } catch (err) {}
-  MK_SL = had ? (MK_SL || []).filter(x => x !== had) : [...(MK_SL || []), { brand: d.b, market: d.m, sector: d.sec, why: d.why, headline: d.h, link: d.u, by, at: new Date().toISOString() }];
-  mkBrands();
-});
 document.addEventListener("click", e => { const b = e.target.closest(".mkv"); if (!b || b.dataset.v === MK_V || !WMAP) return;
-  MK_V = b.dataset.v; mkShade(); mkPick(MK_C in (MK_V === "brands" ? BRD.markets : WMAP.c) ? MK_C : "", true); if (MK_V === "brands" && !MK_SL) mkLoadShort(); });
+  MK_V = b.dataset.v; mkShade(); mkPick(MK_C in (MK_V === "brands" ? BRD.markets : WMAP.c) ? MK_C : "", true); });
 $("#mkSel")?.addEventListener("change", e => mkPick(e.target.value));
 $("#mkOut")?.addEventListener("click", () => mkPick(""));
 $("#mkSvg")?.addEventListener("click", e => { const el = e.target.closest("[data-c]"); if (el) mkPick(el.dataset.c === MK_C ? "" : el.dataset.c); });
