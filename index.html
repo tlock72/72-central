@@ -2620,8 +2620,10 @@ function campStart(){
     if (!d.on) { if (Math.abs(e.clientY - d.y) > Math.abs(dx) && Math.abs(e.clientY - d.y) > 8) { C.drag = null; return; } if (Math.abs(dx) < 6) return; d.on = true; t.setPointerCapture(e.pointerId); }
     const now = performance.now(), nx = d.x0 - dx; C.v = (nx - C.x) / Math.max(now - d.t, 1) * 1000; d.t = now; C.x = nx; C.idle = Date.now(); }, sig);
   const up = () => { if (!C.drag) return; if (!C.drag.on) C.v = 0; C.drag = null; t.classList.remove("drag"); C.idle = Date.now(); };
-  t.addEventListener("pointerup", up, sig); t.addEventListener("pointercancel", up, sig); t.addEventListener("lostpointercapture", up, sig);
-  t.addEventListener("wheel", e => { if (Math.abs(e.deltaX) > Math.abs(e.deltaY)) { C.x += e.deltaX; C.v = 0; C.to = null; C.idle = Date.now(); e.preventDefault(); } }, { passive: false, ...sig });
+  // a finger is held by the strip inside the box from the start, so moving the hold to the box itself fires "lost" from the strip: only the box's own loss ends a swipe
+  t.addEventListener("pointerup", up, sig); t.addEventListener("pointercancel", up, sig); t.addEventListener("lostpointercapture", e => { if (e.target === t) up(); }, sig);
+  // trackpad sideways scroll, also when the pointer is over an arrow
+  t.parentElement.addEventListener("wheel", e => { if (Math.abs(e.deltaX) > Math.abs(e.deltaY)) { C.x += e.deltaX; C.v = 0; C.to = null; C.idle = Date.now(); e.preventDefault(); } }, { passive: false, ...sig });
   let last = performance.now(), shown = null;
   const tick = now => {
     if (!row.isConnected) return;
