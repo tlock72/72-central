@@ -95,8 +95,33 @@ def fetch(url):
     return raw.lstrip(b"\xef\xbb\xbf \r\n\t")
 
 
+def image(el, f):
+    """The story's picture: media:thumbnail / media:content / an image enclosure (the widest up to 800 px),
+    else the first <img> in the summary or full text. Only https addresses are kept."""
+    best, bw = None, -1
+    for ch in el.iter():
+        k, url = ch.tag.split("}")[-1], ch.get("url") or ""
+        typ, med = ch.get("type") or "", ch.get("medium") or ""
+        if not url.startswith("https://"):
+            continue
+        if k == "thumbnail" or (k in ("content", "enclosure") and (typ.startswith("image") or med == "image"
+                                                                   or re.search(r"\.(jpe?g|png|webp)(\?|$)", url, re.I))):
+            try:
+                w = int(ch.get("width") or 0)
+            except ValueError:
+                w = 0
+            if (w <= 800 and w > bw) or best is None:
+                best, bw = url, w
+    if not best:
+        m = re.search(r"<img[^>]+src=[\"'](https://[^\"']+)", html.unescape(f.get("encoded") or "") + html.unescape(f.get("description") or ""))
+        best = m and m.group(1)
+    if best:
+        best = re.sub(r"/ace/standard/\d+/", "/ace/standard/480/", html.unescape(best))  # BBC: a sharper size than the 240 px thumbnail
+    return best or ""
+
+
 def items(raw):
-    """RSS <item> or Atom <entry> -> (title, link, summary, time)."""
+    """RSS <item> or Atom <entry> -> (title, link, summary, time, picture)."""
     root = ET.fromstring(raw)
     out = []
     for el in root.iter():
@@ -114,7 +139,8 @@ def items(raw):
         u = f.get("link") or f.get("guid") or ""
         d = when(f.get("pubDate") or f.get("published") or f.get("updated") or f.get("date"))
         if t and u.startswith("http") and d:
-            out.append((t, u, text(f.get("description") or f.get("summary"))[:240], d))
+            sm = re.sub(r"\s*The post .* appeared first on .*$", "", text(f.get("description") or f.get("summary")))  # WordPress tag line
+            out.append((t, u, sm[:240], d, image(el, f)))
     return out
 
 
@@ -171,7 +197,7 @@ def main():
 
     # one copy per link, newest first
     seen, rows = set(), []
-    for s, t, u, d, at in sorted(got, key=lambda x: x[4], reverse=True):
+    for s, t, u, d, at, img in sorted(got, key=lambda x: x[4], reverse=True):
         if u in seen or at > NOW + timedelta(hours=1) or NOW - at > timedelta(hours=KEEP_72_H):
             continue
         seen.add(u)
@@ -182,7 +208,7 @@ def main():
         if not (s in TENNIS_ONLY or tw & TENNIS or tw & pros or re.search(r"\b[A-Z][a-z]+ Open\b", t) or p72 or sc):
             print("not tennis, left out:", t)
             continue
-        rows.append({"t": t, "u": u, "s": s, "d": d, "at": at,
+        rows.append({"t": t, "u": u, "s": s, "d": d, "at": at, "img": img,
                      "p72": p72, "sc": sc, "w": words(t), "who": words(t) & pros})
 
     # group the same story across outlets (within 36 hours of each other):
@@ -213,6 +239,7 @@ def main():
         if age > KEEP_H and not (p72 or sc):
             continue
         out.append({"t": lead["t"], "u": lead["u"], "s": lead["s"], "d": lead["d"],
+                    "img": next((x["img"] for x in g if x["img"]), ""),  # the lead's picture, else another outlet's
                     "at": lead["at"].strftime("%Y-%m-%dT%H:%M:%SZ"),
                     "also": [{"s": x["s"], "u": x["u"]} for x in g[1:]],
                     "p72": p72, "sc": sc, "score": round(n - age / 24, 2)})
