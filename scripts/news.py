@@ -104,6 +104,8 @@ BIZ_PH = ["prize money", "equal pay", "premium tour", "media rights", "tv rights
 EV_PH = ["entry list", "draw date", "wild card", "new tournament", "new event", "combined event", "tournament director",
          "96 player", "draw size", "host city", "will host", "to host", "tournament will"]
 EV_T = ["davis cup", "billie jean king cup", "united cup", "laver cup", "hopman cup", "next gen", "six kings"]  # headline only
+NOISE = ["where to watch", "how to watch", "live stream", "watch live", "net worth", "ncaa", "college", "invitational",
+         "university"]
 # a match report: one of these in the headline keeps it a match story, whatever else it mentions (so do a player's
 #   "ranking points and prize money after…" pieces and "On this day" history pieces such as "October 7, 1999: …")
 PLAY = set("""beat beats beaten defeat defeats defeated stun stuns stunned crash crashes crashed reach reaches reached
@@ -116,6 +118,9 @@ def topic(t, d):
     """ "biz", "ev" or "" (a match or player story), see BIZ above."""
     tw, tn, dn = set(norm(t).split()), norm(t), norm(d)
     if (tw & PLAY and not any(f" {p} " in tn for p in BIZ_PH)) or " ranking points " in tn or re.match(r"[A-Z][a-z]+ \d{1,2}, \d{4}:", t):
+        return ""
+    # where-to-watch guides, "net worth" pieces and US college tennis aren't the business of the game
+    if any(f" {p} " in tn for p in NOISE):
         return ""
     if any(f" {p} " in tn for p in EV_PH + EV_T):
         return "ev"
@@ -228,7 +233,7 @@ def items(raw):
             sm = re.sub(r"\s*The post .* appeared first on .*$", "", text(f.get("description") or f.get("summary")))  # WordPress tag line
             src = text(f.get("source"))  # Google News: the outlet that ran it ("Title - Outlet"; its summary is just links)
             if src:
-                t, sm = re.sub(r"\s+[-\u2013|]\s+" + re.escape(src) + r"$", "", t), ""
+                t, sm = re.sub(r"(\s+[-\u2013|]\s+" + re.escape(src) + r")+$", "", t), ""  # "… | Gulf Times - Gulf Times"
             out.append((t, u, sm[:240], d, image(el, f), src))
     return out
 
