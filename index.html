@@ -337,6 +337,8 @@ blockquote.q cite{display:block;margin-top:12px;font-style:normal;font-family:va
 .yr li{font-size:13px;color:var(--text);padding-left:16px;position:relative;line-height:1.4}
 .yr li::before{content:"";position:absolute;left:0;top:7px;width:6px;height:6px;border-radius:50%;background:var(--gold)}
 #page-rankings .hero{align-items:flex-end}
+/* Rankings, 72 Players view: ATP & WTA / ITF Juniors switch under the list buttons */
+.rk-sub{margin:0 0 16px}
 #champs{margin-top:22px}
 .champ{position:relative;overflow:hidden;display:flex;align-items:center;gap:10px;padding:8px 16px;border-radius:999px;
   background:linear-gradient(120deg,#E6C9A5 0%,#D0A579 50%,#B98C5E 100%);color:var(--navy);font-size:13px;line-height:1.3;white-space:nowrap}
@@ -862,6 +864,8 @@ dialog.stg[open]{display:block;animation:pop .28s ease}
 .hp-stat > div > span{display:block;font-size:12px;color:var(--muted);margin-top:8px;line-height:1.4}
 .hp-go{flex:none;width:44px;height:44px;border-radius:50%;display:grid;place-items:center;border:1px solid var(--line);color:var(--gold);font-size:18px;transition:background .25s,color .25s}
 .hp-tile:hover .hp-go{background:var(--gold);color:var(--navy)}
+/* News tile: a placeholder until the news feed is built, so it doesn't lift or light up */
+.hp-soon{opacity:.6}.hp-soon:hover{transform:none;border-color:var(--line-2);box-shadow:none}
 .hp-faces{display:flex;margin-top:16px}
 .hp-faces img{width:38px;height:38px;border-radius:50%;object-fit:cover;object-position:center 20%;border:2px solid var(--navy-2);margin-left:-10px;background:var(--navy-3)}
 .hp-faces img:first-child{margin-left:0}
@@ -891,14 +895,13 @@ nav .sh,.nm-s{display:none}
   .brand img{height:28px}
   .p-find{margin-bottom:10px;padding:8px 14px;font-size:16px}
   .champ{font-size:11px;padding:7px 12px;margin:8px 0 0}
-  /* six tabs don't fit beside the logo on a phone: the menu sits under it as two rows of three (72 Scores, 72 Rankings, Roster / Filtered Rankings, Schedule, Scouting) */
+  /* six tabs don't fit beside the logo on a phone: the menu sits under it as two rows of three (72 Scores, Rankings, Roster / Schedule, Scouting, Team) */
   header .bar{flex-wrap:wrap;justify-content:center;row-gap:8px}
   nav{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:3px;padding:4px;border-radius:20px;width:100%}
   nav a{text-align:center;overflow:hidden;text-overflow:ellipsis;padding:7px 2px;font-size:11px;letter-spacing:.04em;white-space:nowrap}
   nav a[data-tab=players] .n72{display:none}
   #champs{margin-top:8px}
   nav .lg{display:none} nav .sh{display:inline}
-  nav a[data-tab=scouting] .lg{display:inline} nav a[data-tab=scouting] .sh{display:none}
   body.on-home header .bar{justify-content:center}
   .hero{padding-block:14px 10px;gap:10px}
   .hero h1{font-size:30px}
@@ -1114,7 +1117,8 @@ body.on-home > footer{display:none}
   #page-rankings .hero,#page-scouting .hero{display:grid;grid-template-columns:minmax(0,1fr) auto;align-items:center;gap:0 10px}
   #page-rankings .hero>div:first-child,#page-scouting .hero>div:first-child{display:contents}
   #page-rankings .hero .sub{grid-column:1/-1;grid-row:2}
-  #page-scouting .hero .chips{grid-column:1/-1;margin-top:8px}
+  #page-rankings .hero .chips,#page-scouting .hero .chips{grid-column:1/-1;margin-top:8px}
+  .rk-sub{margin-bottom:10px}
   /* buttons and boxes */
   .chips{gap:5px}
   .chip,.sq-line .chip{font-size:10px;letter-spacing:.07em;padding:6px 11px}
@@ -1344,7 +1348,6 @@ main.ptr-go,footer.ptr-go{transition:transform .35s cubic-bezier(.2,.8,.3,1)}
 .hp-team:hover{border-color:var(--gold);color:var(--gold)}
 .hp-team svg{width:20px;height:20px;color:var(--gold)}
 /* Team in the top menu on computers and tablets; phones reach it from the Team Cards button on the home page (their menu is a full 3x2 grid) */
-@media (max-width:640px){nav a.nav-team{display:none}}
 /* small tablets: tighter menu so the seventh link still fits beside the logo */
 @media (max-width:900px) and (min-width:641px){nav{gap:2px}nav a{padding:9px 5px;font-size:11px;letter-spacing:.03em}}
 .tm-back{display:inline-block;margin:6px 0 0;font-size:12px;color:var(--muted);text-decoration:none}
@@ -1433,9 +1436,8 @@ dialog.tmd[open]{animation:pop .28s ease}
     </a>
     <nav>
       <a href="#scores" data-tab="scores"><span class="lg"><span class="n72">72 </span>Competition Zone</span><span class="sh"><span class="n72">72 </span>Scores</span></a>
-      <a href="#rankings" data-tab="rankings"><span class="n72">72 </span>Rankings</a>
+      <a href="#rankings" data-tab="rankings">Rankings</a>
       <a href="#players" data-tab="players"><span class="n72">72 </span>Roster</a>
-      <a href="#scouting" data-tab="scouting"><span class="lg">Filtered Rankings</span><span class="sh">Filtered</span></a>
       <a href="#schedule" data-tab="schedule"><span class="lg">Tour Schedule</span><span class="sh">Schedule</span></a>
       <a href="#corner" data-tab="corner"><span class="lg">Scouting Corner</span><span class="sh">Scouting</span></a>
       <a href="#team" data-tab="team" class="nav-team">Team</a>
@@ -1460,8 +1462,8 @@ dialog.tmd[open]{animation:pop .28s ease}
         <div class="hp-stat"><div><b id="hpT1">—</b><span id="hpS1">Loading the schedule…</span></div><span class="hp-go" aria-hidden="true">→</span></div>
       </a>
       <a class="hp-tile" href="#rankings">
-        <h2>72 Rankings</h2>
-        <p>Official ATP, WTA and ITF junior rankings for the roster, updated every week.</p>
+        <h2>Rankings</h2>
+        <p>The roster's official rankings, plus every ranked ATP, WTA, ITF junior and Tennis Europe U14 player by age and birth year, with 1-week, 3-month and 12-month moves.</p>
         <div class="hp-stat"><div><b id="hpT2">—</b><span id="hpS2">Loading rankings…</span></div><span class="hp-go" aria-hidden="true">→</span></div>
       </a>
       <a class="hp-tile" href="#players">
@@ -1469,11 +1471,6 @@ dialog.tmd[open]{animation:pop .28s ease}
         <p>Profiles for the whole roster: titles, partners, social following and results.</p>
         <div class="hp-faces" id="hpFaces"></div>
         <div class="hp-stat"><div><b id="hpT3">—</b><span id="hpS3"></span></div><span class="hp-go" aria-hidden="true">→</span></div>
-      </a>
-      <a class="hp-tile" href="#scouting">
-        <h2>Filtered Rankings</h2>
-        <p>Young ATP/WTA, ITF junior and Tennis Europe U14 rankings by birth year, with 1-week, 3-month and 12-month moves.</p>
-        <div class="hp-stat"><div><b id="hpT4">—</b><span id="hpS4">Loading the scouting list…</span></div><span class="hp-go" aria-hidden="true">→</span></div>
       </a>
       <a class="hp-tile" href="#schedule">
         <h2>Tour Schedule</h2>
@@ -1485,6 +1482,11 @@ dialog.tmd[open]{animation:pop .28s ease}
         <p>Our prospect watch list, from Tennis Europe to the ATP and WTA: rankings, moves and 12 months of results.</p>
         <div class="hp-stat"><div><b id="hpT6">—</b><span id="hpS6">Loading the watch list…</span></div><span class="hp-go" aria-hidden="true">→</span></div>
       </a>
+      <div class="hp-tile hp-soon">
+        <h2>News</h2>
+        <p>The day's top tennis headlines from the main outlets, with stories on 72 players first.</p>
+        <div class="hp-stat"><div><b>Soon</b><span>Coming soon</span></div></div>
+      </div>
     </div>
     <a class="hp-team" href="#team"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="2" y="5" width="20" height="14" rx="2"/><circle cx="8" cy="11" r="2.2"/><path d="M4.8 16c.6-1.6 1.8-2.4 3.2-2.4s2.6.8 3.2 2.4M14 10h5M14 13.5h4"/></svg>Team Cards</a>
     <p class="hp-foot">For SeventyTwo Sports Group staff only.</p>
@@ -1526,11 +1528,12 @@ dialog.tmd[open]{animation:pop .28s ease}
     <div class="hero">
       <div>
         <div class="eyebrow">SeventyTwo Sports Group</div>
-        <h1><span class="n">72</span> Rankings</h1>
+        <h1>Rankings</h1>
         <p class="sub" id="rankSub">Official ATP and WTA singles rankings for the 72 roster.</p>
       </div>
-      <div class="chips" role="group" aria-label="Choose rankings"><button class="chip rt on" data-rt="tour">ATP &amp; WTA</button><button class="chip rt" data-rt="itf">ITF Juniors</button></div>
+      <div class="chips" role="group" aria-label="Choose rankings list"><button class="chip rk72 on">72 Players</button><button class="chip rkgo" data-t="atp">ATP</button><button class="chip rkgo" data-t="wta">WTA</button><button class="chip rkgo" data-t="itfb">ITF Boys</button><button class="chip rkgo" data-t="itfg">ITF Girls</button><button class="chip rkgo" data-t="teb14">TE U14 Boys</button><button class="chip rkgo" data-t="teg14">TE U14 Girls</button></div>
     </div>
+    <div class="chips rk-sub" role="group" aria-label="Choose 72 rankings"><button class="chip rt on" data-rt="tour">ATP &amp; WTA</button><button class="chip rt" data-rt="itf">ITF Juniors</button></div>
     <div id="rk-tour">
     <div class="stale" id="staleRanks" hidden></div>
     <div class="rk-facts" id="rkFacts"></div>
@@ -1585,10 +1588,10 @@ dialog.tmd[open]{animation:pop .28s ease}
     <div class="hero">
       <div>
         <div class="eyebrow">SeventyTwo Sports Group</div>
-        <h1>Filtered Rankings</h1>
-        <p class="sub" id="sqSub">72's scouting radar. Every ranked ATP and WTA singles player (filtered by age group or birth year) and every ITF junior and Tennis Europe U14 player (filtered by birth year), and by ranking, with ranking moves over the last week, 3 months and 12 months, so we can spot rising talent early and see how 72 players (marked <span class="sq-72">72</span>) compare with their age group. Players on the Scouting Corner watch list are marked <span class="sq-eye" title="On the Scouting Corner watch list"><svg viewBox="0 0 24 18" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linejoin="round" aria-hidden="true"><circle cx="6" cy="12.5" r="4.3"/><circle cx="18" cy="12.5" r="4.3"/><path d="M10.3 12.5h3.4M2.6 10 5.3 2h3.4l1.6 8.5M21.4 10 18.7 2h-3.4l-1.6 8.5"/></svg></span>; tap <b>Scout</b> next to anyone else to add them there. Tap the calendar (<b>12 months</b>) next to anyone for their last 12 months of results.</p>
+        <h1>Rankings</h1>
+        <p class="sub" id="sqSub">Every ranked ATP and WTA singles player (filtered by age group or birth year) and every ITF junior and Tennis Europe U14 player (filtered by birth year), and by ranking, with ranking moves over the last week, 3 months and 12 months, so we can spot rising talent early and see how 72 players (marked <span class="sq-72">72</span>) compare with their age group. Players on the Scouting Corner watch list are marked <span class="sq-eye" title="On the Scouting Corner watch list"><svg viewBox="0 0 24 18" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linejoin="round" aria-hidden="true"><circle cx="6" cy="12.5" r="4.3"/><circle cx="18" cy="12.5" r="4.3"/><path d="M10.3 12.5h3.4M2.6 10 5.3 2h3.4l1.6 8.5M21.4 10 18.7 2h-3.4l-1.6 8.5"/></svg></span>; tap <b>Scout</b> next to anyone else to add them there. Tap the calendar (<b>12 months</b>) next to anyone for their last 12 months of results.</p>
       </div>
-      <div class="chips" role="group" aria-label="Choose tour"><button class="chip sqt on" data-t="atp">ATP</button><button class="chip sqt" data-t="wta">WTA</button><button class="chip sqt" data-t="itfb">ITF Boys</button><button class="chip sqt" data-t="itfg">ITF Girls</button><button class="chip sqt" data-t="teb14">TE U14 Boys</button><button class="chip sqt" data-t="teg14">TE U14 Girls</button></div>
+      <div class="chips" role="group" aria-label="Choose rankings list"><button class="chip rk72">72 Players</button><button class="chip sqt on" data-t="atp">ATP</button><button class="chip sqt" data-t="wta">WTA</button><button class="chip sqt" data-t="itfb">ITF Boys</button><button class="chip sqt" data-t="itfg">ITF Girls</button><button class="chip sqt" data-t="teb14">TE U14 Boys</button><button class="chip sqt" data-t="teg14">TE U14 Girls</button></div>
     </div>
     <div class="stale" id="staleScout" hidden></div>
     <div class="stats" id="sqStats"></div>
@@ -1798,12 +1801,12 @@ function route(){
   const pid = hash.startsWith("#players/") ? hash.slice(9) : null;
   if (pid && profById[pid]) openProfile(pid);
   else if ($("#prof").open) { profLock(false); $("#prof").close(); }
-  document.querySelectorAll("nav a").forEach(a => a.classList.toggle("active", a.dataset.tab === tab));
+  document.querySelectorAll("nav a").forEach(a => a.classList.toggle("active", a.dataset.tab === (tab === "scouting" ? "rankings" : tab)));
   // the champions banner sits at the top of both the home page and Competition Zone
   if (tab === "home" || tab === "scores") { $("#page-" + tab).prepend($("#champs")); fitChamps(); }
   if (tab === "home") renderHome();
   if (tab === "home" && window._tab && window._tab !== "home") spinLogo();
-  // coming to Filtered Rankings from another tab always starts on Everyone, all ages, all rankings
+  // coming to the full Rankings lists from another tab always starts on Everyone, all ages, all rankings
   if (tab === "scouting" && window._tab !== "scouting") {
     Object.assign(SQ, { o72: false, by: "age", ag: "all", age: 0, yr: 0, rk: "all", top: 0, q: "", c: "", all: false });
     $("#sqQ").value = ""; $("#sqC").value = "";
@@ -2957,6 +2960,13 @@ function renderScouting(){
     : jr ? `ITF World Tennis Junior Ranking (${SQ.t === "itfb" ? "boys" : "girls"}) of ${sqFmt(T.week)}${[["w", "1 wk"], ["m3", "3 mo"], ["m12", "12 mo"]].filter(([k]) => c[k]).map(([k, l]) => `${sqFmt(c[k])} (${l})`).join(", ").replace(/^(.)/, ", compared with the rankings of $1")}. <b>NEW</b> means the player was not ranked then; <b>—</b> means not tracked then (the ITF doesn't publish past junior weeks, so the moves build up week by week from October 2026). Filtered by birth year, as junior events are. Source: ITF. Updates itself every Monday.`
     : `Official ${SQ.t.toUpperCase()} singles ranking of ${sqFmt(T.week)}, compared with the rankings of ${sqFmt(c.w)} (1 wk), ${sqFmt(c.m3)} (3 mo) and ${sqFmt(c.m12)} (12 mo). <b>NEW</b> means the player was not ranked then${rows.some(p => p.w === -1 || p.m3 === -1 || p.m12 === -1) ? "; <b>—</b> means not tracked then (older ATP weeks are being filled in for every player, a few weeks every half hour)" : ""}. Source: ${SQ.t === "atp" ? `ATP via Tennis Abstract${wp ? " (points via Tennis Explorer)" : ""}` : "WTA"}. Updates itself every week.`;
 }
+// Rankings: "72 Players" shows the roster view (#rankings); the ATP … TE U14 buttons show the full lists (#scouting)
+document.addEventListener("click", e => {
+  if (e.target.closest(".rk72")) { location.hash = "#rankings"; return; }
+  const g = e.target.closest(".rkgo"); if (!g) return;
+  SQ.t = g.dataset.t; document.querySelectorAll(".sqt").forEach(b => b.classList.toggle("on", b.dataset.t === SQ.t));
+  location.hash = "#scouting";
+});
 document.addEventListener("click", e => {
   const t = e.target.closest(".sqt, .sqm, .sqa, .sqy, .sqr, .sqo, .sq-row.h button, #sqMore");
   if (!t) return;
@@ -3947,22 +3957,6 @@ function renderHome(){
   const ng = p => { const x = profById[p.id]; return x?.dob ? x.age < 18 : !!x && under18(x); };
   $("#hpS3").textContent = `${ROSTER.filter(p => p.tour === "ATP" && !ng(p)).length} ATP · ${ROSTER.filter(p => p.tour === "WTA" && !ng(p)).length} WTA · ${ROSTER.filter(ng).length} Next Gen (under 18)`;
   if (!$("#hpFaces").children.length) $("#hpFaces").innerHTML = ranked.slice(0, 6).map(o => `<img src="${o.p.id}.webp" alt="" loading="lazy" onerror="this.remove()">`).join("");
-  // 04 Scouting HQ
-  if (SCOUT?.atp || SCOUT?.wta) {
-    // how 72 players rank against everyone born in the same year, on their tour
-    const mine = [];
-    for (const t of ["atp", "wta"]) {
-      const list = SCOUT[t]?.players || [], byYear = {};
-      for (const p of list) if (p[3] >= SCOUT.minYear) (byYear[p[3]] = byYear[p[3]] || []).push(p);  // under-21s, as on the old list
-      for (const yr in byYear) byYear[yr].sort((a, b) => a[0] - b[0]).forEach((p, i) => {
-        if (SQ72.has(t + ":" + sqKey(p[1]))) mine.push({ name: p[1], born: p[3], pos: i + 1, tour: t.toUpperCase() });
-      });
-    }
-    const top10 = mine.filter(m => m.pos <= 10).sort((a, b) => a.pos - b.pos || a.born - b.born);
-    const short = n => { const r = ROSTER.find(x => sqKey(x.first + x.last) === sqKey(n)); return r ? `${r.first[0]}. ${r.last}` : n; };
-    $("#hpT4").innerHTML = `${top10.length}<small>players top 10 for their age</small>`;
-    $("#hpS4").innerHTML = top10.length ? top10.slice(0, 3).map(m => `<strong>${esc(short(m.name))}</strong> No.${m.pos}`).join(" · ") : "";
-  } else if (SCOUT) { $("#hpT4").textContent = "—"; $("#hpS4").textContent = "Scouting list not available yet"; }
   if (SCHED?.events?.length) {
     // 72 players playing in a week: everyone on an event that runs that week (two-week events count in both)
     const wk0 = schMonday(myDate()), wk1 = schMonday(new Date(schDay(wk0).getTime() + 7 * 864e5).toISOString().slice(0, 10));
@@ -4253,7 +4247,7 @@ setInterval(() => { if (!document.hidden) renderScores(); }, 5 * 60 * 1000);
   // (scripts/visit_log.gs, set up as in VISIT_LOG.md). Off while LOG_URL is empty.
   // Only time with the tab on screen counts; 30 minutes away starts a new visit.
   const LOG_URL = "https://script.google.com/macros/s/AKfycbwzEb0YNoDmZaaJ5fQg05ubEe_lowMLiGoYaXuclycqQikOngLQEmENPN5KoL_KJXu1kA/exec";
-  const PAGES = { home: "Home", scores: "Scores", rankings: "Rankings", players: "Roster", scouting: "Filtered Rankings", schedule: "Schedule", corner: "Scouting Corner", team: "Team Cards" };
+  const PAGES = { home: "Home", scores: "Scores", rankings: "Rankings (72 Players)", players: "Roster", scouting: "Rankings (full lists)", schedule: "Schedule", corner: "Scouting Corner", team: "Team Cards" };
   let visit = null, awayAt = 0;
   const pageNow = () => PAGES[location.hash.slice(1).split("/")[0]] || "Home";
   function newVisit(){ visit = { id: Date.now().toString(36) + Math.random().toString(36).slice(2, 8), start: Date.now(), secs: 0, since: document.hidden ? 0 : Date.now(), pages: [pageNow()] }; awayAt = Date.now(); }
