@@ -864,8 +864,22 @@ dialog.stg[open]{display:block;animation:pop .28s ease}
 .hp-stat > div > span{display:block;font-size:12px;color:var(--muted);margin-top:8px;line-height:1.4}
 .hp-go{flex:none;width:44px;height:44px;border-radius:50%;display:grid;place-items:center;border:1px solid var(--line);color:var(--gold);font-size:18px;transition:background .25s,color .25s}
 .hp-tile:hover .hp-go{background:var(--gold);color:var(--navy)}
-/* News tile: a placeholder until the news feed is built, so it doesn't lift or light up */
-.hp-soon{opacity:.6}.hp-soon:hover{transform:none;border-color:var(--line-2);box-shadow:none}
+/* News (news.json): one card per story, newest-biggest first; 72 / prospect tags; "also in" other outlets */
+.nw-list{display:flex;flex-direction:column;gap:10px}
+.nw{border:1px solid var(--line-2);border-radius:16px;padding:14px 18px;background:linear-gradient(170deg,var(--navy-2),rgba(17,27,63,.6))}
+.nw.k72{border-color:var(--gold)}
+.nw-m{display:flex;flex-wrap:wrap;align-items:center;gap:4px 10px;font-size:11px;color:var(--muted-2);text-transform:uppercase;letter-spacing:.08em;font-family:var(--display)}
+.nw-m .s{color:var(--gold)}
+.nw-m .nb{color:var(--navy);background:var(--gold);border-radius:999px;padding:1px 8px}
+.nw h3{margin:6px 0 4px;font-size:17px;line-height:1.3;font-weight:600}
+.nw h3 a{color:var(--white);text-decoration:none}
+.nw h3 a:hover{color:var(--gold)}
+.nw p{margin:0;font-size:13px;color:var(--muted);line-height:1.5}
+.nw-t{display:flex;flex-wrap:wrap;gap:6px;margin-top:8px}
+.nw-t a,.nw-t span{font-size:11px;border:1px solid var(--line);border-radius:999px;padding:2px 9px;color:var(--muted);text-decoration:none}
+.nw-t .p72{border-color:var(--gold);color:var(--gold)}
+.nw-t a:hover{color:var(--white)}
+@media (max-width:640px){.nw{padding:11px 13px;border-radius:13px}.nw h3{font-size:15px}.nw p{font-size:12px;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}}
 .hp-faces{display:flex;margin-top:16px}
 .hp-faces img{width:38px;height:38px;border-radius:50%;object-fit:cover;object-position:center 20%;border:2px solid var(--navy-2);margin-left:-10px;background:var(--navy-3)}
 .hp-faces img:first-child{margin-left:0}
@@ -895,7 +909,7 @@ nav .sh,.nm-s{display:none}
   .brand img{height:28px}
   .p-find{margin-bottom:10px;padding:8px 14px;font-size:16px}
   .champ{font-size:11px;padding:7px 12px;margin:8px 0 0}
-  /* six tabs don't fit beside the logo on a phone: the menu sits under it as two rows of three (72 Scores, Rankings, Roster / Schedule, Scouting, Team) */
+  /* six tabs don't fit beside the logo on a phone: the menu sits under it as two rows of three (72 Scores, Rankings, Roster / Schedule, Scouting, News) */
   header .bar{flex-wrap:wrap;justify-content:center;row-gap:8px}
   nav{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:3px;padding:4px;border-radius:20px;width:100%}
   nav a{text-align:center;overflow:hidden;text-overflow:ellipsis;padding:7px 2px;font-size:11px;letter-spacing:.04em;white-space:nowrap}
@@ -1092,9 +1106,9 @@ body.on-home > footer{display:none}
 /* Phone: compact Scouting Corner, Tour Schedule, 72 Rankings and Filtered Rankings (smaller buttons and text, less scrolling) */
 @media (max-width:640px){
   /* headings: smaller, and the ATP/WTA buttons sit beside the title */
-  #page-rankings .hero,#page-scouting .hero,#page-schedule .hero,#page-corner .hero{padding-block:12px 8px}
-  #page-rankings .hero h1,#page-scouting .hero h1,#page-schedule .hero h1,#page-corner .hero h1{font-size:24px}
-  #page-schedule .hero .sub,#page-scouting .hero .sub,#page-corner .hero .sub{display:none}
+  #page-rankings .hero,#page-scouting .hero,#page-schedule .hero,#page-corner .hero,#page-news .hero{padding-block:12px 8px}
+  #page-rankings .hero h1,#page-scouting .hero h1,#page-schedule .hero h1,#page-corner .hero h1,#page-news .hero h1{font-size:24px}
+  #page-schedule .hero .sub,#page-scouting .hero .sub,#page-corner .hero .sub,#page-news .hero .sub{display:none}
   .sg-long{display:none}.sg-short{display:block;padding:8px 12px;font-size:11px;line-height:1.4}
   /* Computerised suggestions: two tiles side by side, with the Scout button shrunk to just the binoculars */
   .sg-sec{gap:6px}
@@ -1349,6 +1363,7 @@ main.ptr-go,footer.ptr-go{transition:transform .35s cubic-bezier(.2,.8,.3,1)}
 .hp-team svg{width:20px;height:20px;color:var(--gold)}
 /* Team in the top menu on computers and tablets; phones reach it from the Team Cards button on the home page (their menu is a full 3x2 grid) */
 /* small tablets: tighter menu so the seventh link still fits beside the logo */
+@media (max-width:640px){nav a.nav-team{display:none}}
 @media (max-width:900px) and (min-width:641px){nav{gap:2px}nav a{padding:9px 5px;font-size:11px;letter-spacing:.03em}}
 .tm-back{display:inline-block;margin:6px 0 0;font-size:12px;color:var(--muted);text-decoration:none}
 .tm-back:hover{color:var(--gold)}
@@ -1440,6 +1455,7 @@ dialog.tmd[open]{animation:pop .28s ease}
       <a href="#players" data-tab="players"><span class="n72">72 </span>Roster</a>
       <a href="#schedule" data-tab="schedule"><span class="lg">Tour Schedule</span><span class="sh">Schedule</span></a>
       <a href="#corner" data-tab="corner"><span class="lg">Scouting Corner</span><span class="sh">Scouting</span></a>
+      <a href="#news" data-tab="news">News</a>
       <a href="#team" data-tab="team" class="nav-team">Team</a>
     </nav>
     <button type="button" class="cog" id="cog" aria-label="Settings" title="Settings"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 1 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 1 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 1 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 1 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg></button>
@@ -1482,11 +1498,11 @@ dialog.tmd[open]{animation:pop .28s ease}
         <p>Our prospect watch list, from Tennis Europe to the ATP and WTA: rankings, moves and 12 months of results.</p>
         <div class="hp-stat"><div><b id="hpT6">—</b><span id="hpS6">Loading the watch list…</span></div><span class="hp-go" aria-hidden="true">→</span></div>
       </a>
-      <div class="hp-tile hp-soon">
+      <a class="hp-tile" href="#news">
         <h2>News</h2>
-        <p>The day's top tennis headlines from the main outlets, with stories on 72 players first.</p>
-        <div class="hp-stat"><div><b>Soon</b><span>Coming soon</span></div></div>
-      </div>
+        <p>The top tennis headlines from the BBC, Guardian, ESPN, Sky Sports and more, with stories on 72 players and prospects first.</p>
+        <div class="hp-stat"><div><b id="hpT7">—</b><span id="hpS7">Loading the headlines…</span></div><span class="hp-go" aria-hidden="true">→</span></div>
+      </a>
     </div>
     <a class="hp-team" href="#team"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="2" y="5" width="20" height="14" rx="2"/><circle cx="8" cy="11" r="2.2"/><path d="M4.8 16c.6-1.6 1.8-2.4 3.2-2.4s2.6.8 3.2 2.4M14 10h5M14 13.5h4"/></svg>Team Cards</a>
     <p class="hp-foot">For SeventyTwo Sports Group staff only.</p>
@@ -1619,6 +1635,18 @@ dialog.tmd[open]{animation:pop .28s ease}
     <div class="sq-tbl" id="sqTbl"></div>
     <button class="sq-more" id="sqMore" hidden>Show all</button>
     <p class="src" id="sqSrc"></p>
+  </div>
+  <div id="page-news" hidden>
+    <div class="hero">
+      <div>
+        <div class="eyebrow">SeventyTwo Sports Group</div>
+        <h1>News</h1>
+        <p class="sub">The top tennis stories from the last 3 days, from well-known outlets. Stories more outlets are running come first. Stories naming a 72 player or a Scouting Corner prospect are kept for a week. Tap a headline to read it on the outlet's own site.</p>
+      </div>
+      <div class="chips" role="group" aria-label="Show"><button class="chip nwf on" data-n="all">All</button><button class="chip nwf" data-n="72">72 players</button><button class="chip nwf" data-n="sc">Prospects</button></div>
+    </div>
+    <div class="nw-list" id="nwList"><div class="sq-empty">Loading the headlines…</div></div>
+    <p class="src" id="nwSrc"></p>
   </div>
   <div id="page-corner" hidden>
     <div class="hero">
@@ -1784,7 +1812,7 @@ let logoSpins = 0;
 window.spinLogo = () => { LOGO.src = "data:image/svg+xml;base64," + btoa(LOGO_SVG.replace("</svg>", "<!--" + (++logoSpins) + "--></svg>")); };
 function route(){
   const hash = location.hash;
-  const tab = hash === "#rankings" ? "rankings" : hash === "#scouting" ? "scouting" : hash === "#schedule" ? "schedule" : hash === "#corner" ? "corner" : hash === "#scores" ? "scores" : hash.startsWith("#players") ? "players" : hash.startsWith("#team") ? "team" : "home";
+  const tab = hash === "#rankings" ? "rankings" : hash === "#scouting" ? "scouting" : hash === "#schedule" ? "schedule" : hash === "#corner" ? "corner" : hash === "#news" ? "news" : hash === "#scores" ? "scores" : hash.startsWith("#players") ? "players" : hash.startsWith("#team") ? "team" : "home";
   $("#page-home").hidden = tab !== "home";
   document.body.classList.toggle("on-home", tab === "home");
   $("#page-scores").hidden = tab !== "scores";
@@ -1794,6 +1822,8 @@ function route(){
   $("#page-schedule").hidden = tab !== "schedule";
   $("#page-corner").hidden = tab !== "corner";
   $("#page-team").hidden = tab !== "team";
+  $("#page-news").hidden = tab !== "news";
+  if (tab === "news" && window._tab !== "news") { NW_F = "all"; renderNews(); }
   if (tab === "team") renderTeam();
   const sid = hash.startsWith("#team/") ? hash.slice(6) : null;
   if (sid && STAFF.some(p => p.id === sid)) openCard(sid);
@@ -2999,6 +3029,41 @@ $("#sqAgeIn").addEventListener("input", e => { SQ.age = sqNum(e.target); SQ.all 
 $("#sqC").addEventListener("change", e => { SQ.c = e.target.value; renderScouting(); });
 /* ---------- Tour Schedule (schedule.json, rebuilt daily by scripts/schedule.py) ---------- */
 let SCHED = null;
+/* ---------- News (news.json, rebuilt every hour by scripts/news.py from the outlets' free RSS feeds) ---------- */
+let NEWS = null, NW_F = "all";
+function nwAgo(iso){
+  const h = (Date.now() - new Date(iso)) / 36e5;
+  if (h < 1) return Math.max(1, Math.round(h * 60)) + " min ago";
+  if (h < 24) return Math.round(h) + "h ago";
+  return new Date(iso).toLocaleDateString("en-GB", { weekday: "short", day: "numeric", month: "short", timeZone: MYTZ });
+}
+function renderNews(){
+  if (!$("#page-news")) return;
+  document.querySelectorAll(".nwf").forEach(b => b.classList.toggle("on", b.dataset.n === NW_F));
+  if (!NEWS) return;
+  const all = NEWS.items || [];
+  const its = NW_F === "72" ? all.filter(x => x.p72.length) : NW_F === "sc" ? all.filter(x => x.sc.length) : all;
+  const pName = id => { const p = ROSTER.find(r => r.id === id); return p ? p.first + " " + p.last : id; };
+  const safe = u => /^https:\/\//.test(u || "") ? u : "#";
+  $("#nwList").innerHTML = its.length ? its.map(x => {
+    const n = 1 + x.also.length;
+    const tags = [...x.p72.map(id => profById[id] ? `<a class="p72" href="#players/${esc(id)}">72 · ${esc(pName(id))}</a>` : `<span class="p72">72 · ${esc(pName(id))}</span>`),
+      ...x.sc.map(nm => `<a href="#corner">Prospect · ${esc(nm)}</a>`),
+      ...x.also.map(a => `<a href="${esc(safe(a.u))}" target="_blank" rel="noopener">Also: ${esc(a.s)}</a>`)];
+    return `<article class="nw${x.p72.length ? " k72" : ""}">
+      <div class="nw-m"><span class="s">${esc(x.s)}</span><span>${esc(nwAgo(x.at))}</span>${n > 1 ? `<span class="nb">${n} outlets</span>` : ""}</div>
+      <h3><a href="${esc(safe(x.u))}" target="_blank" rel="noopener">${esc(x.t)}</a></h3>
+      ${x.d ? `<p>${esc(x.d)}</p>` : ""}${tags.length ? `<div class="nw-t">${tags.join("")}</div>` : ""}
+    </article>`;
+  }).join("") : `<div class="sq-empty">${NW_F === "72" ? "No stories on 72 players this week." : NW_F === "sc" ? "No stories on Scouting Corner prospects this week." : "No headlines yet. They are read every hour."}</div>`;
+  const ok = Object.entries(NEWS.sources || {}).filter(([, v]) => v.ok).map(([k]) => k);
+  $("#nwSrc").innerHTML = `Headlines from ${ok.map(esc).join(", ") || "the outlets' feeds"}, read every hour${NEWS.updated ? ` (last change ${esc(nwAgo(NEWS.updated))})` : ""}. 72 Central only shows each outlet's headline and summary and links to the full story on its site.`;
+}
+document.addEventListener("click", e => { const b = e.target.closest(".nwf"); if (b) { NW_F = b.dataset.n; renderNews(); } });
+async function loadNews(){
+  try { const r = await fetch("news.json?t=" + Date.now(), { cache: "no-store" }); if (r.ok) NEWS = await r.json(); else if (!NEWS) NEWS = { items: [] }; } catch (e) { if (!NEWS) NEWS = { items: [] }; }
+  renderNews(); renderHome();
+}
 const SCH = { tour: "all", lvl: "all", e72: false, p: "", q: "" };
 const SCH_TOURS = [["all", "All"], ["atp", "ATP Tour"], ["wta", "WTA Tour"], ["ch", "Challenger"], ["itfm", "Men's ITF"], ["itfw", "Women's ITF & WTA 125"], ["jun", "ITF Juniors"], ["te", "Tennis Europe"]];
 // colour groups, in the order they are listed each week: Slams, 1000, 500, 250, 125 to 50, 35 to 15, ITF Juniors, Tennis Europe (within each group, biggest number first)
@@ -3974,6 +4039,13 @@ function renderHome(){
     const best = climbs.sort((a, b) => b.up - a.up)[0];
     $("#hpS6").innerHTML = best ? `Biggest climb this week: <strong>${esc(best.n)}</strong> up ${best.up} to No.${best.r}` : ps.length ? "Rankings, moves and 12 months of results for each" : "Add the first prospect";
   }
+  // 07 News: stories from the last 24 hours, and how many name a 72 player this week
+  if (NEWS) {
+    const its = NEWS.items || [], day = its.filter(x => Date.now() - new Date(x.at) < 864e5);
+    const n72 = its.filter(x => x.p72.length).length;
+    $("#hpT7").innerHTML = `${day.length}<small>stor${day.length === 1 ? "y" : "ies"} today</small>`;
+    $("#hpS7").innerHTML = n72 ? `<strong>${n72}</strong> on 72 players this week` : its[0] ? `Top: ${esc(its[0].t)}` : "No headlines yet";
+  }
 }
 /* ---------- one spelling per 72 player, and no duplicate fixtures ----------
    The feeds spell some names differently (e.g. "Schwaerzler Joel" v "Schwärzler"), so every 72 player is shown
@@ -4139,6 +4211,8 @@ loadScouting();
 setInterval(() => { if (!document.hidden) loadScouting(); }, 30 * 60 * 1000);
 loadSchedule();
 setInterval(() => { if (!document.hidden) loadSchedule(); }, 60 * 60 * 1000);
+loadNews();
+setInterval(() => { if (!document.hidden) loadNews(); }, 15 * 60 * 1000);
 loadCorner();
 setInterval(() => { if (!document.hidden) loadCorner(); }, 10 * 60 * 1000);
 setInterval(() => { if (!document.hidden) load(); }, 60 * 1000);
@@ -4247,7 +4321,7 @@ setInterval(() => { if (!document.hidden) renderScores(); }, 5 * 60 * 1000);
   // (scripts/visit_log.gs, set up as in VISIT_LOG.md). Off while LOG_URL is empty.
   // Only time with the tab on screen counts; 30 minutes away starts a new visit.
   const LOG_URL = "https://script.google.com/macros/s/AKfycbwzEb0YNoDmZaaJ5fQg05ubEe_lowMLiGoYaXuclycqQikOngLQEmENPN5KoL_KJXu1kA/exec";
-  const PAGES = { home: "Home", scores: "Scores", rankings: "Rankings (72 Players)", players: "Roster", scouting: "Rankings (full lists)", schedule: "Schedule", corner: "Scouting Corner", team: "Team Cards" };
+  const PAGES = { home: "Home", scores: "Scores", rankings: "Rankings (72 Players)", players: "Roster", scouting: "Rankings (full lists)", schedule: "Schedule", corner: "Scouting Corner", news: "News", team: "Team Cards" };
   let visit = null, awayAt = 0;
   const pageNow = () => PAGES[location.hash.slice(1).split("/")[0]] || "Home";
   function newVisit(){ visit = { id: Date.now().toString(36) + Math.random().toString(36).slice(2, 8), start: Date.now(), secs: 0, since: document.hidden ? 0 : Date.now(), pages: [pageNow()] }; awayAt = Date.now(); }
