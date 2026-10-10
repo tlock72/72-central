@@ -1,5 +1,5 @@
 {
-"updated": "2026-10-10T07:37:05Z",
+"updated": "2026-10-10T07:51:03Z",
 "markets": {
 "AU": {
 "brands": [
@@ -54,7 +54,7 @@
 "local": true,
 "more": 0,
 "cool": false,
-"score": 3.23
+"score": 3.22
 },
 {
 "b": "Mazda",
@@ -339,7 +339,7 @@
 "local": false,
 "more": 0,
 "cool": false,
-"score": 3.24
+"score": 3.23
 },
 {
 "b": "Bentley",
@@ -1477,47 +1477,7 @@
 "US": {
 "brands": [
 {
-"b": "Microsoft",
-"sec": "Tech",
-"sig": [
-"sponsor"
-],
-"h": [
-{
-"t": "Tech giants Microsoft, Adobe, Infosys and 5 others lose ability to sponsor African and other foreign workers for US green cards",
-"u": "https://news.google.com/rss/articles/CBMi2AFBVV95cUxPMzBjMlRSaWhXZjhYa3ctcGdFdkhZaDAyU2VKY19xa2lNMGdPakdDWVVxcDRJY2YxbC1icnU0X1dMQ2lrbjVESXlCTm5qOXUyNW1QSkVEZHJ2eG9EYlFMMWZzMDY3NTh3VWRkTUlJSEtqN0ZEU1ZRSGNvV0Zncm9xQndLZkZiVFo3VjB5Z3dJYjV3UXpqZV85VDdSc1lfVnVSdFVBMkU5QjhxNkxiS3JVR3Z3UlhKemhuZ2gtSTdscU1icGdBaTdMVWRuOTRXZmxZVDhIQUZKQlE?oc=5",
-"s": "Business Insider Africa",
-"at": "2026-10-09T14:21:01Z",
-"sig": [
-"sponsor"
-]
-},
-{
-"t": "US suspends Microsoft from Green Card sponsorship programme; company responds: Microsoft only files H-1B",
-"u": "https://news.google.com/rss/articles/CBMitAJBVV95cUxQcUJud3hqQ25oalpxYkhLT0RDWkNPSW14LTlZcVJ1YWhJdllFWFhNWDNST3JUQ2FRQ1RySFY5V0ZOWldEanBISnUtVTBIeVNSN2xTcW5HZHRhUjRwMmpwR1RVaEl3bUItUHdGa0ZyTjdSV1B4NExQRHlGUi0yZDBzRFJxN0ppOUJhbG9Rckw0YmtnZVNEZk0wbGRzMzZpODlVNU40T0RITnVzaWMwYXZYQ3NoLVFOVUdtSGVaVlVXdlBoYmVvUkZCaTRfaDI3RFZjMEZqUUVVbmt0V1NVSHUweTUyZm1sMFlmekRNUDZoMGEyZ3FyVkFrWHF2cWxUdl9aRU1hR3l4RHBRd2w3ZldndEUyNHFWRUVYOGpkeE92VDJSUC1EbndBOXg3Sms2TmotRWlZU9IBugJBVV95cUxPblhIRWZONjFCWE5tVHRRU2lMVzEzM01rMWZOWjdzcW5HUUVkSXg0NXFHTEJyMG5MUkZWTENfMk1sZ3haUlpGVFpXZjNpSjlBUXdZdHAtWTBfbGdXR08tcl96YXJlaGNBRy1mS2ZVTnFaS3lKc3A3T2x0dTNlZ3g0ZzB5YUZuUmFhcUdxVmlIY1h0RGtHOWVwTmRzVE9LenBIWGMwbmxhMkFNQTh4Ym45Zkk5UGNVU0tZMmVGdmZrd1dSdGNFTHJ0RnVzZFpKbjh3ZmdtNlAyR1UyV2E4NDJ0U2lIZ3BqcWdaTnpWelU3SG1HdXliS0lQRjNwUjlLLVhyZEFxc0J3VVFIdzVuME41VXpKakVIdXh2SnM1a1hoNTU3Zmx2OVpNY3F2Y3ZHSmZPNjJFRjVxdXVuZw?oc=5",
-"s": "The Times of India",
-"at": "2026-10-08T18:44:00Z",
-"sig": [
-"sponsor"
-]
-},
-{
-"t": "US Freezes Green Card Sponsorship for Infosys, TCS, Wipro and Microsoft in Major H-1B Crackdown",
-"u": "https://news.google.com/rss/articles/CBMiowFBVV95cUxNTTBSR3VUVkRlbmFFTTJHdnUzM3dpVEF6Um1TcFdSXzNmMExjSDdCbkFJNU53dlEwWW11ajM2ZGxlS3dGc2lyZ19zVWs4bzY3dTJTYTNkV0M3N3RpUE96VmRMbWZWdnNZaFNMbzRjN2Fzc1ZZTXk3VFRmWEN5S2ZDMGJfZjFON1RkMTFUNHlBcUJtQkVRUEdnT1NHbWo2UnhSaDVZ?oc=5",
-"s": "GujaratSamachar English",
-"at": "2026-10-08T15:58:05Z",
-"sig": [
-"sponsor"
-]
-}
-],
-"local": false,
-"more": 0,
-"cool": false,
-"score": 7.83
-},
-{
-"b": "Infosys",
+"b": "Microsoft / Infosys",
 "sec": "Tech",
 "sig": [
 "sponsor"
@@ -1545,7 +1505,7 @@
 "local": false,
 "more": 0,
 "cool": false,
-"score": 5.29
+"score": 5.28
 },
 {
 "b": "Wipro",
@@ -1663,7 +1623,7 @@
 ]
 }
 ],
-"n": 3
+"n": 2
 },
 "BG": {
 "brands": [
@@ -1696,7 +1656,7 @@
 "local": true,
 "more": 0,
 "cool": false,
-"score": 4.8
+"score": 4.79
 },
 {
 "b": "Coca-Cola",
@@ -1718,7 +1678,7 @@
 "local": true,
 "more": 0,
 "cool": false,
-"score": 2.93
+"score": 2.92
 }
 ],
 "other": [
@@ -1856,7 +1816,7 @@
 "local": false,
 "more": 1,
 "cool": false,
-"score": 4.97
+"score": 4.96
 },
 {
 "b": "HSBC",
@@ -1900,7 +1860,7 @@
 "local": false,
 "more": 0,
 "cool": false,
-"score": 1.41
+"score": 1.4
 },
 {
 "b": "Puma / Anta",
@@ -1931,7 +1891,7 @@
 "local": false,
 "more": 0,
 "cool": false,
-"score": 1.33
+"score": 1.32
 },
 {
 "b": "Burberry",
@@ -2095,7 +2055,7 @@
 "local": true,
 "more": 7,
 "cool": false,
-"score": 21.87
+"score": 21.84
 },
 {
 "b": "Nissan",
@@ -2148,7 +2108,7 @@
 "local": true,
 "more": 0,
 "cool": false,
-"score": 3.24
+"score": 3.23
 },
 {
 "b": "Marriott",
@@ -2170,7 +2130,7 @@
 "local": true,
 "more": 0,
 "cool": false,
-"score": 3.21
+"score": 3.2
 },
 {
 "b": "Xpeng",
@@ -2236,7 +2196,7 @@
 "local": true,
 "more": 0,
 "cool": false,
-"score": 1.75
+"score": 1.74
 },
 {
 "b": "Jaguar Land Rover / Chery",
@@ -2386,7 +2346,7 @@
 "local": true,
 "more": 0,
 "cool": false,
-"score": 7.39
+"score": 7.38
 },
 {
 "b": "Lidl",
@@ -2419,7 +2379,7 @@
 "local": true,
 "more": 0,
 "cool": false,
-"score": 6.76
+"score": 6.75
 },
 {
 "b": "Google",
@@ -2614,7 +2574,7 @@
 "local": true,
 "more": 0,
 "cool": false,
-"score": 2.41
+"score": 2.4
 },
 {
 "b": "Marriott",
@@ -2636,7 +2596,7 @@
 "local": true,
 "more": 0,
 "cool": false,
-"score": 2.18
+"score": 2.17
 }
 ],
 "other": [
@@ -2858,28 +2818,791 @@
 },
 "HU": {
 "brands": [],
-"other": [],
+"other": [
+{
+"t": "Yettel Hungary launches RPA software for enterprise automation",
+"u": "https://news.google.com/rss/articles/CBMiqAFBVV95cUxPSEVmVDNDemtkMEdvbkJCVjcyRXhJREtFbGJyYUhsQ25FM0ZnelBHSU40OFZVaGtMb0I4RFVRZ0FSTTFka2RiSHl0bUlVQ0YxWmtKRTJYNjRESFZBWFAwTUdNT0V2NzJTM2ttT0Q2aFRWbFV3SGRsbV9GVFd4S0g5LTI2VGNYb3RCWWtNQmtqTTdydFFiMy1aSE5aX1NscWNiOHEwQmZfQmY?oc=5",
+"s": "Telecompaper",
+"at": "2026-10-09T10:28:39Z",
+"sig": [
+"expand"
+]
+},
+{
+"t": "Hungary plans renewable energy expansion to cut power costs and import dependence",
+"u": "https://news.google.com/rss/articles/CBMimAFBVV95cUxPZDh4cEdBa1hWNEJGaVpES05keGFSbVdHbmdJbDJFRmhWd1A3enhaQnhaODh3a0V6QlFoNExHS1QwbUk2Zzg3SmtrZlNQSWI4bGIwZEtSUDJDakQ1SzlPekpXMnRObzN6WHhOSVlmS3hOWTJQTEdnUkgxSHdiWVFWVWVfTlhiU0JTRHdmUWQ2SW42bVJpdnBOSg?oc=5",
+"s": "Traders Union",
+"at": "2026-10-08T09:55:27Z",
+"sig": [
+"expand"
+]
+},
+{
+"t": "CanCambria raises $4.83M to drill shallow oil prospects in Hungary",
+"u": "https://news.google.com/rss/articles/CBMioAFBVV95cUxPRmh5U1NseVozZ0FYNmdIOVl4Ul95MXNBeWdYa2JlbDMxMWJtcXpRVE1oZTRjakFUYmh6dFVzb2FxMDJXSGtsTjFhVXZLRWJZUEQ0em9zMWdvYTY5SElsZmRORnNvMmZVME4xTHE3dDZKQl92c3RoVFFtQXFuNjJOZGlsQWlielRxNHkyeE1LRzVfZWVpT3NHYXBhTGlwM2dW?oc=5",
+"s": "Dealroom",
+"at": "2026-10-08T21:28:24Z",
+"sig": [
+"money"
+]
+},
+{
+"t": "New discount giant enters Hungary: Budapest store revealed as expansion plans take shape",
+"u": "https://news.google.com/rss/articles/CBMifEFVX3lxTE03QW1jQjNUYnJvamR0aURBVmZUOGxuTU82dVBfYlEwMmdGcE5rdVJXMFNIekpDWXVMTmhUcWxTWHFVa01NUFN6NXVUMFZ5ckFfWFhORWg4MXFoa090d184TEhhQ29aTF9Rcmo4UjlTQWN3NGNMUE4xcE83X1A?oc=5",
+"s": "Daily News Hungary",
+"at": "2026-10-05T08:54:00Z",
+"sig": [
+"expand"
+]
+},
+{
+"t": "FZ1073 incident raises security lessons for Hungary",
+"u": "https://news.google.com/rss/articles/CBMibkFVX3lxTE01MEtGV2JTQWdGeWI0dkJJUDVaM0IwZUg4NW1EVFJFV3BIbzNjZkNQalhwMkpFS29rSXE0S0lMWnJ4TFhyVU5EaktzdlF4cjliNWQ5RzhsVTlOS3Z5YVVfWUxJRVFWb19KWUgzRDNR?oc=5",
+"s": "Daily News Hungary",
+"at": "2026-10-04T15:36:00Z",
+"sig": [
+"money"
+]
+}
+],
 "n": 0
 },
 "UZ": {
-"brands": [],
-"other": [],
-"n": 0
+"brands": [
+{
+"b": "Lukoil",
+"sec": "Energy & industry",
+"sig": [
+"expand"
+],
+"h": [
+{
+"t": "Lukoil plans to expand operations in Uzbekistan",
+"u": "https://news.google.com/rss/articles/CBMiU0FVX3lxTFBkTTd5RVRpZFlIT21uRWZVQ0RmMGh3VVg2ZDI4cXlGcGU2bmRWM3Etc1pMMHltYURDdmFNNjhOcDhrX1g0X0ttVkVKeURHbkVjTzFV?oc=5",
+"s": "Spot.uz",
+"at": "2026-10-06T14:38:38Z",
+"sig": [
+"expand"
+]
+},
+{
+"t": "Uzbekistan, Lukoil discuss ongoing energy projects, expansion plans",
+"u": "https://news.google.com/rss/articles/CBMiX0FVX3lxTE9Ta3BabmpabFctSkNjZTRyNU4tdURxMU9JcTU4bnB1c2dUQlFETExYdUNJN2lNWEtoR2pBSzVlX0h1R3B4ZmEteU9ZbmI0MVpfNzVxdkVQSW9yeTd0UV9V?oc=5",
+"s": "Trend News Agency",
+"at": "2026-10-06T13:48:06Z",
+"sig": [
+"expand"
+]
+}
+],
+"local": true,
+"more": 0,
+"cool": false,
+"score": 4.76
+},
+{
+"b": "BYD",
+"sec": "Cars & motoring",
+"sig": [
+"expand"
+],
+"h": [
+{
+"t": "BYD launches Fang Cheng Bao Tai 7 in Uzbekistan as BYD Ti 7",
+"u": "https://news.google.com/rss/articles/CBMigwFBVV95cUxNeF9WM2lFVjNDdkdrTkdHbTZCWEVkd19ybTc2dkFmYkw2YkZTWUI2dGQ3bDV1TGpLdHRFaTV4Sk5MUVZ1SlhRTmJVUUIxa1RuWUd4Q1VqNDBMQURXSmZHTDVlM2xzdEJhZWVGRy1IRVlGZFU5Rm9BSmYyNVl6RFg3YXVJTQ?oc=5",
+"s": "CnEVPost",
+"at": "2026-10-08T12:49:42Z",
+"sig": [
+"expand"
+]
+}
+],
+"local": true,
+"more": 0,
+"cool": false,
+"score": 2.96
+},
+{
+"b": "Uzum",
+"sec": "Tech",
+"sig": [
+"money"
+],
+"h": [
+{
+"t": "EDB raises Uzum financing to $100M from $70M in Uzbekistan",
+"u": "https://news.google.com/rss/articles/CBMiX0FVX3lxTE5BMG8xSVVGbUR1NFZSSjhDdGQxVzFyMFducnhla3Z1YlVHZ1ZkZHhhVzUxNm5BZmVneldTUkg2N0pOOFR0OXltZ0RDWjd1dWNxZk5ZZXkzelVQVnFUMkMw?oc=5",
+"s": "Trend News Agency",
+"at": "2026-10-05T13:28:46Z",
+"sig": [
+"money"
+]
+}
+],
+"local": true,
+"more": 0,
+"cool": false,
+"score": 1.57
+},
+{
+"b": "ABB",
+"sec": "Energy & industry",
+"sig": [
+"money"
+],
+"h": [
+{
+"t": "KPMG advises ABB on acquisition of 51% stake in Davr Bank",
+"u": "https://news.google.com/rss/articles/CBMiV0FVX3lxTFA3dER4UHRnUXQ3cG0zMkx4TmhHNTVqb3Rrc0ZiYUJTRVpIanhfdnVKUGNDT0hhdnZ4eGMxY25PSFRuMDc5VnY2REhrUTNzZjYyT0lvd1Zuaw?oc=5",
+"s": "Trend News Agency",
+"at": "2026-10-05T12:23:00Z",
+"sig": [
+"money"
+]
+}
+],
+"local": false,
+"more": 0,
+"cool": false,
+"score": 0.5
+}
+],
+"other": [
+{
+"t": "Uzbekistan, Georgian Petrocas discuss expansion of fuel infrastructure",
+"u": "https://news.google.com/rss/articles/CBMiX0FVX3lxTE15V0VldTlrTkJUOXZMR1YtQmtSTjJxS21RQVh2ZzRZYVNISE1sMmd6WGdia240aWpKcmdXOXduQnVDX3hIM3RNVW5pNWs0UlJRejVjM25WN1pRZDJhZW4w?oc=5",
+"s": "Trend News Agency",
+"at": "2026-10-10T06:07:30Z",
+"sig": [
+"expand"
+]
+},
+{
+"t": "Al-Ghazi Tractors Enters Uzbekistan with First Tractor Exports, Partners with Uzavtosanoat JSC’s AgroTech Klaster",
+"u": "https://news.google.com/rss/articles/CBMi4AFBVV95cUxPRkFoZEhnOGdoOE1rSUtwdk5WZGtlYmQ3dTlQX1FfRlpwdmJIeE1jWFJmdGZEWmtkU0pta0x0VTc2WjdjcHZ4bjNVSERxMWFfOGc1Qnl3TDFueEVjVEtqWDhwdllXWWE0Y0tfRWtVYW0xbjRjU1l2SHZBX2hjM041OUZzalRCSlF2OTJ0VEQ4bDVyY0tLT0ZCZzJ0akxoaVlUSDdQRE1MaUxlV0JVaEpkblUwanlKdnVOVXk4MENnOHNTZE1aejlKT01oS0hYTGh3TEhhQ3VlSGxuWGFpNU10ddIB5gFBVV95cUxQbndTYWNfZlAteE9FY0FfakFZdm84YmcxMGQ0VHpsOHMwRTNXQ0RYY3pTZ1R4bGEwMGVpTFdPV1AyWi1tM3VVNmZhUkx5Z1k3MjNENXpqQ1ExbkUzc0NNT2ZaMWVFYjJXRGYyTmxBYkJxam94RDRkVENaR3YzMHZHcXI2dXViNElfN2RuZ1FXOU9nVDNvLWRzNW1lNjJySnJ4TU54SlUzTU0wQUk4dW1IVllTLWRsWHZWamxUSUdkUzVSTVNJUUNIR256dnhWLXpDVFluMXFuaVJENGtrcnhJZjZnV1dRdw?oc=5",
+"s": "ProPakistani",
+"at": "2026-10-09T14:49:56Z",
+"sig": [
+"expand"
+]
+},
+{
+"t": "Uzbekistan Expands Cooperation with MBIR Reactor Consortium",
+"u": "https://news.google.com/rss/articles/CBMijwFBVV95cUxOYnUzOFAwZWNCd25fdnRiT0V5TENXSjBhNUZNM0loelRmLThJTzdZNnMzVWFBd1FyS3N2VDYyRGZyRDRuQ0FVV1VITmNOZEVHZ09BeHVuY3BzV2dFdS1rSnFDVi01WGJEVWpUQ3E0Tno4ZC0xdVh5SFZrZEMyTmdWdS1wTGZadkFaUG9NZzJHQQ?oc=5",
+"s": "UzDaily.uz",
+"at": "2026-10-09T13:15:00Z",
+"sig": [
+"expand"
+]
+},
+{
+"t": "Uzbekistan, Kazakhstan’s Aktobe region discuss trade expansion",
+"u": "https://news.google.com/rss/articles/CBMiX0FVX3lxTFBBMkF1cGVYUlItZV8tOHk1Tl81Q1ZFa0lhaC1MNFJseU5CTnJ4Vlhnc2ZCRDllMXlKdXQ0Qm9ZZTBQcmt2S1pGNHJ4SW81T1R5djhtRExvc1NOVjNoNG9Z?oc=5",
+"s": "Trend News Agency",
+"at": "2026-10-09T12:34:43Z",
+"sig": [
+"expand"
+]
+},
+{
+"t": "TBC Uzbekistan launches secured SME lending",
+"u": "https://news.google.com/rss/articles/CBMijAFBVV95cUxPb2tNblE1UUEwS2t3MXJ6VC1NcGNWejBicTJrWHJwWmh2UHhoYXZ0b3pSLUhReGx2RHZVNFZBNTlNSXo0VVB5UGJvTlBSa3RDMHV5VzhoSXRUNk01SzJGLTA2ZzJPem9veDhENTM0ZTVFcXlMa1R5aVlUSlowWXdQaWNhVTVMLTlBR21fZQ?oc=5",
+"s": "The Paypers",
+"at": "2026-10-08T20:41:30Z",
+"sig": [
+"expand"
+]
+},
+{
+"t": "Seibu Prince Hotels discusses expansion in UzbekistanSeibu Prince Hotels discusses expansion in Uzbekistan",
+"u": "https://news.google.com/rss/articles/CBMizgFBVV95cUxNWUotMU1yMjNlUkdvRlRnUGtiX3lyNV85TGk0WEo5YVJhZ2V0dzRlWVN5V2RQcGRZaURPM2RxLUlKYlB5Ym95ZzM3VHZpaGUzeFlvRER0bXZvdEtEa1JZQ2hCTWVOMG10UmpHZkZPTDluTnYwd3phMmwtOEY1Z0NCc3MyRTBIck5FSXU3YUM0R2VTenhmaWwzcmhnalJva2JFS21qQkNsZ2tMMkhnSWh0R3BjVkl4aDRMSk1BME9SUkJJaDJwekY2Tk5BSlBfUQ?oc=5",
+"s": "UzDaily.uz",
+"at": "2026-10-08T13:45:00Z",
+"sig": [
+"expand"
+]
+},
+{
+"t": "Uzbekistan expands gas exploration as Uzbekneftgaz drills deeper wells",
+"u": "https://news.google.com/rss/articles/CBMipAFBVV95cUxQLXJmcFFtZDB2Z0FkSDgtOU41QVkwTklxcUxNdjB6aG9OR19xSzU3ejZ2dEx5REh4Sy1ocUphX0h6TTN3eXJwemVLOFBldzVENUs0OWc4QXhpdlFpcFQ4MnFNZ3huRWsxUjY2OXpWd3BtT25IUTNMMUF0dXloVGl5VkV4dDZhTzB3MkhoTlhocDRZb0ZCcV9vTnJ1UDQtRHRRQVNyaA?oc=5",
+"s": "Daryo",
+"at": "2026-10-06T10:29:52Z",
+"sig": [
+"expand"
+]
+},
+{
+"t": "Condor Raises Financing to C$70 Million for Uzbekistan Compression and Kazakhstan LNG",
+"u": "https://news.google.com/rss/articles/CBMirwFBVV95cUxNVTIwRkZuZ1JmQ2g1b3FzNUp2Tkw0R052cjdaUHFRcDBzbGp2eG9CWmxoV3RFbUV0Q2NydVZRZzk5YldzZGNKbHcxRVR2TkduSzFGbEp6bm9MalU0bzM5VHFuX0NaTzlIc2FxRmI5VUY3UzhQanltRE85TzZWbC02SVVzaDhCempzdVVrX09FZHF4VlFOZW5kWlJBLUdHWHM0VV9KcWVnYy1qRTFrNlFZ?oc=5",
+"s": "energynews.pro",
+"at": "2026-10-06T03:04:42Z",
+"sig": [
+"money"
+]
+},
+{
+"t": "Uzbekistan’s NMMC posts $2.38bn net profit in first half of 2026",
+"u": "https://news.google.com/rss/articles/CBMimgFBVV95cUxNejhTYi1tQnM4cDRfZTZIb2RkaTFqM0l6UDUwd1MxaUNWSmp4QXFhMjRqOHlxVGxXeHFia3pmSDRmc254RWFWSmt3LUxWc1dnTHZSRDJkMzBWMGFMTTBlYnZTNnJKb2kyM0VDZzh2V084QlI4bGotdTBDQjZMVk9KWGZveDN5cTVESGViQm1sR19WVVJ1b1hpLWhB?oc=5",
+"s": "Daryo",
+"at": "2026-10-05T11:00:09Z",
+"sig": [
+"money"
+]
+},
+{
+"t": "Ferghana region expands cooperation with UZKORO",
+"u": "https://news.google.com/rss/articles/CBMif0FVX3lxTE54UzdqQ2JhRDJIWTFZdlRPYjQ2SFZPb3pxeldFel9ydDY4cTBNQXBxQ01zczc2MWhUUVc5M0twVkdHS19IbGloRzloS3czMGJFYTVucDlFWjduVENFWnpnQ3kzSnBaUXFpQmZoOTluN3poTUVqVDM2dG9rRGdtN0U?oc=5",
+"s": "UzDaily.uz",
+"at": "2026-10-08T09:45:00Z",
+"sig": [
+"expand"
+]
+}
+],
+"n": 4
 },
 "RO": {
-"brands": [],
-"other": [],
-"n": 0
+"brands": [
+{
+"b": "Tesla",
+"sec": "Cars & motoring",
+"sig": [
+"expand"
+],
+"h": [
+{
+"t": "Tesla Opens an 8-Stall Supercharger in Iași, Romania, a Site Its Drivers Voted For",
+"u": "https://news.google.com/rss/articles/CBMidEFVX3lxTE9Eamw3Z2xleDdiVVRZV01XMDJjdGwzWE9yaVRBbGpLeXBkU0R6SHJ0WUVBemczS2xfVzFEU1NWeXRTRUlEcjNFZC1id3FHaF9fTndYOXoxMGVmV0h1R1ZjWVVkQ0RFNGFJMkFCSDZVakV1bjRQ?oc=5",
+"s": "TeslaNorth.com",
+"at": "2026-10-09T23:24:35Z",
+"sig": [
+"expand"
+]
+}
+],
+"local": true,
+"more": 0,
+"cool": false,
+"score": 3.39
+},
+{
+"b": "ABN Amro",
+"sec": "Banking & finance",
+"sig": [
+"expand"
+],
+"h": [
+{
+"t": "ABN AMRO Clearing Bank expands its presence in Romania and relocates to Palas Campus Iaşi",
+"u": "https://news.google.com/rss/articles/CBMixwFBVV95cUxNZFhOVHFoOUxTbWdlS3EtOWMzNlE5S3ZOVTEtZzg4MWxOMjlMZGVHbmFkSU1LaXVqclV4dVZZRE5mTEc5RHpVQ19NSDlrZHNMbmg4NWFSc2QzbVNSdFB2dHZnY1JLLVFpRHR6RV9ubHhTXzhURzNvUlR1UEF1WXhQb1dNNWZScDZ3U3dQUjZXbGM2SW91dm8wQk1aZTU2LTBzSVY3V0lrSXdXQVc0aUtZeGk4MWFocUVaeVlXbHdoQk56WXJaaFo4?oc=5",
+"s": "The Diplomat Bucharest",
+"at": "2026-10-08T09:38:16Z",
+"sig": [
+"expand"
+]
+}
+],
+"local": true,
+"more": 0,
+"cool": false,
+"score": 2.92
+},
+{
+"b": "IKEA",
+"sec": "Fashion & retail",
+"sig": [
+"money"
+],
+"h": [
+{
+"t": "IKEA to Invest €130 Million in Romania Over Next Three Years",
+"u": "https://news.google.com/rss/articles/CBMiogFBVV95cUxQUTUwamNmZy1jMzdjVEExa2VEcmNVU2luaUpJbTNNNjJHSjJSY01FVmQtQ2FZcVlabGhLbTQxcGJlR2ZuMG9MQ0tiVGJNVEhER29aRnF6a3RhVDU5QWQyQTF3R1dmenJraWJ5dlAxeE5aRDI5S1dKTHQ3cWhrYUxIR3d6cnRwVnVKUGlNMUllMFhFbHRsT2twSkJWLWV4Nm5NTGfSAacBQVVfeXFMTXJKYThIV1Z5cUJzNmVaM2FWSkwzY2k3X3cwQ0FLR3RuM09mQm5EbktVMl9KRHlXQ3BkNGpOeldOSXJtYXpiTjBDY2ZHR09wdFZFS2ZWYVhuRnJ1TG5YMkhMaGExenUzZ0dvZUNRa0pHZENZNjJDbHFMOFhwMFJLS3dHTkRGQXZ5WDZ5WFZ6V2hFa2gtWTVHSm0zcTNCQ29ncXIzLUxiWGs?oc=5",
+"s": "The Romania Journal",
+"at": "2026-10-07T15:28:44Z",
+"sig": [
+"money"
+]
+}
+],
+"local": true,
+"more": 0,
+"cool": false,
+"score": 2.2
+},
+{
+"b": "Vodafone",
+"sec": "Telecoms",
+"sig": [
+"expand"
+],
+"h": [
+{
+"t": "Vodafone Business launches Technology as a Service",
+"u": "https://news.google.com/rss/articles/CBMingFBVV95cUxQV2lPclJGdVRwdHdNRzVfVHk3YUhMLWRmV2U1VzlFSWJXQ0lPUmxzYnQ0b2ktcnd6TDhsa296bFJvT3FqZ0IxVXJkdWw4RUM1YzhQdktEZDVpMnhrNmRRRFZSQTRBX1Y2enhiSzRJTHkwWmJWZDVQeUNSSThGd1JybTFDRHRROElFc2s2X0RkS01yYkhJVzFmbzlfNHg3QQ?oc=5",
+"s": "Business Review",
+"at": "2026-10-08T10:06:30Z",
+"sig": [
+"expand"
+]
+}
+],
+"local": false,
+"more": 0,
+"cool": false,
+"score": 1.43
+}
+],
+"other": [
+{
+"t": "Mihaela Suciu begins new four-year term as CEO of Distribuție Energie Electrică România",
+"u": "https://news.google.com/rss/articles/CBMixAFBVV95cUxOc2l1c2VWbnpkTWsxN0xxTFZWY3l0TEpNeURZZmUtLVRJNWlHOTVlX2pndDA5dGZyM25tZm5GMzBsVTZTTlpINlhrWmJ0UzFsTGVoSU1YN1hOZk80cTROWlZPVzZ4aHFyTmJoaXUxQ0k3ajdZbVFJM192S1ZoRndnc0VJc0ttbWp4QUlLMW5YUkNaeWFWVUFIVXFNcHIxSWNVdEMwelVlTTF4NkhqWDJYWHBnNDg1YzRON01XX29TSEttOGJw?oc=5",
+"s": "The Diplomat Bucharest",
+"at": "2026-10-07T10:00:15Z",
+"sig": [
+"people"
+]
+},
+{
+"t": "Danish Retail NORMAL Expands into Romania",
+"u": "https://news.google.com/rss/articles/CBMic0FVX3lxTE1lYU9ENHJwSkZnSXU1eUtISWNvelROa1RDdjBiYWU1alN2aEJJY1NCaGpoQWZCTnU4c0QzZ3htVEhnM1VfUzIzWUx2d2JSU05mVnAzSVk1Q2ktX0Z6ODd2dGpuYmJRNjJZT1RQYkU3N2tWRlU?oc=5",
+"s": "Retail & Leisure International",
+"at": "2026-10-08T08:00:00Z",
+"sig": [
+"expand"
+]
+},
+{
+"t": "120 MWh battery storage system enters operation in Romania’s Teiuș",
+"u": "https://news.google.com/rss/articles/CBMingFBVV95cUxNa0llYU5XNDFOeS1mRGxmOHpWRUgzeS14TkhtbFQwUnlmaWxNYVg1X0t2NlgwQ2hxOGszbXVTc3luMkF6Y1Q5ejRoZUtzU3hpeVNtUUhDd2xQTVlwcFhjdHFvU1ppMUJwSGRoZmtDOXZHQVI3U1lXTWZIZnctajBISVBSU1UzMkxVUjk0alNqMi1FbTVUdTdVcXo1QU91UQ?oc=5",
+"s": "Romania Insider",
+"at": "2026-10-08T04:29:45Z",
+"sig": [
+"expand"
+]
+},
+{
+"t": "Altex Romania opens first rebranded Brico DIY store",
+"u": "https://news.google.com/rss/articles/CBMilwFBVV95cUxOVmJlYU9VTnZoU1JDX1duYUt0QXMtd0tNa01hMVNEYmdZSzc1eDdIWGd2QVhkanFETThZRDNuZ040UFh5emZZOTJMNEFpMDF1dDdnQkxvWHJqYU1DTW02VVpnY3RxX1RRRi1UZGVOYk1UUGt0VkF5T2I1T3JRb2lHcjJhQzhidUx1UkFkRVIxMmhDeVlkdE1N?oc=5",
+"s": "Romania Insider",
+"at": "2026-10-08T02:31:20Z",
+"sig": [
+"expand"
+]
+},
+{
+"t": "Rheinmetall buys insolvent operator of Romania's Mangalia shipyard",
+"u": "https://news.google.com/rss/articles/CBMinwFBVV95cUxQMFVObXAxaDZ2MElPRDR6RnJXYWRxR0N0SHpzNEI0QzRmVUcyRzBxVi01RjRnQVhxbkV3VmJ6RWlYUDVOdGJHVDZvMXpRTEx2ZDFUb0xHN3hVSjVTTkZaSGM5WFliR2RvU2dNVkZQeGV3SjBfOEZaWDN1MjFRTkNkVGVyMDA5UmtoVnJzd3NVNHBwUlpNN0ZEV3FxUWRFVWs?oc=5",
+"s": "SeeNews",
+"at": "2026-10-09T14:45:10Z",
+"sig": [
+"money"
+]
+},
+{
+"t": "Romanian-founded AI startup Siena raises USD 17 million in Series A funding",
+"u": "https://news.google.com/rss/articles/CBMinAFBVV95cUxOZG9RZXU4RW9ZUXhsUkpvLV9zVF9UUHhjVk5LNEwxZHd0ZTJMVUtFNzlzN0FjRkZUZjJSOS0tUHRYMEh2dWJPMHZVVkhJZFlra1d1cTZYVWFCSVQyMUhhRXBJclY1ZDFJTUZoTjU5Umdkam9BVmpnUHB4cjRxa19YNGZYcG0ySUN4eHNHVUN6WVF1Y0NlWFo1Skl3d00?oc=5",
+"s": "Romania Insider",
+"at": "2026-10-09T08:14:38Z",
+"sig": [
+"money"
+]
+},
+{
+"t": "Romania’s City Grill announces leadership changes amid expansion",
+"u": "https://news.google.com/rss/articles/CBMipwFBVV95cUxPVWp3dnhpM0FwV1dteHgtem5QQ25rWmJlbU5TbDZlOHN6VVkyMmJkQWFHSFBNZ3pQTTJ1empybTVESkI0NUM0eC00UTVtdUZXaHp1d1dGV29QdWdweXJuT1lpUmQwZGc2TThOb2haRlFnY2ZYcW9Fb1BxeTY1S2lUTTdhZllPV2hCM0I3aHRiVDZPUnhMVWlzVTVGakRZMU1LeTZodU85Zw?oc=5",
+"s": "Romania Insider",
+"at": "2026-10-07T04:53:30Z",
+"sig": [
+"expand"
+]
+},
+{
+"t": "Solar project marketplace Solmeria expands to Romania",
+"u": "https://news.google.com/rss/articles/CBMilgFBVV95cUxQdVhvT1hiLWJEcmpSQjZIak1heUR2eVd5RFRublRTZURiRE44Wk85T3Zta2IxN0J2Tk1ZRS0tUGVSaG9JMmZRX0l4ME4xWlc5ZWVFdHU2MmRoYTloZDg5T05fTWVUXzVsd0ZxSUFvcEVzWjhaZE1PZmR0RVJIR094ekhlRjRVdVU3UndhSk5NNXdZUVNsWXc?oc=5",
+"s": "Romania Insider",
+"at": "2026-10-07T04:38:41Z",
+"sig": [
+"expand"
+]
+},
+{
+"t": "Romania’s EV charging network expands rapidly, but utilization remains low",
+"u": "https://news.google.com/rss/articles/CBMiqAFBVV95cUxOeFlCQnRxSS1lbHZMRkNBU2tnUkN0cmlmbnh0OHBKTWxKSFdtREJqV0xGUHdzcGw2TkQ5LTB1amRqcEstSjAtNnJjUE1RbHNGR3VYV2p5UzlCcG9OMlBNSG1UajlNaE1Ua0h4eHpGUkdmMmI2ampoeTJ2Rm5OVm5tTTdOMXBtcG5ENEpoR0F3Ry1GV3JOUFktazFISnAzOE9oUHpMTFpLNy0?oc=5",
+"s": "Romania Insider",
+"at": "2026-10-06T08:38:18Z",
+"sig": [
+"expand"
+]
+},
+{
+"t": "Romania Launches MOBEX București–Ilfov 26 Mobilization Exercises",
+"u": "https://news.google.com/rss/articles/CBMinAFBVV95cUxPRVg2eWcyRnlOZFBzbjBnblhVdDBaamtuOEhKOGpBREtoS25NZ3ZZZDVOZ3dOYnBKS0k3S0dZNmN4TU9DMGJyeklFYmtMdW41UXFKN2RPM25VVllScllLcFBVLUVqTXVZYkZvTEJEbk8tMUZmcVRaRjF5Y1Y5TzFMTlg0U0pQWVBmWXBUNWNZTENGRG9zckZzaktueFo?oc=5",
+"s": "Мілітарний",
+"at": "2026-10-06T08:35:17Z",
+"sig": [
+"expand"
+]
+}
+],
+"n": 4
 },
 "RS": {
 "brands": [],
-"other": [],
+"other": [
+{
+"t": "Kolektor Etra expands transformer production capacity in Serbia",
+"u": "https://news.google.com/rss/articles/CBMinwFBVV95cUxOT1kyMTNLZEk1Nmd0UjlLbjR3TWs1NjlWVkhLX2hRdDMwblNHZUpnVjJMWFJFNDJQMllCV2Z2N3VETGZadExHMTNCOEtMU3h4dlc2LXQteXBSemZzbl83UTJKMmtRWURZMkpVZDFVTmc3UnhjYkxKWkVteHUxMlVXbmRxLU9hLWd1RkhmaWR3Nk1KcEd0bUlHVmRtdnlNQlk?oc=5",
+"s": "Balkan Green Energy News",
+"at": "2026-10-08T13:35:19Z",
+"sig": [
+"expand"
+]
+},
+{
+"t": "Ukraine's Multi Cook opens first store in Serbia",
+"u": "https://news.google.com/rss/articles/CBMiYkFVX3lxTFBpMVNGUmFZQ1d1Ty04dTJucFRubzUtU2thRG5BODdFckR4ei1hSG05V3hwaGdHeXRnOF9Id2lBOUhpSzQ3Zk94R2I3Z2ZRMXpiYzFRbzdXNkNnY2p0aUZzMWdR0gFnQVVfeXFMT2NzSDhjZ19DVU5FbG9qclVaaWdIRkE0X2JKZWZyVVdoSlVlMUlROGZxR0Y2YUUyZ2xrZ0dyb3E2alNhQ29KTUFhZU1fc3NyaWl1a2dsVndmRzlpQTBEMGpXTmpHaERfdw?oc=5",
+"s": "Interfax-Ukraine",
+"at": "2026-10-06T16:07:21Z",
+"sig": [
+"expand"
+]
+},
+{
+"t": "Air Serbia expands long haul business class catering",
+"u": "https://news.google.com/rss/articles/CBMihgFBVV95cUxOLWxHYm9QWmVkZDIyVnBLSHQwVjRWYy1FTEhSeGdoT0c4LTVkM2Qyb0RhaFZtbk1JMmRGU3RRZkZjdEZ1SnpYZHhDYU83dzJOVGNOeC1XOTRHc1pqVVlBRDVCc0RpeU9YZ2JCdXh1N0JOekNDOTV4LXV3dE5vdF9GUEV5WTBPUQ?oc=5",
+"s": "EX-YU Aviation News",
+"at": "2026-10-06T11:30:00Z",
+"sig": [
+"expand"
+]
+},
+{
+"t": "Xella Serbia launches buyout bid for local building block maker Rapid",
+"u": "https://news.google.com/rss/articles/CBMipAFBVV95cUxOajVreTZkcHRtbHJBR3VXaGJqVkdtX3UyR2JNekxCcDRQLXlZQXg5M0dQNVdxUE5BTDhsOGlreUM2eHBvcTh5NkJMNmw2ajN0bk0wY0RzQjBaOVlfOUJ5SDBWT2xSNGcxSmc2am8wempUcnF0ckZscUVieEFnSml5eXZ2OGcyMTZqeldham5VRFRocnpWRGdTbUVuOHdvLWxnekh3bw?oc=5",
+"s": "SeeNews",
+"at": "2026-10-05T14:47:27Z",
+"sig": [
+"expand"
+]
+},
+{
+"t": "Serbia opens technical support tender for rural broadband rollout - EBRD",
+"u": "https://news.google.com/rss/articles/CBMipgFBVV95cUxQbjZnczRHUXBFRkZfRFRoSmhFRnZhY1VWc1B4cVVVYUlLeGlUMl9lWVpjeG40Uk9mMF9YcmlaMGlGZW5GRklzNlo0aENmNTBUR3g2R2JPY3dLOXZjc0J3UGNqQWRiOF9hVHY1TXV4SExHQ0FUQU5DWGlkSnVoYlhOUFlzVnphT3ZSS1YxWl9qN19jNy0xbzM2SzEzRi1PWS05MFNNWFVR?oc=5",
+"s": "SeeNews",
+"at": "2026-10-05T11:03:34Z",
+"sig": [
+"expand"
+]
+},
+{
+"t": "Serbian banks loan portfolio expands 16% y/y in Sept",
+"u": "https://news.google.com/rss/articles/CBMilgFBVV95cUxQZURoT0pGT05PZF9uWHBHWVFid0hjekJpbFNZMFhNWmdfaVFydlpPTTJUbWNtM1RnLUtJV2JxYWRLTWRUbFJ6aUxkMVJxajJIbFY1SGoyRDFSVUhVd25vcUNKQW1wWWVXN0c1SG95ZTM5ZWc3alI1WDRtUHlLN0gySGhrTGw3Ukh5MFNiQ0JoU3pqOWtNVlE?oc=5",
+"s": "SeeNews",
+"at": "2026-10-05T09:44:56Z",
+"sig": [
+"expand"
+]
+},
+{
+"t": "GITEX AI Expands to Southeast Europe With New Belgrade Event in 2027",
+"u": "https://news.google.com/rss/articles/CBMinwFBVV95cUxPcDVtYmZqRFF3SUxISU4tV3ZOdTl1SkxFY0M3N0VKOUVvZjZ0cllJejgzZWs4eUFiSkNWX1FJZU9lNmlKQjRwZ0tfTFBZSHZlcnk3VW5oNi1lbEtRRFplLTBEU2EwNUxNVmx6OGFnMktwajRMMFZLdDdEUDhQQUQtZ2luNzZjRWpzQ1ZJOGRnekdGRDZoTFBQTXc0VzJ0WjQ?oc=5",
+"s": "The Recursive",
+"at": "2026-10-05T09:01:03Z",
+"sig": [
+"expand"
+]
+},
+{
+"t": "Omagh animal welfare charity launches Serbia dog appeal",
+"u": "https://news.google.com/rss/articles/CBMinwFBVV95cUxNWlFJcnF3dlpFNFBIRE0xaXU1WHBjMzh3VG9KbmZYS0JSd1hoZ2ctWC1wd1VSdFFZd2tlM2l5N3dGSUJQMlA4Y0pJNXJwS0hwanRhS0E5aEtxT1NXbzhoZHRINEFVU1FVRHNyRVdBbDFLemdnaEdSSXY4MG5HdlZmbVkxb1Fycjd5VmlIdEgtUVkwUkVsc1FXTklzV09tS2c?oc=5",
+"s": "WeAreTyrone",
+"at": "2026-10-05T05:12:49Z",
+"sig": [
+"expand"
+]
+},
+{
+"t": "Min Rex Resources Transitions to Northstone Resources Limited, Launches New ASX Ticker NRL",
+"u": "https://news.google.com/rss/articles/CBMi0gFBVV95cUxOZE9weldHMEt4S3lJMktQb3YxUF9Fd2JyLXpvN21UTkpCcy02RFRoWTZ3SktLSUNvNTAxb1BOYVdNUVBCVzNnM3hSUG11dGhNenhwTkdqbzk5VlJubi1YZTUyNXRiek5sZFlGS0xTa21XRDQwazJ5MnF0Z1ZsVG1TZHhzVDBsVTZaR2tucl80dGJRSS1iamhCNldVQ085b3oyVmthcXR0T095ZDhpV2hsQWRxRVFUWVVPdUpSWkJYczZ1U1gxQTdZTm5LckpOZFd4enc?oc=5",
+"s": "Kalkine Media",
+"at": "2026-10-05T09:08:54Z",
+"sig": [
+"expand"
+]
+}
+],
 "n": 0
 },
 "IN": {
-"brands": [],
-"other": [],
-"n": 0
+"brands": [
+{
+"b": "JSW",
+"sec": "Investors & funds",
+"sig": [
+"sponsor"
+],
+"h": [
+{
+"t": "JSW MG Motor India Named Title Sponsor for Indian Super League 2026-27 Season",
+"u": "https://news.google.com/rss/articles/CBMixAFBVV95cUxQSVpqQkRqblZVSzg1bEU0UGRsbG1QMTlyYVhpY241cE9WWWtzOXNpZWI4T3BPN09vYTRDM2tvOGpIMm9zdjgwZDBGWllvQ0FMOUxIaXpmTG1BNEd3NDNTbVd3SjJoNVh0cnRha1NaUTA5ZzBjb1BWMWRXY2RFbW5ZQ2dTaUR6Q0RjbnU4MU5XZzVxbmhGZ3BQMWhvZWlNUl8tT2NVY0Zsbkw1RXBBUU1ZX1NaQURFeFMwSVdmQzJKRWEtaU1K?oc=5",
+"s": "Telugu Times",
+"at": "2026-10-05T13:13:51Z",
+"sig": [
+"sponsor"
+]
+},
+{
+"t": "JSW MG Motor India Named Title Sponsor of Indian Super League for 2026-27 Season",
+"u": "https://news.google.com/rss/articles/CBMiuAFBVV95cUxNeERFbm9QbDgtRjJKU1NjZWdEV05vOGNnSXkxRjY5NmhCMmcxeVc2OXlUS3VvTk5tQmZXNWQ2RmFJaUczT0hrYkk5N2VKMXBVRk1oSl9rQlY2Tno5T21RNFJvU0JQVXZRT2JQYmtrSE44OFhYN19TTHF5MmU0anlrQU50VFdUNVpYOVlfbjBfVFlvTDdCdGZjTnE4b1RSQ2lXd1lOc0dEMnBRQW9JWkJhNkZFWWUxR1dI?oc=5",
+"s": "EventFAQs",
+"at": "2026-10-05T08:51:36Z",
+"sig": [
+"sponsor"
+]
+},
+{
+"t": "JSW MG Motor India Becomes Title Sponsor Of Indian Super League",
+"u": "https://news.google.com/rss/articles/CBMisAFBVV95cUxNOG11YWM0OS1XbjBDTm4tNjk1SHBaWnliM0NrU1g3c3kyT2tsd0dHaGdQOC1SNngwYjlmOVRzUnZBcDRKVWdyd3huWUMyaEVrNDlNa2lCcFZHZDIxdzhvaWp2bUhkNW5BeFVFQjU5ckhYYmNFald6SUd6WTVWTHlTOFJwcy15TGpOYW5MdWEyb3lhNTBsZWRMelM4S29ILWVkRk5HV1FpTjAtY0NvaHJLTQ?oc=5",
+"s": "BW Marketing World",
+"at": "2026-10-03T07:56:25Z",
+"sig": [
+"sponsor"
+]
+}
+],
+"local": true,
+"more": 0,
+"cool": false,
+"score": 8.48
+},
+{
+"b": "Haier",
+"sec": "Beauty & consumer goods",
+"sig": [
+"sponsor"
+],
+"h": [
+{
+"t": "Haier India Becomes Title Sponsor Of Cricket Live Studio For India’s Bilateral Series",
+"u": "https://news.google.com/rss/articles/CBMizgFBVV95cUxOcEJVZnVZRGc1Qm96eWpyUlBVSDJVX0ZMU0JUWndBeWo0SVE3RlV2Szc4Y29zeVVuVWVCRDNyU1BTV0NRT1dzMUljNzdyVEdvOWtNWG55V0lEOUcwUFo4VkZKb0pWelpKRDJEbWgxRURVckNSeVd2aXBQVWNKMkcwb1JBYW50YWNCV1JYX3VxWUQ5Y0lCZVJxYXRKbWNFUl9FUEV5QkRRWG9wMm9rWEVmei1Xbk5uOFU0bG1rUnlNM09RQmt0RWxSMFRnTmJhdw?oc=5",
+"s": "BW Marketing World",
+"at": "2026-10-09T07:56:48Z",
+"sig": [
+"sponsor"
+]
+},
+{
+"t": "Haier Takes Centre Stage as Title Sponsor of Cricket Live Studio",
+"u": "https://news.google.com/rss/articles/CBMieEFVX3lxTE0wdHVENHB1dC0wcWZFS196eDRKblNQVWRjZE1TeHd3R0JjRm43NEtNNDZndzdYOHJJcFZ5aGFFbXRBQjBQeUx1RDVYMUZlZEMtS1ViTEdONlFmTjA1eDNjbDRLVjdGcWlmcXZ5WGdqcWU1bFlTUHdBWg?oc=5",
+"s": "TechnoSports Media Group",
+"at": "2026-10-08T14:34:25Z",
+"sig": [
+"sponsor"
+]
+}
+],
+"local": true,
+"more": 0,
+"cool": false,
+"score": 6.69
+},
+{
+"b": "Honda",
+"sec": "Cars & motoring",
+"sig": [
+"sponsor",
+"expand"
+],
+"h": [
+{
+"t": "Honda Elevate Facelift Launches in India Today; Honda 0 Alpha EV Expected by March 2027",
+"u": "https://news.google.com/rss/articles/CBMixgFBVV95cUxQWExzajd6S0N5WWtoTEJtMWc1bmpHRHRwTldFS3hsWTNXMDdwSjN5RUFRWW1jOGFXXzFrQ0xkN2xYV2VKTnpzLUFMaUZ3dVZHZXQ4b0pESkFrNFFEX0RVcjREU2s1bUkwbmNzcW91Y1diMHhpQmhuaHdyU0xiczROUy1abnVzQk8wXzY3aXdfU3p0SmVPdS1LcW0yWkJlREpfa3lmRVhsd2lpTlY0d0ZFS0VWLUxBSTVXTXptdXA5YUd2MjEtclE?oc=5",
+"s": "EVTech.News",
+"at": "2026-10-06T04:48:34Z",
+"sig": [
+"expand"
+]
+},
+{
+"t": "Honda Motorcycle & Scooter India Partners with BB Racing as Title Sponsor for ISRL Season 3",
+"u": "https://news.google.com/rss/articles/CBMixAFBVV95cUxOcTMzdUpaeFpfV3F4OWlrY3FIMUwyQlY3dEhMcjRGbnQzMTVIN1Q1ZUJBWW1QS0JLTEpiQ3pPelB4SEFuY3ZtNG5RTmJiQXZBcmRVc0pVeFZpR2VUdHl5U1pCUnotOGZwQm8wX2I2Zi1kejhjQUNtaktraHFhQVAwSjRvX3FBcjJqZk5lY2pST3VTeTl0N1ZGS3NFcmw0bVNhRGp0TWxMcGxmQU5lT2EtM0hsaDBtOHMwTmM2TklDdG9QQURM?oc=5",
+"s": "EventFAQs",
+"at": "2026-10-05T07:19:15Z",
+"sig": [
+"sponsor"
+]
+}
+],
+"local": true,
+"more": 0,
+"cool": false,
+"score": 5.26
+},
+{
+"b": "Sony",
+"sec": "Tech",
+"sig": [
+"sponsor"
+],
+"h": [
+{
+"t": "Sony agrees multi-year TV deal with ISL, MG Motor India pick up naming rights",
+"u": "https://news.google.com/rss/articles/CBMiwgFBVV95cUxOVkRBMkdock42NWxjN1RHNUsxM0gtVE5uRjlRcU0wd2lETWR1OGt6WUtNS0dOYzY0SERJYUs2MXNoa0loaFB3bEhMN00zRUl3U0hSMjNVcXo5anRTdU1WTDlyRTY0LURuanBuMDFBLXlwV2VIZFFON1Qwcm91WTZpRFlmY1c1V0N4Q0NwT2V6X0FkekVVQ1F4S0hfd3lXcnMtM3oyM0NxbFZydUVoVGp4SWdTMXE1V0piT0xCSXFCenNpZw?oc=5",
+"s": "Inside World Football",
+"at": "2026-10-05T04:40:00Z",
+"sig": [
+"sponsor"
+]
+}
+],
+"local": true,
+"more": 0,
+"cool": false,
+"score": 2.96
+},
+{
+"b": "Reliance",
+"sec": "Investors & funds",
+"sig": [
+"expand"
+],
+"h": [
+{
+"t": "KIKO Milano opens flagship store in Mumbai with Reliance Retail as beauty brand bets big on India",
+"u": "https://news.google.com/rss/articles/CBMi6gFBVV95cUxPdFBBUGl3a1ZZUTBuSk5IbVN4YVZ4c3lTQWtma0gzblNuY1luelQ1SUdFY01PWmxlUnQySlBhU0VjcTI2VVVsdFVFRE5tUThEcjZZUGhUN09YNlQwRXpZa2o2dmtpRUMxemc5bE9VZEVqX1JScjctVkVlbWplT05YTWxDQzdzcWVkZnRlZU5NOGxmTFFwUVgxNzJvT01RQWw5TjdhX2Y2OUlITHJnTjlnbEktbVVLUHF4bjJnT0RtUDhTWGtSVmpQaXR6b0V5dUJ4NzJBTWQ5c3gyb1VNRUN1NW1ZZWxxdHdKblHSAe8BQVVfeXFMUEluZURCT1ZuZy1KTzJ2NWJjekwzSC1PU05NMWRqZHpBZGw0RklFeHBRSHVLeFdCZ2NTTFMxR3ZLb0VRNERTUmtGVUVDRmJNS0MzMkw2YTVjODRUZzlYbmpxck9SS1BZWENDVDB5ckItdzZkMzRxWDMtNVJZT0FqTGdLbkpiVTVVVk45VXNhQ1pfRTE1QkhBdEtkR2x6cEdhRXN4cFBLeUEtUnlaLXdtanJRMkhJTXlCdGw5eDJ3S1FtdjhZTFhYeG93TFRvVDVMV0hWZVA3MlpkZ2ZBVkVlV1BNVmRPVWM1SlBhU2p2TTA?oc=5",
+"s": "CNBC TV18",
+"at": "2026-10-07T16:25:26Z",
+"sig": [
+"expand"
+]
+}
+],
+"local": true,
+"more": 0,
+"cool": false,
+"score": 2.71
+},
+{
+"b": "H&M",
+"sec": "Fashion & retail",
+"sig": [
+"expand"
+],
+"h": [
+{
+"t": "Sharvari becomes H&M Beautys first ambassador in India; brand launches festive makeup edit with her picks",
+"u": "https://news.google.com/rss/articles/CBMitwFBVV95cUxNeFFPQ1JBN2lVN09JTTBjazBQeldBNDRkVk92TFV3TXphQ282V19CWlRUWXpxRE5hVDkzRm1iNXNTSzBvQnVmR2stbGdlN0toR2JpV29ydnFzdEQtZi1WUlpqZF9CZ3R2V1FwbWJRTDRNXzVjalBRZ0FMbHFROHIwbkZ2S1JNMnZPaktiLUEteDY0ZC1YbWtTdmhUbjJiTnNMcnR6Wm9WNmVKX2habHpBUW5yNF8xdjTSAbwBQVVfeXFMTTFNWFVld2lRSnJwaGp0WnMxMnl3bl96Q1VYczY1d2xydnBBTWlYOHY3UWtwSjhpeHRvcFdoUS1uUDE5b0MxdmlGTlNFS2xVMmFEdjlGT05taU1rMEU4NWlJNmJhcHpxaU9nb2ttYWFIdzh3VXF0UmdFdW96RG95eUdseEZkdGNQRXBSUEx6bVNGU0xGaGhCLWRCb21XMnNRYUtvQzVCLWxpMHFjS3Bkb2M4VXQ1dElEdE1HU1o?oc=5",
+"s": "Bollywood Hungama",
+"at": "2026-10-07T07:41:10Z",
+"sig": [
+"expand"
+]
+}
+],
+"local": true,
+"more": 0,
+"cool": false,
+"score": 2.6
+}
+],
+"other": [
+{
+"t": "Stagwell names Alap Ghosh India CEO as global media network Stagwell Media launches",
+"u": "https://news.google.com/rss/articles/CBMi3gFBVV95cUxPaTBBSHFfMFZXdEI4ek9DZUo2MlBDNzZHc3BNdmdPbWNNcUpld3JBNUVMbTF4WFQwNFpZN0laN1o0U3NfdXB4V0ticUdJU1dOWTJuQV90SFlaN3V1c010aHJSTVNrcjB5RFliYndQNzFCZlppZ2ktQlJlWS1LNnEwdktzY1dHeTJjaHZ1cXJmUmpQODVnQjN2TDZoMTNSTzdsb2F3V0YtS1FzWUhzc2NZUmUzV1lFTklHWVp4WnE1bUFkZ3RKcktTU3RwbEI1Y1A2WUQxR1VXelNNZTl1RXfSAd4BQVVfeXFMT2kwQUhxXzBWV3RCOHpPQ2VKNjJQQzc2R3NwTXZnT21jTXFKZXdyQTVFTG0xeFhUMDRaWTdJWjdaNFNzX3VweFdLYnFHSVNXTlkybkFfdEhZWjd1dXNNdGhyUk1Ta3IweURZYmJ3UDcxQmZaaWdpLUJSZVktSzZxMHZLc2NXR3kyY2h2dXFyZlJqUDg1Z0Izdkw2aDEzUk83bG9hd1dGLUtRc1lIc3NjWVJlM1dZRU5JR1laeFpxNW1BZGd0SnJLU1N0cGxCNWNQNllEMUdVV3pTTWU5dUV3?oc=5",
+"s": "StoryBoard 18",
+"at": "2026-10-07T10:44:01Z",
+"sig": [
+"people",
+"expand"
+]
+},
+{
+"t": "JM Frictech India Expands Manufacturing Footprint to North India with INR 50 Crore Investment in Chandigarh",
+"u": "https://news.google.com/rss/articles/CBMi5AFBVV95cUxONTk5RWpvMF94ajR1OW1RRThJNnI1cldxQTFzUkkxN3Y2QjZmVDRYcnJoSHMyQnAxaU5KQmg3MVZnVFZlQzczRkU1M09uaTdFZDlJaDV5WkRVWFgydHQtWm9ranY0ejRwTk9Camc0LXF5S0ctdUdDOEx5R1NpcldVaWFSQTduT1AwWWtVaUo1dUVpWFJxNUZIQmRyeVktY2g3T1RnR054SERyR21CVlNtbUhZYUNodUg1amM0LVU2NjdkOVl2UDRsVk5YVkZscFdTb1o1ZDhKOXB2REpKZ05nVVk5OUM?oc=5",
+"s": "Business News This Week",
+"at": "2026-10-09T11:55:54Z",
+"sig": [
+"expand",
+"money"
+]
+},
+{
+"t": "India Slams JD Vance’s Indentured Servants Remark On H-1B Workers Amid US Green Card Sponsorship",
+"u": "https://news.google.com/rss/articles/CBMi7AFBVV95cUxOQ0E1LUktSS1Kdm1VRm90bUxRbDlmVHM2bjVxR0ZXaGVUd0VlbnB6ZDJwbTE2N3kyNG9xc0tfQkFrNk5mOE5IaVByUEVKWDJqb2k5cmNOOFZqUUdRVS1OWnQ2aWtyTTZiajhyOFFmYUF3LTRUMnZ0ZjRmSWJpbmMxX0tDNVdKMzVELS1ZdUJCYS14QmZZb1FpYUFuNGtNaGoxR2R0YXd2WlIyb2gtdTlyeUcyT2txZ0JIR0JUUzFwUVBVeDlrNFBKNURLVFFUMlFhaFJEdm9LWWxNOE56ZmltVjk3WVJSYnRMTlNZNtIB7AFBVV95cUxOQ0E1LUktSS1Kdm1VRm90bUxRbDlmVHM2bjVxR0ZXaGVUd0VlbnB6ZDJwbTE2N3kyNG9xc0tfQkFrNk5mOE5IaVByUEVKWDJqb2k5cmNOOFZqUUdRVS1OWnQ2aWtyTTZiajhyOFFmYUF3LTRUMnZ0ZjRmSWJpbmMxX0tDNVdKMzVELS1ZdUJCYS14QmZZb1FpYUFuNGtNaGoxR2R0YXd2WlIyb2gtdTlyeUcyT2txZ0JIR0JUUzFwUVBVeDlrNFBKNURLVFFUMlFhaFJEdm9LWWxNOE56ZmltVjk3WVJSYnRMTlNZNg?oc=5",
+"s": "Free Press Journal",
+"at": "2026-10-10T04:18:51Z",
+"sig": [
+"sponsor"
+]
+},
+{
+"t": "Ionage Raises $1.3 Million in Pre-Series A Funding to Expand EV Charging Interoperability Platform Across India",
+"u": "https://news.google.com/rss/articles/CBMi4gFBVV95cUxPOGhUVWFUMGFjVzFmRk9LYXUyRVk1elJhbm5VeW9yUTFhcDJYWDhpbUFYUWNzQjhuVFZaUll5NFRLUnBIM3ZSd1lHOXFzQ1ZmS3VWM0NfekVGRWZCenU2a1dsT01sN3FTZXoyZE1TS3BvbVROcm5hV2w4blNSNzliR0R0OGhGRjBDWV9waGREaWljdS11OWpNWnZxNUVmVFBGZlVma2d2TjhfUlpIblk2eXFqT09tYmVUQUpZZlNRejl0TEVUTmVIbHZKbEJZU0lZQTN1VjhWNC0taFJCSkFiajRR0gHnAUFVX3lxTE5VNWdTZEdNb09YRkFOaFdOeEdQLWc5TmpEYzFfNnY1cGpEVFNMR3VTcUs0NVN3Z0Nqa1ZSbmc1b3ptd0N0c1MweFY3VHNqb1V4TGtZdkhWWExoRzJhbjJodXJsdU1IZl9MWEIybVo5SmhGYmhNdVZ2NVhjVlRsdTRWbXdpY3VJbTZteXBJZzlmbExpRElUUFJqNnFydEVSMGlwdUMxcVo3OEoxcWNWX1UtSGpOMWFSdXhOaUhjS1Q2UzlBV3ZTNHBnNHE0RHV0N2MtQXRUZWIzMWhVcUIxYmJmSDVFaVhMTQ?oc=5",
+"s": "EMobility+",
+"at": "2026-10-07T07:56:21Z",
+"sig": [
+"expand",
+"money"
+]
+},
+{
+"t": "{Funding Alert} Sober & Co Raises Rs 75 Lk to Expand Zero-Sugar Mixer Brand Across India",
+"u": "https://news.google.com/rss/articles/CBMiuAFBVV95cUxPWFlkTlFtU0ctZG5HQl81MUZtLTJPaDdqQzIxeWtjNFVySnJNQjRQSE1HWGlpRVZjS2lDLWtlR2pPaXczdDZiZEQ5Smo2enYzbzI0XzI5VmhweVZBaEdqZjFzRktkOGlQNm05eE5jZm9CRE5Kd0QydHVFVllqLUZKc0IySURPSkZXbjZHdXY4TWFwOHVQTXN2UWpjeHllV0RLU0UwYWtqRTZ5bzlVSmxwb3kwaWF5M280?oc=5",
+"s": "Indian Retailer",
+"at": "2026-10-07T06:36:39Z",
+"sig": [
+"expand",
+"money"
+]
+},
+{
+"t": "Muthoot joins India’s cricket party as BCCI finally fills bilateral sponsorship seat",
+"u": "https://news.google.com/rss/articles/CBMixgFBVV95cUxObHNBMlpmU2xwLTN2UkQ1ODJ4UWNNMHF1VGgyZHEtd3BCVTdBMDBibE96MkhqdEhObm5FNjNoYUxxVmZtY0xrd0J6ZnRPTTh0dG85cV94aWJJTGt1bkxIVV9JZ3VoNDlWSWoxQUZoNUNPZDVPaC1iMVE5ZllLV3NWQlB1QWU4b2dsY2FZVjhlbnMta2dRNU5yUHprdHNyWUh3UkpBRmxBSllxN2JTMjFlZ0ZKa255ekpYZzg1dC1qYmNURHpkeUE?oc=5",
+"s": "CricketGully",
+"at": "2026-10-08T16:58:58Z",
+"sig": [
+"sponsor"
+]
+},
+{
+"t": "ReFit Global Raises $1 Million From UAE Family Office for India, Gulf and Africa Expansion",
+"u": "https://news.google.com/rss/articles/CBMi0AFBVV95cUxQTFRHUVJfZWFqcnhkaTFNSFF1ZndyMF8zRmF6ZXE4bHd1aWNoQVNiZktnMlVNSWJSWU9SbUszd1JkdGZHS2twMHRib2dtRHpVVHVFOGo3YWlDOVlKTndGQkZDdy1aZk81bHgyNlVGbDJzeEVmdGk0SUQwYTRnd0tFeHAzb0lNdlRGeFpxOHZMRzlQUzBqVERDWHBSN2ZWUFNMeHhYeFBMbWxXRzBkekxzbkNJLXB1cXR5OGZBNHV4TDZpQmVBbzFtQXZNbVZ0bzJa?oc=5",
+"s": "Indian Startup Times",
+"at": "2026-10-06T06:21:20Z",
+"sig": [
+"expand",
+"money"
+]
+},
+{
+"t": "Youdha rolls out 1,000th ePod electric three-wheeler, eyes southern India expansion",
+"u": "https://news.google.com/rss/articles/CBMi8wFBVV95cUxPZDJ0YmNRMlpMYUFyOGNPbWVDQmxQcGhKeDdrSUVyZDVJeDh6TWxRdU5udDJ5ZVlMY19WT2E5b0RsYW14OTlndmFsNUJxSHVjRDFtNE9la3JwRnhSNUVZbUw0ZUFWOHR6aDctODJUb0p3SnJfdVFIZkJBOW9HaGlUSUFEQmlXc2Vua1RVb0dlSnI1MlF4Y0YzQzJlRXdyZHV6b0NhVERSUWozUXlnR0ZPQzJZdzNlQnU2TUZ3OEdvNjJqVE1vSG5IcXoxMVZ5Yk8zbFlVYXVEUzJQOUY2cUwtXzVKZWV4TW5iRFhkcVNyMHFCYmvSAfMBQVVfeXFMT2QydGJjUTJaTGFBcjhjT21lQ0JsUHBoSng3a0lFcmQ1SXg4ek1sUXVObnQyeWVZTGNfVk9hOW9EbGFteDk5Z3ZhbDVCcUh1Y0QxbTRPZWtycEZ4UjVFWW1MNGVBVjh0emg3LTgyVG9Kd0pyX3VRSGZCQTlvR2hpVElBREJpV3NlbmtUVW9HZUpyNTJReGNGM0MyZUV3cmR1em9DYVREUlFqM1F5Z0dGT0MyWXczZUJ1Nk1GdzhHbzYyalRNb0huSHF6MTFWeWJPM2xZVWF1RFMyUDlGNnFMLV81SmVleE1uYkRYZHFTcjBxQmJr?oc=5",
+"s": "ET Auto",
+"at": "2026-10-09T20:21:24Z",
+"sig": [
+"expand"
+]
+},
+{
+"t": "Anzen India Energy Yield Plus Trust sponsor holding at 23.91% in Q2FY27",
+"u": "https://news.google.com/rss/articles/CBMivgFBVV95cUxNbjNJMXdReW1BZy1sM1hjTXJlU1Q5RlpDbUtfS2dsMjNtM1M2SVpScmVHd2xnb2VDOWNvdm0xNDlDRlljUTgzZDNSM21IX2MxM1VQRzdiak9DcGNkblhaeVQ5eHZPeFZndGs3VWxtUzFRTldUU0hjVmNmSVhjQzd4WWU5Wk1jYjhLYjZlVjdQODhEa3NnZmxnMXFNN0JoNkJGYWlJZGIwZ3FuXzNvbFl1OTBRcDlmVlZ3NGdfNXJn?oc=5",
+"s": "scanx.trade",
+"at": "2026-10-06T10:08:50Z",
+"sig": [
+"sponsor"
+]
+},
+{
+"t": "Jiostar announces Skyscanner as Title Sponsor for Jeeto Dhan Dhana Dhan for West Indies v India T20I serries",
+"u": "https://news.google.com/rss/articles/CBMi2wFBVV95cUxPek5NUlctQmRkYkdzYWVMTHJzMzNFVkZFSUpXNHZyVl9hM3V3ckNxbnYzWlNEMU9sOHBpckRyb09wbEd0cUp6YnQ3UVpndmo4Q0ZOSHNha2ZJaXpNWHMwTTRYZjdVRW5OSVo5TnhJZk9oR2IydDZTUUhoVTljbVRQaUlTYlc5VGIxQU9sYUhOYWVuOWw3R3NWNU81STZBWW5LQkpnc3Azd2xPdkJycjdVRXotRWZvM0pNYVBhamJacXhDUGRkSnNLeklVbzJUYkdGYmRWSmN6TFROcUk?oc=5",
+"s": "Adgully.com",
+"at": "2026-10-06T07:10:00Z",
+"sig": [
+"sponsor"
+]
+}
+],
+"n": 6
 },
 "JP": {
 "brands": [],
@@ -3012,7 +3735,17 @@
 "NL:0": "2026-10-10T07:37:05Z",
 "NL:1": "2026-10-10T07:37:05Z",
 "IT:0": "2026-10-10T07:37:05Z",
-"IT:1": "2026-10-10T07:37:05Z"
+"IT:1": "2026-10-10T07:37:05Z",
+"HU:0": "2026-10-10T07:51:03Z",
+"HU:1": "2026-10-10T07:51:03Z",
+"UZ:0": "2026-10-10T07:51:03Z",
+"UZ:1": "2026-10-10T07:51:03Z",
+"RO:0": "2026-10-10T07:51:03Z",
+"RO:1": "2026-10-10T07:51:03Z",
+"RS:0": "2026-10-10T07:51:03Z",
+"RS:1": "2026-10-10T07:51:03Z",
+"IN:0": "2026-10-10T07:51:03Z",
+"IN:1": "2026-10-10T07:51:03Z"
 },
 "errors": {}
 }
