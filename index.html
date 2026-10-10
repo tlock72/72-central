@@ -891,7 +891,11 @@ dialog.stg[open]{display:block;animation:pop .28s ease}
 .mk-key{display:flex;align-items:center;gap:5px;font-size:11px;color:var(--muted)}
 .mk-key i{display:inline-block;width:12px;height:12px;border-radius:3px;margin-left:6px}
 .mk-box{position:relative;border:1px solid var(--line-2);border-radius:16px;overflow:hidden;background:#0a1230}
-#mkSvg{display:block;width:100%;height:auto;aspect-ratio:16/7;touch-action:manipulation}
+#mkSvg{display:block;width:100%;height:auto;aspect-ratio:16/7;touch-action:none;cursor:grab;user-select:none;-webkit-user-select:none}
+#mkSvg.drag{cursor:grabbing}
+.mk-zoom{position:absolute;left:10px;top:10px;display:flex;flex-direction:column;gap:6px}
+.mk-zoom button{width:32px;height:32px;border-radius:50%;background:var(--navy);color:var(--gold);border:1px solid var(--gold);font:inherit;font-size:18px;line-height:1;cursor:pointer}
+.mk-tip{position:absolute;left:50px;bottom:8px;font-size:11px;color:var(--muted-2);pointer-events:none}
 #mkSvg path,#mkSvg circle{fill:#26325c;stroke:#0a1230;stroke-width:.6;vector-effect:non-scaling-stroke;cursor:pointer;transition:fill .2s}
 #mkSvg circle{stroke:var(--gold);stroke-width:.8}
 #mkSvg .mk1,.mk-key .mk1{fill:rgba(208,165,121,.3);background:rgba(208,165,121,.3)}
@@ -1705,7 +1709,9 @@ dialog.tmd[open]{animation:pop .28s ease}
       <div class="chips mk-view" role="group" aria-label="Show"><button class="chip mkv on" data-v="tennis">Tennis business</button><button class="chip mkv" data-v="brands">Brands on the move</button></div>
       <div class="mk-bar"><label for="mkSel">Country</label><select id="mkSel"><option value="">Whole world</option></select>
         <span class="mk-key"><i class="mk1"></i>1<i class="mk2"></i>2–3<i class="mk3"></i>4–6<i class="mk4"></i>7+ <span id="mkKeyTxt">stories this week</span></span></div>
-      <div class="mk-box"><svg id="mkSvg" role="img" aria-label="World map of tennis business news"></svg><button type="button" class="mk-out" id="mkOut" hidden>Whole world</button></div>
+      <div class="mk-box"><svg id="mkSvg" role="img" aria-label="World map of tennis business news"></svg><button type="button" class="mk-out" id="mkOut" hidden>Whole world</button>
+        <div class="mk-zoom"><button type="button" data-z="1" aria-label="Zoom in">+</button><button type="button" data-z="-1" aria-label="Zoom out">−</button></div>
+        <span class="mk-tip" id="mkTip">Drag to move · scroll or pinch to zoom</span></div>
       <h2 class="mk-h" id="mkH"></h2>
       <div class="nw-list" id="mkList"><div class="sq-empty">Loading the map…</div></div>
     </div>
@@ -3256,7 +3262,58 @@ document.addEventListener("click", e => { const b = e.target.closest(".mkv"); if
   MK_V = b.dataset.v; mkShade(); mkPick(MK_C in (MK_V === "brands" ? BRD.markets : WMAP.c) ? MK_C : "", true); });
 $("#mkSel")?.addEventListener("change", e => mkPick(e.target.value));
 $("#mkOut")?.addEventListener("click", () => mkPick(""));
-$("#mkSvg")?.addEventListener("click", e => { const el = e.target.closest("[data-c]"); if (el) mkPick(el.dataset.c === MK_C ? "" : el.dataset.c); });
+$("#mkSvg")?.addEventListener("click", e => { if (MK_DRAGGED) { MK_DRAGGED = false; return; }  // the end of a drag isn't a tap
+  const el = e.target.closest("[data-c]"); if (el) mkPick(el.dataset.c === MK_C ? "" : el.dataset.c); });
+/* moving around the map: drag (mouse or one finger), mouse wheel / trackpad or pinch to zoom, and the + / − buttons.
+   Zoom is kept between the whole world and about 40x, and the map can't be dragged off screen. */
+let MK_DRAGGED = false;
+function mkSetVB(v){
+  const ar = v[2] / v[3], maxW = WMAP.w * 1.15, minW = WMAP.w / 40;
+  let w = Math.min(maxW, Math.max(minW, v[2])), h = w / ar;
+  let x = Math.min(WMAP.w - w * 0.25, Math.max(-w * 0.75, v[0])), y = Math.min(WMAP.h - h * 0.25, Math.max(-h * 0.75, v[1]));
+  MK_ANIM++;  // stops a zoom animation that's still running
+  MK_VB = [x, y, w, h];
+  $("#mkSvg").setAttribute("viewBox", MK_VB.map(n => n.toFixed(1)).join(" "));
+  $("#mkSvg").querySelectorAll("circle").forEach(c => c.setAttribute("r", (w / 300).toFixed(2)));
+}
+// zoom by k (above 1 = closer) around a point on screen (px, py relative to the map), default its centre
+function mkZoomBy(k, px, py){
+  const svg = $("#mkSvg"), r = svg.getBoundingClientRect(), [x, y, w, h] = MK_VB;
+  const fx = (px ?? r.width / 2) / r.width, fy = (py ?? r.height / 2) / r.height;
+  const nw = Math.min(WMAP.w * 1.15, Math.max(WMAP.w / 40, w / k)), nh = nw * h / w;
+  mkSetVB([x + (w - nw) * fx, y + (h - nh) * fy, nw, nh]);
+  $("#mkOut").hidden = false;
+}
+(function(){
+  const svg = $("#mkSvg"); if (!svg) return;
+  const pts = new Map(); let pinch = 0, start = null;
+  svg.addEventListener("wheel", e => { if (!WMAP) return; e.preventDefault();
+    const r = svg.getBoundingClientRect(); mkZoomBy(Math.exp(-e.deltaY * (e.deltaMode ? 0.05 : 0.0015)), e.clientX - r.left, e.clientY - r.top); }, { passive: false });
+  svg.addEventListener("pointerdown", e => { if (!WMAP) return; pts.set(e.pointerId, { x: e.clientX, y: e.clientY });
+    if (pts.size === 1) { start = { x: e.clientX, y: e.clientY }; MK_DRAGGED = false; } pinch = 0; });
+  svg.addEventListener("pointermove", e => {
+    if (!pts.has(e.pointerId) || !WMAP) return;
+    const prev = pts.get(e.pointerId), r = svg.getBoundingClientRect();
+    pts.set(e.pointerId, { x: e.clientX, y: e.clientY });
+    if (pts.size === 1) {
+      if (!MK_DRAGGED) {  // a small wobble is still a tap
+        if (Math.hypot(e.clientX - start.x, e.clientY - start.y) < 5) return;
+        MK_DRAGGED = true; svg.classList.add("drag"); try { svg.setPointerCapture(e.pointerId); } catch (err) {}
+      }
+      const s = MK_VB[2] / r.width;
+      mkSetVB([MK_VB[0] - (e.clientX - prev.x) * s, MK_VB[1] - (e.clientY - prev.y) * s, MK_VB[2], MK_VB[3]]);
+      $("#mkOut").hidden = false;
+    } else if (pts.size === 2) {  // pinch: zoom by the change in finger distance, around the point between them
+      const [a, b] = [...pts.values()], d = Math.hypot(a.x - b.x, a.y - b.y);
+      if (pinch) mkZoomBy(d / pinch, (a.x + b.x) / 2 - r.left, (a.y + b.y) / 2 - r.top);
+      pinch = d; MK_DRAGGED = true;
+    }
+  });
+  const up = e => { pts.delete(e.pointerId); pinch = 0; if (!pts.size) svg.classList.remove("drag"); };
+  ["pointerup", "pointercancel", "pointerleave"].forEach(t => svg.addEventListener(t, up));
+  document.querySelectorAll(".mk-zoom button").forEach(b => b.addEventListener("click", () => { if (WMAP) mkZoomBy(+b.dataset.z > 0 ? 1.6 : 1 / 1.6); }));
+  if (matchMedia("(hover: none)").matches) $("#mkTip").textContent = "Drag to move · pinch to zoom";
+})();
 addEventListener("resize", () => { if (WMAP && NW_F === "map") mkZoom(mkBox(MK_C), true); });
 async function loadNews(){
   try { const r = await fetch("news.json?t=" + Date.now(), { cache: "no-store" }); if (r.ok) NEWS = await r.json(); else if (!NEWS) NEWS = { items: [] }; } catch (e) { if (!NEWS) NEWS = { items: [] }; }
