@@ -885,6 +885,8 @@ dialog.stg[open]{display:block;animation:pop .28s ease}
 .nw-list[hidden],.nw-also[hidden]{display:none}
 /* News "Market map" (market.json + worldmap.json): countries shaded by business stories this week; zooms to the one picked */
 .nwf-map::before{content:"◍ "}
+.nwf-art::after{content:" ▾"}.nwf-art.on::after{content:" ▴"}
+.nw-btns{flex-basis:100%}.nw-sub{margin-top:8px}.nw-sub[hidden]{display:none}
 .mk-bar{display:flex;flex-wrap:wrap;align-items:center;gap:8px 14px;margin-bottom:10px}
 .mk-bar label{font-family:var(--display);font-size:11px;letter-spacing:.1em;text-transform:uppercase;color:var(--muted-2)}
 .mk-bar select{background:var(--navy-2);color:var(--white);border:1px solid var(--line);border-radius:10px;padding:7px 10px;font:inherit;font-size:14px;max-width:100%}
@@ -1702,7 +1704,8 @@ dialog.tmd[open]{animation:pop .28s ease}
         <h1>News</h1>
         <p class="sub">The business of tennis first: investors, sponsors, broadcasters, the tours and federations, and tournament news (calendar, venues, entry lists) come before match reports, and are kept for a week. Then the top match and player stories from the last 3 days; stories more outlets are running come first. Stories naming a 72 player or a Scouting Corner prospect are kept for a week. Tap a headline to read it on the outlet's own site.</p>
       </div>
-      <div class="chips" role="group" aria-label="Show"><button class="chip nwf nwf-map on" data-n="map">Market map</button><button class="chip nwf" data-n="all">Articles</button><button class="chip nwf" data-n="biz">Business</button><button class="chip nwf" data-n="ev">Tournaments</button><button class="chip nwf" data-n="72">72 players</button><button class="chip nwf" data-n="sc">Prospects</button></div>
+      <div class="nw-btns"><div class="chips" role="group" aria-label="Show"><button class="chip nwf nwf-map on" data-n="map">Market map</button><button class="chip nwf nwf-art" data-n="all" aria-expanded="false">Articles</button></div>
+      <div class="chips nw-sub" id="nwSub" role="group" aria-label="Section" hidden><button class="chip nwf" data-n="all">All</button><button class="chip nwf" data-n="biz">Business</button><button class="chip nwf" data-n="ev">Tournaments</button><button class="chip nwf" data-n="72">72 players</button><button class="chip nwf" data-n="sc">Prospects</button></div></div>
     </div>
     <div class="nw-list" id="nwList"><div class="sq-empty">Loading the headlines…</div></div>
     <div id="mkMap" hidden>
@@ -3108,8 +3111,10 @@ function nwAgo(iso){
 }
 function renderNews(){
   if (!$("#page-news")) return;
-  document.querySelectorAll(".nwf").forEach(b => b.classList.toggle("on", b.dataset.n === NW_F));
   const map = NW_F === "map";
+  // "Articles" stays lit on any section; its sections (All, Business...) drop down underneath only while it is picked
+  document.querySelectorAll(".nwf").forEach(b => b.classList.toggle("on", b.classList.contains("nwf-art") ? !map : b.dataset.n === NW_F));
+  $(".nwf-art").setAttribute("aria-expanded", !map); $("#nwSub").hidden = map;
   $("#nwList").hidden = map; $("#mkMap").hidden = !map;
   if (map) { if (!$("#page-news").hidden) mkOpen(); return; }  // the map (and its files) only load once News is on screen
   if (!NEWS) return;
