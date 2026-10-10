@@ -1,5 +1,5 @@
 {
-"updated": "2026-10-10T13:38:04Z",
+"updated": "2026-10-10T13:56:01Z",
 "markets": {
 "AU": {
 "brands": [
@@ -32,7 +32,7 @@
 "local": true,
 "more": 0,
 "cool": false,
-"score": 3.54
+"score": 3.53
 },
 {
 "b": "Virgin Australia",
@@ -529,7 +529,7 @@
 "local": true,
 "more": 0,
 "cool": false,
-"score": 3.37
+"score": 3.36
 },
 {
 "b": "IHG",
@@ -551,7 +551,7 @@
 "local": true,
 "more": 0,
 "cool": false,
-"score": 2.31
+"score": 2.3
 },
 {
 "b": "Nestlé",
@@ -595,7 +595,7 @@
 "local": false,
 "more": 0,
 "cool": false,
-"score": 2.1
+"score": 2.09
 },
 {
 "b": "Airbus",
@@ -617,7 +617,7 @@
 "local": false,
 "more": 0,
 "cool": false,
-"score": 1.63
+"score": 1.62
 }
 ],
 "other": [
@@ -760,7 +760,7 @@
 "local": false,
 "more": 0,
 "cool": false,
-"score": 1.45
+"score": 1.44
 }
 ],
 "other": [
@@ -852,7 +852,7 @@
 "local": false,
 "more": 0,
 "cool": false,
-"score": 2.51
+"score": 2.5
 }
 ],
 "other": [
@@ -890,7 +890,7 @@
 "local": true,
 "more": 0,
 "cool": false,
-"score": 2.97
+"score": 2.96
 },
 {
 "b": "KFC",
@@ -912,7 +912,7 @@
 "local": true,
 "more": 0,
 "cool": false,
-"score": 2.66
+"score": 2.65
 },
 {
 "b": "Campari",
@@ -956,7 +956,7 @@
 "local": true,
 "more": 0,
 "cool": false,
-"score": 1.94
+"score": 1.93
 },
 {
 "b": "Grab Holdings",
@@ -978,7 +978,7 @@
 "local": false,
 "more": 0,
 "cool": false,
-"score": 1.23
+"score": 1.22
 }
 ],
 "other": [
@@ -1102,7 +1102,7 @@
 "local": false,
 "more": 0,
 "cool": false,
-"score": 2.25
+"score": 2.24
 }
 ],
 "other": [
@@ -1284,7 +1284,7 @@
 "local": false,
 "more": 0,
 "cool": false,
-"score": 1.41
+"score": 1.4
 }
 ],
 "other": [
@@ -1577,47 +1577,7 @@
 "US": {
 "brands": [
 {
-"b": "Microsoft",
-"sec": "Tech",
-"sig": [
-"sponsor"
-],
-"h": [
-{
-"t": "Tech giants Microsoft, Adobe, Infosys and 5 others lose ability to sponsor African and other foreign workers for US green cards",
-"u": "https://news.google.com/rss/articles/CBMi2AFBVV95cUxPMzBjMlRSaWhXZjhYa3ctcGdFdkhZaDAyU2VKY19xa2lNMGdPakdDWVVxcDRJY2YxbC1icnU0X1dMQ2lrbjVESXlCTm5qOXUyNW1QSkVEZHJ2eG9EYlFMMWZzMDY3NTh3VWRkTUlJSEtqN0ZEU1ZRSGNvV0Zncm9xQndLZkZiVFo3VjB5Z3dJYjV3UXpqZV85VDdSc1lfVnVSdFVBMkU5QjhxNkxiS3JVR3Z3UlhKemhuZ2gtSTdscU1icGdBaTdMVWRuOTRXZmxZVDhIQUZKQlE?oc=5",
-"s": "Business Insider Africa",
-"at": "2026-10-09T14:21:01Z",
-"sig": [
-"sponsor"
-]
-},
-{
-"t": "US suspends Microsoft from Green Card sponsorship programme; company responds: Microsoft only files H-1B",
-"u": "https://news.google.com/rss/articles/CBMitAJBVV95cUxQcUJud3hqQ25oalpxYkhLT0RDWkNPSW14LTlZcVJ1YWhJdllFWFhNWDNST3JUQ2FRQ1RySFY5V0ZOWldEanBISnUtVTBIeVNSN2xTcW5HZHRhUjRwMmpwR1RVaEl3bUItUHdGa0ZyTjdSV1B4NExQRHlGUi0yZDBzRFJxN0ppOUJhbG9Rckw0YmtnZVNEZk0wbGRzMzZpODlVNU40T0RITnVzaWMwYXZYQ3NoLVFOVUdtSGVaVlVXdlBoYmVvUkZCaTRfaDI3RFZjMEZqUUVVbmt0V1NVSHUweTUyZm1sMFlmekRNUDZoMGEyZ3FyVkFrWHF2cWxUdl9aRU1hR3l4RHBRd2w3ZldndEUyNHFWRUVYOGpkeE92VDJSUC1EbndBOXg3Sms2TmotRWlZU9IBugJBVV95cUxPblhIRWZONjFCWE5tVHRRU2lMVzEzM01rMWZOWjdzcW5HUUVkSXg0NXFHTEJyMG5MUkZWTENfMk1sZ3haUlpGVFpXZjNpSjlBUXdZdHAtWTBfbGdXR08tcl96YXJlaGNBRy1mS2ZVTnFaS3lKc3A3T2x0dTNlZ3g0ZzB5YUZuUmFhcUdxVmlIY1h0RGtHOWVwTmRzVE9LenBIWGMwbmxhMkFNQTh4Ym45Zkk5UGNVU0tZMmVGdmZrd1dSdGNFTHJ0RnVzZFpKbjh3ZmdtNlAyR1UyV2E4NDJ0U2lIZ3BqcWdaTnpWelU3SG1HdXliS0lQRjNwUjlLLVhyZEFxc0J3VVFIdzVuME41VXpKakVIdXh2SnM1a1hoNTU3Zmx2OVpNY3F2Y3ZHSmZPNjJFRjVxdXVuZw?oc=5",
-"s": "The Times of India",
-"at": "2026-10-08T18:44:00Z",
-"sig": [
-"sponsor"
-]
-},
-{
-"t": "US Freezes Green Card Sponsorship for Infosys, TCS, Wipro and Microsoft in Major H-1B Crackdown",
-"u": "https://news.google.com/rss/articles/CBMiowFBVV95cUxNTTBSR3VUVkRlbmFFTTJHdnUzM3dpVEF6Um1TcFdSXzNmMExjSDdCbkFJNU53dlEwWW11ajM2ZGxlS3dGc2lyZ19zVWs4bzY3dTJTYTNkV0M3N3RpUE96VmRMbWZWdnNZaFNMbzRjN2Fzc1ZZTXk3VFRmWEN5S2ZDMGJfZjFON1RkMTFUNHlBcUJtQkVRUEdnT1NHbWo2UnhSaDVZ?oc=5",
-"s": "GujaratSamachar English",
-"at": "2026-10-08T15:58:05Z",
-"sig": [
-"sponsor"
-]
-}
-],
-"local": false,
-"more": 0,
-"cool": false,
-"score": 7.6
-},
-{
-"b": "Infosys",
+"b": "Microsoft / Infosys",
 "sec": "Tech",
 "sig": [
 "sponsor"
@@ -1645,7 +1605,7 @@
 "local": false,
 "more": 0,
 "cool": false,
-"score": 5.14
+"score": 5.13
 },
 {
 "b": "Wipro",
@@ -1763,7 +1723,7 @@
 ]
 }
 ],
-"n": 3
+"n": 2
 },
 "BG": {
 "brands": [
@@ -1796,7 +1756,7 @@
 "local": true,
 "more": 0,
 "cool": false,
-"score": 4.65
+"score": 4.64
 },
 {
 "b": "Coca-Cola",
@@ -1956,7 +1916,7 @@
 "local": false,
 "more": 1,
 "cool": false,
-"score": 4.67
+"score": 4.65
 },
 {
 "b": "HSBC",
@@ -2000,7 +1960,7 @@
 "local": false,
 "more": 0,
 "cool": false,
-"score": 1.96
+"score": 1.95
 },
 {
 "b": "BYD",
@@ -2053,7 +2013,7 @@
 "local": false,
 "more": 0,
 "cool": false,
-"score": 1.18
+"score": 1.17
 },
 {
 "b": "Burberry",
@@ -2217,7 +2177,7 @@
 "local": true,
 "more": 7,
 "cool": false,
-"score": 21.13
+"score": 21.1
 },
 {
 "b": "Nissan",
@@ -2292,7 +2252,7 @@
 "local": true,
 "more": 0,
 "cool": false,
-"score": 3.09
+"score": 3.08
 },
 {
 "b": "Xpeng",
@@ -2380,7 +2340,7 @@
 "local": false,
 "more": 0,
 "cool": false,
-"score": 0.7
+"score": 0.69
 }
 ],
 "other": [
@@ -2508,7 +2468,7 @@
 "local": true,
 "more": 0,
 "cool": false,
-"score": 7.24
+"score": 7.23
 },
 {
 "b": "Lidl",
@@ -2541,7 +2501,7 @@
 "local": true,
 "more": 0,
 "cool": false,
-"score": 6.61
+"score": 6.6
 },
 {
 "b": "Google",
@@ -2572,7 +2532,7 @@
 "local": true,
 "more": 0,
 "cool": false,
-"score": 5.61
+"score": 5.6
 },
 {
 "b": "Alibaba",
@@ -2616,7 +2576,7 @@
 "local": true,
 "more": 0,
 "cool": false,
-"score": 2.61
+"score": 2.6
 },
 {
 "b": "Movistar",
@@ -2900,7 +2860,7 @@
 "local": false,
 "more": 0,
 "cool": false,
-"score": 2.63
+"score": 2.62
 }
 ],
 "other": [
@@ -3127,7 +3087,7 @@
 "local": true,
 "more": 0,
 "cool": false,
-"score": 1.5
+"score": 1.49
 },
 {
 "b": "ABB",
@@ -3190,6 +3150,15 @@
 ]
 },
 {
+"t": "Uzbekistan expands free solar panel program for low-income households",
+"u": "https://news.google.com/rss/articles/CBMipgFBVV95cUxNLUU5RmZ0Y1VMQ3BDLWFmbTZwb0YwMXBRYmNPY3RvYUhDMFNGMGltbmgtY1JfdjkwemNRNDdLV0ZWRV9uaDNoTFQ2X2tYeFlfMWxiQmE0NmJnZ2xaVmpYZ2ZsVV9IQnk2SHY2MjJtZnhidzRlNFRtUXNJM1hnMDd3OEFHU2YwT0U2cjRIUVBCMDR4cmZINy1hT1pQQWV2MDR6SDZncmtB?oc=5",
+"s": "Kun.uz",
+"at": "2026-10-09T06:05:40Z",
+"sig": [
+"expand"
+]
+},
+{
 "t": "TBC Uzbekistan launches secured SME lending",
 "u": "https://news.google.com/rss/articles/CBMijAFBVV95cUxPb2tNblE1UUEwS2t3MXJ6VC1NcGNWejBicTJrWHJwWmh2UHhoYXZ0b3pSLUhReGx2RHZVNFZBNTlNSXo0VVB5UGJvTlBSa3RDMHV5VzhoSXRUNk01SzJGLTA2ZzJPem9veDhENTM0ZTVFcXlMa1R5aVlUSlowWXdQaWNhVTVMLTlBR21fZQ?oc=5",
 "s": "The Paypers",
@@ -3203,6 +3172,15 @@
 "u": "https://news.google.com/rss/articles/CBMizgFBVV95cUxNWUotMU1yMjNlUkdvRlRnUGtiX3lyNV85TGk0WEo5YVJhZ2V0dzRlWVN5V2RQcGRZaURPM2RxLUlKYlB5Ym95ZzM3VHZpaGUzeFlvRER0bXZvdEtEa1JZQ2hCTWVOMG10UmpHZkZPTDluTnYwd3phMmwtOEY1Z0NCc3MyRTBIck5FSXU3YUM0R2VTenhmaWwzcmhnalJva2JFS21qQkNsZ2tMMkhnSWh0R3BjVkl4aDRMSk1BME9SUkJJaDJwekY2Tk5BSlBfUQ?oc=5",
 "s": "UzDaily.uz",
 "at": "2026-10-08T13:45:00Z",
+"sig": [
+"expand"
+]
+},
+{
+"t": "Uzbekistan launches two-month Cleanliness and Beautification campaign",
+"u": "https://news.google.com/rss/articles/CBMinAFBVV95cUxObWJScUNXT05VVklVVVVPYUhWMDJBUUhRSmNaVVFmdG1LWEhGQnlKalltQ0RkSUlJbDh4N2t0Z3JwZGwydWNvcG92OTN1YjluLWVQUEpZcjlvSWRyS0VrR2dBX0UyR05IM1RxSkZwRTl3SjdCQllFZVJtRkZYeGpVam55NDZPWndqUjZ4VnBRQ19tYjRNaVItUllwY2k?oc=5",
+"s": "UzDaily.uz",
+"at": "2026-10-07T17:00:00Z",
 "sig": [
 "expand"
 ]
@@ -3223,24 +3201,6 @@
 "at": "2026-10-06T03:04:42Z",
 "sig": [
 "money"
-]
-},
-{
-"t": "Uzbekistan’s NMMC posts $2.38bn net profit in first half of 2026",
-"u": "https://news.google.com/rss/articles/CBMimgFBVV95cUxNejhTYi1tQnM4cDRfZTZIb2RkaTFqM0l6UDUwd1MxaUNWSmp4QXFhMjRqOHlxVGxXeHFia3pmSDRmc254RWFWSmt3LUxWc1dnTHZSRDJkMzBWMGFMTTBlYnZTNnJKb2kyM0VDZzh2V084QlI4bGotdTBDQjZMVk9KWGZveDN5cTVESGViQm1sR19WVVJ1b1hpLWhB?oc=5",
-"s": "Daryo",
-"at": "2026-10-05T11:00:09Z",
-"sig": [
-"money"
-]
-},
-{
-"t": "Ferghana region expands cooperation with UZKORO",
-"u": "https://news.google.com/rss/articles/CBMif0FVX3lxTE54UzdqQ2JhRDJIWTFZdlRPYjQ2SFZPb3pxeldFel9ydDY4cTBNQXBxQ01zczc2MWhUUVc5M0twVkdHS19IbGloRzloS3czMGJFYTVucDlFWjduVENFWnpnQ3kzSnBaUXFpQmZoOTluN3poTUVqVDM2dG9rRGdtN0U?oc=5",
-"s": "UzDaily.uz",
-"at": "2026-10-08T09:45:00Z",
-"sig": [
-"expand"
 ]
 }
 ],
@@ -3334,10 +3294,19 @@
 "local": false,
 "more": 0,
 "cool": false,
-"score": 1.36
+"score": 1.35
 }
 ],
 "other": [
+{
+"t": "PRBC delegation explores Constanta-Karachi partnership, expands Romania-Pakistan business links",
+"u": "https://news.google.com/rss/articles/CBMixgFBVV95cUxNai1HbXFJVlBYdDg0NXliQk9EeExJcVgtTG80dzBLblNha213OHp1cUZEVzNDTFhXbkdEZDZNMHF1VGI3UU1rd2dsRWxxaUNGRElFb001TmREWno3dUtIamt0VWhzUFdKUEc1R05fd093bDJxVURvclR3LVl4SldkdE4zUUhzOUh5T2FjRFQ2cTVyY0lyR3N0Wmt6Nk5TZ0dhdDZ1YXNNemhxZlg2dFl0andtMzR4a2IzbFRfb2Iyb1A5d0U5bXc?oc=5",
+"s": "| Associated Press Of Pakistan",
+"at": "2026-10-09T05:49:49Z",
+"sig": [
+"expand"
+]
+},
 {
 "t": "Mihaela Suciu begins new four-year term as CEO of Distribuție Energie Electrică România",
 "u": "https://news.google.com/rss/articles/CBMixAFBVV95cUxOc2l1c2VWbnpkTWsxN0xxTFZWY3l0TEpNeURZZmUtLVRJNWlHOTVlX2pndDA5dGZyM25tZm5GMzBsVTZTTlpINlhrWmJ0UzFsTGVoSU1YN1hOZk80cTROWlZPVzZ4aHFyTmJoaXUxQ0k3ajdZbVFJM192S1ZoRndnc0VJc0ttbWp4QUlLMW5YUkNaeWFWVUFIVXFNcHIxSWNVdEMwelVlTTF4NkhqWDJYWHBnNDg1YzRON01XX29TSEttOGJw?oc=5",
@@ -3366,21 +3335,21 @@
 ]
 },
 {
+"t": "Germany’s Rheinmetall Acquires Romania’s Mangalia Shipyard",
+"u": "https://news.google.com/rss/articles/CBMingFBVV95cUxNcjJuQUJWTzQxZVNrNklkN3lHNnllZ0w5c0tvRXFmeFFRLUFNM2tmdVRYdTNrTjZMS3Z6NTJUSExsTF90YU1jNnNEWUtwWHFpdURBa0N3VEFGZTlxY2NPdU13RkRyZlNSWU41ZVRNZk5GMHNpRkloSDY5TTlJdFFYU2hURFZSTk9LWHdMeElGdWt4UmE0aUt0UjJtcVF2UQ?oc=5",
+"s": "The Maritime Executive",
+"at": "2026-10-09T20:11:48Z",
+"sig": [
+"money"
+]
+},
+{
 "t": "Altex Romania opens first rebranded Brico DIY store",
 "u": "https://news.google.com/rss/articles/CBMilwFBVV95cUxOVmJlYU9VTnZoU1JDX1duYUt0QXMtd0tNa01hMVNEYmdZSzc1eDdIWGd2QVhkanFETThZRDNuZ040UFh5emZZOTJMNEFpMDF1dDdnQkxvWHJqYU1DTW02VVpnY3RxX1RRRi1UZGVOYk1UUGt0VkF5T2I1T3JRb2lHcjJhQzhidUx1UkFkRVIxMmhDeVlkdE1N?oc=5",
 "s": "Romania Insider",
 "at": "2026-10-08T02:31:20Z",
 "sig": [
 "expand"
-]
-},
-{
-"t": "Rheinmetall buys insolvent operator of Romania's Mangalia shipyard",
-"u": "https://news.google.com/rss/articles/CBMinwFBVV95cUxQMFVObXAxaDZ2MElPRDR6RnJXYWRxR0N0SHpzNEI0QzRmVUcyRzBxVi01RjRnQVhxbkV3VmJ6RWlYUDVOdGJHVDZvMXpRTEx2ZDFUb0xHN3hVSjVTTkZaSGM5WFliR2RvU2dNVkZQeGV3SjBfOEZaWDN1MjFRTkNkVGVyMDA5UmtoVnJzd3NVNHBwUlpNN0ZEV3FxUWRFVWs?oc=5",
-"s": "SeeNews",
-"at": "2026-10-09T14:45:10Z",
-"sig": [
-"money"
 ]
 },
 {
@@ -3411,21 +3380,12 @@
 ]
 },
 {
-"t": "Romania’s EV charging network expands rapidly, but utilization remains low",
-"u": "https://news.google.com/rss/articles/CBMiqAFBVV95cUxOeFlCQnRxSS1lbHZMRkNBU2tnUkN0cmlmbnh0OHBKTWxKSFdtREJqV0xGUHdzcGw2TkQ5LTB1amRqcEstSjAtNnJjUE1RbHNGR3VYV2p5UzlCcG9OMlBNSG1UajlNaE1Ua0h4eHpGUkdmMmI2ampoeTJ2Rm5OVm5tTTdOMXBtcG5ENEpoR0F3Ry1GV3JOUFktazFISnAzOE9oUHpMTFpLNy0?oc=5",
-"s": "Romania Insider",
-"at": "2026-10-06T08:38:18Z",
+"t": "Star Invest to acquire 12 mln euro office building in Bucharest",
+"u": "https://news.google.com/rss/articles/CBMinAFBVV95cUxOaGpPcER6ZzBIVGtON1lscmNmbTU0a2hBMWtuOE1EUGxxaS01YWxEREgxVFNJZFZFN2xLUUV1SnFEOEN5OFdJSTluUlgtSm9VOHdPamxSakQyVG5sUy1saGNZTnZRb0Z2Q1Z3OWJWOUl2aEJPamhWWmtvYTFjb1ZHREtIZzlvaEotbUhhVGEtRC1qaFpOX2tBNVBIbVA?oc=5",
+"s": "SeeNews",
+"at": "2026-10-08T13:31:16Z",
 "sig": [
-"expand"
-]
-},
-{
-"t": "Romania Launches MOBEX București–Ilfov 26 Mobilization Exercises",
-"u": "https://news.google.com/rss/articles/CBMinAFBVV95cUxPRVg2eWcyRnlOZFBzbjBnblhVdDBaamtuOEhKOGpBREtoS25NZ3ZZZDVOZ3dOYnBKS0k3S0dZNmN4TU9DMGJyeklFYmtMdW41UXFKN2RPM25VVllScllLcFBVLUVqTXVZYkZvTEJEbk8tMUZmcVRaRjF5Y1Y5TzFMTlg0U0pQWVBmWXBUNWNZTENGRG9zckZzaktueFo?oc=5",
-"s": "Мілітарний",
-"at": "2026-10-06T08:35:17Z",
-"sig": [
-"expand"
+"money"
 ]
 }
 ],
@@ -3549,7 +3509,7 @@
 "local": true,
 "more": 0,
 "cool": false,
-"score": 6.54
+"score": 6.53
 },
 {
 "b": "JSW",
@@ -3580,7 +3540,7 @@
 "local": true,
 "more": 0,
 "cool": false,
-"score": 5.94
+"score": 5.93
 },
 {
 "b": "Honda",
@@ -3612,7 +3572,51 @@
 "local": true,
 "more": 0,
 "cool": false,
-"score": 5.11
+"score": 5.1
+},
+{
+"b": "Tesla",
+"sec": "Cars & motoring",
+"sig": [
+"expand"
+],
+"h": [
+{
+"t": "Tesla expands in India with new Noida centre: two Model Y SUVs, features, prices, charging access, financing plans and test-drive details",
+"u": "https://news.google.com/rss/articles/CBMiigJBVV95cUxQWExQTENuZkxUSXNCRDh3VWpvdEVXZmI3NTdXOWRCaWVDczRDbmFSajlPdnNGSjBrMFM4VTVfcExxdnF5S1BaUFhWNmtONktfSWVUMTFjTGxOV2pvX3dEZHl2aU1iZ3Vxcl9QOGFvOGd4Z1BnWEUwSlZhOVNJNUJUVDc4d3ZWb1lkS2VrVEpyYkxDREo2V1J4ME1XLTFjVlJ5aFFQM1IxOWtmQWZlYXYwMmp6bkhzbERHeU1ZaVZvODEzMjlWZDc0YjROcXdXcnk3cFp1VGZmcVl4azJUMXBvTlRELXhWYzN5Y0l6WVloeWN4RmZLSi1HdlM1Y0V1RUM0eGUwZ2RKaGFMQQ?oc=5",
+"s": "Zee Business",
+"at": "2026-10-10T09:23:00Z",
+"sig": [
+"expand"
+]
+}
+],
+"local": true,
+"more": 0,
+"cool": false,
+"score": 3.44
+},
+{
+"b": "Porsche",
+"sec": "Cars & motoring",
+"sig": [
+"expand"
+],
+"h": [
+{
+"t": "Porsche India Launches Cayenne Electric",
+"u": "https://news.google.com/rss/articles/CBMifkFVX3lxTFA0d0RuY0E1QzRyYXBnaXdFalc3bmVPcFJhRDJYWFZtUmVsc2F6T3VRMHoxcWd4V25BYUNHSUF1ZUZaMzJWOVhMLXVCWjBQcGl5bERDTVEtZjdNeUVLMTZHdXhfMzJGdWU4QVpyb0Z4VTF2UG5EYWlpODJZSDBoZw?oc=5",
+"s": "Machine Maker",
+"at": "2026-10-10T07:42:49Z",
+"sig": [
+"expand"
+]
+}
+],
+"local": true,
+"more": 0,
+"cool": false,
+"score": 3.42
 },
 {
 "b": "Sony",
@@ -3634,7 +3638,7 @@
 "local": true,
 "more": 0,
 "cool": false,
-"score": 2.89
+"score": 2.88
 },
 {
 "b": "Reliance",
@@ -3678,7 +3682,7 @@
 "local": true,
 "more": 0,
 "cool": false,
-"score": 2.53
+"score": 2.52
 }
 ],
 "other": [
@@ -3751,6 +3755,24 @@
 ]
 },
 {
+"t": "Editatease’s Video Production Company in India Expands Multi-Format Video Services",
+"u": "https://news.google.com/rss/articles/CBMingJBVV95cUxOdTBGWFdNcG1ZaXlpemNaUjRLU3Z0SGJZVHhHdkVLalJqS2prcDBjQ29UVjdrRzRweHcwUmtiRUlzeW5HaDl1dEhlMlZ0NVNzNVZLbXlYWE12bGdvQTF1WG91S01zcDVFTDhVWllGREhzQ09DRzVzM0pFQk9lQ3FnQ1BpYVV6cHBRMjNyY0ZlMFJmajFfVmN5TXVPZGpDVDNqYW9oOEw5Rk1WZ2t2WVdocWI3UjkwMWVCekNfNnNJdUs4amdEbjJhZFA4Q19iZjZmSHRtNEFueUdDSlpPZEVteEU4WHJtZ2JaT0dobGp6Y1drRHdmN01mdnJhZjhrd3lrVUY3T0pGcU4yUUZuRHl3VUlCMWZFdjdlOFNoZkVn?oc=5",
+"s": "The Daily Tribune News",
+"at": "2026-10-10T06:05:04Z",
+"sig": [
+"expand"
+]
+},
+{
+"t": "Ola Electric Expands Dealer Network Across India at its First Dealer Day",
+"u": "https://news.google.com/rss/articles/CBMirwFBVV95cUxPQVBWazRPYUl5OGkyWXBMQTR4RXgtcjZELW9UcjQxU19RTWE3aVBlVThMZ2NxcGVrMkdBY2NjOWJaYlpPT3VBNlRwQ25IR19JRXdST1BrTkFyamRKckw3WHItc0pqY0RpYURsZ3JQcnlxQTJFZV9vUHAzTjdicXRSMUNLTEN3UWduZEI4ZVk4NWwwNXpTdUtnQUVhR2NtWkRBaVg4cHE4Nk5RallWV2NR0gGvAUFVX3lxTE9BUFZrNE9hSXk4aTJZcExBNHhFeC1yNkQtb1RyNDFTX1FNYTdpUGVVOExnY3FwZWsyR0FjY2M5YlpiWk9PdUE2VHBDbkhHX0lFd1JPUGtOQXJqZEpyTDdYci1zSmpjRGlhRGxnclByeXFBMkVlX29QcDNON2JxdFIxQ0tMQ3dRZ25kQjhlWTg1bDA1elN1S2dBRWFHY21aREFpWDhwcTg2TlFqWVZXY1E?oc=5",
+"s": "SMEStreet",
+"at": "2026-10-10T04:55:47Z",
+"sig": [
+"expand"
+]
+},
+{
 "t": "Youdha rolls out 1,000th ePod electric three-wheeler, eyes southern India expansion",
 "u": "https://news.google.com/rss/articles/CBMi8wFBVV95cUxPZDJ0YmNRMlpMYUFyOGNPbWVDQmxQcGhKeDdrSUVyZDVJeDh6TWxRdU5udDJ5ZVlMY19WT2E5b0RsYW14OTlndmFsNUJxSHVjRDFtNE9la3JwRnhSNUVZbUw0ZUFWOHR6aDctODJUb0p3SnJfdVFIZkJBOW9HaGlUSUFEQmlXc2Vua1RVb0dlSnI1MlF4Y0YzQzJlRXdyZHV6b0NhVERSUWozUXlnR0ZPQzJZdzNlQnU2TUZ3OEdvNjJqVE1vSG5IcXoxMVZ5Yk8zbFlVYXVEUzJQOUY2cUwtXzVKZWV4TW5iRFhkcVNyMHFCYmvSAfMBQVVfeXFMT2QydGJjUTJaTGFBcjhjT21lQ0JsUHBoSng3a0lFcmQ1SXg4ek1sUXVObnQyeWVZTGNfVk9hOW9EbGFteDk5Z3ZhbDVCcUh1Y0QxbTRPZWtycEZ4UjVFWW1MNGVBVjh0emg3LTgyVG9Kd0pyX3VRSGZCQTlvR2hpVElBREJpV3NlbmtUVW9HZUpyNTJReGNGM0MyZUV3cmR1em9DYVREUlFqM1F5Z0dGT0MyWXczZUJ1Nk1GdzhHbzYyalRNb0huSHF6MTFWeWJPM2xZVWF1RFMyUDlGNnFMLV81SmVleE1uYkRYZHFTcjBxQmJr?oc=5",
 "s": "ET Auto",
@@ -3758,27 +3780,9 @@
 "sig": [
 "expand"
 ]
-},
-{
-"t": "Anzen India Energy Yield Plus Trust sponsor holding at 23.91% in Q2FY27",
-"u": "https://news.google.com/rss/articles/CBMivgFBVV95cUxNbjNJMXdReW1BZy1sM1hjTXJlU1Q5RlpDbUtfS2dsMjNtM1M2SVpScmVHd2xnb2VDOWNvdm0xNDlDRlljUTgzZDNSM21IX2MxM1VQRzdiak9DcGNkblhaeVQ5eHZPeFZndGs3VWxtUzFRTldUU0hjVmNmSVhjQzd4WWU5Wk1jYjhLYjZlVjdQODhEa3NnZmxnMXFNN0JoNkJGYWlJZGIwZ3FuXzNvbFl1OTBRcDlmVlZ3NGdfNXJn?oc=5",
-"s": "scanx.trade",
-"at": "2026-10-06T10:08:50Z",
-"sig": [
-"sponsor"
-]
-},
-{
-"t": "Jiostar announces Skyscanner as Title Sponsor for Jeeto Dhan Dhana Dhan for West Indies v India T20I serries",
-"u": "https://news.google.com/rss/articles/CBMi2wFBVV95cUxPek5NUlctQmRkYkdzYWVMTHJzMzNFVkZFSUpXNHZyVl9hM3V3ckNxbnYzWlNEMU9sOHBpckRyb09wbEd0cUp6YnQ3UVpndmo4Q0ZOSHNha2ZJaXpNWHMwTTRYZjdVRW5OSVo5TnhJZk9oR2IydDZTUUhoVTljbVRQaUlTYlc5VGIxQU9sYUhOYWVuOWw3R3NWNU81STZBWW5LQkpnc3Azd2xPdkJycjdVRXotRWZvM0pNYVBhamJacXhDUGRkSnNLeklVbzJUYkdGYmRWSmN6TFROcUk?oc=5",
-"s": "Adgully.com",
-"at": "2026-10-06T07:10:00Z",
-"sig": [
-"sponsor"
-]
 }
 ],
-"n": 6
+"n": 8
 },
 "JP": {
 "brands": [
@@ -3868,7 +3872,7 @@
 "local": true,
 "more": 0,
 "cool": false,
-"score": 2.01
+"score": 2.0
 },
 {
 "b": "Uniqlo",
@@ -3890,7 +3894,7 @@
 "local": false,
 "more": 0,
 "cool": false,
-"score": 0.82
+"score": 0.81
 },
 {
 "b": "MUFG",
@@ -4032,7 +4036,7 @@
 "local": true,
 "more": 0,
 "cool": false,
-"score": 3.21
+"score": 3.2
 },
 {
 "b": "Air Canada",
@@ -4054,7 +4058,7 @@
 "local": true,
 "more": 0,
 "cool": false,
-"score": 2.89
+"score": 2.88
 },
 {
 "b": "Costco",
@@ -4076,7 +4080,7 @@
 "local": true,
 "more": 0,
 "cool": false,
-"score": 2.24
+"score": 2.23
 },
 {
 "b": "Sony",
@@ -4098,7 +4102,7 @@
 "local": true,
 "more": 0,
 "cool": false,
-"score": 2.02
+"score": 2.01
 }
 ],
 "other": [
@@ -4221,7 +4225,7 @@
 "local": true,
 "more": 0,
 "cool": false,
-"score": 2.44
+"score": 2.43
 },
 {
 "b": "América Movil",
@@ -4245,7 +4249,7 @@
 "local": true,
 "more": 0,
 "cool": false,
-"score": 1.42
+"score": 1.41
 }
 ],
 "other": [
@@ -4383,7 +4387,7 @@
 "local": true,
 "more": 0,
 "cool": false,
-"score": 8.73
+"score": 8.72
 },
 {
 "b": "Nissan",
@@ -4414,7 +4418,7 @@
 "local": true,
 "more": 0,
 "cool": false,
-"score": 6.33
+"score": 6.32
 },
 {
 "b": "Costco",
@@ -4604,7 +4608,7 @@
 "local": true,
 "more": 0,
 "cool": false,
-"score": 2.92
+"score": 2.91
 }
 ],
 "other": [
@@ -4745,7 +4749,7 @@
 "local": true,
 "more": 0,
 "cool": false,
-"score": 8.31
+"score": 8.3
 },
 {
 "b": "Hyundai",
@@ -4767,7 +4771,7 @@
 "local": true,
 "more": 0,
 "cool": false,
-"score": 2.85
+"score": 2.84
 },
 {
 "b": "Infosys / Wipro",
@@ -4789,7 +4793,7 @@
 "local": false,
 "more": 0,
 "cool": false,
-"score": 2.45
+"score": 2.44
 },
 {
 "b": "Visa",
@@ -4811,7 +4815,7 @@
 "local": false,
 "more": 0,
 "cool": false,
-"score": 1.59
+"score": 1.58
 },
 {
 "b": "Diriyah",
@@ -5145,7 +5149,7 @@
 "local": false,
 "more": 0,
 "cool": false,
-"score": 1.07
+"score": 1.06
 },
 {
 "b": "Chery",
@@ -5320,7 +5324,7 @@
 "local": true,
 "more": 0,
 "cool": false,
-"score": 3.89
+"score": 3.88
 },
 {
 "b": "QNB",
@@ -5342,7 +5346,7 @@
 "local": true,
 "more": 0,
 "cool": false,
-"score": 2.6
+"score": 2.59
 },
 {
 "b": "Qatar Airways",
@@ -5386,7 +5390,7 @@
 "local": false,
 "more": 0,
 "cool": false,
-"score": 1.31
+"score": 1.3
 },
 {
 "b": "QatarEnergy",
@@ -5549,7 +5553,7 @@
 "local": true,
 "more": 0,
 "cool": false,
-"score": 5.43
+"score": 5.41
 },
 {
 "b": "Netflix",
@@ -5597,7 +5601,7 @@
 "local": false,
 "more": 0,
 "cool": false,
-"score": 2.95
+"score": 2.94
 },
 {
 "b": "Hanwha",
@@ -5685,7 +5689,7 @@
 "local": false,
 "more": 0,
 "cool": false,
-"score": 1.65
+"score": 1.64
 }
 ],
 "other": [
@@ -5880,7 +5884,7 @@
 "local": true,
 "more": 0,
 "cool": false,
-"score": 2.87
+"score": 2.86
 },
 {
 "b": "Chevron",
@@ -5902,7 +5906,7 @@
 "local": true,
 "more": 0,
 "cool": false,
-"score": 2.59
+"score": 2.58
 },
 {
 "b": "Meta",
@@ -6221,16 +6225,16 @@
 "NL:1": "2026-10-10T13:38:04Z",
 "IT:0": "2026-10-10T13:38:04Z",
 "IT:1": "2026-10-10T13:38:04Z",
-"HU:0": "2026-10-10T07:51:03Z",
-"HU:1": "2026-10-10T07:51:03Z",
-"UZ:0": "2026-10-10T07:51:03Z",
-"UZ:1": "2026-10-10T07:51:03Z",
-"RO:0": "2026-10-10T07:51:03Z",
-"RO:1": "2026-10-10T07:51:03Z",
-"RS:0": "2026-10-10T07:51:03Z",
-"RS:1": "2026-10-10T07:51:03Z",
-"IN:0": "2026-10-10T07:51:03Z",
-"IN:1": "2026-10-10T07:51:03Z",
+"HU:0": "2026-10-10T13:56:01Z",
+"HU:1": "2026-10-10T13:56:01Z",
+"UZ:0": "2026-10-10T13:56:01Z",
+"UZ:1": "2026-10-10T13:56:01Z",
+"RO:0": "2026-10-10T13:56:01Z",
+"RO:1": "2026-10-10T13:56:01Z",
+"RS:0": "2026-10-10T13:56:01Z",
+"RS:1": "2026-10-10T13:56:01Z",
+"IN:0": "2026-10-10T13:56:01Z",
+"IN:1": "2026-10-10T13:56:01Z",
 "JP:0": "2026-10-10T07:53:35Z",
 "JP:1": "2026-10-10T07:53:35Z",
 "CA:0": "2026-10-10T07:53:35Z",
