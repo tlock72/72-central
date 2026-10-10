@@ -4588,9 +4588,11 @@ window.addEventListener("hashchange", () => setTimeout(espnLive, 300));
   const innerScrolled = el => { for (; el && el !== document.body; el = el.parentElement) if (el.scrollTop > 0) return true; return false; };
   // a row that slides sideways (the filter buttons) is left to the finger, so a slightly downward swipe doesn't freeze it
   const sideScroller = el => { for (; el && el !== document.body; el = el.parentElement) if (el.scrollWidth > el.clientWidth + 1 && /auto|scroll/.test(getComputedStyle(el).overflowX)) return true; return false; };
+  // the News world map moves with the finger, so a downward drag on it pans the map and never refreshes
+  const onMap = el => !!(el && el.closest && el.closest(".mk-box"));
   addEventListener("touchstart", e => {
     y0 = null;
-    if (busy || e.touches.length !== 1 || window.scrollY > 0 || document.documentElement.classList.contains("locked") || $("#prof").open || innerScrolled(e.target) || sideScroller(e.target)) return;
+    if (busy || e.touches.length !== 1 || window.scrollY > 0 || document.documentElement.classList.contains("locked") || $("#prof").open || onMap(e.target) || innerScrolled(e.target) || sideScroller(e.target)) return;
     y0 = e.touches[0].clientY; x0 = e.touches[0].clientX; pull = 0;
   }, { passive: true });
   addEventListener("touchmove", e => {
