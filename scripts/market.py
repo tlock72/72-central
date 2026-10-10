@@ -255,6 +255,11 @@ def main():
         pool = [x for x in json.load(open(POOL)) if x["at"] >= cut.strftime("%Y-%m-%dT%H:%M:%SZ")]
     except Exception:
         pool = []
+    # sector stories saved earlier this week are re-checked, so a change to the word lists applies to them too
+    for x in pool:
+        if x.get("k") == "mkt":
+            x["sec"] = sector(x["t"])
+    pool = [x for x in pool if x.get("k") != "mkt" or x["sec"]]
 
     # 1) this run's searches: the countries searched longest ago. Our players' nations (the roster list brands.py saves)
     #    go first on a tie and count as due 4 hours sooner, so they are searched about twice as often
