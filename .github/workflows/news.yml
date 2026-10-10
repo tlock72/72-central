@@ -12,7 +12,7 @@ permissions:
 jobs:
   news:
     runs-on: ubuntu-latest
-    timeout-minutes: 10
+    timeout-minutes: 15
     steps:
       - uses: actions/checkout@v6
         with:
@@ -24,7 +24,7 @@ jobs:
       - id: market
         name: Market map - tennis business news by country (Google News searches, no Claude)
         run: python3 scripts/market.py
-        timeout-minutes: 4
+        timeout-minutes: 6
         continue-on-error: true   # the headlines still save if the map fails (it is alerted)
       - id: brands
         name: Market map - brands on the move in each market (Google News searches, no Claude)

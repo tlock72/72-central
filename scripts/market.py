@@ -20,7 +20,7 @@ tournament stories (news.topic) are kept, the same story from several outlets is
 news.BEST), and the page shows each country's 10 most relevant: more outlets, the country in the headline,
 business before tournament news, newer first.
 """
-import json, os, re, sys
+import json, os, re, sys, time
 from datetime import datetime, timedelta, timezone
 from urllib.parse import quote_plus
 
@@ -31,7 +31,8 @@ from news import norm, words, topic, rank, fetch, items, NOW, TODAY
 OUT = "market.json"
 POOL = "market_pool.json"  # every story seen in the last 7 days (the page never loads it)
 KEEP_D = 7
-SEARCH_PER_RUN = 8
+SEARCH_PER_RUN = 20   # countries a run (2 searches each); about 110 countries, so each is searched every ~6 hours
+BUDGET_S = 240        # stop starting new searches after this long (the step has 6 minutes)
 # ISO code -> words that place a story there (matched as whole words, any accents, lower case). Words that are also
 #   something else are left out on purpose: Georgia, Jordan, "Indian" (Indian Wells), Nice, Santiago, Austin, Florence.
 PLACES = {
@@ -96,10 +97,59 @@ PLACES = {
     "TN": "tunisia|tunisian|tunis",
     "BG": "bulgaria|bulgarian",
     "UZ": "uzbekistan|uzbek|tashkent",
+    # the next biggest economies, added Oct 2026 so the map covers about the top 100 countries
+    "NG": "nigeria|nigerian|lagos|abuja",
+    "KE": "kenya|kenyan|nairobi",
+    "GH": "ghana|ghanaian|accra",
+    "ET": "ethiopia|ethiopian|addis ababa",
+    "DZ": "algeria|algerian|algiers",
+    "AO": "angola|angolan|luanda",
+    "TZ": "tanzania|tanzanian|dar es salaam",
+    "CI": "ivory coast|cote d ivoire|ivorian|abidjan",
+    "SN": "senegal|senegalese|dakar",
+    "PK": "pakistan|pakistani|karachi|lahore|islamabad",
+    "BD": "bangladesh|bangladeshi|dhaka",
+    "LK": "sri lanka|sri lankan|colombo",
+    "IR": "iran|iranian|tehran",
+    "IQ": "iraq|iraqi|baghdad",
+    "KW": "kuwait|kuwaiti",
+    "OM": "oman|omani|muscat",
+    "JO": "jordanian|amman",
+    "LB": "lebanon|lebanese|beirut",
+    "AZ": "azerbaijan|azerbaijani|baku",
+    "GE": "tbilisi",
+    "AM": "armenia|armenian|yerevan",
+    "BY": "belarus|belarusian|minsk",
+    "MD": "moldova|moldovan|chisinau",
+    "LT": "lithuania|lithuanian|vilnius",
+    "LV": "latvia|latvian|riga",
+    "EE": "estonia|estonian|tallinn",
+    "SI": "slovenia|slovenian|ljubljana",
+    "BA": "bosnia|bosnian|sarajevo",
+    "ME": "montenegro|montenegrin|podgorica",
+    "MK": "north macedonia|macedonian|skopje",
+    "AL": "albania|albanian|tirana",
+    "CY": "cyprus|cypriot|nicosia|limassol",
+    "LU": "luxembourg",
+    "MT": "malta|maltese|valletta",
+    "IS": "iceland|icelandic|reykjavik",
+    "VE": "venezuela|venezuelan|caracas",
+    "EC": "ecuador|ecuadorian|quito|guayaquil",
+    "UY": "uruguay|uruguayan|montevideo",
+    "PY": "paraguay|paraguayan|asuncion",
+    "BO": "bolivia|bolivian",
+    "DO": "dominican republic|santo domingo",
+    "CR": "costa rica|costa rican",
+    "PA": "panama|panamanian",
+    "GT": "guatemala|guatemalan",
+    "KH": "cambodia|cambodian|phnom penh",
+    "MM": "myanmar|burma|burmese|yangon",
+    "MN": "mongolia|mongolian|ulaanbaatar",
 }
 PLACES = {cc: [" " + w + " " for w in v.split("|")] for cc, v in PLACES.items()}
 # the searches: Google News, English (UK) edition; the country's own name is quoted in the search
-NAME = {"GB": "United Kingdom", "US": "United States", "KR": "South Korea", "CZ": "Czech Republic", "AE": "UAE"}
+NAME = {"GB": "United Kingdom", "US": "United States", "KR": "South Korea", "CZ": "Czech Republic", "AE": "UAE",
+        "CI": "Ivory Coast", "BA": "Bosnia", "GE": "Tbilisi", "JO": "Amman"}  # Georgia / Jordan: the US state, Michael Jordan
 QUERY = ("https://news.google.com/rss/search?hl=en-GB&gl=GB&ceid=GB:en&q=tennis+%22{c}%22+(sponsor+OR+sponsorship+OR+"
          "investment+OR+investor+OR+partnership+OR+deal+OR+broadcast+OR+%22media+rights%22+OR+CEO+OR+tournament+OR+"
          "academy+OR+acquisition+OR+venue)+when:7d")
@@ -200,8 +250,13 @@ def main():
                     fulls.add(f" {w[0]} {w[-1]} ")
     except Exception:
         pass
+    t0 = time.time()
     for cc in todo:
+        if time.time() - t0 > BUDGET_S:
+            print("Time budget used up; the rest wait for the next run")
+            break
         name = NAME.get(cc) or wm.get(cc, {}).get("n") or cc
+        time.sleep(1)  # be gentle with Google News
         try:
             its = items(fetch(QUERY.format(c=quote_plus(name))))
             its += items(fetch(SECTOR_QUERY.format(c=quote_plus(name))))
