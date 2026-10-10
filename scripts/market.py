@@ -2,12 +2,15 @@
 72 Central - Market map (runs right after news.py in news.yml, no Claude, no paid services).
 
 Builds market.json for the News page's "Market map": the business of tennis country by country over the last 7 days
-(sponsors, investors, broadcasters, federations, new or moved tournaments...).
+(sponsors, investors, broadcasters, federations, new or moved tournaments...), and, under them, each country's wider
+business and investment news in the sectors in SECTORS (sport, tech, food, insurance, healthcare) plus war and conflict.
 
 Where the stories come from:
   - news.json's business and tournament stories (news.py), and
-  - Google News searches (free, public RSS), one per country in PLACES, a few countries each run (SEARCH_PER_RUN), so
-    every country is searched a few times a day and smaller markets are covered too.
+  - Google News searches (free, public RSS), two per country in PLACES (tennis business; then sector business and
+    war news, SECTOR_QUERY), a few countries each run (SEARCH_PER_RUN), so every country is searched a few times a
+    day and smaller markets are covered too. A sector story must name the country searched in its headline, be a
+    money / business move (W_MONEY; war news needs no money word) and is labelled with its sector ("sec").
 Each story is tagged with the countries it is about, without guessing: the country, its people ("Spanish"), its
 cities, tournaments and federation named in the headline (or, for news.json stories, the summary). A search result
 is kept for the country searched only if its headline names that country or no other country. Only business and
@@ -98,6 +101,47 @@ NAME = {"GB": "United Kingdom", "US": "United States", "KR": "South Korea", "CZ"
 QUERY = ("https://news.google.com/rss/search?hl=en-GB&gl=GB&ceid=GB:en&q=tennis+%22{c}%22+(sponsor+OR+sponsorship+OR+"
          "investment+OR+investor+OR+partnership+OR+deal+OR+broadcast+OR+%22media+rights%22+OR+CEO+OR+tournament+OR+"
          "academy+OR+acquisition+OR+venue)+when:7d")
+# the wider business search: investment and business moves in the SECTORS below, plus war news
+SECTOR_QUERY = ("https://news.google.com/rss/search?hl=en-GB&gl=GB&ceid=GB:en&q=%22{c}%22+(investment+OR+invests+OR+"
+                "investor+OR+acquisition+OR+acquires+OR+funding+OR+stake+OR+merger+OR+deal+OR+expansion+OR+war+OR+"
+                "ceasefire+OR+sanctions)+(sport+OR+tech+OR+AI+OR+food+OR+insurance+OR+insurer+OR+healthcare+OR+"
+                "hospital+OR+pharma+OR+military+OR+war)+when:7d")
+# sector -> words (whole words in the headline); the first sector that matches is the label. To add a sector
+#   (energy, banking...), add a line here and a word for it in SECTOR_QUERY.
+SECTORS = {
+    "Insurance": "insurance insurer insurers reinsurance reinsurer insurtech underwriter",
+    "Healthcare": "healthcare health hospital hospitals pharma pharmaceutical pharmaceuticals biotech medical clinic "
+                  "clinics medtech drugmaker drugmakers vaccine vaccines",
+    "Food": "food foods beverage beverages drinks restaurant restaurants grocery groceries supermarket supermarkets "
+            "agriculture agri agritech dairy snack snacks brewer brewery coffee",
+    "Sport": "sport sports football soccer league stadium olympic olympics golf cricket rugby basketball nba nfl "
+             "f1 athletics esports",
+    "Tech": "tech technology ai software startup startups chip chips semiconductor semiconductors datacenter cloud "
+            "fintech telecom telecoms 5g cyber cybersecurity digital robotics",
+    "War & conflict": "war wars invasion ceasefire truce missile missiles drone drones troops military defence defense "
+                      "shelling airstrike airstrikes frontline offensive sanctions conflict army",
+}
+SECTORS = {k: set(v.split()) for k, v in SECTORS.items()}
+W_MONEY = set("""invest invests invested investing investment investments investor investors stake stakes acquire
+acquires acquired acquisition acquisitions buys bought buyout merger merge merges funding fund raises raised ipo
+listing valuation deal deals partnership expansion expands expand launches opens plant factory billion million
+contract contracts takeover""".split())
+# share-price notes, crime and obituaries aren't market moves
+W_NOISE = set("shares stock stocks analyst analysts dividend outperform overweight underweight downgrade obituary".split())
+W_NOISE_PH = ["price target", "target price", "raises target", "cuts target"]
+
+
+def sector(t):
+    """A sector story's label, or "" if the headline isn't one (see SECTORS, W_MONEY)."""
+    tn, tw = norm(t), set(norm(t).split())
+    if tw & W_NOISE or any(f" {p} " in tn for p in W_NOISE_PH):
+        return ""
+    if " artificial intelligence " in tn or " data centre " in tn or " data center " in tn:
+        tw = tw | {"ai"}
+    for sec, ws in SECTORS.items():
+        if tw & ws and (sec == "War & conflict" or tw & W_MONEY):
+            return sec
+    return ""
 
 
 def places(t):
@@ -148,30 +192,34 @@ def main():
         name = NAME.get(cc) or wm.get(cc, {}).get("n") or cc
         try:
             its = items(fetch(QUERY.format(c=quote_plus(name))))
+            its += items(fetch(SECTOR_QUERY.format(c=quote_plus(name))))
         except Exception as e:
             errs[cc] = str(e)[:200]
             print(f"{cc}: search failed ({e})")
             continue
         done[cc] = NOW.strftime("%Y-%m-%dT%H:%M:%SZ")
-        kept = 0
+        kept = ksec = 0
         for t, u, d, at, _img, src in its:
             if at < cut or at > NOW + timedelta(hours=1):
                 continue
-            k = topic(t, "")
-            tn, tw = norm(t), set(norm(t).split())
-            if not k:
-                continue  # not a business / tournament story
-            if not (tw & news.TENNIS or news.pro_named(t, pros, fulls) or re.search(r"\b[A-Z][a-z]+ Open\b", t)):
-                continue  # the headline must look like tennis
             if len(re.sub(r"[^A-Za-z]", "", t)) < 0.6 * len(t.replace(" ", "")):
                 continue  # not English
-            named = places(tn)
-            if named and cc not in named:
-                continue  # about somewhere else
-            pool.append({"t": t, "u": u, "s": src or "Google News", "at": at.strftime("%Y-%m-%dT%H:%M:%SZ"), "k": k,
-                         "c": sorted(named | {cc}), "h": sorted(named)})
-            kept += 1
-        print(f"{cc} ({name}): {len(its)} results, {kept} business stories")
+            tn, tw = norm(t), set(norm(t).split())
+            named = places(tn) | ({cc} if f" {norm(name).strip()} " in tn else set())
+            row = {"t": t, "u": u, "s": src or "Google News", "at": at.strftime("%Y-%m-%dT%H:%M:%SZ")}
+            k = topic(t, "")
+            if k and (tw & news.TENNIS or news.pro_named(t, pros, fulls) or re.search(r"\b[A-Z][a-z]+ Open\b", t)):
+                if named and cc not in named:
+                    continue  # about somewhere else
+                pool.append(dict(row, k=k, c=sorted(named | {cc}), h=sorted(named)))
+                kept += 1
+                continue
+            # not tennis: a sector story, only if its headline names the country searched
+            sec = sector(t)
+            if sec and cc in named:
+                pool.append(dict(row, k="mkt", sec=sec, c=sorted(named), h=sorted(named)))
+                ksec += 1
+        print(f"{cc} ({name}): {len(its)} results, {kept} tennis business stories, {ksec} sector stories")
 
     # 2) news.json's business and tournament stories (headline or summary names the country)
     try:
@@ -213,11 +261,16 @@ def main():
         age = (NOW - datetime.strptime(max(x["at"] for x in xs), "%Y-%m-%dT%H:%M:%SZ").replace(tzinfo=timezone.utc)).total_seconds() / 86400
         c = sorted({cc for x in xs for cc in x["c"]})
         h = sorted({cc for x in xs for cc in x["h"]})
-        stories.append({"t": lead["t"], "u": lead["u"], "s": lead["s"], "at": max(x["at"] for x in xs), "k": lead["k"],
-                        "c": c, "h": h, "also": [{"s": x["s"], "u": x["u"]} for x in xs[1:]][:8],
-                        "score": round(min(outlets, 6) + (2 if lead["k"] == "biz" else 1) - age * 0.6, 2)})
+        st = {"t": lead["t"], "u": lead["u"], "s": lead["s"], "at": max(x["at"] for x in xs), "k": lead["k"],
+              "c": c, "h": h, "also": [{"s": x["s"], "u": x["u"]} for x in xs[1:]][:8],
+              # tennis business first, then tournament news, then the sector stories
+              "score": round(min(outlets, 6) + {"biz": 2, "ev": 1}.get(lead["k"], 0) - age * 0.6, 2)}
+        if lead.get("sec"):
+            st["sec"] = lead["sec"]
+        stories.append(st)
 
-    # 4) each country's top 10 (a headline naming the country counts 2 more), and the world's top 10
+    # 4) each country's top 10 tennis stories, then its top 10 sector stories (a headline naming the country counts 2
+    #    more), and the world's top 10 tennis stories
     by = {}
     for i, x in enumerate(stories):
         for cc in x["c"]:
@@ -225,9 +278,10 @@ def main():
     keep_i = set()
     top = {}
     for cc, lst in by.items():
-        top[cc] = [i for _, i in sorted(lst, key=lambda p: (-p[0], p[1]))[:10]]
+        lst = sorted(lst, key=lambda p: (-p[0], p[1]))
+        top[cc] = [i for _, i in lst if not stories[i].get("sec")][:10] + [i for _, i in lst if stories[i].get("sec")][:10]
         keep_i |= set(top[cc])
-    world = [i for i in sorted(range(len(stories)), key=lambda i: -stories[i]["score"])[:10]]
+    world = [i for i in sorted(range(len(stories)), key=lambda i: -stories[i]["score"]) if not stories[i].get("sec")][:10]
     keep_i |= set(world)
     idx = {i: n for n, i in enumerate(sorted(keep_i))}
     out_st = [{k: v for k, v in stories[i].items() if k != "h"} for i in sorted(keep_i)]

@@ -872,6 +872,7 @@ dialog.stg[open]{display:block;animation:pop .28s ease}
 .nw-m .s{color:var(--gold)}
 .nw-m .nb{color:var(--navy);background:var(--gold);border-radius:999px;padding:1px 8px}
 .nw-m .kb{color:var(--gold);border:1px solid var(--gold);border-radius:999px;padding:0 7px}
+.nw-m .kb.war{color:#e88b7d;border-color:#e88b7d}
 .nw h3{margin:6px 0 4px;font-size:17px;line-height:1.3;font-weight:600}
 .nw h3 a{color:var(--white);text-decoration:none}
 .nw h3 a:hover{color:var(--gold)}
@@ -1709,10 +1710,10 @@ dialog.tmd[open]{animation:pop .28s ease}
     </div>
     <div class="nw-list" id="nwList"><div class="sq-empty">Loading the headlines…</div></div>
     <div id="mkMap" hidden>
-      <div class="chips mk-view" role="group" aria-label="Show"><button class="chip mkv on" data-v="tennis">Tennis business</button><button class="chip mkv" data-v="brands">Brands on the move</button></div>
+      <div class="chips mk-view" role="group" aria-label="Show"><button class="chip mkv on" data-v="tennis">Business news</button><button class="chip mkv" data-v="brands">Brands on the move</button></div>
       <div class="mk-bar"><label for="mkSel">Country</label><select id="mkSel"><option value="">Whole world</option></select>
         <span class="mk-key"><i class="mk1"></i>1<i class="mk2"></i>2–3<i class="mk3"></i>4–6<i class="mk4"></i>7+ <span id="mkKeyTxt">stories this week</span></span></div>
-      <div class="mk-box"><svg id="mkSvg" role="img" aria-label="World map of tennis business news"></svg><button type="button" class="mk-out" id="mkOut" hidden>Whole world</button>
+      <div class="mk-box"><svg id="mkSvg" role="img" aria-label="World map of business news"></svg><button type="button" class="mk-out" id="mkOut" hidden>Whole world</button>
         <div class="mk-zoom"><button type="button" data-z="1" aria-label="Zoom in">+</button><button type="button" data-z="-1" aria-label="Zoom out">−</button></div>
         <span class="mk-tip" id="mkTip">Drag to move · scroll or pinch to zoom</span></div>
       <h2 class="mk-h" id="mkH"></h2>
@@ -3144,8 +3145,8 @@ document.addEventListener("click", e => { const b = e.target.closest(".nw-oth");
   const box = b.closest(".nw-b").querySelector(".nw-also"), open = box.hidden;
   box.hidden = !open; b.setAttribute("aria-expanded", open); b.classList.toggle("on", open); });
 /* Market map: market.json (scripts/market.py) and brands.json (scripts/brands.py), both rebuilt after every News update,
-   and worldmap.json (country shapes, Natural Earth); all only read when the map is opened. Two views: "Tennis business"
-   (the country's top 10 tennis business stories) and "Brands" (companies making moves there, one card per brand).
+   and worldmap.json (country shapes, Natural Earth); all only read when the map is opened. Two views: "Business news"
+   (the country's top 10 tennis business stories, then its top 10 business / war stories in other sectors, "sec") and "Brands" (companies making moves there, one card per brand).
    Picking a country (list or map) zooms in. */
 let MKT = null, WMAP = null, BRD = null, MK_C = "", MK_VB = null, MK_ANIM = 0, MK_V = "tennis";
 const mkLvl = n => n >= 7 ? 4 : n >= 4 ? 3 : n >= 2 ? 2 : n ? 1 : 0;
@@ -3171,7 +3172,7 @@ function mkShade(){
   const brands = MK_V === "brands";
   document.querySelectorAll(".mkv").forEach(b => b.classList.toggle("on", b.dataset.v === MK_V));
   $("#mkKeyTxt").textContent = brands ? "brands making moves this week" : "stories this week";
-  $("#mkSvg").setAttribute("aria-label", brands ? "World map of brands making moves" : "World map of tennis business news");
+  $("#mkSvg").setAttribute("aria-label", brands ? "World map of brands making moves" : "World map of business news");
   $("#mkSvg").querySelectorAll("[data-c]").forEach(el => {
     const cc = el.dataset.c, n = mkN(cc), l = mkLvl(n);
     el.classList.remove("mk1", "mk2", "mk3", "mk4", "mkx");
@@ -3227,15 +3228,17 @@ function mkPick(cc, now){
   mkZoom(mkBox(MK_C), now);
   if (MK_V === "brands") return mkBrands();
   const ids = MK_C ? MKT.top[MK_C] || [] : MKT.world || [], st = ids.map(i => MKT.stories[i]).filter(Boolean);
-  $("#mkH").innerHTML = `${esc(MK_C ? WMAP.c[MK_C].n : "Whole world")}<small>top ${st.length || ""} business stor${st.length === 1 ? "y" : "ies"}, last 7 days</small>`;
-  $("#mkList").innerHTML = st.length ? st.map(x => {
+  const nm = MK_C ? WMAP.c[MK_C].n : "Whole world", first = st.findIndex(x => x.sec);
+  $("#mkH").innerHTML = `${esc(nm)}<small>${MK_C ? "" : "top "}${st.length || ""} business stor${st.length === 1 ? "y" : "ies"}, last 7 days</small>`;
+  // tennis business and tournament stories first, then (countries only) the wider business and war news by sector
+  $("#mkList").innerHTML = st.length ? st.map((x, i) => {
     const n = new Set([x.s, ...x.also.map(a => a.s)]).size;
-    return `<article class="nw"><div class="nw-b">
-      <div class="nw-m"><span class="kb">${x.k === "biz" ? "Business" : "Tournament"}</span><span class="s">${esc(x.s)}</span><span>${esc(nwAgo(x.at))}</span>${n > 1 ? `<span class="nb">${n} outlets</span>` : ""}</div>
+    return `${i === first ? `<h3 class="bd-sub">Wider business and war news</h3>` : ""}<article class="nw"><div class="nw-b">
+      <div class="nw-m"><span class="kb${x.sec === "War & conflict" ? " war" : ""}">${esc(x.sec || (x.k === "biz" ? "Tennis business" : "Tournament"))}</span><span class="s">${esc(x.s)}</span><span>${esc(nwAgo(x.at))}</span>${n > 1 ? `<span class="nb">${n} outlets</span>` : ""}</div>
       <h3><a href="${esc(mkSafe(x.u))}" target="_blank" rel="noopener">${esc(x.t)}</a></h3>
       ${x.also.length ? `<div class="nw-t"><button type="button" class="nw-oth" aria-expanded="false">Other outlets (${x.also.length})</button></div><div class="nw-also" hidden>${x.also.map(a => `<a href="${esc(mkSafe(a.u))}" target="_blank" rel="noopener">${esc(a.s)}</a>`).join("")}</div>` : ""}
     </div></article>`;
-  }).join("") : `<div class="sq-empty">No tennis business stories found for ${esc(MK_C ? WMAP.c[MK_C].n : "anywhere")} in the last 7 days.</div>`;
+  }).join("") : `<div class="sq-empty">No business stories found for ${esc(MK_C ? WMAP.c[MK_C].n : "anywhere")} in the last 7 days.</div>`;
 }
 /* ---- Brands view ---- */
 const MK_SIG_CLS = { sponsor: "s1", people: "s2", expand: "s2", money: "s2", cool: "s0" };
