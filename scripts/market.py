@@ -214,6 +214,9 @@ def sector(t):
     tn, tw = norm(t), set(norm(t).split())
     if tw & W_NOISE or any(f" {p} " in tn for p in W_NOISE_PH):
         return ""
+    # country profile pages ("Serbia - Politics, Constitution, Economy") and buyers' guides aren't news
+    if re.search(r" - [A-Z][a-z]+, [A-Z][a-z]+", t) or {"guide", "guides", "profile"} & tw:
+        return ""
     if " artificial intelligence " in tn or " data centre " in tn or " data center " in tn:
         tw = tw | {"ai"}
     if re.search(r" power (plant|plants|station|stations|grid|project|projects|supply|sector) ", tn):
