@@ -215,7 +215,7 @@ def sector(t):
     if tw & W_NOISE or any(f" {p} " in tn for p in W_NOISE_PH):
         return ""
     # country profile pages ("Serbia - Politics, Constitution, Economy") and buyers' guides aren't news
-    if re.search(r" - [A-Z][a-z]+, [A-Z][a-z]+", t) or {"guide", "guides", "profile"} & tw:
+    if re.search(r" - [A-Z][A-Za-z ]+, [A-Z][a-z]+", t) or {"guide", "guides", "profile"} & tw:
         return ""
     if " artificial intelligence " in tn or " data centre " in tn or " data center " in tn:
         tw = tw | {"ai"}
