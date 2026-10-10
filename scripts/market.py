@@ -3,7 +3,8 @@
 
 Builds market.json for the News page's "Market map": the business of tennis country by country over the last 7 days
 (sponsors, investors, broadcasters, federations, new or moved tournaments...), and, under them, each country's wider
-business and investment news in the sectors in SECTORS (sport, tech, food, insurance, healthcare) plus war and conflict.
+business and investment news in the sectors in SECTORS (insurance, healthcare, food, banking, energy, sport, tech)
+plus war and conflict.
 
 Where the stories come from:
   - news.json's business and tournament stories (news.py), and
@@ -101,25 +102,29 @@ NAME = {"GB": "United Kingdom", "US": "United States", "KR": "South Korea", "CZ"
 QUERY = ("https://news.google.com/rss/search?hl=en-GB&gl=GB&ceid=GB:en&q=tennis+%22{c}%22+(sponsor+OR+sponsorship+OR+"
          "investment+OR+investor+OR+partnership+OR+deal+OR+broadcast+OR+%22media+rights%22+OR+CEO+OR+tournament+OR+"
          "academy+OR+acquisition+OR+venue)+when:7d")
-# the wider business search: investment and business moves in the SECTORS below, plus war news
+# the wider business search: investment and business moves in the SECTORS below (incl. energy and banking), plus war news
 SECTOR_QUERY = ("https://news.google.com/rss/search?hl=en-GB&gl=GB&ceid=GB:en&q=%22{c}%22+(investment+OR+invests+OR+"
                 "investor+OR+acquisition+OR+acquires+OR+funding+OR+stake+OR+merger+OR+deal+OR+expansion+OR+war+OR+"
                 "ceasefire+OR+sanctions)+(sport+OR+tech+OR+AI+OR+food+OR+insurance+OR+insurer+OR+healthcare+OR+"
-                "hospital+OR+pharma+OR+military+OR+war)+when:7d")
-# sector -> words (whole words in the headline); the first sector that matches is the label. To add a sector
-#   (energy, banking...), add a line here and a word for it in SECTOR_QUERY.
+                "hospital+OR+pharma+OR+energy+OR+oil+OR+gas+OR+bank+OR+banking+OR+military+OR+war)+when:7d")
+# sector -> words (whole words in the headline); the first sector that matches is the label (war first: "drone
+#   strikes on the energy grid" is war news; tech before energy: a phone's battery isn't energy). To add a sector
+#   (retail, property...), add a line here and a word for it in SECTOR_QUERY.
 SECTORS = {
+    "War & conflict": "war wars invasion ceasefire truce missile missiles drone drones troops military defence defense "
+                      "shelling airstrike airstrikes frontline offensive sanctions conflict army",
     "Insurance": "insurance insurer insurers reinsurance reinsurer insurtech underwriter",
     "Healthcare": "healthcare health hospital hospitals pharma pharmaceutical pharmaceuticals biotech medical clinic "
                   "clinics medtech drugmaker drugmakers vaccine vaccines",
     "Food": "food foods beverage beverages drinks restaurant restaurants grocery groceries supermarket supermarkets "
             "agriculture agri agritech dairy snack snacks brewer brewery coffee",
+    "Banking": "bank banks banking banker bankers lender lenders fintech neobank mortgage mortgages",
     "Sport": "sport sports football soccer league stadium olympic olympics golf cricket rugby basketball nba nfl "
              "f1 athletics esports",
     "Tech": "tech technology ai software startup startups chip chips semiconductor semiconductors datacenter cloud "
             "fintech telecom telecoms 5g cyber cybersecurity digital robotics",
-    "War & conflict": "war wars invasion ceasefire truce missile missiles drone drones troops military defence defense "
-                      "shelling airstrike airstrikes frontline offensive sanctions conflict army",
+    "Energy": "energy oil gas lng petroleum refinery refineries pipeline pipelines power solar wind renewable renewables "
+              "nuclear hydrogen battery batteries grid electricity utility utilities",
 }
 SECTORS = {k: set(v.split()) for k, v in SECTORS.items()}
 W_MONEY = set("""invest invests invested investing investment investments investor investors stake stakes acquire
