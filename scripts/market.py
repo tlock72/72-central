@@ -179,8 +179,9 @@ SECTORS = {
     "Sport": "sport sports football soccer league stadium olympic olympics golf cricket rugby basketball nba nfl "
              "f1 athletics esports",
     "Tech": "tech technology ai software startup startups chip chips semiconductor semiconductors datacenter cloud "
-            "fintech telecom telecoms 5g cyber cybersecurity digital robotics",
-    "Energy": "energy oil gas lng petroleum refinery refineries pipeline pipelines power solar wind renewable renewables "
+            "fintech telecom telecoms telco 5g cyber cybersecurity digital robotics connectivity broadband satellite "
+            "quantum unicorn",
+    "Energy": "energy oil gas lng petroleum refinery refineries pipeline pipelines solar wind renewable renewables "
               "nuclear hydrogen battery batteries grid electricity utility utilities",
 }
 SECTORS = {k: set(v.split()) for k, v in SECTORS.items()}
@@ -190,7 +191,14 @@ listing valuation deal deals partnership expansion expands expand launches opens
 contract contracts takeover profit profits revenue revenues earnings exports export loan loans bond bonds
 financing financed grant project projects tender jobs""".split())
 # share-price notes, crime and obituaries aren't market moves
-W_NOISE = set("shares stock stocks analyst analysts dividend outperform overweight underweight downgrade obituary".split())
+W_NOISE = set("""shares stock stocks analyst analysts dividend outperform overweight underweight downgrade obituary odds
+prediction predictions bets betting tips""".split())
+# "Investment": a clear money move with no sector word (an acquisition, merger, IPO or stake, or an amount such as
+#   "$500m"); never a football transfer
+W_DEAL = set("acquires acquired acquisition acquisitions merger takeover ipo buyout stake stakes".split())
+W_INVEST = W_DEAL | set("invests invested investment investments investor investors funding raises raised deal loan".split())
+W_FOOTBALL = set("transfer signs sign signing striker midfielder defender goalkeeper winger footballer".split())
+AMOUNT = re.compile(r"[$€£¥]\s?\d|\b\d+(\.\d+)?\s?(m|bn|mn|million|billion)\b|\b(usd|eur|gbp)\s?\d", re.I)
 W_NOISE_PH = ["price target", "target price", "raises target", "cuts target"]
 
 
@@ -201,6 +209,8 @@ def sector(t):
         return ""
     if " artificial intelligence " in tn or " data centre " in tn or " data center " in tn:
         tw = tw | {"ai"}
+    if re.search(r" power (plant|plants|station|stations|grid|project|projects|supply|sector) ", tn):
+        tw = tw | {"grid"}
     if " real estate " in tn or " e commerce " in tn:
         tw = tw | {"realestate" if " real estate " in tn else "ecommerce"}
     # "strikes" is war news only with war around it ("drone strikes", "Israeli strikes kill..."), never
@@ -211,6 +221,8 @@ def sector(t):
     for sec, ws in SECTORS.items():
         if tw & ws and (sec == "War & conflict" or tw & W_MONEY):
             return sec
+    if tw & W_INVEST and (tw & W_DEAL or AMOUNT.search(t)) and not tw & W_FOOTBALL:
+        return "Investment"
     return ""
 
 
@@ -274,9 +286,11 @@ def main():
             continue
         done[cc] = NOW.strftime("%Y-%m-%dT%H:%M:%SZ")
         kept = ksec = 0
+        out = []
         for t, u, d, at, _img, src in its:
             if at < cut or at > NOW + timedelta(hours=1):
                 continue
+            out.append(t)
             if len(re.sub(r"[^A-Za-z]", "", t)) < 0.6 * len(t.replace(" ", "")):
                 continue  # not English
             tn, tw = norm(t), set(norm(t).split())
@@ -294,9 +308,9 @@ def main():
             if sec and cc in named:
                 pool.append(dict(row, k="mkt", sec=sec, c=sorted(named), h=sorted(named)))
                 ksec += 1
-        print(f"{cc} ({name}): {len(its)} results, {kept} tennis business stories, {ksec} sector stories")
+        print(f"{cc} ({name}): {len(its)} results, {len(out)} in the last 7 days, {kept} tennis business stories, {ksec} sector stories")
         if not kept + ksec:  # for tuning the word lists: a few of the headlines naming the country that were left out
-            for t in [t for t, *_ in its if cc in places(norm(t))][:6]:
+            for t in [t for t in out if cc in places(norm(t))][:6]:
                 print(f"    left out: {t}")
 
     # 2) news.json's business and tournament stories (headline or summary names the country)
