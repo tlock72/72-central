@@ -31,7 +31,7 @@ from news import norm, words, topic, rank, fetch, items, NOW, TODAY
 OUT = "market.json"
 POOL = "market_pool.json"  # every story seen in the last 7 days (the page never loads it)
 KEEP_D = 7
-SEARCH_PER_RUN = 20   # countries a run (2 searches each); about 110 countries, so each is searched every ~6 hours
+SEARCH_PER_RUN = 40   # countries a run (2 searches each, ~2 s a country); about 110 countries, each searched every ~3 hours
 BUDGET_S = 240        # stop starting new searches after this long (the step has 6 minutes)
 # ISO code -> words that place a story there (matched as whole words, any accents, lower case). Words that are also
 #   something else are left out on purpose: Georgia, Jordan, "Indian" (Indian Wells), Nice, Santiago, Austin, Florence.
@@ -164,7 +164,9 @@ SECTOR_QUERY = ("https://news.google.com/rss/search?hl=en-GB&gl=GB&ceid=GB:en&q=
 #   (mining, transport...), add a line here and a word for it in SECTOR_QUERY.
 SECTORS = {
     "War & conflict": "war wars invasion ceasefire truce missile missiles drone drones troops military defence defense "
-                      "shelling airstrike airstrikes frontline offensive sanctions conflict army",
+                      "shelling airstrike airstrikes frontline offensive sanctions conflict army attack attacks attacked killed "
+                      "bombing bombed bombardment hezbollah hamas houthi houthis militants militia rebels hostages "
+                      "insurgents jihadists coup artillery",
     "Insurance": "insurance insurer insurers reinsurance reinsurer insurtech underwriter",
     "Healthcare": "healthcare health hospital hospitals pharma pharmaceutical pharmaceuticals biotech medical clinic "
                   "clinics medtech drugmaker drugmakers vaccine vaccines",
@@ -185,7 +187,8 @@ SECTORS = {k: set(v.split()) for k, v in SECTORS.items()}
 W_MONEY = set("""invest invests invested investing investment investments investor investors stake stakes acquire
 acquires acquired acquisition acquisitions buys bought buyout merger merge merges funding fund raises raised ipo
 listing valuation deal deals partnership expansion expands expand launches opens plant factory billion million
-contract contracts takeover""".split())
+contract contracts takeover profit profits revenue revenues earnings exports export loan loans bond bonds
+financing financed grant project projects tender jobs""".split())
 # share-price notes, crime and obituaries aren't market moves
 W_NOISE = set("shares stock stocks analyst analysts dividend outperform overweight underweight downgrade obituary".split())
 W_NOISE_PH = ["price target", "target price", "raises target", "cuts target"]
@@ -200,6 +203,11 @@ def sector(t):
         tw = tw | {"ai"}
     if " real estate " in tn or " e commerce " in tn:
         tw = tw | {"realestate" if " real estate " in tn else "ecommerce"}
+    # "strikes" is war news only with war around it ("drone strikes", "Israeli strikes kill..."), never
+    #   "strikes a deal", "strikes twice" or a labour strike
+    if re.search(r" (drone|missile|air|israeli|russian|ukrainian|military|rocket|artillery|deadly|fresh|retaliatory) strikes? ", tn) \
+            or re.search(r" strikes? (on|kill|kills|killed|hit|hits|pound|pounds) ", tn):
+        tw = tw | {"airstrike"}
     for sec, ws in SECTORS.items():
         if tw & ws and (sec == "War & conflict" or tw & W_MONEY):
             return sec
@@ -287,6 +295,9 @@ def main():
                 pool.append(dict(row, k="mkt", sec=sec, c=sorted(named), h=sorted(named)))
                 ksec += 1
         print(f"{cc} ({name}): {len(its)} results, {kept} tennis business stories, {ksec} sector stories")
+        if not kept + ksec:  # for tuning the word lists: a few of the headlines naming the country that were left out
+            for t in [t for t, *_ in its if cc in places(norm(t))][:6]:
+                print(f"    left out: {t}")
 
     # 2) news.json's business and tournament stories (headline or summary names the country)
     try:
