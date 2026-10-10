@@ -1702,7 +1702,7 @@ dialog.tmd[open]{animation:pop .28s ease}
         <h1>News</h1>
         <p class="sub">The business of tennis first: investors, sponsors, broadcasters, the tours and federations, and tournament news (calendar, venues, entry lists) come before match reports, and are kept for a week. Then the top match and player stories from the last 3 days; stories more outlets are running come first. Stories naming a 72 player or a Scouting Corner prospect are kept for a week. Tap a headline to read it on the outlet's own site.</p>
       </div>
-      <div class="chips" role="group" aria-label="Show"><button class="chip nwf on" data-n="all">All</button><button class="chip nwf" data-n="biz">Business</button><button class="chip nwf" data-n="ev">Tournaments</button><button class="chip nwf" data-n="72">72 players</button><button class="chip nwf" data-n="sc">Prospects</button><button class="chip nwf nwf-map" data-n="map">Market map</button></div>
+      <div class="chips" role="group" aria-label="Show"><button class="chip nwf nwf-map on" data-n="map">Market map</button><button class="chip nwf" data-n="all">Articles</button><button class="chip nwf" data-n="biz">Business</button><button class="chip nwf" data-n="ev">Tournaments</button><button class="chip nwf" data-n="72">72 players</button><button class="chip nwf" data-n="sc">Prospects</button></div>
     </div>
     <div class="nw-list" id="nwList"><div class="sq-empty">Loading the headlines…</div></div>
     <div id="mkMap" hidden>
@@ -1892,7 +1892,7 @@ function route(){
   $("#page-corner").hidden = tab !== "corner";
   $("#page-team").hidden = tab !== "team";
   $("#page-news").hidden = tab !== "news";
-  if (tab === "news" && window._tab !== "news") { NW_F = "all"; renderNews(); }
+  if (tab === "news" && window._tab !== "news") { NW_F = "map"; renderNews(); }
   if (tab === "team") renderTeam();
   const sid = hash.startsWith("#team/") ? hash.slice(6) : null;
   if (sid && STAFF.some(p => p.id === sid)) openCard(sid);
@@ -3099,7 +3099,7 @@ $("#sqC").addEventListener("change", e => { SQ.c = e.target.value; renderScoutin
 /* ---------- Tour Schedule (schedule.json, rebuilt daily by scripts/schedule.py) ---------- */
 let SCHED = null;
 /* ---------- News (news.json, rebuilt every hour by scripts/news.py from the outlets' free RSS feeds) ---------- */
-let NEWS = null, NW_F = "all";
+let NEWS = null, NW_F = "map";  // News opens on the Market map; "Articles" (all) is the second button
 function nwAgo(iso){
   const h = (Date.now() - new Date(iso)) / 36e5;
   if (h < 1) return Math.max(1, Math.round(h * 60)) + " min ago";
@@ -3111,7 +3111,7 @@ function renderNews(){
   document.querySelectorAll(".nwf").forEach(b => b.classList.toggle("on", b.dataset.n === NW_F));
   const map = NW_F === "map";
   $("#nwList").hidden = map; $("#mkMap").hidden = !map;
-  if (map) { mkOpen(); return; }
+  if (map) { if (!$("#page-news").hidden) mkOpen(); return; }  // the map (and its files) only load once News is on screen
   if (!NEWS) return;
   const all = NEWS.items || [];
   const its = NW_F === "72" ? all.filter(x => x.p72.length) : NW_F === "sc" ? all.filter(x => x.sc.length) : NW_F === "biz" || NW_F === "ev" ? all.filter(x => x.k === NW_F) : all;
