@@ -3201,12 +3201,12 @@ function mkShade(){
 function mkBox(cc){
   const svg = $("#mkSvg"), ar = svg.clientWidth && svg.clientHeight ? svg.clientWidth / svg.clientHeight : WMAP.w / WMAP.h;
   const c = cc && WMAP.c[cc];
-  if (!c) return ar > 1.9 ? [0, (WMAP.h - WMAP.w / ar) / 2, WMAP.w, WMAP.w / ar] : [(WMAP.w - WMAP.h * ar) / 2, 0, WMAP.h * ar, WMAP.h];
+  if (!c) return ar > WMAP.w / WMAP.h ? [0, (WMAP.h - WMAP.w / ar) / 2, WMAP.w, WMAP.w / ar] : [(WMAP.w - WMAP.h * ar) / 2, 0, WMAP.h * ar, WMAP.h];
   let [x, y, w, h] = c.b || [c.p[0] - 1, c.p[1] - 1, 2, 2];
   const pad = Math.max(w, h) * 0.5 + 25;
   x -= pad; y -= pad; w += 2 * pad; h += 2 * pad;
   if (w / h > ar) { const nh = w / ar; y -= (nh - h) / 2; h = nh; } else { const nw = h * ar; x -= (nw - w) / 2; w = nw; }
-  return [x, y, w, h];
+  return mkClamp([x, y, w, h]);
 }
 function mkZoom(to, now){
   const svg = $("#mkSvg"), from = MK_VB.slice(), t0 = performance.now(), id = ++MK_ANIM;
@@ -3278,12 +3278,16 @@ $("#mkOut")?.addEventListener("click", () => mkPick(""));
 $("#mkSvg")?.addEventListener("click", e => { if (MK_DRAGGED) { MK_DRAGGED = false; return; }  // the end of a drag isn't a tap
   const el = e.target.closest("[data-c]"); if (el) mkPick(el.dataset.c === MK_C ? "" : el.dataset.c); });
 /* moving around the map: drag (mouse or one finger), mouse wheel / trackpad or pinch to zoom, and the + / − buttons.
-   Zoom is kept between the whole world and about 40x, and the map can't be dragged off screen. */
+   Zoom is kept between the map filling the box (never any empty space round the edges) and about 40x,
+   and the map can't be dragged past its edges. */
 let MK_DRAGGED = false;
+const mkMaxW = ar => Math.min(WMAP.w, WMAP.h * ar);
+function mkClamp(v){
+  const ar = v[2] / v[3], w = Math.min(mkMaxW(ar), Math.max(WMAP.w / 40, v[2])), h = w / ar;
+  return [Math.min(WMAP.w - w, Math.max(0, v[0])), Math.min(WMAP.h - h, Math.max(0, v[1])), w, h];
+}
 function mkSetVB(v){
-  const ar = v[2] / v[3], maxW = WMAP.w * 1.15, minW = WMAP.w / 40;
-  let w = Math.min(maxW, Math.max(minW, v[2])), h = w / ar;
-  let x = Math.min(WMAP.w - w * 0.25, Math.max(-w * 0.75, v[0])), y = Math.min(WMAP.h - h * 0.25, Math.max(-h * 0.75, v[1]));
+  const [x, y, w, h] = mkClamp(v);
   MK_ANIM++;  // stops a zoom animation that's still running
   MK_VB = [x, y, w, h];
   $("#mkSvg").setAttribute("viewBox", MK_VB.map(n => n.toFixed(1)).join(" "));
@@ -3293,7 +3297,7 @@ function mkSetVB(v){
 function mkZoomBy(k, px, py){
   const svg = $("#mkSvg"), r = svg.getBoundingClientRect(), [x, y, w, h] = MK_VB;
   const fx = (px ?? r.width / 2) / r.width, fy = (py ?? r.height / 2) / r.height;
-  const nw = Math.min(WMAP.w * 1.15, Math.max(WMAP.w / 40, w / k)), nh = nw * h / w;
+  const nw = Math.min(mkMaxW(w / h), Math.max(WMAP.w / 40, w / k)), nh = nw * h / w;
   mkSetVB([x + (w - nw) * fx, y + (h - nh) * fy, nw, nh]);
   $("#mkOut").hidden = false;
 }
