@@ -4,7 +4,7 @@
 Builds market.json for the News page's "Market map": the business of tennis country by country over the last 7 days
 (sponsors, investors, broadcasters, federations, new or moved tournaments...), and, under them, each country's wider
 business and investment news in the sectors in SECTORS (insurance, healthcare, food, banking, retail, property,
-sport, tech, energy)
+sport, tech, energy), plus "Investment" (a clear money move with no sector) and "Economy" (IMF, GDP, budgets, trade)
 plus war and conflict.
 
 Where the stories come from:
@@ -159,6 +159,9 @@ SECTOR_QUERY = ("https://news.google.com/rss/search?hl=en-GB&gl=GB&ceid=GB:en&q=
                 "ceasefire+OR+sanctions)+(sport+OR+tech+OR+AI+OR+food+OR+insurance+OR+insurer+OR+healthcare+OR+"
                 "hospital+OR+pharma+OR+energy+OR+oil+OR+gas+OR+bank+OR+banking+OR+property+OR+%22real+estate%22+OR+retail+OR+"
                 "retailer+OR+military+OR+war)+when:7d")
+# a broader search for smaller countries, where the sector search mostly finds older stories
+ECON_QUERY = ("https://news.google.com/rss/search?hl=en-GB&gl=GB&ceid=GB:en&q=%22{c}%22+(economy+OR+business+OR+"
+              "company+OR+investment+OR+IMF+OR+exports+OR+billion+OR+million)+when:7d")
 # sector -> words (whole words in the headline); the first sector that matches is the label (war first: "drone
 #   strikes on the energy grid" is war news; tech before energy: a phone's battery isn't energy). To add a sector
 #   (mining, transport...), add a line here and a word for it in SECTOR_QUERY.
@@ -182,7 +185,8 @@ SECTORS = {
             "fintech telecom telecoms telco 5g cyber cybersecurity digital robotics connectivity broadband satellite "
             "quantum unicorn",
     "Energy": "energy oil gas lng petroleum refinery refineries pipeline pipelines solar wind renewable renewables "
-              "nuclear hydrogen battery batteries grid electricity utility utilities",
+              "nuclear hydrogen battery batteries grid electricity utility utilities hydro hydropower hydroelectric "
+              "mw gw megawatt megawatts gigawatt",
 }
 SECTORS = {k: set(v.split()) for k, v in SECTORS.items()}
 W_MONEY = set("""invest invests invested investing investment investments investor investors stake stakes acquire
@@ -198,6 +202,9 @@ prediction predictions bets betting tips""".split())
 W_DEAL = set("acquires acquired acquisition acquisitions merger takeover ipo buyout stake stakes".split())
 W_INVEST = W_DEAL | set("invests invested investment investments investor investors funding raises raised deal loan".split())
 W_FOOTBALL = set("transfer signs sign signing striker midfielder defender goalkeeper winger footballer".split())
+# "Economy": the country's economy itself (IMF, GDP, inflation, budgets, trade), no money word needed
+W_ECON = set("""economy economic economies gdp inflation imf recession budget tariff tariffs exports imports trade
+deficit currency import export""".split())
 AMOUNT = re.compile(r"[$€£¥]\s?\d|\b\d+(\.\d+)?\s?(m|bn|mn|million|billion)\b|\b(usd|eur|gbp)\s?\d", re.I)
 W_NOISE_PH = ["price target", "target price", "raises target", "cuts target"]
 
@@ -218,11 +225,14 @@ def sector(t):
     if re.search(r" (drone|missile|air|israeli|russian|ukrainian|military|rocket|artillery|deadly|fresh|retaliatory) strikes? ", tn) \
             or re.search(r" strikes? (on|kill|kills|killed|hit|hits|pound|pounds) ", tn):
         tw = tw | {"airstrike"}
+    money = tw & W_MONEY or AMOUNT.search(t)  # a stated amount ("US$12bn") counts as a money move
     for sec, ws in SECTORS.items():
-        if tw & ws and (sec == "War & conflict" or tw & W_MONEY):
+        if tw & ws and (sec == "War & conflict" or money):
             return sec
     if tw & W_INVEST and (tw & W_DEAL or AMOUNT.search(t)) and not tw & W_FOOTBALL:
         return "Investment"
+    if tw & W_ECON and not tw & W_FOOTBALL:
+        return "Economy"
     return ""
 
 
@@ -280,6 +290,7 @@ def main():
         try:
             its = items(fetch(QUERY.format(c=quote_plus(name))))
             its += items(fetch(SECTOR_QUERY.format(c=quote_plus(name))))
+            its += items(fetch(ECON_QUERY.format(c=quote_plus(name))))
         except Exception as e:
             errs[cc] = str(e)[:200]
             print(f"{cc}: search failed ({e})")
