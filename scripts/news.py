@@ -85,7 +85,8 @@ DIRECT = {"bbc", "bbc sport", "the guardian", "sky sports", "the independent", "
 # from the others, a headline must be about tennis: one of these words, an "… Open", a ranked player's surname,
 #   or a 72 player / prospect named in it or its summary (their tennis feeds also carry general sport pieces)
 TENNIS = set("""tennis atp wta itf wimbledon slam roland garros masters challenger davis billie racket racquet
-lta usta seed seeded seeds tiebreak tie break""".split())
+lta usta seed seeded seeds tiebreak tie break
+federer nadal sharapova serena navratilova agassi sampras mcenroe""".split())  # retired stars: no longer ranked, still in business news
 STOP = set("""a an the and or but of to in on at for from by with as is are was were be been it its his her their
 this that these those after before over under into out up down off about against v vs win wins won beat beats
 beaten loses lost lose says said say set sets match matches open tennis first second third final finals semi
@@ -142,6 +143,19 @@ def topic(t, d):
     if tw & EV or any(f" {p} " in dn for p in EV_PH):
         return "ev"
     return ""
+
+
+def pro_named(t, pros, fulls):
+    """A ranked player named in a headline: first name + surname, or the surname on its own unless it is used as
+    someone's first name there, i.e. straight after it comes another capitalised name ("Donald Trump" is not
+    Matthew Donald; "Sinner wins" and "Alcaraz beats Sinner" are fine)."""
+    if any(f in norm(t) for f in fulls):
+        return True
+    for m in re.finditer(r"[^\W\d_]+", t):
+        nxt = t[m.end():m.end() + 2]
+        if norm(m.group()).strip() in pros and not (nxt[:1] == " " and nxt[1:].isupper()):
+            return True
+    return False
 
 
 def norm(s):
@@ -271,7 +285,7 @@ def main():
         scouts = []
 
     # surnames of the ranked ATP/WTA top 500 (scouting.json): the "who" words used to match stories across outlets
-    pros, names = set(), set()  # names: every word of those players' full names (first names too)
+    pros, names, fulls = set(), set(), set()  # names: every word of those players' full names (first names too)
     try:
         sq = json.load(open("scouting.json"))
         for t in ("atp", "wta"):
@@ -281,6 +295,8 @@ def main():
                     pros.add(w[-1])
                 if row[0] <= 500:
                     names |= set(w)
+                    if len(w) > 1:
+                        fulls.add(f" {w[0]} {w[-1]} ")
     except Exception:
         pass
     pros |= {norm(n).split()[-1] for n, _ in ROSTER.values()}
@@ -319,7 +335,7 @@ def main():
         p72 = [rid for rid, n in names72 if n in blob]
         sc = [n for n, k in scouts if k in blob]
         k = topic(t, d)
-        tennis = tw & TENNIS or tw & pros or re.search(r"\b[A-Z][a-z]+ Open\b", t) or p72 or sc
+        tennis = tw & TENNIS or pro_named(t, pros, fulls) or re.search(r"\b[A-Z][a-z]+ Open\b", t) or p72 or sc
         if feed in BIZ_FEEDS:
             # a search result's headline must look like tennis (as for the general outlets' feeds below)
             if (not k or not (tennis if feed in SEARCHES else any(f" {w} " in blob for w in STRICT))

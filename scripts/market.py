@@ -132,7 +132,7 @@ def main():
         return (t, c not in ros)
     todo = sorted(PLACES, key=due)[:SEARCH_PER_RUN]
     errs = {}
-    pros = set()
+    pros, fulls = set(), set()
     try:
         sq = json.load(open("scouting.json"))
         for t in ("atp", "wta"):
@@ -140,6 +140,8 @@ def main():
                 w = norm(row[1]).split()
                 if row[0] <= 500 and w and len(w[-1]) >= 4:
                     pros.add(w[-1])
+                if row[0] <= 500 and len(w) > 1:
+                    fulls.add(f" {w[0]} {w[-1]} ")
     except Exception:
         pass
     for cc in todo:
@@ -159,7 +161,7 @@ def main():
             tn, tw = norm(t), set(norm(t).split())
             if not k:
                 continue  # not a business / tournament story
-            if not (tw & news.TENNIS or tw & pros or re.search(r"\b[A-Z][a-z]+ Open\b", t)):
+            if not (tw & news.TENNIS or news.pro_named(t, pros, fulls) or re.search(r"\b[A-Z][a-z]+ Open\b", t)):
                 continue  # the headline must look like tennis
             if len(re.sub(r"[^A-Za-z]", "", t)) < 0.6 * len(t.replace(" ", "")):
                 continue  # not English
