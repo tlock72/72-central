@@ -337,12 +337,13 @@ def main():
         nj = json.load(open("news.json"))
     except Exception:
         nj = {}
+    ntag = {}  # every news.json story's countries (match stories too), so the News page can show any topic on the map
     for x in nj.get("items") or []:
-        if not x.get("k") or x["at"] < cut.strftime("%Y-%m-%dT%H:%M:%SZ"):
-            continue
         h = places(norm(x["t"]))
         c = h or places(norm(x.get("d") or ""))
-        if not c:
+        if c:
+            ntag[x["u"]] = sorted(c)
+        if not c or not x.get("k") or x["at"] < cut.strftime("%Y-%m-%dT%H:%M:%SZ"):
             continue
         for y in [x] + (x.get("also") or []):
             pool.append({"t": x["t"], "u": y["u"], "s": y["s"], "at": x["at"], "k": x["k"], "c": sorted(c), "h": sorted(h)})
@@ -399,7 +400,7 @@ def main():
     new = {"updated": NOW.strftime("%Y-%m-%dT%H:%M:%SZ"), "stories": out_st,
            "top": {cc: [idx[i] for i in v] for cc, v in sorted(top.items())},
            "count": {cc: len(v) for cc, v in sorted(by.items())},
-           "world": [idx[i] for i in world], "searched": done, "errors": errs}
+           "world": [idx[i] for i in world], "news": ntag, "searched": done, "errors": errs}
     json.dump(sorted(rows, key=lambda x: (x["at"], x["u"]), reverse=True), open(POOL, "w"), ensure_ascii=False, indent=0)
     same = {k: v for k, v in new.items() if k != "updated"} == {k: v for k, v in old.items() if k != "updated"}
     if same:

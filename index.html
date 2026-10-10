@@ -885,9 +885,10 @@ dialog.stg[open]{display:block;animation:pop .28s ease}
 .nw-t .nw-oth::after{content:" ▾"}.nw-t .nw-oth.on::after{content:" ▴"}
 .nw-list[hidden],.nw-also[hidden]{display:none}
 /* News "Market map" (market.json + worldmap.json): countries shaded by business stories this week; zooms to the one picked */
-.nwf-map::before{content:"◍ "}
-.nwf-art::after{content:" ▾"}.nwf-art.on::after{content:" ▴"}
-.nw-btns{flex-basis:100%}.nw-sub{margin-top:8px}.nw-sub[hidden]{display:none}
+.nwv-map::before{content:"◍ "}.nwv-list::before{content:"☰ "}
+.nw-btns{flex-basis:100%;display:flex;flex-wrap:wrap;justify-content:space-between;gap:8px 16px}
+.mk-box[hidden],.mk-key[hidden]{display:none}
+#mkSvg circle.mkh{display:none}
 .mk-bar{display:flex;flex-wrap:wrap;align-items:center;gap:8px 14px;margin-bottom:10px}
 .mk-bar label{font-family:var(--display);font-size:11px;letter-spacing:.1em;text-transform:uppercase;color:var(--muted-2)}
 .mk-bar select{background:var(--navy-2);color:var(--white);border:1px solid var(--line);border-radius:10px;padding:7px 10px;font:inherit;font-size:14px;max-width:100%}
@@ -911,7 +912,6 @@ dialog.stg[open]{display:block;animation:pop .28s ease}
 .mk-h{font-family:var(--display);font-size:18px;letter-spacing:.04em;margin:16px 0 10px;color:var(--white)}
 .mk-h small{color:var(--muted-2);font-size:12px;margin-left:8px;font-family:inherit;letter-spacing:0}
 #mkSvg .mkx{fill:#18213f;cursor:default}
-.mk-view{margin-bottom:12px}
 /* Brands on the move: one card per brand (sector, what it's doing, its headlines) */
 .bd-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(290px,1fr));gap:10px}
 .bd{display:flex;flex-direction:column;gap:8px;border:1px solid var(--line-2);border-radius:16px;padding:14px 16px;background:linear-gradient(170deg,var(--navy-2),rgba(17,27,63,.6))}
@@ -1703,14 +1703,12 @@ dialog.tmd[open]{animation:pop .28s ease}
       <div>
         <div class="eyebrow">SeventyTwo Sports Group</div>
         <h1>News</h1>
-        <p class="sub">The business of tennis first: investors, sponsors, broadcasters, the tours and federations, and tournament news (calendar, venues, entry lists) come before match reports, and are kept for a week. Then the top match and player stories from the last 3 days; stories more outlets are running come first. Stories naming a 72 player or a Scouting Corner prospect are kept for a week. Tap a headline to read it on the outlet's own site.</p>
+        <p class="sub">Pick a topic, then see it on the map (countries shaded by how many stories name them) or as a plain list. Both show the same stories, and the country picker works in either. Business and tournament news is kept for a week, match stories for 3 days (a week if they name a 72 player or prospect). Tap a headline to read it on the outlet's own site.</p>
       </div>
-      <div class="nw-btns"><div class="chips" role="group" aria-label="Show"><button class="chip nwf nwf-map on" data-n="map">Market map</button><button class="chip nwf nwf-art" data-n="all" aria-expanded="false">Articles</button></div>
-      <div class="chips nw-sub" id="nwSub" role="group" aria-label="Section" hidden><button class="chip nwf" data-n="all">All</button><button class="chip nwf" data-n="biz">Business</button><button class="chip nwf" data-n="ev">Tournaments</button><button class="chip nwf" data-n="72">72 players</button><button class="chip nwf" data-n="sc">Prospects</button></div></div>
+      <div class="nw-btns"><div class="chips" role="group" aria-label="Topic"><button class="chip nwf on" data-n="biz">Business</button><button class="chip nwf" data-n="brands">Brands</button><button class="chip nwf" data-n="ev">Tournaments</button><button class="chip nwf" data-n="72">72 players</button><button class="chip nwf" data-n="sc">Prospects</button><button class="chip nwf" data-n="all">All</button></div>
+      <div class="chips nw-fmt" role="group" aria-label="Show as"><button class="chip nwv nwv-map on" data-v="map">Map</button><button class="chip nwv nwv-list" data-v="list">List</button></div></div>
     </div>
-    <div class="nw-list" id="nwList"><div class="sq-empty">Loading the headlines…</div></div>
-    <div id="mkMap" hidden>
-      <div class="chips mk-view" role="group" aria-label="Show"><button class="chip mkv on" data-v="tennis">Business news</button><button class="chip mkv" data-v="brands">Brands on the move</button></div>
+    <div id="mkMap">
       <div class="mk-bar"><label for="mkSel">Country</label><select id="mkSel"><option value="">Whole world</option></select>
         <span class="mk-key"><i class="mk1"></i>1<i class="mk2"></i>2–3<i class="mk3"></i>4–6<i class="mk4"></i>7+ <span id="mkKeyTxt">stories this week</span></span></div>
       <div class="mk-box"><svg id="mkSvg" role="img" aria-label="World map of business news"></svg><button type="button" class="mk-out" id="mkOut" hidden>Whole world</button>
@@ -1896,7 +1894,7 @@ function route(){
   $("#page-corner").hidden = tab !== "corner";
   $("#page-team").hidden = tab !== "team";
   $("#page-news").hidden = tab !== "news";
-  if (tab === "news" && window._tab !== "news") { NW_F = "map"; renderNews(); }
+  if (tab === "news" && window._tab !== "news") { NW_F = "biz"; renderNews(); }
   if (tab === "team") renderTeam();
   const sid = hash.startsWith("#team/") ? hash.slice(6) : null;
   if (sid && STAFF.some(p => p.id === sid)) openCard(sid);
@@ -3103,43 +3101,48 @@ $("#sqC").addEventListener("change", e => { SQ.c = e.target.value; renderScoutin
 /* ---------- Tour Schedule (schedule.json, rebuilt daily by scripts/schedule.py) ---------- */
 let SCHED = null;
 /* ---------- News (news.json, rebuilt every hour by scripts/news.py from the outlets' free RSS feeds) ---------- */
-let NEWS = null, NW_F = "map";  // News opens on the Market map; "Articles" (all) is the second button
+// One row of topics (NW_F) and a "Map | List" switch (NW_V): both formats show the same stories, with the same country picker.
+let NEWS = null, NW_F = "biz", NW_V = "map";  // News opens on Business, on the map
 function nwAgo(iso){
   const h = (Date.now() - new Date(iso)) / 36e5;
   if (h < 1) return Math.max(1, Math.round(h * 60)) + " min ago";
   if (h < 24) return Math.round(h) + "h ago";
   return new Date(iso).toLocaleDateString("en-GB", { weekday: "short", day: "numeric", month: "short", timeZone: MYTZ });
 }
+// the news.json stories for the topic picked; their countries come from market.py ("news" in market.json)
+function nwItems(){
+  const all = NEWS?.items || [];
+  return NW_F === "72" ? all.filter(x => x.p72.length) : NW_F === "sc" ? all.filter(x => x.sc.length) : NW_F === "biz" || NW_F === "ev" ? all.filter(x => x.k === NW_F) : all;
+}
+const nwC = x => MKT?.news?.[x.u] || [];
+function nwCard(x){
+  const pName = id => { const p = ROSTER.find(r => r.id === id); return p ? p.first + " " + p.last : id; };
+  const n = new Set([x.s, ...x.also.map(a => a.s)]).size;  // outlets, not links (one outlet can have several pieces on a story)
+  const cnt = {}, lab = a => { cnt[a.s] = (cnt[a.s] || (a.s === x.s ? 1 : 0)) + 1; return cnt[a.s] > 1 ? `${a.s} (${cnt[a.s]})` : a.s; };
+  const tags = [...x.p72.map(id => profById[id] ? `<a class="p72" href="#players/${esc(id)}">72 · ${esc(pName(id))}</a>` : `<span class="p72">72 · ${esc(pName(id))}</span>`),
+    ...x.sc.map(nm => `<a href="#corner">Prospect · ${esc(nm)}</a>`),
+    ...(x.also.length ? [`<button type="button" class="nw-oth" aria-expanded="false">Other outlets (${x.also.length})</button>`] : [])];
+  const oth = x.also.length ? `<div class="nw-also" hidden>${x.also.map(a => `<a href="${esc(mkSafe(a.u))}" target="_blank" rel="noopener">${esc(lab(a))}</a>`).join("")}</div>` : "";
+  return `<article class="nw${x.p72.length ? " k72" : ""}"><div class="nw-b">
+    <div class="nw-m">${x.k ? `<span class="kb">${x.k === "biz" ? "Business" : "Tournament"}</span>` : ""}<span class="s">${esc(x.s)}</span><span>${esc(nwAgo(x.at))}</span>${n > 1 ? `<span class="nb">${n} outlets</span>` : ""}</div>
+    <h3><a href="${esc(mkSafe(x.u))}" target="_blank" rel="noopener">${esc(x.t)}</a></h3>
+    ${x.d ? `<p>${esc(x.d)}</p>` : ""}${tags.length ? `<div class="nw-t">${tags.join("")}</div>` : ""}${oth}
+  </div></article>`;
+}
 function renderNews(){
   if (!$("#page-news")) return;
-  const map = NW_F === "map";
-  // "Articles" stays lit on any section; its sections (All, Business...) drop down underneath only while it is picked
-  document.querySelectorAll(".nwf").forEach(b => b.classList.toggle("on", b.classList.contains("nwf-art") ? !map : b.dataset.n === NW_F));
-  $(".nwf-art").setAttribute("aria-expanded", !map); $("#nwSub").hidden = map;
-  $("#nwList").hidden = map; $("#mkMap").hidden = !map;
-  if (map) { if (!$("#page-news").hidden) mkOpen(); return; }  // the map (and its files) only load once News is on screen
-  if (!NEWS) return;
-  const all = NEWS.items || [];
-  const its = NW_F === "72" ? all.filter(x => x.p72.length) : NW_F === "sc" ? all.filter(x => x.sc.length) : NW_F === "biz" || NW_F === "ev" ? all.filter(x => x.k === NW_F) : all;
-  const pName = id => { const p = ROSTER.find(r => r.id === id); return p ? p.first + " " + p.last : id; };
-  const safe = u => /^https:\/\//.test(u || "") ? u : "#";
-  $("#nwList").innerHTML = its.length ? its.map(x => {
-    const n = new Set([x.s, ...x.also.map(a => a.s)]).size;  // outlets, not links (one outlet can have several pieces on a story)
-    const cnt = {}, lab = a => { cnt[a.s] = (cnt[a.s] || (a.s === x.s ? 1 : 0)) + 1; return cnt[a.s] > 1 ? `${a.s} (${cnt[a.s]})` : a.s; };
-    const tags = [...x.p72.map(id => profById[id] ? `<a class="p72" href="#players/${esc(id)}">72 · ${esc(pName(id))}</a>` : `<span class="p72">72 · ${esc(pName(id))}</span>`),
-      ...x.sc.map(nm => `<a href="#corner">Prospect · ${esc(nm)}</a>`),
-      ...(x.also.length ? [`<button type="button" class="nw-oth" aria-expanded="false">Other outlets (${x.also.length})</button>`] : [])];
-    const oth = x.also.length ? `<div class="nw-also" hidden>${x.also.map(a => `<a href="${esc(safe(a.u))}" target="_blank" rel="noopener">${esc(lab(a))}</a>`).join("")}</div>` : "";
-    return `<article class="nw${x.p72.length ? " k72" : ""}"><div class="nw-b">
-      <div class="nw-m">${x.k ? `<span class="kb">${x.k === "biz" ? "Business" : "Tournament"}</span>` : ""}<span class="s">${esc(x.s)}</span><span>${esc(nwAgo(x.at))}</span>${n > 1 ? `<span class="nb">${n} outlets</span>` : ""}</div>
-      <h3><a href="${esc(safe(x.u))}" target="_blank" rel="noopener">${esc(x.t)}</a></h3>
-      ${x.d ? `<p>${esc(x.d)}</p>` : ""}${tags.length ? `<div class="nw-t">${tags.join("")}</div>` : ""}${oth}
-    </div></article>`;
-  }).join("") : `<div class="sq-empty">${NW_F === "72" ? "No stories on 72 players this week." : NW_F === "sc" ? "No stories on Scouting Corner prospects this week." : NW_F === "biz" ? "No business stories this week yet." : NW_F === "ev" ? "No tournament news this week yet." : "No headlines yet. They are read every hour."}</div>`;
-  const ok = Object.entries(NEWS.sources || {}).filter(([, v]) => v.ok).map(([k]) => k);
-  $("#nwSrc").innerHTML = `Headlines from ${ok.map(esc).join(", ") || "the outlets' feeds"}, read every hour${NEWS.updated ? ` (last change ${esc(nwAgo(NEWS.updated))})` : ""}. 72 Central only shows each outlet's headline and summary and links to the full story on its site.`;
+  document.querySelectorAll(".nwf").forEach(b => b.classList.toggle("on", b.dataset.n === NW_F));
+  document.querySelectorAll(".nwv").forEach(b => b.classList.toggle("on", b.dataset.v === NW_V));
+  $(".mk-box").hidden = $(".mk-key").hidden = NW_V !== "map";
+  if (NEWS) {
+    const ok = Object.entries(NEWS.sources || {}).filter(([, v]) => v.ok).map(([k]) => k);
+    $("#nwSrc").innerHTML = `Headlines from ${ok.map(esc).join(", ") || "the outlets' feeds"}, read every hour${NEWS.updated ? ` (last change ${esc(nwAgo(NEWS.updated))})` : ""}, plus Google News searches for each country's business news. 72 Central only shows each outlet's headline and summary and links to the full story on its site.`;
+  }
+  if (!$("#page-news").hidden) mkOpen();  // the map files only load once News is on screen
 }
-document.addEventListener("click", e => { const b = e.target.closest(".nwf"); if (b) { NW_F = b.dataset.n; renderNews(); } });
+document.addEventListener("click", e => { const b = e.target.closest(".nwf,.nwv"); if (!b) return;
+  if (b.classList.contains("nwv")) NW_V = b.dataset.v; else NW_F = b.dataset.n;
+  renderNews(); });
 // "Other outlets (n)": shows / hides the other outlets' links under a story
 document.addEventListener("click", e => { const b = e.target.closest(".nw-oth"); if (!b) return;
   const box = b.closest(".nw-b").querySelector(".nw-also"), open = box.hidden;
@@ -3148,9 +3151,10 @@ document.addEventListener("click", e => { const b = e.target.closest(".nw-oth");
    and worldmap.json (country shapes, Natural Earth); all only read when the map is opened. Two views: "Business news"
    (the country's top 10 tennis business stories, then its top 10 business / war stories in other sectors, "sec") and "Brands" (companies making moves there, one card per brand).
    Picking a country (list or map) zooms in. */
-let MKT = null, WMAP = null, BRD = null, MK_C = "", MK_VB = null, MK_ANIM = 0, MK_V = "tennis";
+let MKT = null, WMAP = null, BRD = null, MK_C = "", MK_VB = null, MK_ANIM = 0, MK_CNT = {};
 const mkLvl = n => n >= 7 ? 4 : n >= 4 ? 3 : n >= 2 ? 2 : n ? 1 : 0;
-const mkN = cc => MK_V === "brands" ? BRD?.markets?.[cc]?.n || 0 : MKT?.count?.[cc] || 0;
+const mkN = cc => NW_F === "brands" ? BRD?.markets?.[cc]?.n || 0 : MK_CNT[cc] || 0;
+const mkSafe = u => /^https:\/\//.test(u || "") ? u : "#";
 async function mkOpen(){
   if (!WMAP || !MKT) {
     try {
@@ -3158,9 +3162,9 @@ async function mkOpen(){
       const [a, b, c] = await Promise.all([fetch("worldmap.json").then(r => r.json()), j("market.json", { stories: [], top: {}, count: {}, world: [] }), j("brands.json", { markets: {}, roster: [], signals: {} })]);
       WMAP = a; MKT = b; BRD = c;
     } catch (e) { $("#mkList").innerHTML = `<div class="sq-empty">The map couldn't be loaded. Try again in a minute.</div>`; return; }
-    // small countries (Monaco, Singapore, Hong Kong...) are a dot, drawn only when they have news or are a tracked market
+    // small countries (Monaco, Singapore, Hong Kong...) are a dot, shown only when they have news or are a tracked market (mkShade)
     $("#mkSvg").innerHTML = Object.entries(WMAP.c).sort((x, y) => !!x[1].p - !!y[1].p).map(([cc, c]) =>
-      c.d ? `<path data-c="${cc}" d="${c.d}"><title></title></path>` : MKT.count[cc] || BRD.markets[cc] ? `<circle data-c="${cc}" cx="${c.p[0]}" cy="${c.p[1]}" r="4"><title></title></circle>` : "").join("");
+      c.d ? `<path data-c="${cc}" d="${c.d}"><title></title></path>` : `<circle data-c="${cc}" cx="${c.p[0]}" cy="${c.p[1]}" r="4"><title></title></circle>`).join("");
     MK_VB = [0, 0, WMAP.w, WMAP.h];
     $("#mkSvg").setAttribute("viewBox", MK_VB.join(" "));
   }
@@ -3169,15 +3173,18 @@ async function mkOpen(){
 }
 // colours and the country list for the view showing
 function mkShade(){
-  const brands = MK_V === "brands";
-  document.querySelectorAll(".mkv").forEach(b => b.classList.toggle("on", b.dataset.v === MK_V));
-  $("#mkKeyTxt").textContent = brands ? "brands making moves this week" : "stories this week";
-  $("#mkSvg").setAttribute("aria-label", brands ? "World map of brands making moves" : "World map of business news");
+  const brands = NW_F === "brands";
+  if (brands) MK_CNT = {};
+  else if (NW_F === "biz") MK_CNT = MKT.count || {};
+  else { MK_CNT = {}; nwItems().forEach(x => nwC(x).forEach(cc => MK_CNT[cc] = (MK_CNT[cc] || 0) + 1)); }
+  $("#mkKeyTxt").textContent = brands ? "brands making moves this week" : "stories";
+  $("#mkSvg").setAttribute("aria-label", brands ? "World map of brands making moves" : "World map of the news");
   $("#mkSvg").querySelectorAll("[data-c]").forEach(el => {
     const cc = el.dataset.c, n = mkN(cc), l = mkLvl(n);
     el.classList.remove("mk1", "mk2", "mk3", "mk4", "mkx");
     if (l) el.classList.add("mk" + l);
     if (brands && !BRD.markets[cc]) el.classList.add("mkx");
+    el.classList.toggle("mkh", !l && !(brands && BRD.markets[cc]) && cc !== MK_C);
     el.querySelector("title").textContent = WMAP.c[cc].n + (brands ? (BRD.markets[cc] ? ` · ${n} brand${n === 1 ? "" : "s"}` : " · not tracked yet") : n ? ` · ${n} stor${n === 1 ? "y" : "ies"}` : "");
   });
   const nm = cc => WMAP.c[cc].n, opt = (cc, n) => `<option value="${cc}">${esc(nm(cc))}${n ? ` (${n})` : ""}</option>`;
@@ -3186,12 +3193,12 @@ function mkShade(){
     $("#mkSel").innerHTML = `<option value="">Whole world</option><optgroup label="Our players' nations">${mk.filter(cc => ros.has(cc)).sort(by).map(cc => opt(cc, mkN(cc))).join("")}</optgroup>`
       + `<optgroup label="Other key markets">${mk.filter(cc => !ros.has(cc)).sort(by).map(cc => opt(cc, mkN(cc))).join("")}</optgroup>`;
   } else {
-    const has = Object.keys(MKT.count).filter(cc => WMAP.c[cc]).sort((x, y) => MKT.count[y] - MKT.count[x] || nm(x).localeCompare(nm(y)));
+    const has = Object.keys(MK_CNT).filter(cc => WMAP.c[cc]).sort((x, y) => MK_CNT[y] - MK_CNT[x] || nm(x).localeCompare(nm(y)));
     // our players' nations with no story yet get their own group near the top (never counted as having news)
     const ros = new Set(BRD.roster || []), byNm = (x, y) => nm(x).localeCompare(nm(y));
-    const ours = Object.keys(WMAP.c).filter(cc => !MKT.count[cc] && ros.has(cc)).sort(byNm);
-    const rest = Object.keys(WMAP.c).filter(cc => !MKT.count[cc] && !ros.has(cc)).sort(byNm);
-    $("#mkSel").innerHTML = `<option value="">Whole world</option><optgroup label="Business news this week">${has.map(cc => opt(cc, MKT.count[cc])).join("")}</optgroup>`
+    const ours = Object.keys(WMAP.c).filter(cc => !MK_CNT[cc] && ros.has(cc)).sort(byNm);
+    const rest = Object.keys(WMAP.c).filter(cc => !MK_CNT[cc] && !ros.has(cc)).sort(byNm);
+    $("#mkSel").innerHTML = `<option value="">Whole world</option><optgroup label="${NW_F === "biz" ? "Business news this week" : "In the news"}">${has.map(cc => opt(cc, MK_CNT[cc])).join("")}</optgroup>`
       + (ours.length ? `<optgroup label="Our players' nations · no news yet">${ours.map(cc => opt(cc)).join("")}</optgroup>` : "")
       + `<optgroup label="Other countries">${rest.map(cc => opt(cc)).join("")}</optgroup>`;
   }
@@ -3217,19 +3224,19 @@ function mkZoom(to, now){
     set(from.map((f, i) => f + (to[i] - f) * e)); if (k < 1) requestAnimationFrame(step); };
   requestAnimationFrame(step);
 }
-const mkSafe = u => /^https:\/\//.test(u || "") ? u : "#";
 function mkPick(cc, now){
   MK_C = cc && WMAP.c[cc] ? cc : "";
   $("#mkSel").value = MK_C;
   $("#mkSvg").querySelectorAll(".on").forEach(e => e.classList.remove("on"));
   const el = MK_C && $("#mkSvg").querySelector(`[data-c="${MK_C}"]`);
-  if (el) { el.classList.add("on"); el.parentNode.appendChild(el); }  // drawn last so its outline shows
+  if (el) { el.classList.add("on"); el.classList.remove("mkh"); el.parentNode.appendChild(el); }  // drawn last so its outline shows
   $("#mkOut").hidden = !MK_C;
-  mkZoom(mkBox(MK_C), now);
-  if (MK_V === "brands") return mkBrands();
-  const ids = MK_C ? MKT.top[MK_C] || [] : MKT.world || [], st = ids.map(i => MKT.stories[i]).filter(Boolean);
-  const nm = MK_C ? WMAP.c[MK_C].n : "Whole world", first = st.findIndex(x => x.sec);
-  $("#mkH").innerHTML = `${esc(nm)}<small>${MK_C ? "" : "top "}${st.length || ""} business stor${st.length === 1 ? "y" : "ies"}, last 7 days</small>`;
+  if (NW_V === "map") mkZoom(mkBox(MK_C), now);
+  if (NW_F === "brands") return mkBrands();
+  if (NW_F !== "biz" || !MK_C) return mkNews();
+  const st = (MKT.top[MK_C] || []).map(i => MKT.stories[i]).filter(Boolean);
+  const nm = WMAP.c[MK_C].n, first = st.findIndex(x => x.sec);
+  $("#mkH").innerHTML = `${esc(nm)}<small>${st.length || ""} business stor${st.length === 1 ? "y" : "ies"}, last 7 days</small>`;
   // tennis business and tournament stories first, then (countries only) the wider business and war news by sector
   $("#mkList").innerHTML = st.length ? st.map((x, i) => {
     const n = new Set([x.s, ...x.also.map(a => a.s)]).size;
@@ -3238,7 +3245,17 @@ function mkPick(cc, now){
       <h3><a href="${esc(mkSafe(x.u))}" target="_blank" rel="noopener">${esc(x.t)}</a></h3>
       ${x.also.length ? `<div class="nw-t"><button type="button" class="nw-oth" aria-expanded="false">Other outlets (${x.also.length})</button></div><div class="nw-also" hidden>${x.also.map(a => `<a href="${esc(mkSafe(a.u))}" target="_blank" rel="noopener">${esc(a.s)}</a>`).join("")}</div>` : ""}
     </div></article>`;
-  }).join("") : `<div class="sq-empty">No business stories found for ${esc(MK_C ? WMAP.c[MK_C].n : "anywhere")} in the last 7 days.</div>`;
+  }).join("") : `<div class="sq-empty">No business stories found for ${esc(nm)} in the last 7 days.</div>`;
+}
+// news.json stories for the topic (the whole world's business list too), for the country picked if any
+const NW_NOUN = { biz: "business stor", ev: "tournament stor", 72: "stor", sc: "stor", all: "stor" };
+function mkNews(){
+  const its = nwItems().filter(x => !MK_C || nwC(x).includes(MK_C)), nm = MK_C ? WMAP.c[MK_C].n : "Whole world";
+  const who = NW_F === "72" ? " naming a 72 player" : NW_F === "sc" ? " naming a prospect" : "";
+  $("#mkH").innerHTML = `${esc(nm)}<small>${its.length || ""} ${NW_NOUN[NW_F]}${its.length === 1 ? "y" : "ies"}${who}</small>`;
+  const what = NW_F === "72" ? "stories on 72 players" : NW_F === "sc" ? "stories on Scouting Corner prospects" : NW_F === "biz" ? "business stories" : NW_F === "ev" ? "tournament news" : "headlines";
+  $("#mkList").innerHTML = !NEWS ? `<div class="sq-empty">Loading the headlines…</div>` : its.length ? its.map(nwCard).join("")
+    : `<div class="sq-empty">No ${what}${MK_C ? ` naming ${esc(nm)}` : ""} this week yet.${MK_C ? " A story only counts for a country when it names it (the country, its people, a city or a tournament)." : " They are read every hour."}</div>`;
 }
 /* ---- Brands view ---- */
 const MK_SIG_CLS = { sponsor: "s1", people: "s2", expand: "s2", money: "s2", cool: "s0" };
@@ -3271,8 +3288,6 @@ function mkBrands(){
   }
   $("#mkList").innerHTML = html;
 }
-document.addEventListener("click", e => { const b = e.target.closest(".mkv"); if (!b || b.dataset.v === MK_V || !WMAP) return;
-  MK_V = b.dataset.v; mkShade(); mkPick(MK_C in (MK_V === "brands" ? BRD.markets : WMAP.c) ? MK_C : "", true); });
 $("#mkSel")?.addEventListener("change", e => mkPick(e.target.value));
 $("#mkOut")?.addEventListener("click", () => mkPick(""));
 $("#mkSvg")?.addEventListener("click", e => { if (MK_DRAGGED) { MK_DRAGGED = false; return; }  // the end of a drag isn't a tap
@@ -3331,7 +3346,7 @@ function mkZoomBy(k, px, py){
   document.querySelectorAll(".mk-zoom button").forEach(b => b.addEventListener("click", () => { if (WMAP) mkZoomBy(+b.dataset.z > 0 ? 1.6 : 1 / 1.6); }));
   if (matchMedia("(hover: none)").matches) $("#mkTip").textContent = "Drag to move · pinch to zoom";
 })();
-addEventListener("resize", () => { if (WMAP && NW_F === "map") mkZoom(mkBox(MK_C), true); });
+addEventListener("resize", () => { if (WMAP && NW_V === "map" && !$("#page-news").hidden) mkZoom(mkBox(MK_C), true); });
 async function loadNews(){
   try { const r = await fetch("news.json?t=" + Date.now(), { cache: "no-store" }); if (r.ok) NEWS = await r.json(); else if (!NEWS) NEWS = { items: [] }; } catch (e) { if (!NEWS) NEWS = { items: [] }; }
   renderNews(); renderHome();
