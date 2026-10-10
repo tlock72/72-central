@@ -3,7 +3,8 @@
 
 Builds market.json for the News page's "Market map": the business of tennis country by country over the last 7 days
 (sponsors, investors, broadcasters, federations, new or moved tournaments...), and, under them, each country's wider
-business and investment news in the sectors in SECTORS (insurance, healthcare, food, banking, energy, sport, tech)
+business and investment news in the sectors in SECTORS (insurance, healthcare, food, banking, retail, property,
+sport, tech, energy)
 plus war and conflict.
 
 Where the stories come from:
@@ -106,10 +107,11 @@ QUERY = ("https://news.google.com/rss/search?hl=en-GB&gl=GB&ceid=GB:en&q=tennis+
 SECTOR_QUERY = ("https://news.google.com/rss/search?hl=en-GB&gl=GB&ceid=GB:en&q=%22{c}%22+(investment+OR+invests+OR+"
                 "investor+OR+acquisition+OR+acquires+OR+funding+OR+stake+OR+merger+OR+deal+OR+expansion+OR+war+OR+"
                 "ceasefire+OR+sanctions)+(sport+OR+tech+OR+AI+OR+food+OR+insurance+OR+insurer+OR+healthcare+OR+"
-                "hospital+OR+pharma+OR+energy+OR+oil+OR+gas+OR+bank+OR+banking+OR+military+OR+war)+when:7d")
+                "hospital+OR+pharma+OR+energy+OR+oil+OR+gas+OR+bank+OR+banking+OR+property+OR+%22real+estate%22+OR+retail+OR+"
+                "retailer+OR+military+OR+war)+when:7d")
 # sector -> words (whole words in the headline); the first sector that matches is the label (war first: "drone
 #   strikes on the energy grid" is war news; tech before energy: a phone's battery isn't energy). To add a sector
-#   (retail, property...), add a line here and a word for it in SECTOR_QUERY.
+#   (mining, transport...), add a line here and a word for it in SECTOR_QUERY.
 SECTORS = {
     "War & conflict": "war wars invasion ceasefire truce missile missiles drone drones troops military defence defense "
                       "shelling airstrike airstrikes frontline offensive sanctions conflict army",
@@ -119,6 +121,9 @@ SECTORS = {
     "Food": "food foods beverage beverages drinks restaurant restaurants grocery groceries supermarket supermarkets "
             "agriculture agri agritech dairy snack snacks brewer brewery coffee",
     "Banking": "bank banks banking banker bankers lender lenders fintech neobank mortgage mortgages",
+    "Retail": "retail retailer retailers store stores shop shops shopping mall malls ecommerce fashion",
+    "Property": "property properties realestate developer developers housing homes residential apartments "
+                "skyscraper tower towers hotel hotels resort resorts warehouse warehouses",
     "Sport": "sport sports football soccer league stadium olympic olympics golf cricket rugby basketball nba nfl "
              "f1 athletics esports",
     "Tech": "tech technology ai software startup startups chip chips semiconductor semiconductors datacenter cloud "
@@ -143,6 +148,8 @@ def sector(t):
         return ""
     if " artificial intelligence " in tn or " data centre " in tn or " data center " in tn:
         tw = tw | {"ai"}
+    if " real estate " in tn or " e commerce " in tn:
+        tw = tw | {"realestate" if " real estate " in tn else "ecommerce"}
     for sec, ws in SECTORS.items():
         if tw & ws and (sec == "War & conflict" or tw & W_MONEY):
             return sec
