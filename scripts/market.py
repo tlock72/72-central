@@ -117,9 +117,20 @@ def main():
     except Exception:
         pool = []
 
-    # 1) this run's searches: the countries searched longest ago
+    # 1) this run's searches: the countries searched longest ago. Our players' nations (the roster list brands.py saves)
+    #    go first on a tie and count as due 4 hours sooner, so they are searched about twice as often
     done = old.get("searched") or {}
-    todo = sorted(PLACES, key=lambda c: done.get(c, ""))[:SEARCH_PER_RUN]
+    try:
+        ros = set(json.load(open("brands.json")).get("roster") or [])
+    except Exception:
+        ros = set()
+
+    def due(c):
+        t = done.get(c, "")
+        if t and c in ros:
+            t = (datetime.strptime(t, "%Y-%m-%dT%H:%M:%SZ") - timedelta(hours=4)).strftime("%Y-%m-%dT%H:%M:%SZ")
+        return (t, c not in ros)
+    todo = sorted(PLACES, key=due)[:SEARCH_PER_RUN]
     errs = {}
     pros = set()
     try:

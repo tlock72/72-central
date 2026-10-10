@@ -3186,8 +3186,13 @@ function mkShade(){
       + `<optgroup label="Other key markets">${mk.filter(cc => !ros.has(cc)).sort(by).map(cc => opt(cc, mkN(cc))).join("")}</optgroup>`;
   } else {
     const has = Object.keys(MKT.count).filter(cc => WMAP.c[cc]).sort((x, y) => MKT.count[y] - MKT.count[x] || nm(x).localeCompare(nm(y)));
-    const rest = Object.keys(WMAP.c).filter(cc => !MKT.count[cc]).sort((x, y) => nm(x).localeCompare(nm(y)));
-    $("#mkSel").innerHTML = `<option value="">Whole world</option><optgroup label="Business news this week">${has.map(cc => opt(cc, MKT.count[cc])).join("")}</optgroup><optgroup label="Other countries">${rest.map(cc => opt(cc)).join("")}</optgroup>`;
+    // our players' nations with no story yet get their own group near the top (never counted as having news)
+    const ros = new Set(BRD.roster || []), byNm = (x, y) => nm(x).localeCompare(nm(y));
+    const ours = Object.keys(WMAP.c).filter(cc => !MKT.count[cc] && ros.has(cc)).sort(byNm);
+    const rest = Object.keys(WMAP.c).filter(cc => !MKT.count[cc] && !ros.has(cc)).sort(byNm);
+    $("#mkSel").innerHTML = `<option value="">Whole world</option><optgroup label="Business news this week">${has.map(cc => opt(cc, MKT.count[cc])).join("")}</optgroup>`
+      + (ours.length ? `<optgroup label="Our players' nations · no news yet">${ours.map(cc => opt(cc)).join("")}</optgroup>` : "")
+      + `<optgroup label="Other countries">${rest.map(cc => opt(cc)).join("")}</optgroup>`;
   }
   $("#mkSel").value = MK_C;
 }
