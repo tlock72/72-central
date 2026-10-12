@@ -22,14 +22,11 @@ when either tour has published a new ranking week (or when RANKINGS=1 / FORCE=1)
 """
 import html, json, os, re, sys, time, unicodedata, urllib.request
 from datetime import date, datetime, timedelta, timezone
-from collections import Counter
 
 UA = "72CentralScouting/1.0 (+https://github.com/tlock72/72-central; weekly, a few requests)"
 TA_URL = "https://www.tennisabstract.com/reports/atpRankings.html"
 TE_URL = "https://www.tennisexplorer.com/ranking/atp-men/?date={d}&page={p}"
 ATP_V = 2  # raise to rebuild the ATP list once after a change to how moves are worked out
-SWAP_MAX = 4  # most players in one group ranked in a different order on the two sites
-PTS_V = 3  # raise to re-read this week's ATP points once after a change to how they are matched
 TE_WEEKS = 5  # past ATP weeks filled in per run (about 45 pages each)
 WTA_URL = "https://api.wtatennis.com/tennis/players/ranked?page={p}&pageSize=100&type=rankSingles&sort=asc&metric=SINGLES"
 OUT, HIST = "scouting.json", "scouting_history.json"
@@ -124,10 +121,9 @@ def tok_find(t, keys):
     return hits[0] if len(hits) == 1 else None
 
 
-def te_week(d, pts=None):
-    """Every player in Tennis Explorer's ATP ranking of week d, as {tok(name): rank}. None if it has no list for that week.
-    If pts is a dict, it is filled with {tok(name): ranking points} (the last number column of each row)."""
-    seen, got = {}, {}
+def te_week(d):
+    """Every player in Tennis Explorer's ATP ranking of week d, as {tok(name): rank}. None if it has no list for that week."""
+    seen = {}
     for p in range(1, 90):
         page = get(TE_URL.format(d=d, p=p))
         if p == 1 and not re.search(r'<option value="%s" selected' % d, page):
@@ -139,17 +135,11 @@ def te_week(d, pts=None):
                 n += 1
                 t = tok(html.unescape(m.group(2)))
                 seen.setdefault(t, []).append(int(m.group(1)))
-                cells = [re.sub(r"[\s,.]|&nbsp;", "", re.sub(r"<[^>]+>", "", c)) for c in re.findall(r"<td[^>]*>(.*?)</td>", tr[m.end():], re.S)]
-                nums = [c for c in cells if c.isdigit()]
-                if nums:
-                    got[t] = int(nums[-1])
         if not n:
             break
         time.sleep(0.3)
     if len(seen) < 1000:
         raise RuntimeError(f"Tennis Explorer list for {d} looks short ({len(seen)} players)")
-    if pts is not None:
-        pts.update({k: got[k] for k, v in seen.items() if len(v) == 1 and k in got})
     return {k: v[0] for k, v in seen.items() if len(v) == 1}  # two players with the same name: leave both out
 
 
@@ -159,64 +149,6 @@ def pts_ok(players, i):
     got = [(p[0], p[i]) for p in players if len(p) > i and p[i] is not None]
     got.sort()
     return len(got) >= 0.9 * len(players) and got[0][1] >= 1000 and all(a[1] >= b[1] for a, b in zip(got, got[1:]))
-
-
-def atp_points(rows, week):
-    """{name: points} for this ATP week from Tennis Explorer, only for players it ranks exactly as Tennis Abstract does
-    (or a small group the two sites have in a different order, see below).
-    None if Tennis Explorer doesn't have the week yet (tried again next run)."""
-    pts = {}
-    lst = te_week(week, pts)
-    if lst is None:
-        return None
-    taken = {tok(r["name"]) for r in rows} & lst.keys()  # exact names, never borrowed by another player
-    at = {}
-    for k, v in lst.items():
-        at.setdefault(v, []).append(k)
-    letters = lambda t: "".join(sorted(t.replace(" ", "")))
-
-    def find(t, rank):
-        """Same name, else a different spelling of it ("Tomas Barrios Vera" = "Barrios Tomas", "O'Connell" = "Oconnell")."""
-        if t in lst:
-            return t
-        k = tok_find(t, lst)
-        if not k:  # same letters, at the same rank
-            hits = [k for k in at.get(rank, []) if letters(k) == letters(t)]
-            k = hits[0] if len(hits) == 1 else None
-        return k if k and k not in taken else None
-
-    match = {r["name"]: find(tok(r["name"]), r["rank"]) for r in rows}
-    used = Counter(match.values())
-    match = {n: k if used[k] == 1 else None for n, k in match.items()}  # one Tennis Explorer name fitting two players: neither
-    same = [r for r in rows if match[r["name"]] and lst[match[r["name"]]] == r["rank"]]  # the rank must still agree exactly
-    if len(same) < 0.9 * len(rows):
-        raise RuntimeError(f"Tennis Explorer points: only {len(same)}/{len(rows)} players ranked the same as Tennis Abstract")
-    out = {r["name"]: pts.get(match[r["name"]]) for r in same}
-    # a few players in a different order on the two sites (e.g. 5 and 6 swapped, usually level on points): kept only if
-    # both sites have exactly the same players in those places and the points still go down in Tennis Abstract's order
-    order = sorted(rows, key=lambda r: r["rank"])
-    i = 0
-    while i < len(order):
-        if order[i]["name"] in out:
-            i += 1
-            continue
-        block, j = [], i
-        while j < len(order) and j < i + SWAP_MAX and match[order[j]["name"]]:
-            block.append(order[j])
-            j += 1
-            if sorted(r["rank"] for r in block) == sorted(lst[match[r["name"]]] for r in block):
-                break
-        else:
-            i += 1
-            continue
-        got = [pts.get(match[r["name"]]) for r in block]
-        above = next((out[r["name"]] for r in reversed(order[:i]) if out.get(r["name"]) is not None), None)
-        below = next((out[r["name"]] for r in order[j:] if out.get(r["name"]) is not None), None)
-        seq = ([above] if above is not None else []) + got + ([below] if below is not None else [])
-        if len(block) > 1 and None not in got and all(x >= y for x, y in zip(seq, seq[1:])):
-            out.update({r["name"]: g for r, g in zip(block, got)})
-        i = j
-    return out
 
 
 def backfill_atp(hist, rows, priority):
@@ -352,12 +284,7 @@ def main():
                 y = int(r["dob"][:4]) if r["dob"][:4].isdigit() else None  # None: birth date not published
                 prev = {c: prev_rank(weeks[w], r, y) if w else None for c, w in cmp.items()}
                 players.append([r["rank"], r["name"], r["cty"], y, prev["w"], prev["m3"], prev["m12"], r["url"], None, None])
-            old = data.get("atp") or {}
-            if old.get("week") == week and old.get("pts"):  # same week rebuilt (moves filled in): keep its points
-                had = {p[1]: p[9] for p in old["players"] if len(p) > 9}
-                for p in players:
-                    p[9] = had.get(p[1])
-            data["atp"] = {"week": week, "cmp": cmp, "players": players, "v": ATP_V, **({"pts": old["pts"]} if old.get("week") == week and old.get("pts") else {})}
+            data["atp"] = {"week": week, "cmp": cmp, "players": players, "v": ATP_V}
             # trim history: last 60 weeks
             cutoff = (date.fromisoformat(week) - timedelta(weeks=60)).isoformat()
             for w in list(weeks):
@@ -369,34 +296,13 @@ def main():
         else:
             print("Scouting HQ: ATP unchanged", week)
         errors.pop("atp", None)
-        # ranking points (Tennis Abstract has none): from Tennis Explorer's list of the same week, tried every run until in
-        tried = data["atp"].get("ptsFailed")  # after a misread or a failed read, try again once a day
-        if data["atp"].get("pts") != PTS_V and not (tried and NOW - datetime.fromisoformat(tried) < timedelta(hours=24)):
-            try:
-                pts = atp_points(rows, week)
-                if pts is None:
-                    print("Scouting HQ: Tennis Explorer has no ATP points for", week, "yet")
-                    if (NOW.date() - date.fromisoformat(week)).days >= 3 and (errors.get("atpPts") or {}).get("week") != week:
-                        errors["atpPts"] = {"at": NOW.isoformat(timespec="seconds"), "week": week,
-                                            "msg": "Tennis Explorer still has no list for this week"}
-                else:
-                    if not pts_ok([p[:8] + [None, pts.get(p[1])] for p in data["atp"]["players"]], 9):
-                        raise RuntimeError("the points don't go down with the ranking, so they were misread")
-                    for p in data["atp"]["players"]:
-                        p[8:] = [None, pts.get(p[1])]
-                    data["atp"]["pts"] = PTS_V
-                    data["atp"].pop("ptsFailed", None)
-                    errors.pop("atpPts", None)
-                    changed = True
-                    print(f"Scouting HQ: ATP points for {sum(p[9] is not None for p in data['atp']['players'])} players")
-            except Exception as e:
-                if not data["atp"].get("pts"):  # points read the old way for this week stay until the new read works
-                    for p in data["atp"]["players"]:
-                        p[8:] = [None, None]
-                data["atp"]["ptsFailed"] = NOW.isoformat(timespec="seconds")
-                print("Scouting HQ: ATP points not shown:", e)
-                if (errors.get("atpPts") or {}).get("week") != week:
-                    errors["atpPts"] = {"at": NOW.isoformat(timespec="seconds"), "week": week, "msg": str(e)[:200]}
+        # no ATP ranking points: Tennis Abstract has none, and Tennis Explorer's list doesn't always agree with it
+        old_pts = [data["atp"].pop(k, None) for k in ("pts", "ptsFailed")]
+        if any(old_pts) or any(p[9] is not None for p in data["atp"]["players"]):
+            for p in data["atp"]["players"]:
+                p[8:] = [None, None]
+            changed = True
+        errors.pop("atpPts", None)
     except Exception as e:
         print("Scouting HQ: ATP failed:", e)
         errors["atp"] = {"at": NOW.isoformat(timespec="seconds"), "msg": str(e)[:200]}
