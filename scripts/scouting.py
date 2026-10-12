@@ -28,7 +28,8 @@ UA = "72CentralScouting/1.0 (+https://github.com/tlock72/72-central; weekly, a f
 TA_URL = "https://www.tennisabstract.com/reports/atpRankings.html"
 TE_URL = "https://www.tennisexplorer.com/ranking/atp-men/?date={d}&page={p}"
 ATP_V = 2  # raise to rebuild the ATP list once after a change to how moves are worked out
-PTS_V = 2  # raise to re-read this week's ATP points once after a change to how they are matched
+SWAP_MAX = 4  # most players in one group ranked in a different order on the two sites
+PTS_V = 3  # raise to re-read this week's ATP points once after a change to how they are matched
 TE_WEEKS = 5  # past ATP weeks filled in per run (about 45 pages each)
 WTA_URL = "https://api.wtatennis.com/tennis/players/ranked?page={p}&pageSize=100&type=rankSingles&sort=asc&metric=SINGLES"
 OUT, HIST = "scouting.json", "scouting_history.json"
@@ -161,7 +162,8 @@ def pts_ok(players, i):
 
 
 def atp_points(rows, week):
-    """{name: points} for this ATP week from Tennis Explorer, only for players it ranks exactly as Tennis Abstract does.
+    """{name: points} for this ATP week from Tennis Explorer, only for players it ranks exactly as Tennis Abstract does
+    (or a small group the two sites have in a different order, see below).
     None if Tennis Explorer doesn't have the week yet (tried again next run)."""
     pts = {}
     lst = te_week(week, pts)
@@ -189,7 +191,32 @@ def atp_points(rows, week):
     same = [r for r in rows if match[r["name"]] and lst[match[r["name"]]] == r["rank"]]  # the rank must still agree exactly
     if len(same) < 0.9 * len(rows):
         raise RuntimeError(f"Tennis Explorer points: only {len(same)}/{len(rows)} players ranked the same as Tennis Abstract")
-    return {r["name"]: pts.get(match[r["name"]]) for r in same}
+    out = {r["name"]: pts.get(match[r["name"]]) for r in same}
+    # a few players in a different order on the two sites (e.g. 5 and 6 swapped, usually level on points): kept only if
+    # both sites have exactly the same players in those places and the points still go down in Tennis Abstract's order
+    order = sorted(rows, key=lambda r: r["rank"])
+    i = 0
+    while i < len(order):
+        if order[i]["name"] in out:
+            i += 1
+            continue
+        block, j = [], i
+        while j < len(order) and j < i + SWAP_MAX and match[order[j]["name"]]:
+            block.append(order[j])
+            j += 1
+            if sorted(r["rank"] for r in block) == sorted(lst[match[r["name"]]] for r in block):
+                break
+        else:
+            i += 1
+            continue
+        got = [pts.get(match[r["name"]]) for r in block]
+        above = next((out[r["name"]] for r in reversed(order[:i]) if out.get(r["name"]) is not None), None)
+        below = next((out[r["name"]] for r in order[j:] if out.get(r["name"]) is not None), None)
+        seq = ([above] if above is not None else []) + got + ([below] if below is not None else [])
+        if len(block) > 1 and None not in got and all(x >= y for x, y in zip(seq, seq[1:])):
+            out.update({r["name"]: g for r, g in zip(block, got)})
+        i = j
+    return out
 
 
 def backfill_atp(hist, rows, priority):
