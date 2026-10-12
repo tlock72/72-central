@@ -1,5 +1,5 @@
 {
-"updated": "2026-10-12T13:08:39Z",
+"updated": "2026-10-12T13:13:18Z",
 "markets": {
 "AU": {
 "brands": [
@@ -41,7 +41,7 @@
 "local": true,
 "more": 1,
 "cool": false,
-"score": 17.62
+"score": 17.61
 },
 {
 "b": "Geely",
@@ -162,7 +162,7 @@
 "local": false,
 "more": 0,
 "cool": false,
-"score": 1.91
+"score": 1.9
 },
 {
 "b": "Electrolux / ANZ",
@@ -527,7 +527,7 @@
 "local": false,
 "more": 0,
 "cool": false,
-"score": 1.63
+"score": 1.62
 },
 {
 "b": "Visa",
@@ -571,7 +571,7 @@
 "local": true,
 "more": 0,
 "cool": false,
-"score": 1.48
+"score": 1.47
 },
 {
 "b": "Adidas",
@@ -697,6 +697,28 @@
 },
 "FR": {
 "brands": [
+{
+"b": "L'Oréal",
+"sec": "Beauty & consumer goods",
+"sig": [
+"sponsor"
+],
+"h": [
+{
+"t": "L’Oréal becomes PSG’s new sponsor",
+"u": "https://news.google.com/rss/articles/CBMiakFVX3lxTFBkYWNpTmlrNWVmZzNkT19oM0d4eURfcTd3SE11c1VZS0NiQWx5dlprYUdxUU5ZeG9LQmVPNnE2RnA1eVpfNVVyLTR3Ynk5R3VPdXNoR3RkM3BJUXF5TVhhWkcwdjRxOTRQaGc?oc=5",
+"s": "Luxus Plus",
+"at": "2026-10-12T08:43:08Z",
+"sig": [
+"sponsor"
+]
+}
+],
+"local": false,
+"more": 0,
+"cool": false,
+"score": 2.94
+},
 {
 "b": "IHG",
 "sec": "Airlines & travel",
@@ -835,7 +857,7 @@
 ]
 }
 ],
-"n": 2
+"n": 3
 },
 "UA": {
 "brands": [
@@ -859,7 +881,29 @@
 "local": true,
 "more": 0,
 "cool": false,
-"score": 2.53
+"score": 2.52
+},
+{
+"b": "Microsoft",
+"sec": "Tech",
+"sig": [
+"sponsor"
+],
+"h": [
+{
+"t": "Vance Suspends Microsoft and Adobe From Green Card Sponsorship Program",
+"u": "https://news.google.com/rss/articles/CBMiqAFBVV95cUxNVnF0Nk5qMU5oVXNINk5qSTlPVGFKTWotemJoY1JDSjdUWEZ0V09OczU5R2JqQUdQaWtyVGhyU1ZJb1pKdDc0dFRmeHBNTFludDVWODlrRlBmT19YTUZoNXZZdkgtV3Z6MnU5WGVEamhPT093V0NxaWFnX09RbFl4ZGtOUTV5ME5HX2ZXcjEzY3RzOGdpLXJGQW1FUmswVC05cXRkWHV1SUk?oc=5",
+"s": "Around Prague",
+"at": "2026-10-08T22:07:41Z",
+"sig": [
+"sponsor"
+]
+}
+],
+"local": false,
+"more": 0,
+"cool": false,
+"score": 1.91
 },
 {
 "b": "Google",
@@ -885,6 +929,16 @@
 }
 ],
 "other": [
+{
+"t": "DTEK and Shakhtar launch Champions League campaign to drive investment in Ukraine",
+"u": "https://news.google.com/rss/articles/CBMivAFBVV95cUxNTHNCb1VxWUFSNDVicFVuREUwODFJTURjbm1xd2Q2MGE1WG9VVnpBSmNBNDdIdE1MMHl5VnpHLURZLVV5VF9GQzJ2REs1enBsdURkSkY0VU93aVA3d2dJNi1JYXFueXBZZG41Y3JPVm5JOXFuUUNmVndEUFIyY2pJMXdkLW9BV2FDRkR3dHlUTTFyTXVEQU5SbkhXSEVIaU1YcDRPb1ZjQjJ4cUhET0l3ZnJfRDRtcUh1ZXZ4ctIBwgFBVV95cUxPMWM3ZV9XZlc1YmN5b0tUVWR1TFdJZTVJck9YYjlfU3ZPZEVYQ3hmMk1kMmdwZEc5VGJ2YVlOWWwtWmc3OUZxb3FlRUU4OWJpcWtIaTN1SHh6M1Q3NjExNW1GMmRKYUJkUkZuTFpIMXBmSkVhaGE5SWs5UjhxMjFMalBVSzM5WHdjcHppbTJ5ZU9fdXVjQzZwbC10bURXSGFXU0l2NTFFWS1kMUJEc2lsOUZPanhlLWdCUXdBbnFUOVlOdw?oc=5",
+"s": "https://dtek.com/en/",
+"at": "2026-10-12T11:46:01Z",
+"sig": [
+"expand",
+"money"
+]
+},
 {
 "t": "Ukraine's Largest Mobile Carrier Raises Plan Prices: What's Behind It?",
 "u": "https://news.google.com/rss/articles/CBMiqgFBVV95cUxNZ09Qa1FpSkhmRnoyODZMcGxPajQtM3JfZE1vRTF4eUFXeDk2SE5ENklUdWN6YjRUWFpJdDdzMlRZMEZ0TFBOMWdyczdaNWp6amdDUzFPWHdJcFVqSFZQSzA4dDZjSjZyT2lSaGczSjlHb2lhZTdqT3RybUJGd3NFVkxSNmR0TjBGcFk1TVd4V2lhanp2OVNybnFUcDZ4cHd4WkF0MV9ncFpMdw?oc=5",
@@ -967,11 +1021,20 @@
 ]
 }
 ],
-"n": 2
+"n": 3
 },
 "CZ": {
 "brands": [],
 "other": [
+{
+"t": "Xtreme Fitness Gyms Opens First Club in the Czech Republic",
+"u": "https://news.google.com/rss/articles/CBMingFBVV95cUxQQ29DRnctUGJXOWc5akRGempOZTJDOUZibldUc1U4akl1cnd5a3RtNGx3ZV8tOUpDLUxJVkg1VE5wWjFTdW9lSXNIaGg3MEZPLS1zLWp4d25PNVZsMTlzLVFNc2NSTUlmSmdSOUpHQVhFSjBFRmFjWlhtTFhWeUdWcnBBZ21TNHRtQ1d5U1VldzFheXl5QjhpZS1Td2t2QQ?oc=5",
+"s": "EurobuildCEE",
+"at": "2026-10-12T08:03:25Z",
+"sig": [
+"expand"
+]
+},
 {
 "t": "Hacksaw Gaming Expands Czech Republic Reach with Sazka Hry",
 "u": "https://news.google.com/rss/articles/CBMiwgFBVV95cUxPYS11VFpPdTh2bWZWcVN6LXdtUE4tNml2Z2pORnJkcXpNRFBnS0pxSmJiVkZhb0ZMaDd2YjFneFkwTWE4VW1pbGs0MTR1TUFRM240UFVJXzItZDhnOFNYMWJGR0szaDh0elkxVzhKTGNtSk5MUnNyN2N0X0tKSlRKRW9FN0NOZUtHcnlOZ2c1WkV6a3c5S3JWV0JyRXcyRno5aW9xYTJwYWlpX0JQa2N0Rld0dFhWNVh6SDV5SllJWDZ5Zw?oc=5",
@@ -1127,6 +1190,15 @@
 ]
 },
 {
+"t": "BCCT Insight: Foreign Investment and Property Ownership in Thailand",
+"u": "https://news.google.com/rss/articles/CBMiwAFBVV95cUxQUFlQc1ZFTy1jV3BmRHVldU1pdlpNNFhWdDE2Z19vSUhuUHhaVTRSTkVyQS1mblg4LXc2S3JoVnhLWmh5ckJFSVhjYU5XR05jUTFlZEhvak1MRktESDFSc2tFMUVkZkxtTlJvMWQ2ZmhTVllmTFFUNGZMYW1tWmdxNnk0UW9sQkJycnR4ZUtrajV3S1RDZXJERXZJNzkzd0F5S054R3JsWXJ2eWF1Z0Nfc1JGMW42Qk5CYTNmY3FBVms?oc=5",
+"s": "Pattaya Mail",
+"at": "2026-10-12T02:38:10Z",
+"sig": [
+"money"
+]
+},
+{
 "t": "Calbee to Launch New Asia-Oceania Strategic Brand POP LAYERS in Thailand",
 "u": "https://news.google.com/rss/articles/CBMitgFBVV95cUxQbzhzR0xkMzZTdXgxTDlVWUQwYjBKUmNTQmNNc0VWeWlya041MTBDUWlEcnBfRU5NSE05QzJ2aU1DVml1Q0xSR2ZXUmYtV21hcFM2OElLNWZ2cTd1cVVBZUhsdEJTZEM1LUJMenVsN1VROE9zQjdDQ3F6NGZFTjJDdnVGZEJKMlpZREtFbFlHaE0tV1hSYW5JeXdoaUVHbmFqMzNvaExtZ00wSmtRZTVSUUhQTElMQQ?oc=5",
 "s": "Mini Me Insights",
@@ -1164,6 +1236,15 @@
 ]
 },
 {
+"t": "Highgate International School Thailand opens first campus outside the UK near Siam Country Club, Chonburi",
+"u": "https://news.google.com/rss/articles/CBMikAFBVV95cUxQb3JEYlNGVTFuUnd0WHBPOThNTWt1dHJQUjVkejBXZlVUTnBXQnlLOFU5OGF6N1VVcGJibkpVMWZpMzFBTlc0cHBteGZIdmtMZVZ0NkZkaVRTU2NfczR4b2pSSHNBeGpzUzhKd1NiaGVUX0V6M1FTN3FQckRDMEdMc0RlSGpLTko1VlVnZXZTS0g?oc=5",
+"s": "Thaiger",
+"at": "2026-10-09T05:43:56Z",
+"sig": [
+"expand"
+]
+},
+{
 "t": "Cargill expands Asian poultry operations with $130M investment to meet protein demand",
 "u": "https://news.google.com/rss/articles/CBMi1gFBVV95cUxQRkl6LTY1QWpXM0ZvYjVkeWtld0pFWGdaeGZnQzFmY3gtMng3RVFIRzhDUnVfMjJLVGpVOHhEU2dvQlZTNDA1Szljc1BGZV9sUG9pS2JaVFVxdVFtdmxIYmlMdDdUdzJfRjItR3JDNDlYTUR2LTJfUjF3NWRicXB2b29wVG5XYUFXTnctdUJnVk1IZllPSkFENW5GVXVwbGd6cnFaQm9YMl8wWUI1Tm1YYWdtQnI4WGd5Y0FJMHE3cXVlSUp3VmVyZWs4Wm9EdzVXRlZjV0130gHWAUFVX3lxTFBGSXotNjVBalczRm9iNWR5a2V3SkVYZ1p4ZmdDMWZjeC0yeDdFUUhHOENSdV8yMktUalU4eERTZ29CVlM0MDVLOWNzUEZlX2xQb2lLYlpUVXF1UW12bEhiaUx0N1R3Ml9GMi1HckM0OVhNRHYtMl9SMXc1ZGJxcHZvb3BUbldhQVdOdy11QmdWTUhmWU9KQUQ1bkZVdXBsZ3pycVpCb1gyXzBZQjVObVhhZ21CcjhYZ3ljQUkwcTdxdWVJSndWZXJlazhab0R3NVdGVmNXTXc?oc=5",
 "s": "FoodTechBiz",
@@ -1180,24 +1261,6 @@
 "at": "2026-10-08T01:01:34Z",
 "sig": [
 "expand"
-]
-},
-{
-"t": "Clean Max Enviro Energy Solutions Acquires Thailand-Based Massmunch Company Limited",
-"u": "https://news.google.com/rss/articles/CBMi_gFBVV95cUxOVU9Wc0lsbE5FZ1dtVGI4VWNJVl90RE5qUmFNVEJDVl9GbFFWdzFBRVNDYWFvcHVjdW8xUG8yalVaZkdLV2FmU1lkTFl4Rl84V2VRWFh4Yl9aek9lYXVxMEJlMGVvX3lUV3psd25uX0ZpWHZON3lHdlRvME51aFI2TVNJTjM4MVpmdlV0ZGwzQWVCZzZibGNMM1NnSzR5OUx2YUo4VFlxSm9GbzVGOGs0Q3Z4aFVMdS1fSkQtTmFyOEVtYkhQdENWVVVsdFJuLTJFX1NmVjNwR1Q2aDlGaDlJbkhIMEI5OUlfbDF2SElWcXRIRmU3U3k5UlYyM2dWQQ?oc=5",
-"s": "Whalesbook",
-"at": "2026-10-09T13:19:44Z",
-"sig": [
-"money"
-]
-},
-{
-"t": "Thai officials examine Chabad funding, 61 company registrations",
-"u": "https://news.google.com/rss/articles/CBMilgFBVV95cUxNTnJmUzFESEFhc3dmTER1aEwtNnB2M29Fa3NmSVdnODVsVzVtR0czai0zTUt3blg2M0VIbHB2cE9GM0RkMW5QQ2w3NkFQaVQ5cEhULWtrY3NFNjJCMXF5SjJiY3htZmw5bkRIbGU0VnJwUmdpUkEzVlR4MWtWdUpDUVpVbHo4eTlicVJrckFsWmRpM19OX3c?oc=5",
-"s": "Thaiger",
-"at": "2026-10-09T06:22:43Z",
-"sig": [
-"money"
 ]
 }
 ],
@@ -1863,7 +1926,7 @@
 "local": false,
 "more": 0,
 "cool": false,
-"score": 6.37
+"score": 6.36
 },
 {
 "b": "Infosys",
@@ -1916,7 +1979,7 @@
 "local": false,
 "more": 0,
 "cool": false,
-"score": 1.84
+"score": 1.83
 }
 ],
 "other": [
@@ -2067,7 +2130,7 @@
 "local": true,
 "more": 0,
 "cool": false,
-"score": 2.94
+"score": 2.93
 },
 {
 "b": "Coca-Cola",
@@ -2252,28 +2315,6 @@
 "score": 1.81
 },
 {
-"b": "Mandarin Oriental",
-"sec": "Airlines & travel",
-"sig": [
-"expand"
-],
-"h": [
-{
-"t": "The Mandarin Oriental brand launches celadon suitcases with Globe-Trotter, from £165 to £2,295",
-"u": "https://news.google.com/rss/articles/CBMiowFBVV95cUxOb2NWMjd1b0xnaU1kMkRPQm5zdWVFcHo0QUZsUVVzX2tyNDBKU2NJaDZNcWw3M3hJTkdUX1hKTGJYMmZoVGVPNExIYWxVRmZ6ckowLTlycEJWUjNaNlFSbC16S2t2YVpLNkJkeHhRbUpuVE1xZUpfV1FkcU1BM0d3NF9faENCeHlpQy1maHhZUEZPcnl5REZVN3NvNFhRRGNPdm9z?oc=5",
-"s": "La Revue des Hôtels",
-"at": "2026-10-10T10:13:02Z",
-"sig": [
-"expand"
-]
-}
-],
-"local": false,
-"more": 0,
-"cool": false,
-"score": 1.36
-},
-{
 "b": "Puma / Anta",
 "sec": "Sportswear",
 "sig": [
@@ -2325,28 +2366,6 @@
 "more": 0,
 "cool": false,
 "score": 0.74
-},
-{
-"b": "Burberry",
-"sec": "Watches & luxury",
-"sig": [
-"expand"
-],
-"h": [
-{
-"t": "Burberry opens Harrods pop-up as part of 170th anniversary",
-"u": "https://news.google.com/rss/articles/CBMiqgFBVV95cUxQN0VaTlNTZHdYeVdJYjlkd0VIV3ZXYnJJSGgydFN3RXJxUW92Vmw0VG9aWnJGenNiSGpTZGRIR3JxVVlES1p4NkFwZVZIaWxXT0k3OGxlODJ5RVRUaTRpVUEtYXVjcVdDTVpyd19tOHN2N3dHM05TZnMtYkd2UTNUNW9KVGowX3hBYmhNSTNKeHF6bEdHdE4xeXQ3OXNYeTYwOFZfdGxrWndUQQ?oc=5",
-"s": "FashionNetwork France",
-"at": "2026-10-06T18:20:39Z",
-"sig": [
-"expand"
-]
-}
-],
-"local": false,
-"more": 0,
-"cool": false,
-"score": 0.5
 }
 ],
 "other": [
@@ -2446,7 +2465,7 @@
 ]
 }
 ],
-"n": 6
+"n": 4
 },
 "CN": {
 "brands": [
@@ -2488,7 +2507,7 @@
 "local": true,
 "more": 7,
 "cool": false,
-"score": 15.54
+"score": 15.53
 },
 {
 "b": "Asics",
@@ -2532,7 +2551,7 @@
 "local": true,
 "more": 0,
 "cool": false,
-"score": 3.09
+"score": 3.08
 },
 {
 "b": "Nissan",
@@ -2909,7 +2928,7 @@
 "local": true,
 "more": 0,
 "cool": false,
-"score": 2.24
+"score": 2.23
 },
 {
 "b": "Hyundai",
@@ -3870,7 +3889,7 @@
 "local": true,
 "more": 1,
 "cool": false,
-"score": 12.42
+"score": 12.41
 },
 {
 "b": "Asics",
@@ -4046,7 +4065,7 @@
 "local": true,
 "more": 0,
 "cool": false,
-"score": 1.6
+"score": 1.59
 }
 ],
 "other": [
@@ -4173,7 +4192,7 @@
 "local": true,
 "more": 0,
 "cool": false,
-"score": 3.81
+"score": 3.8
 },
 {
 "b": "Amazon",
@@ -4217,7 +4236,7 @@
 "local": true,
 "more": 0,
 "cool": false,
-"score": 3.01
+"score": 3.0
 },
 {
 "b": "Lufthansa",
@@ -4352,59 +4371,6 @@
 "score": 1.4
 },
 {
-"b": "Uniqlo",
-"sec": "Fashion & retail",
-"sig": [
-"money"
-],
-"h": [
-{
-"t": "Uniqlo operator projects 7th straight record profit for current fiscal year",
-"u": "https://news.google.com/rss/articles/CBMitgFBVV95cUxOZjdXcG5YNExBYm1zXzJHY013T19JekJrU0tIcWQ4MURvOVlBaDNnRE9JMzhPRnFPWGJnMkhSb1QycFFyckF0UmlUbXQwVnkwZkZ3aXRnWEJFTEZCLVhhMnB5TzVpMHp3UGpNQy1LcHBMd21lOE41OHQ0OXVDM3QzZmVQZU1IVEZMakRoYUxmR3E1Xzkwdk9rY1o5UW91UUFoX1FubTN6MFd4OW0tUjhCS1B3enBUZw?oc=5",
-"s": "Nikkei Asia",
-"at": "2026-10-08T10:35:00Z",
-"sig": [
-"money"
-]
-},
-{
-"t": "Uniqlo Operator Fast Retailing Logs Fifth Straight Record Profit on Overseas Strength",
-"u": "https://news.google.com/rss/articles/CBMidkFVX3lxTFBWbkdTXzRZMmVHUXpHUlJLRVFVT3FTRmVtSjVTN3ZmQjVmQVkxYkw1a2I4NWQtdWM4VExvekpIa0oyWEl5MnhqMUVzTkZUZTNKX0NUcGx6VTA0S0ZndTkxVnNOSGFmTTgxMHlCbXluRWlpQi1lYWc?oc=5",
-"s": "BigGo Finance",
-"at": "2026-10-08T07:05:00Z",
-"sig": [
-"money"
-]
-}
-],
-"local": false,
-"more": 0,
-"cool": false,
-"score": 1.0
-},
-{
-"b": "Fast Retailing",
-"sec": "Fashion & retail",
-"sig": [
-"money"
-],
-"h": [
-{
-"t": "Uniqlo Operator Fast Retailing Logs Fifth Straight Record Profit on Overseas Strength",
-"u": "https://news.google.com/rss/articles/CBMidkFVX3lxTFBWbkdTXzRZMmVHUXpHUlJLRVFVT3FTRmVtSjVTN3ZmQjVmQVkxYkw1a2I4NWQtdWM4VExvekpIa0oyWEl5MnhqMUVzTkZUZTNKX0NUcGx6VTA0S0ZndTkxVnNOSGFmTTgxMHlCbXluRWlpQi1lYWc?oc=5",
-"s": "BigGo Finance",
-"at": "2026-10-08T07:05:00Z",
-"sig": [
-"money"
-]
-}
-],
-"local": false,
-"more": 0,
-"cool": false,
-"score": 0.5
-},
-{
 "b": "MUFG",
 "sec": "Banking & finance",
 "sig": [
@@ -4418,6 +4384,28 @@
 "at": "2026-10-06T06:01:00Z",
 "sig": [
 "expand"
+]
+}
+],
+"local": false,
+"more": 0,
+"cool": false,
+"score": 0.5
+},
+{
+"b": "Uniqlo",
+"sec": "Fashion & retail",
+"sig": [
+"money"
+],
+"h": [
+{
+"t": "Uniqlo operator projects 7th straight record profit for current fiscal year",
+"u": "https://news.google.com/rss/articles/CBMitgFBVV95cUxOZjdXcG5YNExBYm1zXzJHY013T19JekJrU0tIcWQ4MURvOVlBaDNnRE9JMzhPRnFPWGJnMkhSb1QycFFyckF0UmlUbXQwVnkwZkZ3aXRnWEJFTEZCLVhhMnB5TzVpMHp3UGpNQy1LcHBMd21lOE41OHQ0OXVDM3QzZmVQZU1IVEZMakRoYUxmR3E1Xzkwdk9rY1o5UW91UUFoX1FubTN6MFd4OW0tUjhCS1B3enBUZw?oc=5",
+"s": "Nikkei Asia",
+"at": "2026-10-08T10:35:00Z",
+"sig": [
+"money"
 ]
 }
 ],
@@ -4520,7 +4508,7 @@
 ]
 }
 ],
-"n": 12
+"n": 11
 },
 "CA": {
 "brands": [
@@ -4566,7 +4554,7 @@
 "local": true,
 "more": 0,
 "cool": false,
-"score": 2.54
+"score": 2.53
 },
 {
 "b": "Air Canada",
@@ -4916,7 +4904,7 @@
 "local": true,
 "more": 2,
 "cool": false,
-"score": 12.7
+"score": 12.69
 },
 {
 "b": "Nissan",
@@ -5115,7 +5103,7 @@
 "local": true,
 "more": 0,
 "cool": false,
-"score": 3.08
+"score": 3.07
 },
 {
 "b": "Nike / Adidas / Burberry",
@@ -5838,7 +5826,7 @@
 "local": true,
 "more": 0,
 "cool": false,
-"score": 5.49
+"score": 5.48
 },
 {
 "b": "Mubadala",
@@ -6201,7 +6189,7 @@
 "local": false,
 "more": 0,
 "cool": false,
-"score": 3.97
+"score": 3.96
 },
 {
 "b": "Netflix",
@@ -6293,7 +6281,7 @@
 "local": true,
 "more": 0,
 "cool": false,
-"score": 1.36
+"score": 1.35
 },
 {
 "b": "Mercedes-Benz",
@@ -6783,12 +6771,49 @@
 ],
 "other": [
 {
+"t": "ABEL expands health services into Sweden(2)",
+"u": "https://news.google.com/rss/articles/CBMinAFBVV95cUxQMk5IS3hkNGVLaVVvZC0zWkNBTUo3M29FYUJvLUg3Slcyb1RhQXVkamNVN3lKQm5RTVVYRXJodmtCOGhaSnJZUEhpUTR2UUR5N1R0aVhJNUFyVWpoblFnNzZrYTEzQ1NvM25BVmtxalpGVERzcUlFX1JiTERUQ2NBZUdHRnk4TUNZVm5WNU1tWDE2cGUzcTBOZlpsQTk?oc=5",
+"s": "Business Sweden",
+"at": "2026-10-12T07:58:21Z",
+"sig": [
+"expand"
+]
+},
+{
+"t": "Sweden's Metacon secures EU funding for biogas hydrogen project",
+"u": "https://news.google.com/rss/articles/CBMizgFBVV95cUxNaWhtWkJfY2FVRHd2YXhsZUlRaEtWTFNDZlJIcGlBRmVmOWNxU0JSY3duVzNMaFJKN2RsU2tiQWRnMFN5cFc3SGJ1Ul9QZHMtUU14Q2JrbnlObXJsc09DQl96dXd4TVBlTFRiMDl3ZU9xa0wtNF9xblpWYzlKQ05CclpRYTBBR2ttQ2ZWQm5YZlFMQVdDSnFHRm0xUDh6MWtLaWw0VEJVVFFaV0g3aDV0X0JpTm9lbENHbFZDaGdZY3duT3h1b21jdExIUkprdw?oc=5",
+"s": "Fibre2Fashion",
+"at": "2026-10-12T10:03:49Z",
+"sig": [
+"money"
+]
+},
+{
+"t": "Swedish medtech firm misses out on EU funding – files for bankruptcy",
+"u": "https://news.google.com/rss/articles/CBMivAFBVV95cUxOd2ZiZWxoOEQ1d25lSEdGZGM1T0Vla1BiU2ZmYmYtNGxrWGtHRXFJcXBPb1VCY19yMzh1cV92MzBuaVY0ZEdpa3pxZHFpdHRoUk9PenBxYUw3SGJkX3RoYl9Ka0h5ODNrd3hBV1ViV1VjYzM2M2o4VUw0YnRWdGhxYUlDWHFvQTl1Q0tETmE4eU1FaWQ5a2F5cHNoNV9PX2R4STBHXzRqcGtnVTExUlBHM3Q4d1Jjd0pwWnlkVg?oc=5",
+"s": "lifesciencesweden.se",
+"at": "2026-10-12T08:14:27Z",
+"sig": [
+"money",
+"cool"
+]
+},
+{
 "t": "Swedish Teacher Identified as Korean Boy's 57-Year Sponsor",
 "u": "https://news.google.com/rss/articles/CBMiiAFBVV95cUxPQVRXMDJpWUFOSzd0N2FpV2FRYVJuYnpYZ3NIcGgwLUhONV9NemJxaHJNelZVVjhTNVRtZnA5Z1RVUktOSWN5TWdUNUFrLVZyMUlham9IUFc2bWplNlFZd3FjSnNpMkJsVVJyZWt5Z05udDRZTm1WOHNDalFPM1dWNFZBTGQ1VjJn?oc=5",
 "s": "조선일보",
 "at": "2026-10-06T15:41:55Z",
 "sig": [
 "sponsor"
+]
+},
+{
+"t": "Sweden Raises Its Work Permit Salary Requirement to 90% of Median Wage",
+"u": "https://news.google.com/rss/articles/CBMinAFBVV95cUxONFVlZXljbUlEb21BaEk0SE9nSk5zQUxmMmZpQVlhYUFvNlZxWDBjNVdkYTNBcklCa3o5NVg1bTJlbzFMdVBBUEFzVzJ5dkNUZ0NTVjlucWpVYzZvd2hWbjNyaTRWSlNEakxxakNfSjAwd0tYY3JJajRBd2JhUF9kTWZjNG5UaUtfSlVXbUo4LTlHM2hVOTFkN3VhOG0?oc=5",
+"s": "Legit.ng",
+"at": "2026-10-11T15:04:50Z",
+"sig": [
+"money"
 ]
 },
 {
@@ -6832,42 +6857,6 @@
 "u": "https://news.google.com/rss/articles/CBMiiAFBVV95cUxPVGdlMm1xaV8wZWZLX0lhb2tlUDladENlV0FtTDd4YS1PUTRtclpabzZCQ0hacGR5VGpobXQ4dnhJOVQ2SUx1NUotNDBMOFY0RWo5blFXd21OZ1B1WHdIYWo5S1NJbVVZRW42dnV3MXNrMzFJajA2LWtmX3hLbWdpclloaTExSUVw?oc=5",
 "s": "TaiyangNews",
 "at": "2026-10-09T09:58:05Z",
-"sig": [
-"money"
-]
-},
-{
-"t": "Swedish Startups Project $5.6 Billion in 2026 Venture Funding",
-"u": "https://news.google.com/rss/articles/CBMiWEFVX3lxTFBnM2RaU09FOHd5aXp4SUtDc0Zra3VBVjF4dDd2eDF4UWVhc0h6dXh0UFk5YlR3cm9FaHh4SU12WlozcEFRZ2pOMXdnaERDLWFVSkIyQk9WRks?oc=5",
-"s": "TOKENPOST",
-"at": "2026-10-09T07:07:46Z",
-"sig": [
-"money"
-]
-},
-{
-"t": "Sweden Launches A Travel Agency For Introverts [Video]",
-"u": "https://news.google.com/rss/articles/CBMilgFBVV95cUxPOERObVB3N1BWRUo1M0pxcGZTSWVFZnc3NDJCaVNaQzI4QmdSaVZnM1FXWGNaTkVxMGtuNmFhUmoyUU9SbU1IZ3lhVzRLVll4Qm1GX29iSXZlS3M4OEhmUzFLQVA1ZmxWZ2FwODNsUlk1cDZOMGczTlIyQ0VpR3BQWnZoZGpYMTBfOFdlRlhOcGRjWnNYaEE?oc=5",
-"s": "2oceansvibe News",
-"at": "2026-10-07T07:59:10Z",
-"sig": [
-"expand"
-]
-},
-{
-"t": "Sweden's Green AI Cloud to go public via SPAC merger at $300M valuation",
-"u": "https://news.google.com/rss/articles/CBMipwFBVV95cUxPT29nX1ZsUnd3Q0t6U0FXTWdMQlNuVllTeGcwZDQtNE5MQmFkck51dmZLZ1RWMUtDcTR6OHo5ZzhQYms5QXRBa0ZvVWFMaDAxQ3NueWlNZGktNUlUdmhncVk0OXRwLUNRRkZFYVgyTnRlUXFKVEwwZjdWRE1XODVBWkJ4cXZUN29FSGFGbk9sRTZBSTIzT2JvSTlmNThPWDVoMkhQcHNBQQ?oc=5",
-"s": "Dealroom",
-"at": "2026-10-08T21:42:30Z",
-"sig": [
-"money"
-]
-},
-{
-"t": "Leonardo DiCaprio, yes that Leo, announces investment in Swedish EnergyTech startup Elvy",
-"u": "https://news.google.com/rss/articles/CBMiwAFBVV95cUxQelR2dXJDSjFqZE1hbHYyTmV6QWhXNUJZTWl0VXAzMFo1U19HMTF6VHBKUnpUWnRZc0lFLVNGN1Z3LTAtZHBIeDFodjNuUW1TNUM1MDc0X0t5VVpyWk9hTTQ3T2QyNzZjVF96enlnWlJtTF9oc0taV19ScWpORjJOR0ZoMGNTQ3RnYVk0SWZvSks2VzVjVzY1aVNhMkZQVVhsekJZSTlLaWhxMjhmN2N3VFY3VmNXZUs4Q0xEZzQ3ZWs?oc=5",
-"s": "EU-Startups",
-"at": "2026-10-08T15:47:29Z",
 "sig": [
 "money"
 ]
@@ -6920,14 +6909,14 @@
 "PE:1": "2026-10-12T13:08:39Z",
 "DE:0": "2026-10-12T13:08:39Z",
 "DE:1": "2026-10-12T13:08:39Z",
-"FR:0": "2026-10-12T06:54:15Z",
-"FR:1": "2026-10-12T06:54:15Z",
-"UA:0": "2026-10-12T06:54:15Z",
-"UA:1": "2026-10-12T06:54:15Z",
-"CZ:0": "2026-10-12T06:54:15Z",
-"CZ:1": "2026-10-12T06:54:15Z",
-"TH:0": "2026-10-12T06:54:15Z",
-"TH:1": "2026-10-12T06:54:15Z",
+"FR:0": "2026-10-12T13:13:18Z",
+"FR:1": "2026-10-12T13:13:18Z",
+"UA:0": "2026-10-12T13:13:18Z",
+"UA:1": "2026-10-12T13:13:18Z",
+"CZ:0": "2026-10-12T13:13:18Z",
+"CZ:1": "2026-10-12T13:13:18Z",
+"TH:0": "2026-10-12T13:13:18Z",
+"TH:1": "2026-10-12T13:13:18Z",
 "GB:0": "2026-10-12T07:46:16Z",
 "GB:1": "2026-10-12T07:46:16Z",
 "TN:0": "2026-10-12T07:46:16Z",
@@ -6982,8 +6971,8 @@
 "KR:1": "2026-10-12T11:43:47Z",
 "SG:0": "2026-10-12T11:43:47Z",
 "SG:1": "2026-10-12T11:43:47Z",
-"SE:0": "2026-10-11T22:39:01Z",
-"SE:1": "2026-10-11T22:39:01Z"
+"SE:0": "2026-10-12T13:13:18Z",
+"SE:1": "2026-10-12T13:13:18Z"
 },
 "errors": {}
 }
