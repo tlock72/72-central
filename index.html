@@ -3657,17 +3657,19 @@ const RS_SG = { atp: "atp", wta: "wta", teb14: "b14", teg14: "g14" };
 // results/index.json: every saved 12 months with at least one result (lookup_results.py); those buttons are gold
 let RS_HAS = new Set();
 const rsSaved = (p, t = SQ.t) => RS_HAS.has(rsFile(p, t).slice(8, -5));
-// results already on the page: the watch list (matched by link, else name) or the computerised suggestions
-function rsLocal(p, t = SQ.t){
+// results already on the page: the watch list (matched by link, else name) or the computerised suggestions,
+// as { res, at } (at = when they were read)
+const rsLocal = (p, t = SQ.t) => rsLocalAt(p, t)?.res || null;
+function rsLocalAt(p, t = SQ.t){
   const u = (p.url || "").toLowerCase();
   for (const c of Object.values(CORNER ? cnShown() : {})) {
     const L = c.links || {};
     if (!c.results?.length) continue;
     if ((L.pro?.url && u === L.pro.url.toLowerCase()) || (L.itf?.id && u.includes("/" + L.itf.id + "/")) || (L.te?.id && u.includes(String(L.te.id).toLowerCase()))
-      || [c.name, c.typed].some(n => n && cnSorted(n) === cnSorted(p.raw))) return c.results;
+      || [c.name, c.typed].some(n => n && cnSorted(n) === cnSorted(p.raw))) return { res: c.results, at: c.updated || "" };
   }
   const S = RS_SG[t] && SUGG?.players?.[RS_SG[t] + ":" + cnSorted(p.raw)];
-  return S?.results?.length ? S.results : null;
+  return S?.results?.length ? { res: S.results, at: S.updated || "" } : null;
 }
 function rsSqBtn(p){
   return `<button type="button" class="rs-sq${rsLocal(p) || rsSaved(p) ? " has" : ""}" data-rsq="${esc(sqRowKey(p))}" title="Last 12 months of results">${RS_ICON}<span class="lb">12 months</span></button>`;
@@ -3677,11 +3679,10 @@ async function rsSq(p, tour = SQ.t){
   const k = "sq:" + tour + ":" + cnSorted(p.raw), file = rsFile(p, tour);
   const site = /^te/.test(tour) ? "Tennis Europe website" : "ITF website";
   const meta = [p.cty, p.born ? "born " + p.born : "", `${SQ_SHORT[tour] || tour.toUpperCase()} No. ${p.rank}`].filter(Boolean).join(" · ");
-  const local = rsLocal(p, tour);
+  const L = rsLocalAt(p, tour), local = L?.res || null;
   RS.all[k] = { name: p.name, meta, res: local, state: "load", site };
   clearTimeout(RS.poll);
   rsOpen(k);
-  if (local) return;
   const read = async () => { try { const r = await fetch(file + "?t=" + Date.now(), { cache: "no-store" }); return r.ok ? await r.json() : null; } catch (e) { return null; } };
   const ask = () => fetch(CORNER_URL, { method: "POST", mode: "no-cors", body: JSON.stringify({ kind: "results", tour, name: p.raw, url: p.url || "" }) });
   const show = j => {
@@ -3692,6 +3693,8 @@ async function rsSq(p, tour = SQ.t){
     if (RS.k === k && $("#resd").open) rsOpen(k);
   };
   let j = await read();
+  // results already on the page are shown at once; this player's own 12-months file replaces them if it was read later
+  if (local) { if (j?.results?.length && (!L.at || (j.updated || "") > L.at)) show(j); return; }
   if (j && j.day === rsUkDay()) return show(j);
   // nothing saved, or not from today: ask GitHub for a fresh read
   let sent = true;
