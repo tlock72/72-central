@@ -10,8 +10,11 @@ the watch list and the suggestions (prospects.py / suggest_results.py):
     GetPlayerActivity on the men's / women's circuit, plus junior matches for anyone 18 or under;
   - ITF juniors: the ITF id in the ranking list's link: junior and pro (men's / women's circuit) matches;
   - Tennis Europe U14: the profile in the ranking list's link, its tournaments pages.
-Each player is saved to results/<tour>-<name words sorted>.json (the page reads that file) and refreshed at most once
-a day. Files nobody has asked for in 60 days are deleted. Bot check = that site left alone 3 hours (results/status.json,
+Each player is saved to results/<tour>-<name words sorted>.json (the page reads that file). Kept up to date without
+anyone pressing the button: every 72 player (on the list the page's rs72() uses) and everyone ever asked for (a file
+in results/) is re-read once a day, and a 72 player who has just finished a match (data.json, itfm.json, te.json:
+today or yesterday) every 3 hours, so a new result shows the same day. New requests go first, then 72 players, then
+the rest, oldest first. Files are never deleted. Bot check = that site left alone 3 hours (results/status.json,
 so the page can say so).
 """
 import json, os, re, sys, time, urllib.request
@@ -20,6 +23,7 @@ from datetime import timedelta, datetime
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 import prospects as P
 import suggest_results as S
+import update as U  # ROSTER: the 72 players (name, tour)
 
 DIR = "results"
 STATUS = os.path.join(DIR, "status.json")
@@ -62,6 +66,53 @@ def find_row(tour, name, url, files):
     return hit[0] if hit else None, ((files[f] or {}).get(k) or {}).get("week")
 
 
+def rk_key(s):
+    """Same as the page's rkKey(): letters only, accents off, ae/oe/ue as a/o/u."""
+    s = P.unicodedata.normalize("NFD", s or "").lower()
+    return re.sub(r"[^a-z]", "", s).replace("ae", "a").replace("oe", "o").replace("ue", "u")
+
+
+def roster_rows(files):
+    """{roster id: (tour, row)} on the list the page's rs72() uses: juniors on Tennis Europe U14 (by roster id), else the
+    ITF junior list, else ATP/WTA; pros on ATP/WTA by name (same name, else the one name that starts the same)."""
+    try:
+        m = re.search(r"const JUNIOR_PROFILES = \[(.*?)\n\];", open("index.html", encoding="utf-8").read(), re.S)
+        juniors = set(re.findall(r'\{ id:"([a-z0-9]+)"', m[1])) if m else set()
+    except OSError:
+        juniors = set()
+    rows = lambda f, k: ((files[f] or {}).get(k) or {}).get("players") or []
+    out = {}
+    for rid, (name, tour) in U.ROSTER.items():
+        g = "b" if tour == "atp" else "g"
+        hit = None
+        if rid in juniors:
+            for t, f, k in ((f"te{g}14", "terank.json", g + "14"), (f"itf{g}", "itfjr.json", g)):
+                r = next((r for r in rows(f, k) if len(r) > 8 and r[8] == rid), None)
+                if r:
+                    hit = (t, r); break
+        if not hit:
+            want, pro = rk_key(name), rows("scouting.json", tour)
+            same = [r for r in pro if rk_key(r[1]) == want]
+            near = [r for r in pro if rk_key(r[1]).startswith(want) or want.startswith(rk_key(r[1]))]
+            r = same[0] if same else near[0] if len(near) == 1 else None
+            if r:
+                hit = (tour, r)
+        if hit:
+            out[rid] = hit
+    return out
+
+
+def just_played():
+    """Roster ids with a finished match today or yesterday (UK) in the score files."""
+    since = (T - timedelta(days=1)).isoformat()
+    ids = set()
+    for f in ("data.json", "itfm.json", "te.json"):
+        for m in P.load(f, {}).get("matches") or []:
+            if m.get("status") == "finished" and (m.get("date") or "") >= since:
+                ids.update(x for x in (m.get("p1Id"), m.get("p2Id")) if x)
+    return ids
+
+
 def main():
     os.makedirs(DIR, exist_ok=True)
     status = P.load(STATUS, {})
@@ -83,36 +134,69 @@ def main():
         return
     files = {f: P.load(f, {}) for f in ("scouting.json", "itfjr.json", "terank.json")}
     suggest = P.load(S.OUT, {}).get("players") or {}
+    itf_ids = P.load("titles.json", {}).get("ids") or {}  # roster id -> ITF id (itf_titles.py)
+    today = T.isoformat()
     todo, seen = [], set()
-    for a in sorted(asks, key=lambda a: a.get("at") or "", reverse=True):  # newest first
+
+    def add(tour, name, url, rid=None, why=""):
+        k = (tour, sorted_words(name))
+        if tour not in LISTS or not name or k in seen:
+            return
+        seen.add(k)
+        todo.append((tour, name, url, P.load(path_of(tour, name), {}), rid, why))
+
+    # 1) new requests, newest first (skipped if already read today after the request was made)
+    for a in sorted(asks, key=lambda a: a.get("at") or "", reverse=True):
         tour, name = a.get("tour"), (a.get("name") or "").strip()
-        if tour not in LISTS or not name or (tour, sorted_words(name)) in seen:
+        if tour not in LISTS or not name:
             continue
-        seen.add((tour, sorted_words(name)))
         old = P.load(path_of(tour, name), {})
         asked = when(a.get("at"))
-        # done already: refreshed today, and after this request was made
-        if old.get("day") == T.isoformat() and (not asked or (when(old.get("updated")) or asked) >= asked):
+        if old.get("day") == today and (not asked or (when(old.get("updated")) or asked) >= asked):
+            seen.add((tour, sorted_words(name)))
             continue
-        todo.append((tour, name, a.get("url") or "", old))
-    print(f"{len(asks)} requests, {len(todo)} to look up")
+        add(tour, name, a.get("url") or "", why="asked")
+    # 2) 72 players: daily, and every 3 hours after a match they've just finished
+    played = just_played()
+    for rid, (tour, row) in roster_rows(files).items():
+        old = P.load(path_of(tour, row[1]), {})
+        if old.get("day") != today:
+            add(tour, row[1], row[7] if len(row) > 7 else "", rid, "daily")
+        elif rid in played and P.ago(old.get("updated")) > timedelta(hours=3):
+            add(tour, row[1], row[7] if len(row) > 7 else "", rid, "just played")
+        else:
+            seen.add((tour, sorted_words(row[1])))
+    # 3) everyone asked for before: daily, the longest waiting first
+    kept = []
+    for f in os.listdir(DIR):
+        if f != "status.json" and f.endswith(".json"):
+            old = P.load(os.path.join(DIR, f), {})
+            if old.get("tour") in LISTS and old.get("name") and old.get("day") != today:
+                kept.append(old)
+    for old in sorted(kept, key=lambda o: o.get("updated") or ""):
+        add(old["tour"], old["name"], old.get("url") or "", why="daily")
+    print(f"{len(asks)} requests, {len(todo)} to look up:", ", ".join(f"{t[1]} ({t[5]})" for t in todo[:60]))
     te_ok, changed = False, False
-    for tour, name, url, old in todo:
+    for tour, name, url, old, rid, why in todo:
         if P.out_of_time():
             print("time budget used - the next run carries on"); break
         site = "te" if tour.startswith("te") else "itf"
         if off[site]:
             continue
         row, week = find_row(tour, name, url, files)
-        rec = {"tour": tour, "name": name, "day": T.isoformat(), "updated": P.iso(NOW)}
+        rec = {"tour": tour, "name": name, "day": today, "updated": P.iso(NOW)}
         if not row:
-            rec["note"] = "This player isn't on the latest ranking list any more."
+            if old.get("results"):  # off the list now: the results already read stay, checked again tomorrow
+                rec = dict(old, day=today)
+            else:
+                rec["note"] = "This player isn't on the latest ranking list any more."
             json.dump(rec, open(path_of(tour, name), "w"), ensure_ascii=False, separators=(",", ":")); changed = True
             continue
         rank, rname, nat, born, w = row[:5]
         rurl = row[7] if len(row) > 7 else ""
+        rec["url"] = rurl
         g = LISTS[tour][2]
-        print("-", tour, rname)
+        print("-", tour, rname, f"({why})")
         try:
             if site == "te":
                 m = re.search(r"player-profile/([0-9A-Fa-f-]{36})", rurl or "")
@@ -134,7 +218,8 @@ def main():
             else:
                 # the ITF id: kept from an earlier look-up or the suggestions, else found by name + nationality (never a guess)
                 sg = suggest.get(f"{tour}:{sorted_words(rname)}") or {}
-                pid, how, itf_name = (old.get("itf"), old.get("how"), old.get("itfName")) if old.get("itf") else \
+                pid, how, itf_name = (str(itf_ids[rid]), "72 roster", rname) if rid and itf_ids.get(rid) else \
+                    (old.get("itf"), old.get("how"), old.get("itfName")) if old.get("itf") else \
                     (sg.get("itf"), sg.get("how"), sg.get("itfName")) if sg.get("itf") else (None, None, None)
                 if not pid and rname not in S.NO_ITF_LINK:
                     pid, how, itf_name = S.itf_id({"name": rname, "nat": nat, "g": g, "born": born, "rank": rank, "w": w})
@@ -159,11 +244,6 @@ def main():
         rec["name"] = rname
         json.dump(rec, open(path_of(tour, name), "w"), ensure_ascii=False, separators=(",", ":"))
         changed = True
-    # nobody asked in 60 days: deleted
-    for f in os.listdir(DIR):
-        p = os.path.join(DIR, f)
-        if f != "status.json" and f.endswith(".json") and P.ago(P.load(p, {}).get("updated")) > timedelta(days=60):
-            os.remove(p); changed = True
     for s in ("itf", "te"):
         if not off[s]:
             blocked.pop(s, None)
