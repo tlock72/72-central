@@ -60,13 +60,16 @@ def norm(s):
 
 
 def find_id(names):
+    # a name can belong to several ITF profiles (Daria Kasatkina: a 2005 junior listed before the WTA player),
+    # so a professional's profile comes first
     for name in names.split("|"):
         res = get("/PlayerApi/GetPlayerSearch", searchString=name)
         want = set(norm(name).split())
-        for p in res.get("players") or []:
-            have = set(norm(f'{p.get("givenName")} {p.get("familyName")}').split())
-            if want <= have or (len(have) >= 2 and have <= want):
-                return p["playerId"]
+        hits = [p for p in res.get("players") or []
+                if (lambda have: want <= have or (len(have) >= 2 and have <= want))(set(norm(f'{p.get("givenName")} {p.get("familyName")}').split()))]
+        hits.sort(key=lambda p: not p.get("proPlayer"))
+        if hits:
+            return hits[0]["playerId"]
     return None
 
 
