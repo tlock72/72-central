@@ -72,8 +72,15 @@ def main():
     off = {s: P.ago(blocked.get(s)) < timedelta(hours=3) for s in ("itf", "te")}
     try:
         asks = requests_list()
+        status.pop("sheet", None)
     except Exception as e:
-        print("The Sheet's list couldn't be read:", e); return
+        # e.g. "72 Central" back instead of the list: the Sheet is running an older copy of visit_log.gs (alerted)
+        print("The Sheet's list couldn't be read:", e)
+        if not status.get("sheet"):
+            status["sheet"] = P.iso(NOW)
+        if json.dumps(status, sort_keys=True) != json.dumps(P.load(STATUS, {}), sort_keys=True):
+            json.dump(status, open(STATUS, "w"), separators=(",", ":"))
+        return
     files = {f: P.load(f, {}) for f in ("scouting.json", "itfjr.json", "terank.json")}
     suggest = P.load(S.OUT, {}).get("players") or {}
     todo, seen = [], set()
