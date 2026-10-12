@@ -244,6 +244,15 @@
     "link": "https://www.itftennis.com/en/tournament/dominican-republic-f4-futures/dom/2014/m-fu-dom-04a-2014/"
    },
    {
+    "id": "kasatkina",
+    "tournament": "$25,000 Telavi",
+    "tier": "$25K",
+    "type": "ITF Womens Circuit",
+    "week": "15 Sep to 21 Sep 2014",
+    "end": "2014-09-21",
+    "link": "https://www.itftennis.com/en/tournament/$25000-telavi/geo/2014/w-witf-geo-05a-2014/"
+   },
+   {
     "id": "rublev",
     "tournament": "Russia F3 Futures",
     "tier": "Futures",
@@ -269,6 +278,15 @@
     "week": "03 Mar to 09 Mar 2014",
     "end": "2014-03-09",
     "link": "https://www.itftennis.com/en/tournament/kazakhstan-f2-futures/kaz/2014/m-fu-kaz-02a-2014/"
+   },
+   {
+    "id": "kasatkina",
+    "tournament": "$10,000 Sharm El Sheikh",
+    "tier": "$10K",
+    "type": "ITF Womens Circuit",
+    "week": "27 Jan to 02 Feb 2014",
+    "end": "2014-02-02",
+    "link": "https://www.itftennis.com/en/tournament/$10000-sharm-el-sheikh/egy/2014/w-witf-egy-03a-2014/"
    }
   ],
   "2013": [
@@ -980,6 +998,53 @@
     "end": "2010-05-02",
     "link": "https://www.itftennis.com/en/tournament/$10000-antalya/tur/2010/w-witf-tur-07a-2010/"
    }
+  ],
+  "2015": [
+   {
+    "id": "kasatkina",
+    "tournament": "$50,000+H Saint-Malo",
+    "tier": "$50K",
+    "type": "ITF Womens Circuit",
+    "week": "14 Sep to 20 Sep 2015",
+    "end": "2015-09-20",
+    "link": "https://www.itftennis.com/en/tournament/$50000plush-saint-malo/fra/2015/w-witf-fra-22a-2015/"
+   },
+   {
+    "id": "kasatkina",
+    "tournament": "$25,000 Minsk",
+    "tier": "$25K",
+    "type": "ITF Womens Circuit",
+    "week": "15 Jun to 21 Jun 2015",
+    "end": "2015-06-21",
+    "link": "https://www.itftennis.com/en/tournament/$25000-minsk/blr/2015/w-witf-blr-02a-2015/"
+   },
+   {
+    "id": "kasatkina",
+    "tournament": "$25,000 Minsk",
+    "tier": "$25K",
+    "type": "ITF Womens Circuit",
+    "week": "08 Jun to 14 Jun 2015",
+    "end": "2015-06-14",
+    "link": "https://www.itftennis.com/en/tournament/$25000-minsk/blr/2015/w-witf-blr-01a-2015/"
+   },
+   {
+    "id": "kasatkina",
+    "tournament": "$25,000 Caserta",
+    "tier": "$25K",
+    "type": "ITF Womens Circuit",
+    "week": "18 May to 24 May 2015",
+    "end": "2015-05-24",
+    "link": "https://www.itftennis.com/en/tournament/$25000-caserta/ita/2015/w-witf-ita-13a-2015/"
+   },
+   {
+    "id": "kasatkina",
+    "tournament": "$25,000 Daytona Beach, FL",
+    "tier": "$25K",
+    "type": "ITF Womens Circuit",
+    "week": "19 Jan to 25 Jan 2015",
+    "end": "2015-01-25",
+    "link": "https://www.itftennis.com/en/tournament/$25000-daytona-beach-fl/usa/2015/w-witf-usa-02a-2015/"
+   }
   ]
  },
  "checked": "2026-10-12",
@@ -1025,7 +1090,8 @@
   "dudeney",
   "mmakarova",
   "vmakarova",
-  "kanabar"
+  "kanabar",
+  "kasatkina"
  ],
  "best": {
   "deminaur": {
@@ -1275,9 +1341,16 @@
    "itf": 1447,
    "week": "2026-10-12",
    "checked": "2026-10-12"
+  },
+  "kasatkina": {
+   "rank": 8,
+   "itf": 8,
+   "seen": 22,
+   "week": "2026-10-12",
+   "checked": "2026-10-12"
   }
  },
- "tried": "2026-10-12T11:02:59Z",
+ "tried": "2026-10-12T11:13:37Z",
  "pending": [],
  "todo": [],
  "todoMode": "career",
