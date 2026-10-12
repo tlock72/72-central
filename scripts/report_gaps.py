@@ -192,6 +192,10 @@ def gaps():
     for k, e in (co.get("errors") or {}).items():
         if ukday(e.get("at")) == TODAY:
             out.append(f"Scouting Corner: the {(e.get('msg') or '').split(' (')[0]} on {TODAY}. Names on prospects.json still update.")
+    # 6b2) "12 months" look-ups: the Sheet's list of requests can't be read (usually an old copy of visit_log.gs)
+    if load("results/status.json").get("sheet"):
+        out.append("12 months look-ups: GitHub can't read the requests from the Google Sheet, so no new results are "
+                   "fetched. Paste the latest scripts/visit_log.gs into the Sheet's Apps Script and deploy a new version.")
     # 6c) News (news.json, hourly): an outlet's feed that hasn't been readable for 2 days (moved or blocked)
     for name, src in (load("news.json").get("sources") or {}).items():
         ok = src.get("ok")
