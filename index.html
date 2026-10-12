@@ -600,6 +600,10 @@ dialog.rsd[open]{animation:pop .28s ease}
 .rs-sq:hover{color:var(--gold);border-color:var(--gold)}
 .rs-sq svg{width:11px;height:11px}
 .rs-sq.has{color:var(--gold);border-color:rgba(208,165,121,.45)}
+/* 72 Roster profiles: the same window from a bigger button */
+.rs-pf{display:inline-flex;align-items:center;gap:8px;padding:10px 18px;border:1px solid rgba(208,165,121,.45);border-radius:999px;color:var(--gold);font-family:var(--display);text-transform:uppercase;letter-spacing:.14em;font-size:11px}
+.rs-pf:hover{background:var(--gold-dim);border-color:var(--gold)}
+.rs-pf svg{width:14px;height:14px}
 @media (max-width:640px){
   .rs-sq .lb{display:none}
   .sq-row .ct .sq-acts{display:flex;width:max-content;margin-top:5px;border:1px solid var(--line-2);border-radius:8px;overflow:hidden}
@@ -2280,7 +2284,7 @@ function renderItf(){
     .sort((a, b) => (a.d.rank ?? 1e9) - (b.d.rank ?? 1e9) || a.x.born - b.x.born || a.p.last.localeCompare(b.p.last));
   const html = list => list.map(({ x, p, d }) => `<div class="rk">
       <div class="no ${d.rank ? "" : "na"}">${d.rank ? `<span class="hash">#</span>${d.rank}` : "—"}</div>
-      <div class="who">${nmLink(p)}<div class="ct">${esc([p.country, "b. " + x.born, d.rank ? "" : d.high ? "No current ITF junior ranking" : (x.head ? `${x.head[0]} #${x.head[1]}` : "Not ITF-ranked")].filter(Boolean).join(" · "))}${d.high ? `<span class="ptm"> · best #${d.high}</span>` : ""}</div></div>
+      <div class="who">${nmLink(p)}<div class="ct">${esc([p.country, "b. " + x.born, d.rank ? "" : d.high ? "No current ITF junior ranking" : (x.head ? `${x.head[0]} #${x.head[1]}` : "Not ITF-ranked")].filter(Boolean).join(" · "))}${d.high ? `<span class="ptm"> · best #${d.high}</span>` : ""}${rs72Btn(p.id)}</div></div>
       <div class="pts">${d.high ? "#" + d.high : ""}<small>${d.high ? "BEST" : ""}</small></div>
       ${mv(d.rank ? d.move : null)}</div>`).join("");
   const b = rows("ATP"), g = rows("WTA");
@@ -2289,6 +2293,13 @@ function renderItf(){
   const wk = ITF?.rankDate ? `, week of ${ITF.rankDate}` : "";
   $("#itfSrc").textContent = ITF ? `Source: ITF World Tennis Junior Rankings${wk}. Updated every Monday. Only players with a current ITF junior ranking are listed.` : "Loading ITF junior rankings…";
   return [...b, ...g].filter(o => o.d.rank);
+}
+// a roster player's row on the official ATP/WTA list in scouting.json (same name, else one clear longer/shorter form)
+function rkRow(p){
+  const T = SCOUT && SCOUT[p.tour.toLowerCase()]; if (!T?.players) return null;
+  const k = rkKey(p.first + p.last); let x = T.players.find(q => rkKey(q[1]) === k);
+  if (!x) { const h = T.players.filter(q => { const n = rkKey(q[1]); return n.startsWith(k) || k.startsWith(n); }); if (h.length === 1) x = h[0]; } // e.g. "Leyre Romero Gormaz"
+  return x || null;
 }
 function rkKey(s){ return String(s || "").normalize("NFD").toLowerCase().replace(/[^a-z]/g, "").replace(/ae/g, "a").replace(/oe/g, "o").replace(/ue/g, "u"); }
 // 72 Rankings: a player's name opens their 72 Roster profile (plain text if they have no profile)
@@ -2305,10 +2316,7 @@ function renderRankings(){
   // players who have held an ATP/WTA ranking (a career high is on file) but are not ranked now go at the bottom
   const former = tour => ROSTER.filter(p => p.tour === tour && !(r.players[p.id] || {}).rank && profById[p.id]?.high).map(p => ({ p, d: { note: `Not currently ranked · career high #${profById[p.id].high}` } }));
   // 1 wk / 3 mo / 12 mo moves from the official weekly rankings in scouting.json (same list as Filtered Rankings)
-  const trendOf = p => { const T = SCOUT && SCOUT[p.tour.toLowerCase()]; if (!T?.players) return null;
-    const k = rkKey(p.first + p.last); let x = T.players.find(q => rkKey(q[1]) === k);
-    if (!x) { const h = T.players.filter(q => { const n = rkKey(q[1]); return n.startsWith(k) || k.startsWith(n); }); if (h.length === 1) x = h[0]; } // e.g. "Leyre Romero Gormaz"
-    return x ? { rank: x[0], w: x[4], m3: x[5], m12: x[6], pts: x[9] } : null; };
+  const trendOf = p => { const x = rkRow(p); return x ? { rank: x[0], w: x[4], m3: x[5], m12: x[6], pts: x[9] } : null; };
   const trCell = (t, k) => { if (!t) return `<div class="tr"></div>`; const prev = t[k];
     if (prev === -1) return `<div class="tr" title="Not tracked then">—</div>`;
     if (prev == null) return `<div class="tr new" title="Not ranked then">NEW</div>`;
@@ -2318,7 +2326,7 @@ function renderRankings(){
     const pts = d.points || op ? Number(d.points || op).toLocaleString("en-GB") : "";
     return `<div class="rk t6">
       <div class="no ${d.rank ? "" : "na"}">${d.rank ? `<span class="hash">#</span>${d.rank}` : "—"}</div>
-      <div class="who">${nmLink(p)}<div class="ct">${esc([p.country, d.rank ? "" : (d.note || "Not ranked")].filter(Boolean).join(" · "))}${pts ? `<span class="ptm"> · ${pts} pts</span>` : ""}</div></div>
+      <div class="who">${nmLink(p)}<div class="ct">${esc([p.country, d.rank ? "" : (d.note || "Not ranked")].filter(Boolean).join(" · "))}${pts ? `<span class="ptm"> · ${pts} pts</span>` : ""}${rs72Btn(p.id)}</div></div>
       <div class="pts">${pts}<small>${pts ? "PTS" : ""}</small></div>
       ${t ? trCell(t, "w") + trCell(t, "m3") + trCell(t, "m12") : d.rank ? `<div class="tr">${mv(d.move)}</div><div class="tr"></div><div class="tr"></div>` : `<div class="tr"></div><div class="tr"></div><div class="tr"></div>`}</div>`; }).join("");
   const atp = rows("ATP"), wta = rows("WTA");
@@ -2773,6 +2781,7 @@ function openProfile(id){
     <div class="pb">
       ${campHtml(x.campaign)}
       ${(lr => lr ? `<section><h3 class="pk">Latest result</h3><div class="plr">${card(lr)}</div></section>` : "")(latestResult(id))}
+      ${(b => b ? `<section><h3 class="pk">Last 12 months</h3>${b}</section>` : "")(rs72Btn(id, true))}
       ${x.kind === "junior" ? juniorBody(x, p, rank) : proBody(x, p, rank)}
       <div class="pnav"><button data-go="${prev.x.id}">← ${esc(prev.p.last)}</button>${safeUrl(p.sofa) ? `<a class="live-btn" href="${esc(safeUrl(p.sofa))}" target="_blank" rel="noopener"><span class="dot"></span>SofaScore profile</a>` : ""}<button data-go="${next.x.id}">${esc(next.p.last)} →</button></div>
     </div>`;
@@ -3633,16 +3642,16 @@ $("#resd").addEventListener("click", e => {
   if (f) RS.f = f.dataset.rsf; else if (s) RS.src = s.dataset.rss; else return;
   const y = d.scrollTop; rsOpen(RS.k); d.scrollTop = y;
 });
-$("#resd").addEventListener("close", () => { if (!$("#cnd").open) profLock(false); clearTimeout(RS.poll); });
+$("#resd").addEventListener("close", () => { if (!$("#cnd").open && !$("#prof").open) profLock(false); clearTimeout(RS.poll); });
 /* Filtered Rankings: "12 months" on every row. Results already on the site (watch list, suggestions, or someone
    asked for this player before: results/<list>-<name words sorted>.json) open at once. Otherwise, or if they're
    not from today, the Sheet asks GitHub (results.yml, scripts/lookup_results.py) to read them, and this window
    checks for the file every 30 seconds while it's open. */
 const RS_ICON = `<svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6" aria-hidden="true"><rect x="2" y="3" width="12" height="11" rx="2"/><path d="M2 6.5h12M5.5 1.5v3M10.5 1.5v3"/></svg>`;
-const rsFile = p => `results/${SQ.t}-${cnSorted(p.raw).replace(/ /g, "-")}.json`;
+const rsFile = (p, t = SQ.t) => `results/${t}-${cnSorted(p.raw).replace(/ /g, "-")}.json`;
 const RS_SG = { atp: "atp", wta: "wta", teb14: "b14", teg14: "g14" };
 // results already on the page: the watch list (matched by link, else name) or the computerised suggestions
-function rsLocal(p){
+function rsLocal(p, t = SQ.t){
   const u = (p.url || "").toLowerCase();
   for (const c of Object.values(CORNER ? cnShown() : {})) {
     const L = c.links || {};
@@ -3650,18 +3659,18 @@ function rsLocal(p){
     if ((L.pro?.url && u === L.pro.url.toLowerCase()) || (L.itf?.id && u.includes("/" + L.itf.id + "/")) || (L.te?.id && u.includes(String(L.te.id).toLowerCase()))
       || [c.name, c.typed].some(n => n && cnSorted(n) === cnSorted(p.raw))) return c.results;
   }
-  const S = RS_SG[SQ.t] && SUGG?.players?.[RS_SG[SQ.t] + ":" + cnSorted(p.raw)];
+  const S = RS_SG[t] && SUGG?.players?.[RS_SG[t] + ":" + cnSorted(p.raw)];
   return S?.results?.length ? S.results : null;
 }
 function rsSqBtn(p){
   return `<button type="button" class="rs-sq${rsLocal(p) ? " has" : ""}" data-rsq="${esc(sqRowKey(p))}" title="Last 12 months of results">${RS_ICON}<span class="lb">12 months</span></button>`;
 }
 const rsUkDay = () => new Date().toLocaleDateString("en-CA", { timeZone: "Europe/London" });
-async function rsSq(p){
-  const k = "sq:" + SQ.t + ":" + cnSorted(p.raw), tour = SQ.t, file = rsFile(p);
+async function rsSq(p, tour = SQ.t){
+  const k = "sq:" + tour + ":" + cnSorted(p.raw), file = rsFile(p, tour);
   const site = /^te/.test(tour) ? "Tennis Europe website" : "ITF website";
   const meta = [p.cty, p.born ? "born " + p.born : "", `${SQ_SHORT[tour] || tour.toUpperCase()} No. ${p.rank}`].filter(Boolean).join(" · ");
-  const local = rsLocal(p);
+  const local = rsLocal(p, tour);
   RS.all[k] = { name: p.name, meta, res: local, state: "load", site };
   clearTimeout(RS.poll);
   rsOpen(k);
@@ -3697,6 +3706,30 @@ async function rsSq(p){
   };
   RS.poll = setTimeout(tick, 30000);
 }
+/* 72 Rankings and the 72 Roster profiles: "12 months" for our own players, through the same look-up as Filtered Rankings
+   (rsSq). Each player is found on the list GitHub reads them from: juniors on Tennis Europe U14 (by profile id; most of
+   their matches are there), else the ITF junior list (by ITF id), else ATP/WTA; pros on ATP/WTA by name.
+   Not on any list now = no button. */
+function rs72(id){
+  const r = byId[id]; if (!r) return null;
+  const g = r.tour === "ATP" ? "b" : "g";
+  const on = (D, k, t) => { const q = D?.[k]?.players?.find(x => x[8] === id); return q ? { t, q } : null; };
+  const pro = () => { const q = rkRow(r); return q ? { t: r.tour.toLowerCase(), q } : null; };
+  const hit = profById[id]?.kind === "junior" ? on(TERANK, g + "14", "te" + g + "14") || on(ITFJR, g, "itf" + g) || pro() : pro();
+  if (!hit) return null;
+  const q = hit.q;
+  return { t: hit.t, p: { rank: q[0], name: `${r.first} ${r.last}`, raw: q[1], cty: q[2], born: q[3], url: q[7] || "" } };
+}
+function rs72Btn(id, big){
+  const h = rs72(id); if (!h) return "";
+  const has = rsLocal(h.p, h.t) ? " has" : "";
+  return big ? `<button type="button" class="rs-pf${has}" data-rs72="${esc(id)}">${RS_ICON}View the last 12 months</button>`
+    : `<button type="button" class="rs-sq${has}" data-rs72="${esc(id)}" title="Last 12 months of results">${RS_ICON}<span class="lb">12 months</span></button>`;
+}
+document.addEventListener("click", e => {
+  const b = e.target.closest("[data-rs72]"); if (!b) return;
+  const h = rs72(b.dataset.rs72); if (h) rsSq(h.p, h.t);
+});
 // a calendar-year W-L line ("2026 30-12 · 2025 8-4") for the last 12 months of results
 function cnYears(res){
   const y = {};
