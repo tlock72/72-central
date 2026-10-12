@@ -599,11 +599,14 @@ dialog.rsd[open]{animation:pop .28s ease}
 .rs-sq{display:inline-flex;align-items:center;gap:4px;margin-left:8px;font-size:10px;letter-spacing:.06em;color:var(--muted-2);border:1px solid var(--line-2);border-radius:999px;padding:1px 7px;vertical-align:1px;line-height:14px}
 .rs-sq:hover{color:var(--gold);border-color:var(--gold)}
 .rs-sq svg{width:11px;height:11px}
-.rs-sq.has{color:var(--gold);border-color:rgba(208,165,121,.45)}
+.rs-sq.has{color:var(--navy);background:var(--gold);border-color:var(--gold);font-weight:700}
+.rs-sq.has:hover{color:var(--navy);background:var(--gold-2);border-color:var(--gold-2)}
 /* 72 Roster profiles: the same window from a bigger button */
 .rs-pf{display:inline-flex;align-items:center;gap:8px;padding:10px 18px;border:1px solid rgba(208,165,121,.45);border-radius:999px;color:var(--gold);font-family:var(--display);text-transform:uppercase;letter-spacing:.14em;font-size:11px}
 .rs-pf:hover{background:var(--gold-dim);border-color:var(--gold)}
 .rs-pf svg{width:14px;height:14px}
+.rs-pf.has{color:var(--navy);background:var(--gold);border-color:var(--gold);font-weight:700}
+.rs-pf.has:hover{background:var(--gold-2);border-color:var(--gold-2)}
 @media (max-width:640px){
   .rs-sq .lb{display:none}
   .sq-row .ct .sq-acts{display:flex;width:max-content;margin-top:5px;border:1px solid var(--line-2);border-radius:8px;overflow:hidden}
@@ -612,7 +615,7 @@ dialog.rsd[open]{animation:pop .28s ease}
   .sq-acts>button svg{width:13px;height:12px}
   .sq-acts .sq-add{font-size:0;gap:0}
   .sq-acts .cm-btn:not(.has){border-style:solid}
-  .sq-acts .rs-sq.has{background:var(--gold-dim)}
+  .sq-acts .rs-sq.has{background:var(--gold)}
 }
 @media (max-width:640px){
   dialog.rsd{width:calc(100vw - 16px);max-height:calc(100dvh - 20px);border-radius:18px}
@@ -3443,6 +3446,7 @@ async function loadScouting(){
   try { const r = await fetch("itfjr.json?t=" + Date.now(), { cache: "no-store" }); if (r.ok) ITFJR = await r.json(); else if (!ITFJR) ITFJR = {}; } catch (e) { if (!ITFJR) ITFJR = {}; }
   try { const r = await fetch("terank.json?t=" + Date.now(), { cache: "no-store" }); if (r.ok) TERANK = await r.json(); else if (!TERANK) TERANK = {}; } catch (e) { if (!TERANK) TERANK = {}; }
   try { const r = await fetch("best.json?t=" + Date.now(), { cache: "no-store" }); if (r.ok) BEST = await r.json(); else if (!BEST) BEST = {}; } catch (e) { if (!BEST) BEST = {}; }
+  try { const r = await fetch("results/index.json?t=" + Date.now(), { cache: "no-store" }); if (r.ok) RS_HAS = new Set(await r.json()); } catch (e) {}
   renderScouting(); renderRankings(); renderHome(); renderCorner();
 }
 /* ---------- Scouting Corner (corner.json, rebuilt by scripts/prospects.py) ----------
@@ -3650,6 +3654,9 @@ $("#resd").addEventListener("close", () => { if (!$("#cnd").open && !$("#prof").
 const RS_ICON = `<svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6" aria-hidden="true"><rect x="2" y="3" width="12" height="11" rx="2"/><path d="M2 6.5h12M5.5 1.5v3M10.5 1.5v3"/></svg>`;
 const rsFile = (p, t = SQ.t) => `results/${t}-${cnSorted(p.raw).replace(/ /g, "-")}.json`;
 const RS_SG = { atp: "atp", wta: "wta", teb14: "b14", teg14: "g14" };
+// results/index.json: every saved 12 months with at least one result (lookup_results.py); those buttons are gold
+let RS_HAS = new Set();
+const rsSaved = (p, t = SQ.t) => RS_HAS.has(rsFile(p, t).slice(8, -5));
 // results already on the page: the watch list (matched by link, else name) or the computerised suggestions
 function rsLocal(p, t = SQ.t){
   const u = (p.url || "").toLowerCase();
@@ -3663,7 +3670,7 @@ function rsLocal(p, t = SQ.t){
   return S?.results?.length ? S.results : null;
 }
 function rsSqBtn(p){
-  return `<button type="button" class="rs-sq${rsLocal(p) ? " has" : ""}" data-rsq="${esc(sqRowKey(p))}" title="Last 12 months of results">${RS_ICON}<span class="lb">12 months</span></button>`;
+  return `<button type="button" class="rs-sq${rsLocal(p) || rsSaved(p) ? " has" : ""}" data-rsq="${esc(sqRowKey(p))}" title="Last 12 months of results">${RS_ICON}<span class="lb">12 months</span></button>`;
 }
 const rsUkDay = () => new Date().toLocaleDateString("en-CA", { timeZone: "Europe/London" });
 async function rsSq(p, tour = SQ.t){
@@ -3722,7 +3729,7 @@ function rs72(id){
 }
 function rs72Btn(id, big){
   const h = rs72(id); if (!h) return "";
-  const has = rsLocal(h.p, h.t) ? " has" : "";
+  const has = rsLocal(h.p, h.t) || rsSaved(h.p, h.t) ? " has" : "";
   return big ? `<button type="button" class="rs-pf${has}" data-rs72="${esc(id)}">${RS_ICON}View the last 12 months</button>`
     : `<button type="button" class="rs-sq${has}" data-rs72="${esc(id)}" title="Last 12 months of results">${RS_ICON}<span class="lb">12 months</span></button>`;
 }

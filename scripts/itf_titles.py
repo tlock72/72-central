@@ -160,6 +160,15 @@ def seen_ranks(rid, scout):
     return [x for x in [hit[0][0]] + list(hit[0][4:7]) if isinstance(x, int) and x > 0]
 
 
+def older_ranks(rid, scout):
+    """Official ranks 3 and 12 months ago (the ITF has had time to catch up with those)."""
+    name, tour = ROSTER[rid]
+    rows = (scout.get(tour) or {}).get("players") or []
+    k = norm_key(name.split("|")[0])
+    hit = [r for r in rows if norm_key(r[1]) == k] or [r for r in rows if norm_key(r[1]).startswith(k) or k.startswith(norm_key(r[1]))]
+    return [x for x in hit[0][5:7] if isinstance(x, int) and x > 0] if len(hit) == 1 else []
+
+
 def typed_highs():
     """Career highs typed into the player profiles in index.html (high:123), checked by Tobey."""
     try:
@@ -169,7 +178,7 @@ def typed_highs():
     return {m.group(1): int(m.group(2)) for m in re.finditer(r'\{ id:"(\w+)",[^\n]*?\bhigh:(\d+)', page)}
 
 
-def check_best(rid, itf, why, typed, seen, label):
+def check_best(rid, itf, why, typed, seen, label, older=()):
     """Decide which career high to show. Returns (rank or None, problem text or "")."""
     name = ROSTER[rid][0].split("|")[0]
     if why:
@@ -179,6 +188,9 @@ def check_best(rid, itf, why, typed, seen, label):
             return None, (f"Career high for {name}: the ITF profile shows no {label} career high, but they have been No. {seen} "
                           f"in the official {label} rankings. Their profile's 'high' in index.html is shown instead, if set.")
         return None, ""
+    if seen and itf > seen and not any(r < itf for r in older):
+        # only a rank from the last week or two beats the ITF's figure: a new career high the ITF hasn't caught up with yet
+        itf = seen
     if seen and itf > seen:
         return None, (f"Career high for {name}: the ITF says {label} No. {itf}, but they were No. {seen} in the official "
                       f"{label} rankings, so the ITF figure is wrong. Not shown until it is fixed.")
@@ -252,7 +264,7 @@ def main():
             seen = min([x for x in seen_ranks(rid, scout) + [old.get("seen")] if x] or [None])
             if old.get("checked", "") <= week_ago or (week and old.get("week") != week):
                 itf, why = best_of(rid, pid)
-                rank, issue = check_best(rid, itf, why, typed.get(rid), seen, tour.upper())
+                rank, issue = check_best(rid, itf, why, typed.get(rid), seen, tour.upper(), older_ranks(rid, scout))
                 best[rid] = {k: v for k, v in {"rank": rank, "itf": itf, "seen": seen, "issue": issue,
                                                "week": week, "checked": today}.items() if v is not None and v != ""}
             career = rid not in full

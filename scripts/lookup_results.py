@@ -27,6 +27,7 @@ import update as U  # ROSTER: the 72 players (name, tour)
 
 DIR = "results"
 STATUS = os.path.join(DIR, "status.json")
+INDEX_NAME = "index.json"  # every file with at least one result: the page turns those players' "12 months" buttons gold
 P.BUDGET = timedelta(minutes=12)
 P.STARTED = time.monotonic()
 T, NOW = P.T, P.NOW
@@ -169,9 +170,9 @@ def main():
     # 3) everyone asked for before: daily, the longest waiting first
     kept = []
     for f in os.listdir(DIR):
-        if f != "status.json" and f.endswith(".json"):
+        if f not in ("status.json", INDEX_NAME) and f.endswith(".json"):
             old = P.load(os.path.join(DIR, f), {})
-            if old.get("tour") in LISTS and old.get("name") and old.get("day") != today:
+            if isinstance(old, dict) and old.get("tour") in LISTS and old.get("name") and old.get("day") != today:
                 kept.append(old)
     for old in sorted(kept, key=lambda o: o.get("updated") or ""):
         add(old["tour"], old["name"], old.get("url") or "", why="daily")
@@ -244,6 +245,11 @@ def main():
         rec["name"] = rname
         json.dump(rec, open(path_of(tour, name), "w"), ensure_ascii=False, separators=(",", ":"))
         changed = True
+    have = sorted(f[:-5] for f in os.listdir(DIR) if f.endswith(".json") and f not in ("status.json", INDEX_NAME)
+                  and (P.load(os.path.join(DIR, f), {}) or {}).get("results"))
+    index = os.path.join(DIR, INDEX_NAME)
+    if have != P.load(index, None):
+        json.dump(have, open(index, "w"), separators=(",", ":"))
     for s in ("itf", "te"):
         if not off[s]:
             blocked.pop(s, None)
