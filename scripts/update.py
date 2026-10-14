@@ -431,6 +431,51 @@ def main():
     elif (data.get("conflicts") or {}).get("date") != today_s:
         data.pop("conflicts", None)
 
+    # 4e) A player has only one match to play per tournament at a time. The feed sometimes keeps an old draw
+    #     line after the opponent changed (a lucky loser came in), or lists a match it has guessed ahead of
+    #     the draw (the next round at an exhibition such as the Six Kings Slam). So:
+    #     - a match not yet played in a round the player has already finished in that tournament is dropped;
+    #     - if two or more unplayed matches are left in the same tournament and their rounds can't tell which
+    #       comes first, none is shown and an alert goes out (never guess which one is real).
+    # Two ways of naming rounds: the Live Tennis API's (R32, R16...) and ESPN's (1R, 2R...). They are only compared within one.
+    orders = [["Q1", "Q2", "Q3", "Q final", "R128", "R64", "R32", "R16", "QF", "SF", "Final"],
+              ["Q1", "Q2", "Q3", "Q final", "1R", "2R", "3R", "4R", "QF", "SF", "Final"]]
+    clashes = []
+    for rid in {r for m in new.values() for r in ours(m)}:
+        mine = [(k, m) for k, m in new.items() if rid in ours(m)]
+        done = {(m["tournament"], (m.get("round") or "").replace(" (walkover)", "")) for _, m in mine if m["status"] == "finished"}
+        for k, m in mine:
+            if m["status"] in ("scheduled", "live") and m.get("round") and (m["tournament"], m["round"]) in done:
+                print("dropped an old draw line:", m["p1"], "v", m["p2"], m["tournament"], m["round"])
+                del new[k]
+        todo = {}
+        for k, m in mine:
+            if k in new and m["status"] in ("scheduled", "live"):
+                todo.setdefault(m["tournament"], []).append((k, m))
+        for tour, ms in todo.items():
+            if len(ms) < 2:
+                continue
+            rounds = [m.get("round") for _, m in ms]
+            order = next((o for o in orders if all(r in o for r in rounds)), None)
+            if order and len(set(rounds)) == len(rounds):
+                first = min(rounds, key=order.index)
+                for k, m in ms:
+                    if m["round"] != first:
+                        print("dropped a match ahead of the draw:", m["p1"], "v", m["p2"], tour, m["round"])
+                        del new[k]
+                continue
+            name = ROSTER.get(rid, (rid,))[0]
+            clashes.append(f'{name} has {len(ms)} matches to play at {tour} ('
+                           + ", ".join(f'v {m["p2"] if m.get("p1Id") == rid else m["p1"]} {m.get("date") or ""}'.strip() for _, m in ms)
+                           + ")")
+            for k, _ in ms:
+                del new[k]
+    if clashes:
+        data["clashes"] = {"date": today_s, "matches": sorted(clashes)}
+        print("matches left off the site, the feed lists more than one to play:", clashes)
+    elif fetched_upcoming or (data.get("clashes") or {}).get("date") != today_s:
+        data.pop("clashes", None)  # kept between the 2-hourly upcoming checks, which are what bring the matches back
+
     # 5) Merge: keep hand-entered matches (no apiId) unless a feed now has the same match (same 72 player and
     #    opponent within 2 days, so a match moved to another day isn't listed twice)
     def key(m):
