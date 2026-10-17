@@ -2162,9 +2162,11 @@ function card(m){
   </article>`;
 }
 /* congratulations banner: any 72 player who won a final in the last 7 days */
+// UTR Pro Tennis Tour events end in placing playoffs ("13-16 Playoff" has a "Final" too): only the 1st place one counts
+const utrFirst = m => !/\bUTR\b|\bPTT\b/i.test(m.tournament || "") || /\b(1st|first)\b|\b1\s*-\s*\d+\s*playoff/i.test(m.tournament || "");
 function renderChamps(){
   const cutoff = new Date(Date.now() - 7 * 864e5).toISOString().slice(0, 10);
-  const wins = (STATE?.matches || []).filter(m => m.status === "finished" && /^(final|f)$/i.test((m.round || "").trim()) && m.date >= cutoff && m.winner)
+  const wins = (STATE?.matches || []).filter(m => m.status === "finished" && /^(final|f)$/i.test((m.round || "").trim()) && m.date >= cutoff && m.winner && utrFirst(m))
     .map(m => ({ m, id: m.winner === 1 ? m.p1Id : m.p2Id })).filter(w => byId[w.id])
     .sort((a, b) => b.m.date.localeCompare(a.m.date));
   const el = $("#champs"), key = wins.map(w => w.m.date + w.id + w.m.tournament).join("|");
