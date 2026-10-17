@@ -1,5 +1,5 @@
 {
-"updated": "2026-10-17T12:58:33Z",
+"updated": "2026-10-17T13:49:51Z",
 "markets": {
 "AU": {
 "brands": [
@@ -43,7 +43,7 @@
 "local": true,
 "more": 9,
 "cool": false,
-"score": 41.7
+"score": 41.57
 },
 {
 "b": "Anthropic",
@@ -86,7 +86,7 @@
 "local": true,
 "more": 0,
 "cool": false,
-"score": 10.35
+"score": 10.32
 },
 {
 "b": "OpenAI",
@@ -120,7 +120,7 @@
 "local": true,
 "more": 0,
 "cool": false,
-"score": 8.15
+"score": 8.13
 },
 {
 "b": "IHG",
@@ -142,7 +142,7 @@
 "local": true,
 "more": 0,
 "cool": false,
-"score": 3.56
+"score": 3.55
 },
 {
 "b": "Tesla",
@@ -164,7 +164,7 @@
 "local": true,
 "more": 0,
 "cool": false,
-"score": 3.36
+"score": 3.35
 },
 {
 "b": "Geely",
@@ -188,7 +188,7 @@
 "local": true,
 "more": 0,
 "cool": false,
-"score": 3.05
+"score": 3.04
 },
 {
 "b": "Samsung",
@@ -210,7 +210,7 @@
 "local": false,
 "more": 0,
 "cool": false,
-"score": 1.24
+"score": 1.23
 },
 {
 "b": "Woolworths",
@@ -232,7 +232,7 @@
 "local": false,
 "more": 0,
 "cool": false,
-"score": 0.99
+"score": 0.98
 },
 {
 "b": "Amazon",
@@ -332,22 +332,21 @@
 ]
 },
 {
-"t": "CRMIT Solutions Acquires Brooke Global To Expand Australian",
-"u": "https://news.google.com/rss/articles/CBMi6gFBVV95cUxNeTdaZm95cF9hbVNUSzlPUXlsSXV5T0VvYUtqMTVnVnpnbVVRMGtlNDgtenZoQS1fcTR4MlZZWVBDbC1XbGRMaGdaMFM0RkJHZnBjLVl3M0dETkJrcVVRMGdDNzVYRXZ4S25vdGNrT0dldWtBa0NDOXNLSzI5clpVbjVtRkg5blpIRW1pWU54Mm9naGR3Ry1XTmluMndFallOUVJyWGRxaHlKWUVwUXE2RU1XMTJWNXBHU2tKa1IwSVBhRWhBai11WGQxdHpWblFQUEpGWm5hNVl0ckU1cTBwa21waGQ0bmR0ZEE?oc=5",
-"s": "Passionate In Marketing",
-"at": "2026-10-10T13:11:47Z",
-"sig": [
-"expand",
-"money"
-]
-},
-{
 "t": "WorkWave launches AI-powered decision intelligence platform across UK, Australia and New Zealand",
 "u": "https://news.google.com/rss/articles/CBMi3AFBVV95cUxNakowdjBBLWhCeVlQeWFteW05WTA2U3h5OTl0eXlUR2ltbXF2N2hFblFtY2JFbWd1dmRVaDVrTjdNd2wzY1ZzcXpSUndubDNHZHFoSmxpTnNiWGxkaDltQ2N6MmlpckhrVHBPZXlZWjg2ZU9zNkpoNGZVeE9JanBfTTlJeGhfOHBkVU95OG9RdDJUOHREZG1yQVFyd2NYVFFjeE1tMzZRTkxLZDZNcU55OGU5RUg5bnV6eWRweTAzYldRdFFSNnFMN0NhV1NsQWRyZEQyNXFwelFDZ1lh?oc=5",
 "s": "Sunderland Echo",
 "at": "2026-10-15T09:00:00Z",
 "sig": [
 "expand"
+]
+},
+{
+"t": "Sydney FC and Sports Direct Australia Extend Commercial Partnership for 2026/27 Season",
+"u": "https://news.google.com/rss/articles/CBMitgFBVV95cUxOM0lCLTRGdlZrY0xnaWFZYlpSSnZjb2NLZEVtTmktT3o3TEZreU5fVVBRc09HcDNtZHhhS20tc3RycldCQll4eDV6TGF0TkJPMERNdWZFTnRMdVlJRmEtZ2FnLTRaTXJ3WHEzb29meG9uVW9wWFlhMFRHc3NXV3MwNWtPLTBrUzIxcDVnTFctVmIwckdlaUJBUjBUekZjdkQ3T3RvYXFjX21iY01WT2FWLUNHRHJrZw?oc=5",
+"s": "Ministry of Sport",
+"at": "2026-10-11T23:10:08Z",
+"sig": [
+"sponsor"
 ]
 }
 ],
@@ -375,7 +374,7 @@
 "local": true,
 "more": 0,
 "cool": false,
-"score": 3.22
+"score": 3.21
 },
 {
 "b": "Visa",
@@ -397,10 +396,19 @@
 "local": false,
 "more": 0,
 "cool": false,
-"score": 1.4
+"score": 1.39
 }
 ],
 "other": [
+{
+"t": "Western Overseas expands global outreach via education fairs and Russia bridge",
+"u": "https://news.google.com/rss/articles/CBMiwgFBVV95cUxPRDEwYkhvX3FTc0dqUXZLd1VFaXVQRlFZLU55N2dmV2JDbDRJck11YjBvVEVHWTZNNE92UUttS0x5bFhWY2FDeU4zQXlmbS1YTnIxQThwRnpXQjR5ak02anlWbUlOMVlKMG9FSllkOFNFQ0VRSkozMFpoa0N2U3k2UVhQRUF5eC1hSURtb25zbzFGclQ0bXNHSHlNTnJoaE1weDB2Q0l2TnkzRXV0cW1EaUhlVEY1ODR1YWI3S21QWDJPUQ?oc=5",
+"s": "scanx.trade",
+"at": "2026-10-17T07:37:42Z",
+"sig": [
+"expand"
+]
+},
 {
 "t": "Russia launches airstrikes across Ukraine after report claims call to throttle Starshield came directly from White House",
 "u": "https://news.google.com/rss/articles/CBMiuAFBVV95cUxQM0xmNURUV1pzSDY0OHA2V0ZQZklySTFYU2k0ei1EUjdLUVA1VlpCNm9ueEQtRmNqUnE5QUZ3Mmd4QlhoOWFoeEhfWnBZQU9OX0NOSUtkR1pRSXRoNjd5cWVLanJTNml4czdMYTFVdEVaOHQ4X3VxcDZZVWIwTVJDeTA3VFFvODh0dXJFN213MWkyUVhqcDRkOF9iREhnWkRYRjJGU2NIQTd5TG1EX1VLbVhMMnBuNmJv?oc=5",
@@ -478,15 +486,6 @@
 "u": "https://news.google.com/rss/articles/CBMi2AFBVV95cUxQZThRWTVpdVhjME5FNTBPanhkOURDMmxCZS1fcWlsbk9FRVZ5WWp4Z2dwa2JGZVh2ZEpGWnZiNDBrNXBOSDhuQkJ1ZWJycXByajJfYUNSLW54OWRTVzRpTjlBNlRrUUdESG1xaHkyV3R4LUlrbnBmOTJoRUZlRnJnMzB2YkRiWk9Sa2JhVzloU1I5RVB5Ym1JcGw5eXQyQjBMbEpjTjE4dHFXVmlXYkw5UFFpT1JvTWFiQzlKeUliUXJBVG9Hb2N2SE9ZSnNDMUJYSU1Wc0R1cTA?oc=5",
 "s": "Fana Media Corporation S.C",
 "at": "2026-10-13T13:45:55Z",
-"sig": [
-"expand"
-]
-},
-{
-"t": "Russia's A7 launches payment service using USDT for foreign invoices with SWIFT settlements",
-"u": "https://news.google.com/rss/articles/CBMikgFBVV95cUxNbUVHTmNqTEhtYTF0RXNkX21mdEJ4ODJwUFMyYk5mWkZmbVpfOVE2dERaNmJDTE0wOTFNVldLSmlKZFZiaVpPcEtxUVdBSmNHLU9jazVtT3dqX2NibkVMVExET0pPY25wQ0JNWlNxcHB6RV9NcUM0UFZGc3EwX09KQjVUQXgtT3FjTjhWdXlIZWdsQQ?oc=5",
-"s": "Pluang",
-"at": "2026-10-13T07:06:23Z",
 "sig": [
 "expand"
 ]
@@ -630,7 +629,7 @@
 "local": true,
 "more": 0,
 "cool": false,
-"score": 7.79
+"score": 7.76
 },
 {
 "b": "Estrella Galicia",
@@ -661,7 +660,7 @@
 "local": true,
 "more": 0,
 "cool": false,
-"score": 4.62
+"score": 4.6
 },
 {
 "b": "Ferrari",
@@ -692,7 +691,7 @@
 "local": true,
 "more": 0,
 "cool": false,
-"score": 4.57
+"score": 4.55
 },
 {
 "b": "AXA",
@@ -714,7 +713,7 @@
 "local": false,
 "more": 0,
 "cool": false,
-"score": 2.62
+"score": 2.61
 },
 {
 "b": "Mercedes-Benz",
@@ -736,7 +735,7 @@
 "local": true,
 "more": 0,
 "cool": false,
-"score": 2.57
+"score": 2.56
 }
 ],
 "other": [
@@ -871,7 +870,7 @@
 "local": true,
 "more": 0,
 "cool": false,
-"score": 8.58
+"score": 8.56
 },
 {
 "b": "BYD",
@@ -902,7 +901,7 @@
 "local": true,
 "more": 0,
 "cool": false,
-"score": 3.96
+"score": 3.94
 },
 {
 "b": "Chanel",
@@ -926,7 +925,7 @@
 "local": false,
 "more": 0,
 "cool": false,
-"score": 3.01
+"score": 3.0
 },
 {
 "b": "Air France",
@@ -948,7 +947,7 @@
 "local": true,
 "more": 0,
 "cool": false,
-"score": 2.26
+"score": 2.25
 },
 {
 "b": "L'Oréal",
@@ -970,7 +969,7 @@
 "local": false,
 "more": 0,
 "cool": false,
-"score": 1.45
+"score": 1.44
 },
 {
 "b": "KKR / TotalEnergies",
@@ -992,7 +991,7 @@
 "local": false,
 "more": 0,
 "cool": false,
-"score": 0.52
+"score": 0.51
 },
 {
 "b": "Airbus",
@@ -1276,7 +1275,7 @@
 "local": true,
 "more": 0,
 "cool": false,
-"score": 2.61
+"score": 2.59
 },
 {
 "b": "Visa",
@@ -1298,7 +1297,7 @@
 "local": true,
 "more": 0,
 "cool": false,
-"score": 2.6
+"score": 2.59
 },
 {
 "b": "ADNOC",
@@ -1320,7 +1319,7 @@
 "local": true,
 "more": 0,
 "cool": false,
-"score": 1.47
+"score": 1.46
 },
 {
 "b": "ASML",
@@ -1466,7 +1465,7 @@
 "local": true,
 "more": 0,
 "cool": false,
-"score": 2.99
+"score": 2.98
 }
 ],
 "other": [
@@ -1590,7 +1589,7 @@
 "local": false,
 "more": 0,
 "cool": false,
-"score": 0.71
+"score": 0.7
 }
 ],
 "other": [
@@ -1806,7 +1805,7 @@
 "local": true,
 "more": 2,
 "cool": false,
-"score": 4.79
+"score": 4.75
 },
 {
 "b": "Lufthansa",
@@ -1830,7 +1829,7 @@
 "local": true,
 "more": 0,
 "cool": false,
-"score": 4.34
+"score": 4.33
 },
 {
 "b": "Anthropic",
@@ -1852,7 +1851,7 @@
 "local": false,
 "more": 0,
 "cool": false,
-"score": 0.96
+"score": 0.95
 },
 {
 "b": "Shopee",
@@ -1874,7 +1873,7 @@
 "local": false,
 "more": 0,
 "cool": false,
-"score": 0.95
+"score": 0.94
 }
 ],
 "other": [
@@ -1997,7 +1996,7 @@
 "local": false,
 "more": 0,
 "cool": false,
-"score": 0.93
+"score": 0.92
 },
 {
 "b": "Rolex",
@@ -2019,7 +2018,7 @@
 "local": false,
 "more": 0,
 "cool": false,
-"score": 0.84
+"score": 0.83
 }
 ],
 "other": [
@@ -2145,7 +2144,7 @@
 "local": true,
 "more": 0,
 "cool": false,
-"score": 4.33
+"score": 4.32
 },
 {
 "b": "Wells Fargo",
@@ -2167,7 +2166,7 @@
 "local": false,
 "more": 0,
 "cool": false,
-"score": 2.43
+"score": 2.42
 },
 {
 "b": "Microsoft",
@@ -2191,7 +2190,7 @@
 "local": false,
 "more": 0,
 "cool": false,
-"score": 0.92
+"score": 0.91
 }
 ],
 "other": [
@@ -2312,7 +2311,7 @@
 "local": true,
 "more": 0,
 "cool": false,
-"score": 2.36
+"score": 2.35
 },
 {
 "b": "Lukoil",
@@ -2334,7 +2333,7 @@
 "local": true,
 "more": 0,
 "cool": false,
-"score": 1.44
+"score": 1.43
 },
 {
 "b": "Meta / OpenAI / Anthropic",
@@ -2356,7 +2355,7 @@
 "local": false,
 "more": 0,
 "cool": false,
-"score": 0.74
+"score": 0.73
 }
 ],
 "other": [
@@ -2484,7 +2483,7 @@
 "local": true,
 "more": 0,
 "cool": false,
-"score": 9.5
+"score": 9.47
 },
 {
 "b": "American Express",
@@ -2515,7 +2514,7 @@
 "local": true,
 "more": 0,
 "cool": false,
-"score": 6.42
+"score": 6.4
 },
 {
 "b": "BlackRock",
@@ -2537,7 +2536,7 @@
 "local": false,
 "more": 0,
 "cool": false,
-"score": 0.57
+"score": 0.56
 },
 {
 "b": "Jardine",
@@ -2705,7 +2704,7 @@
 "local": true,
 "more": 0,
 "cool": false,
-"score": 3.47
+"score": 3.46
 },
 {
 "b": "Boeing",
@@ -2727,7 +2726,7 @@
 "local": true,
 "more": 0,
 "cool": false,
-"score": 3.23
+"score": 3.22
 },
 {
 "b": "Meta",
@@ -2749,7 +2748,7 @@
 "local": true,
 "more": 0,
 "cool": false,
-"score": 3.23
+"score": 3.22
 },
 {
 "b": "Chery",
@@ -2771,7 +2770,7 @@
 "local": true,
 "more": 0,
 "cool": false,
-"score": 3.21
+"score": 3.19
 },
 {
 "b": "Nike",
@@ -2793,7 +2792,7 @@
 "local": true,
 "more": 0,
 "cool": false,
-"score": 3.2
+"score": 3.19
 },
 {
 "b": "Lululemon",
@@ -2824,7 +2823,7 @@
 "local": true,
 "more": 0,
 "cool": false,
-"score": 3.06
+"score": 3.05
 },
 {
 "b": "Apple",
@@ -2848,7 +2847,7 @@
 "local": true,
 "more": 0,
 "cool": false,
-"score": 2.95
+"score": 2.94
 },
 {
 "b": "ByteDance",
@@ -2870,7 +2869,7 @@
 "local": true,
 "more": 0,
 "cool": false,
-"score": 2.87
+"score": 2.86
 },
 {
 "b": "Citigroup / Mastercard",
@@ -2892,7 +2891,7 @@
 "local": true,
 "more": 0,
 "cool": false,
-"score": 2.75
+"score": 2.74
 },
 {
 "b": "Tesla",
@@ -2914,7 +2913,7 @@
 "local": true,
 "more": 0,
 "cool": false,
-"score": 2.4
+"score": 2.39
 },
 {
 "b": "Visa",
@@ -2936,7 +2935,7 @@
 "local": true,
 "more": 0,
 "cool": false,
-"score": 2.3
+"score": 2.29
 },
 {
 "b": "IHG",
@@ -2958,7 +2957,7 @@
 "local": true,
 "more": 0,
 "cool": false,
-"score": 1.96
+"score": 1.95
 },
 {
 "b": "Asics",
@@ -2980,7 +2979,7 @@
 "local": true,
 "more": 0,
 "cool": false,
-"score": 1.63
+"score": 1.62
 },
 {
 "b": "Sumitomo",
@@ -3002,7 +3001,7 @@
 "local": true,
 "more": 0,
 "cool": false,
-"score": 1.59
+"score": 1.58
 },
 {
 "b": "Volvo / Nvidia",
@@ -3024,7 +3023,7 @@
 "local": false,
 "more": 0,
 "cool": false,
-"score": 1.51
+"score": 1.5
 },
 {
 "b": "Lotte",
@@ -3046,7 +3045,7 @@
 "local": false,
 "more": 0,
 "cool": false,
-"score": 0.95
+"score": 0.94
 }
 ],
 "other": [
@@ -3178,7 +3177,41 @@
 "local": true,
 "more": 0,
 "cool": false,
-"score": 8.06
+"score": 8.03
+},
+{
+"b": "Netflix",
+"sec": "Media & streaming",
+"sig": [
+"sponsor",
+"expand",
+"money"
+],
+"h": [
+{
+"t": "Netflix Buys World Cup 2030 Rights in Spain, Andorra",
+"u": "https://news.google.com/rss/articles/CBMiS0FVX3lxTFBHNXhSSzBtYVQ3QTB4MnNsSFpUdVRydE1yVDA4Q21acVREWFFwV2R0TlJFSWRzdWdHTkdMeDRXR2lWWHJRLVhZNm9Ndw?oc=5",
+"s": "JFeed",
+"at": "2026-10-14T13:52:00Z",
+"sig": [
+"money"
+]
+},
+{
+"t": "Netflix Expands FIFA Partnership With 2030 World Cup Rights",
+"u": "https://news.google.com/rss/articles/CBMirAFBVV95cUxPYldOZjN4dW9XSHJUakM1YWpIcnEtaVVvYlloWGN5cV9pcVdaZ3ZYeVVzTmlyT1RuWURDancwTU9oYkN5T2t3eHViOXQ0bTN1RmtndDE1a1NtNFNnVTUtelhHWVBXNXRmWmF4anQwNDl5UXY5WTQyUklNWFBadC1BYnVYeWUzcWN1Ym1pLVBiam1fZnlVX0ltd1NSRWJJUTFHd1ZhclFtb3A4eWk2?oc=5",
+"s": "Morocco World News",
+"at": "2026-10-13T16:07:57Z",
+"sig": [
+"sponsor",
+"expand"
+]
+}
+],
+"local": true,
+"more": 0,
+"cool": false,
+"score": 5.93
 },
 {
 "b": "Uber",
@@ -3210,7 +3243,7 @@
 "local": true,
 "more": 0,
 "cool": false,
-"score": 5.79
+"score": 5.76
 },
 {
 "b": "Uniqlo",
@@ -3241,29 +3274,29 @@
 "local": true,
 "more": 0,
 "cool": false,
-"score": 3.98
+"score": 3.95
 },
 {
-"b": "Netflix",
-"sec": "Media & streaming",
+"b": "Movistar",
+"sec": "Telecoms",
 "sig": [
-"money"
+"sponsor"
 ],
 "h": [
 {
-"t": "Netflix Buys World Cup 2030 Rights in Spain, Andorra",
-"u": "https://news.google.com/rss/articles/CBMiS0FVX3lxTFBHNXhSSzBtYVQ3QTB4MnNsSFpUdVRydE1yVDA4Q21acVREWFFwV2R0TlJFSWRzdWdHTkdMeDRXR2lWWHJRLVhZNm9Ndw?oc=5",
-"s": "JFeed",
-"at": "2026-10-14T13:52:00Z",
+"t": "Movistar to continue as Unicaja Malaga basketball sponsor",
+"u": "https://news.google.com/rss/articles/CBMiogFBVV95cUxPeHdMci04dEVSV2pGbl9qTkFHWS0wRUt6c0o5aXl2bFhFVVZqUHZiQzQ4WENvRnZla3p4QkJCUDdFQXNxdEFueVllMkZHNHF0SFZCcU1qWFhITGpjV09INDBWTy1oRkM4Z1czUDgyR01oUkV5LXJwNnAtbGtxQWwzUGFvckt6WTlUdmh6MGNtM2l5WThYRENDNGN3ZkNDR2J5NlE?oc=5",
+"s": "Telecompaper",
+"at": "2026-10-14T08:53:26Z",
 "sig": [
-"money"
+"sponsor"
 ]
 }
 ],
-"local": true,
+"local": false,
 "more": 0,
 "cool": false,
-"score": 2.11
+"score": 2.04
 },
 {
 "b": "Meliá",
@@ -3285,7 +3318,7 @@
 "local": true,
 "more": 0,
 "cool": false,
-"score": 2.04
+"score": 2.02
 },
 {
 "b": "Deutsche Bank",
@@ -3307,7 +3340,7 @@
 "local": true,
 "more": 0,
 "cool": false,
-"score": 1.71
+"score": 1.7
 },
 {
 "b": "Telefónica",
@@ -3329,7 +3362,7 @@
 "local": false,
 "more": 0,
 "cool": false,
-"score": 0.8
+"score": 0.79
 }
 ],
 "other": [
@@ -3425,7 +3458,7 @@
 ]
 }
 ],
-"n": 7
+"n": 8
 },
 "NL": {
 "brands": [
@@ -3460,7 +3493,7 @@
 "local": false,
 "more": 0,
 "cool": false,
-"score": 3.07
+"score": 3.05
 },
 {
 "b": "Equinor",
@@ -3482,7 +3515,7 @@
 "local": true,
 "more": 0,
 "cool": false,
-"score": 2.87
+"score": 2.86
 },
 {
 "b": "Heineken",
@@ -3527,9 +3560,41 @@
 "more": 0,
 "cool": false,
 "score": 0.5
+},
+{
+"b": "Samsung",
+"sec": "Tech",
+"sig": [
+"money"
+],
+"h": [
+{
+"t": "EU clears Harman’s driver tech acquisition despite Samsung influence concerns",
+"u": "https://news.google.com/rss/articles/CBMijgJBVV95cUxNQnpxa2F0Q2ZDSDBrWFNzU0ZZNFJMNmx2a1Jzem5nbFpWREx4OTIzN2Q4bEtEc2dweHZ4N2VJdEtOVXRicTYwWnA4c2lmTjJ5am9JUlg5VnFGU3M5UmhCa0hnMXdzQW5wQVRmcmlMVUhjU3dYRWZaV3FYRUw4bk9qeEdYWC1rMWx4cm8tTHBZUnN6X29JZ1JOQ2hyNjZTUlZGb2FsTGNwVG1mSVUxbWRqRmZwSEJfYWlwRUtudWgtLXdmaVZvMlExTWJ0eHE1SlVlV2tRaVNkUGVSakhuUnIwUzBjMGRTeGE2LTJtT2lPNW80TUsxYWtOTGpEMUdnZE9KbVZneUNmd08xYmhPM3c?oc=5",
+"s": "The Brussels Times",
+"at": "2026-10-12T21:52:26Z",
+"sig": [
+"money"
+]
+}
+],
+"local": false,
+"more": 0,
+"cool": false,
+"score": 0.5
 }
 ],
 "other": [
+{
+"t": "Storskogen’s business unit Båstadgruppen acquires Hawedo and enters the Benelux market",
+"u": "https://news.google.com/rss/articles/CBMizAFBVV95cUxPZFZ1cWJ1OXlDb3NwNmVCcnFIX0JJaFAweU5pbEVtX19lTG9NU296MzVNbVlaRk84dC1ueEh5TnpBM2hGMFo3c1hkeUtzM2E4bmxldXhISlJBekFGOUIxQjM0cldsdlBhUHNyMFl5bm1VTjdCOVhwcVlwX3VBSmR0dndYZmJXN2E1NWZxdENEUXRRSlE5T2VwWjdNMXEzUU1rMHJfOG5Rc09qcFdFU2xZYUljWTFfeEFNaUJkYm5rNzd6SXhLQkp3UHM2N1I?oc=5",
+"s": "Cision News",
+"at": "2026-10-16T08:00:00Z",
+"sig": [
+"expand",
+"money"
+]
+},
 {
 "t": "Hard Rock Casino enters Dutch sports betting market",
 "u": "https://news.google.com/rss/articles/CBMiggFBVV95cUxOOGNFVTVzTGpFZ3FENS1zT195MzdOcWxLNWtwdjBEVi1DeDZjUEl0a3pYaEFMMW9zV2ZHdGlGb2dvZVMyVEkyZ0VQaGF5RzMzU1V4c1pEbXpwSm1JMXVEdl9TZXRRYW50NnVWUGtFWUlna1ZHTWp3enQwRGdtRWMzbUN3?oc=5",
@@ -3546,6 +3611,25 @@
 "at": "2026-10-15T04:56:57Z",
 "sig": [
 "expand"
+]
+},
+{
+"t": "Life360 brings Festival of Lights sponsorship alive with experiential activation",
+"u": "https://news.google.com/rss/articles/CBMisgFBVV95cUxOUnJKdFpiUXV5R0JuTktCNVN3YW4tVnk0bVJQM0U1NC1lWUFzR0txZkFQNjl1LWJ1SWRjQ3RJMzF2dzhXcHk5T2hsX19tQ2lDOEtFZlR3TDZFN0V4WTJnRnpVbDNETWlvXzR5OURqM1hjcE4wNEduZnpVNGdLa1FCWWhKNXZpLU41bEY3WndKQl9NeXdfSzZUaFhqZWFLOEhfWEdseUxNVmd2bV9WY0dSbGV30gGyAUFVX3lxTE5Sckp0WmJRdXlHQm5OS0I1U3dhbi1WeTRtUlAzRTU0LWVZQXNHS3FmQVA2OXUtYnVJZGNDdEkzMXZ3OFdweTlPaGxfX21DaUM4S0VmVHdMNkU3RXhZMmdGelVsM0RNaW9fNHk5RGozWGNwTjA0R25melU0Z0trUUJZaEo1dmktTjVsRjdad0pCX015d19LNlRoWGplYUs4SF9YR2x5TE1WZ3ZtX1ZjR1JsZXc?oc=5",
+"s": "Mediashotz",
+"at": "2026-10-16T12:00:55Z",
+"sig": [
+"sponsor"
+]
+},
+{
+"t": "Kraken Parent Payward Acquires Saldo Bank to Expand Crypto Banking in Europe",
+"u": "https://news.google.com/rss/articles/CBMi0gFBVV95cUxQcFUxY1RjU3lvV0UtSkVlVWNUeWFVN3BUOW8zTTYyS0tIM2FvMGt4b3BTTFphQ0RvZ3MyWjRjSGpLQnNoUXNCbWtHdVNMd2plRGRnMUppSXNYMmh0RHE2NldMYjNteDlUejdsVUpkVFVfRVZLUi1lOG9vUURZZU92MFdpNlNDMmZlV2hRMnE0cDYyS3hjWjd2YXdOVF9qYzJyT2w4ejliMnd5VDZienc0bHpLMGkxQWVjNkxTa3JMc212clIzalFuME9ITkFiUThUMVE?oc=5",
+"s": "TradingView",
+"at": "2026-10-14T12:54:44Z",
+"sig": [
+"expand",
+"money"
 ]
 },
 {
@@ -3593,36 +3677,9 @@
 "sig": [
 "expand"
 ]
-},
-{
-"t": "Facebook Netherlands net sales flat in 2025",
-"u": "https://news.google.com/rss/articles/CBMijwFBVV95cUxQUlZ0ZzN3cmVkRXcwMC0xZWl5NksxTVVVbU1KNmF1LUhtUy1ZMU02Rk55SkFzT095VGpOSlJWU2NJNHk2ODJFbkNhT3RNTFpxUGFxeUxvRF9mMkMxT2w5cGo0VTREOEI2N0psa08xVFh3WnNLX2xWMUxDa1lFNDR6YkdHNnFUTmN2R1hGaVAyOA?oc=5",
-"s": "Telecompaper",
-"at": "2026-10-14T14:52:55Z",
-"sig": [
-"money"
-]
-},
-{
-"t": "Li Auto i6 makes European debut ahead of Q1 2027 launch in Norway and Netherlands",
-"u": "https://news.google.com/rss/articles/CBMiakFVX3lxTE82MElMUGIyX0FjLXJVSkRNdGF5cWpmTDE2SzVBNTh2Rm9hcUhkZFlCWmJmY25ueUR0WWxsNzdqTkgwZm5VSF9aZkZfMjBaNjVEUV8yX3d3VFBxVnhjU281Z0wzUTZ4LTZXcVE?oc=5",
-"s": "CnEVPost",
-"at": "2026-10-12T15:48:22Z",
-"sig": [
-"expand"
-]
-},
-{
-"t": "Netherlands raises salary bar for skilled migrants in 2026",
-"u": "https://news.google.com/rss/articles/CBMisgFBVV95cUxNSXNIcGprcUNoX29GOHM5SnFXMV9CNTU5MVJUMHJZRkNCX21lc0t1WFhoZXFwTXduUzN5eXRNVUFDYnZmbGI0UjBLbmg0T204RE90QXExMW1JYWRYdEFFMFI0VVVHUVR5QVNQNzQ1MEliZ3oxNUhLb3d2UWRTYllVSUhZYU9zLWRCQzNyM3k5QlhkaE55ZnU1SW1Sdzc3ZXM2YTlMbGpNX1B2YjcydlJkSVRR?oc=5",
-"s": "Briefly News",
-"at": "2026-10-13T11:36:42Z",
-"sig": [
-"money"
-]
 }
 ],
-"n": 4
+"n": 5
 },
 "IT": {
 "brands": [
@@ -3648,7 +3705,7 @@
 "local": true,
 "more": 0,
 "cool": false,
-"score": 3.14
+"score": 3.12
 },
 {
 "b": "Lavazza",
@@ -3670,7 +3727,7 @@
 "local": true,
 "more": 0,
 "cool": false,
-"score": 2.86
+"score": 2.84
 },
 {
 "b": "Shell",
@@ -3692,7 +3749,7 @@
 "local": true,
 "more": 0,
 "cool": false,
-"score": 2.27
+"score": 2.26
 },
 {
 "b": "Barilla",
@@ -3714,7 +3771,7 @@
 "local": false,
 "more": 0,
 "cool": false,
-"score": 1.56
+"score": 1.55
 },
 {
 "b": "Midea",
@@ -3874,7 +3931,7 @@
 "local": true,
 "more": 2,
 "cool": false,
-"score": 12.55
+"score": 12.5
 },
 {
 "b": "BYD",
@@ -3905,7 +3962,7 @@
 "local": true,
 "more": 0,
 "cool": false,
-"score": 5.1
+"score": 5.08
 },
 {
 "b": "Samsung",
@@ -3927,7 +3984,7 @@
 "local": true,
 "more": 0,
 "cool": false,
-"score": 2.67
+"score": 2.66
 },
 {
 "b": "Shell",
@@ -3949,7 +4006,7 @@
 "local": true,
 "more": 0,
 "cool": false,
-"score": 2.41
+"score": 2.4
 },
 {
 "b": "Bosch",
@@ -3971,7 +4028,7 @@
 "local": false,
 "more": 0,
 "cool": false,
-"score": 1.36
+"score": 1.35
 }
 ],
 "other": [
@@ -4000,15 +4057,6 @@
 "at": "2026-10-14T08:34:09Z",
 "sig": [
 "expand"
-]
-},
-{
-"t": "Laliga Names Milka as Official Sponsor in Three Central European Nations",
-"u": "https://news.google.com/rss/articles/CBMigwFBVV95cUxQcVNnVDkxNVJnU08zRjdBR25MdnNZcmd4Z191c0w4Zi1Za2psRnpKNHR4V0YzWmpYaFc3ckExOWJsVjdFd05sZDhmNFdBQlgxQ2NKd053Sl9NbjZ1WVBVZ2pGQW9qei05SDRKbWpQODBHMUVmNE5xRTl0MzZRVzFBNDJWTQ?oc=5",
-"s": "Sportscape Magazine",
-"at": "2026-10-15T05:29:02Z",
-"sig": [
-"sponsor"
 ]
 },
 {
@@ -4064,6 +4112,15 @@
 "sig": [
 "money"
 ]
+},
+{
+"t": "CanCambria Energy Kicks Off Shallow Oil Appraisal Program with 3D Seismic Acquisition Agreement; Fieldwork Scheduled to Begin November 2026",
+"u": "https://news.google.com/rss/articles/CBMinwJBVV95cUxQWmVLVFlOa0h2M1E1UnJSVWtVQjVsci1tXzZZX2xxZzAtTld3NC1QTXYwSzYtVTFXWHZBNHY1Sm5MX0Nwa19pNjM0SUpuN08wb2p3TmYyRTNxQk92MVptdlFYUkJHNmduS05kNE1hemY1QWlJZWJ6V2JKNW1qa2RZSkE0ZDA0czdvdW5PTHVqWlhycXV6SlFfNy1KdzVNX3NCdGNtckktblhiUG9EWFR5TVNGRmFvNkpSRzFvWFhWeW5HUDlDQy15WE5QYmw0REMwREJ0Sml3UndfRU1ULTlKS0RobnhrSEpaOXNPSFB4Ml8xYTBLVVItX3lKb2JoNVU3OGhHQjlVcG4xa3JTN3NmMjR5a1ducnFyNVN5R2lHRQ?oc=5",
+"s": "StreetInsider",
+"at": "2026-10-14T11:57:20Z",
+"sig": [
+"money"
+]
 }
 ],
 "n": 5
@@ -4090,7 +4147,7 @@
 "local": true,
 "more": 0,
 "cool": false,
-"score": 2.02
+"score": 2.01
 },
 {
 "b": "Uzum",
@@ -4121,7 +4178,7 @@
 "local": true,
 "more": 0,
 "cool": false,
-"score": 1.65
+"score": 1.64
 }
 ],
 "other": [
@@ -4250,7 +4307,7 @@
 "local": true,
 "more": 0,
 "cool": false,
-"score": 4.06
+"score": 4.03
 },
 {
 "b": "KFC",
@@ -4272,7 +4329,7 @@
 "local": true,
 "more": 0,
 "cool": false,
-"score": 2.92
+"score": 2.91
 },
 {
 "b": "IKEA",
@@ -4294,7 +4351,7 @@
 "local": true,
 "more": 0,
 "cool": false,
-"score": 2.04
+"score": 2.03
 },
 {
 "b": "DP World",
@@ -4325,7 +4382,7 @@
 "local": false,
 "more": 0,
 "cool": false,
-"score": 1.5
+"score": 1.48
 }
 ],
 "other": [
@@ -4527,7 +4584,7 @@
 "local": true,
 "more": 1,
 "cool": false,
-"score": 13.52
+"score": 13.48
 },
 {
 "b": "Asics",
@@ -4567,7 +4624,7 @@
 "local": true,
 "more": 2,
 "cool": false,
-"score": 11.44
+"score": 11.39
 },
 {
 "b": "Hyundai",
@@ -4608,7 +4665,7 @@
 "local": true,
 "more": 1,
 "cool": false,
-"score": 9.44
+"score": 9.39
 },
 {
 "b": "Rolls-Royce",
@@ -4648,7 +4705,7 @@
 "local": true,
 "more": 0,
 "cool": false,
-"score": 8.86
+"score": 8.83
 },
 {
 "b": "BYD",
@@ -4681,7 +4738,7 @@
 "local": true,
 "more": 0,
 "cool": false,
-"score": 6.71
+"score": 6.69
 },
 {
 "b": "Dyson",
@@ -4714,7 +4771,7 @@
 "local": true,
 "more": 0,
 "cool": false,
-"score": 6.67
+"score": 6.65
 },
 {
 "b": "HP",
@@ -4745,7 +4802,7 @@
 "local": true,
 "more": 0,
 "cool": false,
-"score": 5.73
+"score": 5.71
 },
 {
 "b": "Marriott",
@@ -4776,7 +4833,7 @@
 "local": true,
 "more": 0,
 "cool": false,
-"score": 4.58
+"score": 4.56
 },
 {
 "b": "Nike",
@@ -4798,7 +4855,7 @@
 "local": true,
 "more": 0,
 "cool": false,
-"score": 3.2
+"score": 3.19
 },
 {
 "b": "Oppo",
@@ -4820,7 +4877,7 @@
 "local": true,
 "more": 0,
 "cool": false,
-"score": 2.47
+"score": 2.46
 },
 {
 "b": "Nestlé",
@@ -4842,7 +4899,7 @@
 "local": true,
 "more": 0,
 "cool": false,
-"score": 2.33
+"score": 2.32
 },
 {
 "b": "Bridgestone",
@@ -4864,7 +4921,7 @@
 "local": true,
 "more": 0,
 "cool": false,
-"score": 2.28
+"score": 2.27
 },
 {
 "b": "Diageo",
@@ -4886,7 +4943,7 @@
 "local": true,
 "more": 0,
 "cool": false,
-"score": 1.9
+"score": 1.89
 },
 {
 "b": "McLaren / Etihad",
@@ -4908,7 +4965,7 @@
 "local": false,
 "more": 0,
 "cool": false,
-"score": 1.46
+"score": 1.45
 }
 ],
 "other": [
@@ -5046,7 +5103,7 @@
 "local": true,
 "more": 0,
 "cool": false,
-"score": 6.9
+"score": 6.88
 },
 {
 "b": "Sony",
@@ -5077,7 +5134,7 @@
 "local": true,
 "more": 0,
 "cool": false,
-"score": 4.71
+"score": 4.69
 },
 {
 "b": "Samsung",
@@ -5099,7 +5156,7 @@
 "local": true,
 "more": 0,
 "cool": false,
-"score": 2.48
+"score": 2.47
 },
 {
 "b": "Amazon",
@@ -5121,7 +5178,7 @@
 "local": true,
 "more": 0,
 "cool": false,
-"score": 1.91
+"score": 1.9
 },
 {
 "b": "Nissan",
@@ -5143,7 +5200,7 @@
 "local": true,
 "more": 0,
 "cool": false,
-"score": 1.54
+"score": 1.53
 },
 {
 "b": "IKEA",
@@ -5165,7 +5222,7 @@
 "local": true,
 "more": 0,
 "cool": false,
-"score": 1.51
+"score": 1.5
 },
 {
 "b": "Rakuten",
@@ -5187,7 +5244,7 @@
 "local": false,
 "more": 0,
 "cool": false,
-"score": 0.65
+"score": 0.64
 },
 {
 "b": "SoftBank",
@@ -5209,29 +5266,7 @@
 "local": false,
 "more": 0,
 "cool": false,
-"score": 0.58
-},
-{
-"b": "Hyatt",
-"sec": "Airlines & travel",
-"sig": [
-"expand"
-],
-"h": [
-{
-"t": "Hyatt Centric Sapporo opens as brand's first hotel in Hokkaido",
-"u": "https://news.google.com/rss/articles/CBMipwFBVV95cUxOcDdGM2w2UHBReHNKbE1xMkZIRGlLNlVfeF8tMExPS0tsUTFpNGd2TE5tV3RHR2stNWlxUVFPclRvRUUxZzBYSmJJbF8taFFlSWJ3WVJIcFl5cHdGNkhEOFVNbmN2cTlJcDQ1ZDlDRmx1M2JRZURpaU5mbjlGdThSc0ZvZi1JQVJfelNnMzRVbWRxOFg0NUNvMGF0X29tekVOVGFwX05Sbw?oc=5",
-"s": "BW Hotelier",
-"at": "2026-10-10T13:14:36Z",
-"sig": [
-"expand"
-]
-}
-],
-"local": false,
-"more": 0,
-"cool": false,
-"score": 0.5
+"score": 0.57
 }
 ],
 "other": [
@@ -5328,7 +5363,7 @@
 ]
 }
 ],
-"n": 9
+"n": 8
 },
 "CA": {
 "brands": [
@@ -5372,7 +5407,7 @@
 "local": true,
 "more": 0,
 "cool": false,
-"score": 10.17
+"score": 10.13
 },
 {
 "b": "Canada Goose",
@@ -5396,7 +5431,7 @@
 "local": true,
 "more": 0,
 "cool": false,
-"score": 5.15
+"score": 5.13
 },
 {
 "b": "Expedia",
@@ -5420,7 +5455,7 @@
 "local": false,
 "more": 0,
 "cool": false,
-"score": 4.07
+"score": 4.06
 },
 {
 "b": "Visa",
@@ -5442,7 +5477,7 @@
 "local": true,
 "more": 0,
 "cool": false,
-"score": 3.62
+"score": 3.61
 },
 {
 "b": "Nintendo",
@@ -5464,7 +5499,7 @@
 "local": true,
 "more": 0,
 "cool": false,
-"score": 3.2
+"score": 3.19
 },
 {
 "b": "Samsung",
@@ -5486,7 +5521,7 @@
 "local": true,
 "more": 0,
 "cool": false,
-"score": 3.14
+"score": 3.13
 },
 {
 "b": "Prime Video",
@@ -5508,7 +5543,7 @@
 "local": true,
 "more": 0,
 "cool": false,
-"score": 2.69
+"score": 2.68
 },
 {
 "b": "Airbus",
@@ -5530,7 +5565,7 @@
 "local": true,
 "more": 0,
 "cool": false,
-"score": 2.56
+"score": 2.55
 },
 {
 "b": "Amazon",
@@ -5692,7 +5727,7 @@
 "local": true,
 "more": 0,
 "cool": false,
-"score": 8.31
+"score": 8.28
 },
 {
 "b": "Nubank",
@@ -5725,7 +5760,7 @@
 "local": false,
 "more": 0,
 "cool": false,
-"score": 3.76
+"score": 3.74
 },
 {
 "b": "Shopee",
@@ -5756,7 +5791,7 @@
 "local": false,
 "more": 0,
 "cool": false,
-"score": 2.82
+"score": 2.8
 },
 {
 "b": "BlackRock",
@@ -5778,7 +5813,7 @@
 "local": false,
 "more": 0,
 "cool": false,
-"score": 1.21
+"score": 1.2
 },
 {
 "b": "Samsung",
@@ -5934,7 +5969,7 @@
 "local": true,
 "more": 0,
 "cool": false,
-"score": 7.75
+"score": 7.73
 },
 {
 "b": "Revolut",
@@ -5965,7 +6000,7 @@
 "local": true,
 "more": 0,
 "cool": false,
-"score": 3.1
+"score": 3.08
 },
 {
 "b": "Mastercard",
@@ -5987,7 +6022,7 @@
 "local": true,
 "more": 0,
 "cool": false,
-"score": 1.91
+"score": 1.9
 },
 {
 "b": "Geely",
@@ -6009,7 +6044,7 @@
 "local": false,
 "more": 0,
 "cool": false,
-"score": 1.77
+"score": 1.76
 }
 ],
 "other": [
@@ -6146,7 +6181,7 @@
 "local": true,
 "more": 0,
 "cool": false,
-"score": 12.07
+"score": 12.04
 },
 {
 "b": "YPF",
@@ -6168,7 +6203,7 @@
 "local": false,
 "more": 0,
 "cool": false,
-"score": 0.71
+"score": 0.69
 }
 ],
 "other": [
@@ -6306,29 +6341,7 @@
 "local": true,
 "more": 1,
 "cool": false,
-"score": 5.41
-},
-{
-"b": "Geely",
-"sec": "Cars & motoring",
-"sig": [
-"expand"
-],
-"h": [
-{
-"t": "Geely Galaxy Battleship 700 Launches: A 1,113 hp Off-Road Hybrid SUV From Roughly $26,800",
-"u": "https://news.google.com/rss/articles/CBMixAFBVV95cUxQWS0wN3NuME9DVkxibWQ1a1ZSd2paUWw0dHEtNnAtemNkcy1SSkkwNG9PN3VzcktLOGFKWENPQlBFUDZpMFRrTm54YnZFd0dLRTZRLWhGelIzWm5FRDJ5dGlFMnY1bVVHZERKNUQxXzZKMHJTVER3ekNDQ2Q5SXZsMlp6YW9OZ3oxYnp5QnVXQ1p3MEZGbTI2ZmVJVlJacTJwbG1OclhrR3hDOFVzYmVvWUtzVWpydnNPRkZmM0ZyNGJ5dkpV?oc=5",
-"s": "Tires & Parts News",
-"at": "2026-10-13T11:00:34Z",
-"sig": [
-"expand"
-]
-}
-],
-"local": false,
-"more": 0,
-"cool": false,
-"score": 0.78
+"score": 5.37
 },
 {
 "b": "Shell",
@@ -6350,7 +6363,29 @@
 "local": false,
 "more": 0,
 "cool": false,
-"score": 0.78
+"score": 0.77
+},
+{
+"b": "Geely",
+"sec": "Cars & motoring",
+"sig": [
+"expand"
+],
+"h": [
+{
+"t": "Geely Galaxy Battleship 700 Launches: A 1,113 hp Off-Road Hybrid SUV From Roughly $26,800",
+"u": "https://news.google.com/rss/articles/CBMixAFBVV95cUxQWS0wN3NuME9DVkxibWQ1a1ZSd2paUWw0dHEtNnAtemNkcy1SSkkwNG9PN3VzcktLOGFKWENPQlBFUDZpMFRrTm54YnZFd0dLRTZRLWhGelIzWm5FRDJ5dGlFMnY1bVVHZERKNUQxXzZKMHJTVER3ekNDQ2Q5SXZsMlp6YW9OZ3oxYnp5QnVXQ1p3MEZGbTI2ZmVJVlJacTJwbG1OclhrR3hDOFVzYmVvWUtzVWpydnNPRkZmM0ZyNGJ5dkpV?oc=5",
+"s": "Tires & Parts News",
+"at": "2026-10-13T11:00:34Z",
+"sig": [
+"expand"
+]
+}
+],
+"local": false,
+"more": 0,
+"cool": false,
+"score": 0.76
 },
 {
 "b": "Amazon",
@@ -6512,7 +6547,7 @@
 "local": false,
 "more": 0,
 "cool": false,
-"score": 4.79
+"score": 4.76
 },
 {
 "b": "Visa",
@@ -6534,7 +6569,7 @@
 "local": true,
 "more": 0,
 "cool": false,
-"score": 4.28
+"score": 4.27
 },
 {
 "b": "Lexus",
@@ -6556,7 +6591,7 @@
 "local": false,
 "more": 0,
 "cool": false,
-"score": 1.09
+"score": 1.08
 },
 {
 "b": "Etisalat",
@@ -6578,7 +6613,7 @@
 "local": false,
 "more": 0,
 "cool": false,
-"score": 1.07
+"score": 1.05
 },
 {
 "b": "TikTok",
@@ -6600,7 +6635,7 @@
 "local": false,
 "more": 0,
 "cool": false,
-"score": 1.01
+"score": 1.0
 },
 {
 "b": "Huawei",
@@ -6761,7 +6796,7 @@
 "local": true,
 "more": 4,
 "cool": false,
-"score": 20.73
+"score": 20.65
 },
 {
 "b": "Qatar Airways",
@@ -6803,7 +6838,7 @@
 "local": true,
 "more": 0,
 "cool": false,
-"score": 9.02
+"score": 8.99
 },
 {
 "b": "Visit Qatar",
@@ -6837,7 +6872,7 @@
 "local": true,
 "more": 0,
 "cool": false,
-"score": 7.19
+"score": 7.16
 },
 {
 "b": "Mubadala",
@@ -6861,7 +6896,7 @@
 "local": true,
 "more": 0,
 "cool": false,
-"score": 3.38
+"score": 3.37
 },
 {
 "b": "Microsoft",
@@ -6883,7 +6918,7 @@
 "local": true,
 "more": 0,
 "cool": false,
-"score": 3.2
+"score": 3.19
 },
 {
 "b": "Uniqlo",
@@ -7046,7 +7081,7 @@
 "local": true,
 "more": 1,
 "cool": false,
-"score": 9.03
+"score": 8.99
 },
 {
 "b": "Kia",
@@ -7055,6 +7090,15 @@
 "expand"
 ],
 "h": [
+{
+"t": "Kia launches remote-controlled car-sharing service in South Korea — Electrek",
+"u": "https://news.google.com/rss/articles/CBMirgFBVV95cUxNWDF5cHlodjNUQnpVaEVwREN5N2RJSGFmN0RTYTZUenVsZTJoUkplU1FRdC15WXBfcXpLcUF2UmRsSTZ3Ujd2NldYTy1ka3JjMDlNUkdmRS1jU1BYUF9JYWRLU3VJTFBvLVRGLXRpblBvbkJEVWNiR000amhqenBhOUV1dFBRNUlVaE4xZHVlS09hb3lObTZ0ZEFWXzJEZG9EdDFPSkhoSDU4bHlWcVE?oc=5",
+"s": "UA.NEWS",
+"at": "2026-10-16T15:46:35Z",
+"sig": [
+"expand"
+]
+},
 {
 "t": "Kia Launches Remote-Operated PV5 Car Sharing Pilot in Pangyo, South Korea",
 "u": "https://news.google.com/rss/articles/CBMidkFVX3lxTE1KbUdiaTY2RmZoUzEwaDJVd3UtRlBIZDNsN1FKem1qU1RPT2tDVGFZMkNoSkJlQWNKZDhoU1RSX0ttazY3b092VTZiQk90VWU1YVZJUTBTOGl5UUtBM0l2QzVWNXVJc09yNkhjbFBzb2RtdXdob3c?oc=5",
@@ -7077,7 +7121,7 @@
 "local": true,
 "more": 0,
 "cool": false,
-"score": 4.98
+"score": 8.18
 },
 {
 "b": "Shinhan",
@@ -7111,7 +7155,7 @@
 "local": true,
 "more": 0,
 "cool": false,
-"score": 3.98
+"score": 3.96
 },
 {
 "b": "Intel",
@@ -7133,7 +7177,7 @@
 "local": true,
 "more": 0,
 "cool": false,
-"score": 2.87
+"score": 2.86
 },
 {
 "b": "Kirin",
@@ -7155,7 +7199,7 @@
 "local": true,
 "more": 0,
 "cool": false,
-"score": 2.54
+"score": 2.53
 },
 {
 "b": "Adani",
@@ -7179,7 +7223,7 @@
 "local": false,
 "more": 0,
 "cool": false,
-"score": 2.47
+"score": 2.46
 },
 {
 "b": "Hanwha",
@@ -7201,7 +7245,7 @@
 "local": true,
 "more": 0,
 "cool": false,
-"score": 2.35
+"score": 2.33
 },
 {
 "b": "Lotte",
@@ -7234,7 +7278,7 @@
 "local": true,
 "more": 0,
 "cool": false,
-"score": 2.21
+"score": 2.2
 },
 {
 "b": "Hyundai",
@@ -7256,7 +7300,7 @@
 "local": true,
 "more": 0,
 "cool": false,
-"score": 2.06
+"score": 2.05
 },
 {
 "b": "Lexus",
@@ -7278,7 +7322,7 @@
 "local": false,
 "more": 0,
 "cool": false,
-"score": 0.7
+"score": 0.69
 }
 ],
 "other": [
@@ -7300,6 +7344,15 @@
 "sig": [
 "expand",
 "money"
+]
+},
+{
+"t": "iM Financial Group Sponsors \"1st Korea Public Interest Activity Impact Awards\"... \"Contributing to Solving Social Problems\"",
+"u": "https://news.google.com/rss/articles/CBMib0FVX3lxTFBDRGU1d0VYc3dUTXZDX0Jjb2cteGdzTk1iRHJlZEgzZnpSeFAzb3NaMEUwU093Ukxlb3BqQmFYdmdxSWhHdHpPSU1pdkt0elp4dmxfZUt3QlBOWVFkTXk4ZWhjYjV4Qm1qOG9SVi1ldw?oc=5",
+"s": "아시아경제",
+"at": "2026-10-15T01:01:29Z",
+"sig": [
+"sponsor"
 ]
 },
 {
@@ -7348,30 +7401,21 @@
 ]
 },
 {
+"t": "SC Capital Partners invests in 40MW AI data center in South Korea",
+"u": "https://news.google.com/rss/articles/CBMilAFBVV95cUxPTS05d29wTTJTeEdHVi1oRnFlQktVR19ETTFRTkhEZ3R5c0h2WXg4UmZKZHdmUlhISFN5TmhYTF9ud1FKanBlaGQtVWdZbU9nTXhIUkdFc2g0MzdUX0FPSGxFSGY0cC1KQkRvSnhsblh2eER3S1ZabEJHWTZaOXdZZWNzbHFfd0FSQlFLMVZKdmc5Z2xq?oc=5",
+"s": "Institutional Real Estate, Inc.",
+"at": "2026-10-14T07:00:00Z",
+"sig": [
+"expand"
+]
+},
+{
 "t": "Hoban Construction revamps Hoban Summit, launches premium Edition in South Korea - CHOSUNBIZ",
 "u": "https://news.google.com/rss/articles/CBMimAFBVV95cUxQOEhUajNDcDU1dFdKWHhzVk1ZRDg5aHZ6Z0RaNDUzV2xvbklsZFZrekVITnlWamFVNjdNOURGREhTXzhPUzZMZ3BhNGdDN0lQUFNXeVlhR3RRcTV5bzFuNS1wT2F1bW91NHRkWlJxV0VzeHdVNzhEYVZsbzN1RU1hYlpqRGdhQUNIUlhVZmg3UjVoV0ZmbGM3NtIBmAFBVV95cUxQOEhUajNDcDU1dFdKWHhzVk1ZRDg5aHZ6Z0RaNDUzV2xvbklsZFZrekVITnlWamFVNjdNOURGREhTXzhPUzZMZ3BhNGdDN0lQUFNXeVlhR3RRcTV5bzFuNS1wT2F1bW91NHRkWlJxV0VzeHdVNzhEYVZsbzN1RU1hYlpqRGdhQUNIUlhVZmg3UjVoV0ZmbGM3Ng?oc=5",
 "s": "Chosunbiz",
 "at": "2026-10-13T02:00:00Z",
 "sig": [
 "expand"
-]
-},
-{
-"t": "South Korea's SMR Developer RX Raises ₩10 Billion in Pre-A Bridge Round; Cumulative Funding Reaches ₩23.9 Billion",
-"u": "https://news.google.com/rss/articles/CBMidkFVX3lxTFBWdkdEUHpiLTdWaFI0eEM3Vnd2Q0cycDFYbUsxRV91ajBwNHVpRkd2S05tNkpyZU1DMW8xSWtYWVF4X3VHLVc2V2xNclVZSXQ0NmVsQzdYOGV2YV94VjF1aHNZbGt3V0pRZmZCeGNZalpKVVhVRVE?oc=5",
-"s": "BigGo Finance",
-"at": "2026-10-14T11:05:00Z",
-"sig": [
-"money"
-]
-},
-{
-"t": "KB Kookmin Bank to Sponsor New Women's Pro Basketball Season",
-"u": "https://news.google.com/rss/articles/CBMiogFBVV95cUxNZjJBUlUtbWgxRWQ3TVpJRHlqMW1zS3hPQ2tvS1ZGRnhsdmtiRUdiUDl5azJGZWtxUkUyaWFWTTRtRl9TdEFNRkVLY0ozTkhXY1FNcXRZakdZeXM5OGVCcUdCNXRRVHBZN1E4N0JTb3ZQMnF2TW1RWENuRnJBSFhVOUlYQlBYYmd1eDAzejlPMzM1Mm96emN2YXhGb1VaV0V2ZlE?oc=5",
-"s": "Seoul Economic Daily",
-"at": "2026-10-14T09:26:58Z",
-"sig": [
-"sponsor"
 ]
 }
 ],
@@ -7417,7 +7461,7 @@
 "local": true,
 "more": 1,
 "cool": false,
-"score": 10.85
+"score": 10.81
 },
 {
 "b": "Singtel",
@@ -7451,7 +7495,7 @@
 "local": false,
 "more": 0,
 "cool": false,
-"score": 6.75
+"score": 6.73
 },
 {
 "b": "Mazda",
@@ -7473,7 +7517,7 @@
 "local": true,
 "more": 0,
 "cool": false,
-"score": 3.09
+"score": 3.08
 },
 {
 "b": "OpenAI",
@@ -7495,7 +7539,7 @@
 "local": true,
 "more": 0,
 "cool": false,
-"score": 2.96
+"score": 2.94
 },
 {
 "b": "NTT",
@@ -7517,7 +7561,7 @@
 "local": true,
 "more": 0,
 "cool": false,
-"score": 2.79
+"score": 2.78
 },
 {
 "b": "Marriott",
@@ -7539,7 +7583,7 @@
 "local": true,
 "more": 0,
 "cool": false,
-"score": 1.94
+"score": 1.93
 },
 {
 "b": "Hyundai / Singapore Airlines",
@@ -7561,7 +7605,7 @@
 "local": true,
 "more": 0,
 "cool": false,
-"score": 1.92
+"score": 1.91
 },
 {
 "b": "Revolut",
@@ -7583,29 +7627,7 @@
 "local": true,
 "more": 0,
 "cool": false,
-"score": 1.72
-},
-{
-"b": "Visa",
-"sec": "Payments & crypto",
-"sig": [
-"sponsor"
-],
-"h": [
-{
-"t": "Visa returns as title sponsor for 2026 MAMA AWARDS; Visa Presale registration begins 13 October",
-"u": "https://news.google.com/rss/articles/CBMi1AFBVV95cUxPRlpfWmRxMnozU2RBbkxPWjMwTXF1aDlFRURRQ0V5aDZfVThqU2NfOFBudGZBM29MSmZzWDR4dHYyT1lVOFVfX2ZWaU1HYzZzT3NSU3BWWlRVbTliamE4TGliTGQwQWZzSzBfV0NqaWk3eVZIWnlJXzlpRExiRWlZS1lQMGp5Mlp2a2hsRTBLM0cybHc0SmpGanF1T3ZicFF5NG9WazIxZ1E0anBXZ0h4cWliMHNDMFNuLVdUMDdHT2ZnZXZsV1hnekZVUGYtS0wwalJPbQ?oc=5",
-"s": "The Malaysian Reserve",
-"at": "2026-10-13T02:41:58Z",
-"sig": [
-"sponsor"
-]
-}
-],
-"local": false,
-"more": 0,
-"cool": false,
-"score": 1.67
+"score": 1.71
 }
 ],
 "other": [
@@ -7704,7 +7726,7 @@
 ]
 }
 ],
-"n": 9
+"n": 8
 },
 "SE": {
 "brands": [
@@ -7728,7 +7750,7 @@
 "local": true,
 "more": 0,
 "cool": false,
-"score": 2.45
+"score": 2.44
 }
 ],
 "other": [
@@ -7866,8 +7888,8 @@
 "searched": {
 "AU:0": "2026-10-17T07:50:53Z",
 "AU:1": "2026-10-17T07:50:53Z",
-"RU:0": "2026-10-17T05:51:00Z",
-"RU:1": "2026-10-17T05:51:00Z",
+"RU:0": "2026-10-17T13:49:51Z",
+"RU:1": "2026-10-17T13:49:51Z",
 "PE:0": "2026-10-17T07:04:35Z",
 "PE:1": "2026-10-17T07:04:35Z",
 "DE:0": "2026-10-17T07:04:35Z",
@@ -7896,12 +7918,12 @@
 "BG:1": "2026-10-17T10:49:17Z",
 "HK:0": "2026-10-17T10:49:17Z",
 "HK:1": "2026-10-17T10:49:17Z",
-"CN:0": "2026-10-17T05:51:00Z",
-"CN:1": "2026-10-17T05:51:00Z",
-"ES:0": "2026-10-17T05:51:00Z",
-"ES:1": "2026-10-17T05:51:00Z",
-"NL:0": "2026-10-17T05:51:00Z",
-"NL:1": "2026-10-17T05:51:00Z",
+"CN:0": "2026-10-17T13:49:51Z",
+"CN:1": "2026-10-17T13:49:51Z",
+"ES:0": "2026-10-17T13:49:51Z",
+"ES:1": "2026-10-17T13:49:51Z",
+"NL:0": "2026-10-17T13:49:51Z",
+"NL:1": "2026-10-17T13:49:51Z",
 "IT:0": "2026-10-17T07:50:53Z",
 "IT:1": "2026-10-17T07:50:53Z",
 "HU:0": "2026-10-17T08:51:58Z",
@@ -7930,8 +7952,8 @@
 "AE:1": "2026-10-17T12:58:33Z",
 "QA:0": "2026-10-17T12:58:33Z",
 "QA:1": "2026-10-17T12:58:33Z",
-"KR:0": "2026-10-16T14:57:36Z",
-"KR:1": "2026-10-16T14:57:36Z",
+"KR:0": "2026-10-17T13:49:51Z",
+"KR:1": "2026-10-17T13:49:51Z",
 "SG:0": "2026-10-17T11:47:14Z",
 "SG:1": "2026-10-17T11:47:14Z",
 "SE:0": "2026-10-17T12:58:33Z",
