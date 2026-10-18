@@ -51,6 +51,15 @@
  "titles": {
   "2026": [
    {
+    "id": "dudeney",
+    "tournament": "W35 Birmingham",
+    "tier": "W35",
+    "type": "ITF World Tennis Tour",
+    "week": "12 Oct to 18 Oct 2026",
+    "end": "2026-10-18",
+    "link": "https://www.itftennis.com/en/tournament/w35-birmingham/gbr/2026/w-itf-gbr-2026-011/"
+   },
+   {
     "id": "rajeshwaran",
     "tournament": "W35 Lagos",
     "tier": "W35",
@@ -1047,7 +1056,7 @@
    }
   ]
  },
- "checked": "2026-10-17",
+ "checked": "2026-10-18",
  "v": 3,
  "full": [
   "deminaur",
@@ -1350,9 +1359,9 @@
    "checked": "2026-10-12"
   }
  },
- "tried": "2026-10-17T23:00:25Z",
+ "tried": "2026-10-18T06:17:13Z",
  "pending": [],
  "todo": [],
- "todoMode": "career",
+ "todoMode": "daily",
  "source": "ITF singles results (itftennis.com)"
 }
