@@ -1,5 +1,5 @@
 {
-"updated": "2026-10-18T07:03:50Z",
+"updated": "2026-10-18T07:50:38Z",
 "markets": {
 "AU": {
 "brands": [
@@ -43,7 +43,7 @@
 "local": true,
 "more": 9,
 "cool": false,
-"score": 38.99
+"score": 38.87
 },
 {
 "b": "Anthropic",
@@ -86,7 +86,7 @@
 "local": true,
 "more": 0,
 "cool": false,
-"score": 9.68
+"score": 9.65
 },
 {
 "b": "OpenAI",
@@ -120,7 +120,7 @@
 "local": true,
 "more": 0,
 "cool": false,
-"score": 7.7
+"score": 7.68
 },
 {
 "b": "IHG",
@@ -164,7 +164,7 @@
 "local": true,
 "more": 0,
 "cool": false,
-"score": 3.13
+"score": 3.12
 },
 {
 "b": "Samsung",
@@ -186,7 +186,7 @@
 "local": false,
 "more": 0,
 "cool": false,
-"score": 1.01
+"score": 1.0
 },
 {
 "b": "Woolworths",
@@ -208,7 +208,7 @@
 "local": false,
 "more": 0,
 "cool": false,
-"score": 0.76
+"score": 0.75
 },
 {
 "b": "Amazon",
@@ -350,7 +350,7 @@
 "local": true,
 "more": 0,
 "cool": false,
-"score": 2.99
+"score": 2.98
 },
 {
 "b": "Visa",
@@ -372,7 +372,7 @@
 "local": false,
 "more": 0,
 "cool": false,
-"score": 1.17
+"score": 1.16
 }
 ],
 "other": [
@@ -605,7 +605,7 @@
 "local": true,
 "more": 0,
 "cool": false,
-"score": 7.11
+"score": 7.08
 },
 {
 "b": "Estrella Galicia",
@@ -636,7 +636,7 @@
 "local": true,
 "more": 0,
 "cool": false,
-"score": 4.17
+"score": 4.15
 },
 {
 "b": "Ferrari",
@@ -667,7 +667,53 @@
 "local": true,
 "more": 0,
 "cool": false,
-"score": 4.12
+"score": 4.1
+},
+{
+"b": "Nestlé",
+"sec": "Food & drink",
+"sig": [
+"sponsor",
+"expand"
+],
+"h": [
+{
+"t": "Nestlé expands sports marketing portfolio with multi-year NBA partnership",
+"u": "https://news.google.com/rss/articles/CBMipAFBVV95cUxOMXdENURiUzRCdTBqSHJCbUxGOXRvaTRqTVRxMXFtSVRhNERObmgxUGR3a2dGamtIUlR0NDY0NFJ2QVE0amFmS0dIaXd6ai1IcGxXOWpaYzRBbGtzaTFNeHd6MExIWVVOUFd5aXZjdU5UN2Q4bTJMTGdRMVpDUDRYWDY5ZTZuaDBtZnV5cnlxSlFuV1ZabXlhazNVekZZRTRXRHUzcg?oc=5",
+"s": "SportsMint Media",
+"at": "2026-10-15T05:30:00Z",
+"sig": [
+"sponsor",
+"expand"
+]
+}
+],
+"local": false,
+"more": 0,
+"cool": false,
+"score": 4.07
+},
+{
+"b": "Jio",
+"sec": "Telecoms",
+"sig": [
+"expand"
+],
+"h": [
+{
+"t": "Reliance Jio Global Expansion: Targets US, Germany Market, Eyes 1.5 Billion Users",
+"u": "https://news.google.com/rss/articles/CBMisgFBVV95cUxONXNILWZHVTVQcVJ2SXNXR09Cd0dxMzZ2ZWl5QVk2MllnbEpBMXpFczhTOTc5cTBicU9fSnNmQ2o3VzBBSGp1Mk4yQnVEZjlCeVlzc0d5Y3lGX0tZc0JGcms3azNLU3VWNzhpMl82U3QwTDVlWGZJQnU5RUJXQ0s0UU5fcnFEbGQ3SVpuaFo2SzREbmFlVUhDc1h3SjZVYlVUaWlrNEtiRzE2ZnlZTk1tUlRn?oc=5",
+"s": "The Samikhsya",
+"at": "2026-10-18T06:11:01Z",
+"sig": [
+"expand"
+]
+}
+],
+"local": true,
+"more": 0,
+"cool": false,
+"score": 3.48
 },
 {
 "b": "AXA",
@@ -689,7 +735,7 @@
 "local": false,
 "more": 0,
 "cool": false,
-"score": 2.39
+"score": 2.38
 },
 {
 "b": "Mercedes-Benz",
@@ -711,7 +757,7 @@
 "local": true,
 "more": 0,
 "cool": false,
-"score": 2.34
+"score": 2.33
 }
 ],
 "other": [
@@ -814,7 +860,7 @@
 ]
 }
 ],
-"n": 5
+"n": 7
 },
 "FR": {
 "brands": [
@@ -847,7 +893,7 @@
 "local": true,
 "more": 0,
 "cool": false,
-"score": 8.13
+"score": 8.11
 },
 {
 "b": "BYD",
@@ -878,7 +924,39 @@
 "local": true,
 "more": 0,
 "cool": false,
-"score": 3.51
+"score": 3.49
+},
+{
+"b": "TotalEnergies",
+"sec": "Energy & industry",
+"sig": [
+"sponsor",
+"expand"
+],
+"h": [
+{
+"t": "TotalEnergies confident of surviving into 2027 despite ongoing title sponsor search",
+"u": "https://news.google.com/rss/articles/CBMiswFBVV95cUxQZ1k0SGFYdUU1cW1GaWZwdElBWHFKX2NfTUpxRmFiNi1jdFVGcF9aZkVQLVZMbFVzNURlUkZIdWFwQXRtQzhzQWQ1V2RNMkU2VUoyaDBCcnJkUzUzOVpsYkRpRVREQXFUbkFwdzJNVVdjVWFpUEZWYl93Y0o4bFhxSHBMTWxYMGd6emVIVUY3U0xlTmZpNUJBU3FyTlE5Y0ZnNmJuZXh0UWpZRzFNLXc2SklZZw?oc=5",
+"s": "Escape Collective",
+"at": "2026-10-17T20:18:28Z",
+"sig": [
+"sponsor"
+]
+},
+{
+"t": "TotalEnergies expands US venture with KKR with 700 MW portfolio",
+"u": "https://news.google.com/rss/articles/CBMiogFBVV95cUxQdTl2NEh2Z1lnV2hVVS1uUnFEVXc4Ymtka1VFMUkzWk1JNkhoNHZ5eHZCb1BUdGNnVF9XblNfT00zemp6dnpScGppY2dKTUstZjF5UGcyUUlEaGxwcy1Fa2dSY1N0Z1NZTks5clpsR1hCdTlZRGk5V1NJRGEzVS03ZWZ5SEViYlk3WjEzZnBIckttU3VPYWZ4Tzhody1vYlA1S3c?oc=5",
+"s": "KSL News",
+"at": "2026-10-12T14:16:45Z",
+"sig": [
+"expand"
+]
+}
+],
+"local": false,
+"more": 0,
+"cool": false,
+"score": 3.36
 },
 {
 "b": "Air France",
@@ -900,7 +978,7 @@
 "local": true,
 "more": 0,
 "cool": false,
-"score": 2.91
+"score": 2.9
 },
 {
 "b": "Chanel",
@@ -924,7 +1002,7 @@
 "local": false,
 "more": 0,
 "cool": false,
-"score": 2.79
+"score": 2.78
 },
 {
 "b": "L'Oréal",
@@ -946,7 +1024,7 @@
 "local": false,
 "more": 0,
 "cool": false,
-"score": 1.22
+"score": 1.21
 },
 {
 "b": "Airbus",
@@ -971,7 +1049,7 @@
 "score": 0.5
 },
 {
-"b": "KKR / TotalEnergies",
+"b": "KKR",
 "sec": "Investors & funds",
 "sig": [
 "expand"
@@ -1063,6 +1141,15 @@
 ]
 },
 {
+"t": "Prima KottuMee backs Asia Rugby Sevens as sponsor",
+"u": "https://news.google.com/rss/articles/CBMidkFVX3lxTFBjRHNzTGRzYzZ2c3VOQnlncmQzcG8tUDh2SUtVTHJtQmIyTDc1SnZMdkhGSVNKUmhkdEFzeWlobUxJbmc4MHJ3a1pjY1A0Wmkta05FYi1jWXVLVGU0RlVteVF1UGwxMUNRT0dwVkxPMWRRUzY4QWc?oc=5",
+"s": "Island.lk",
+"at": "2026-10-18T03:40:28Z",
+"sig": [
+"sponsor"
+]
+},
+{
 "t": "France launches ACF to replace cancelled NGF future combat aircraft",
 "u": "https://news.google.com/rss/articles/CBMi0gFBVV95cUxQd1hndXNLUHp3YnByX2pJU0tNWTNRMUhtakJ6ckI4ckdvdU04R0I1eGJxWlBGdzhPemcwb0FXSDJ3N2xIamtqSjdEMWg1Q002djhGVjYzaE1HRklEYlpwbnlTWWZ0OS0yaWJuX0g0YVRYam5tWVFjVXR5dW5VdXR1MzNqSDAzUjNkblNZamVxaUJvLU5aZHV6WFdHWlA1b3BCNDhtd3JZU1NWaHNyZW1Td0FwY3EtNHBvX3k3LVZXZGxhTjZUMmw5a1ZnbExsem5qd3c?oc=5",
 "s": "Janes",
@@ -1079,18 +1166,9 @@
 "sig": [
 "expand"
 ]
-},
-{
-"t": "AEG Drives Growth in France with Auguri Productions Acquisition",
-"u": "https://news.google.com/rss/articles/CBMijAFBVV95cUxQLWFVaFpmY3ZLYTdzUGduWm5fQWIxLUxWbE91akc3YXMwdWNsVVU1aU9KNm5TbFFRX1l4QV9oRjhyeDFudlhZQUxwcEVmbGJlNG4zQjFFQWtQZF9ZUC1vSEtRUWtLRTJUVTNjYWRwS0c1bDk0Ty1Db2lqT04tMW9pOUNsTElZd3FuSFdyeQ?oc=5",
-"s": "InterSpace Music Distribution",
-"at": "2026-10-17T02:48:24Z",
-"sig": [
-"money"
-]
 }
 ],
-"n": 7
+"n": 8
 },
 "UA": {
 "brands": [],
@@ -1160,6 +1238,15 @@
 ]
 },
 {
+"t": "EU leaders end summit without agreement on Ukraine funding and key disputes",
+"u": "https://news.google.com/rss/articles/CBMiakFVX3lxTFBnRFF5ZEpaX2w2TFJkaHpWeUFZUUg2TTk4SGVONjBBeVhBdmx0WFl0RjFzVjZ5MzNyYjFhWXFBcHZJQmlXWVJQaUtsZUNpMmk4em1XZVRSMzJVWTRUREJGU0J5aVhWSnVtN3c?oc=5",
+"s": "Mezha.net",
+"at": "2026-10-16T18:44:45Z",
+"sig": [
+"money"
+]
+},
+{
 "t": "Ukraine's Largest Mobile Carrier Raises Plan Prices: What's Behind It?",
 "u": "https://news.google.com/rss/articles/CBMiqgFBVV95cUxNZ09Qa1FpSkhmRnoyODZMcGxPajQtM3JfZE1vRTF4eUFXeDk2SE5ENklUdWN6YjRUWFpJdDdzMlRZMEZ0TFBOMWdyczdaNWp6amdDUzFPWHdJcFVqSFZQSzA4dDZjSjZyT2lSaGczSjlHb2lhZTdqT3RybUJGd3NFVkxSNmR0TjBGcFk1TVd4V2lhanp2OVNybnFUcDZ4cHd4WkF0MV9ncFpMdw?oc=5",
 "s": "Visit Ukraine.Today",
@@ -1175,15 +1262,6 @@
 "at": "2026-10-14T12:22:05Z",
 "sig": [
 "expand"
-]
-},
-{
-"t": "EU Seeks Extra Funding for Ukraine at IMF & G7 Meetings in Bangkok",
-"u": "https://news.google.com/rss/articles/CBMinAFBVV95cUxQV1dfaUZLUDB1djEwUy1pMldDSnpnUkppTVh3am9ranFZODV4U0RVaTIxM3JVeEN1ZHdSLThWS3BhM21IV3otZGtBTFhBM1pLaHpIYXRqRmZoazY4UWhPWFhFZmduVmVfcUxfUjhmbHB6TWxHbDNXQ290X3BmcHByTW5YNVg3c3oyNk1STHhNV2ViQ1pRNDhycjFIdDY?oc=5",
-"s": "Global Banking & Finance Review",
-"at": "2026-10-14T11:42:05Z",
-"sig": [
-"money"
 ]
 }
 ],
@@ -1253,7 +1331,7 @@
 "local": true,
 "more": 0,
 "cool": false,
-"score": 2.38
+"score": 2.37
 },
 {
 "b": "Visa",
@@ -1275,7 +1353,7 @@
 "local": true,
 "more": 0,
 "cool": false,
-"score": 2.38
+"score": 2.37
 },
 {
 "b": "ADNOC",
@@ -1297,7 +1375,7 @@
 "local": true,
 "more": 0,
 "cool": false,
-"score": 1.25
+"score": 1.24
 },
 {
 "b": "Standard Chartered",
@@ -1319,7 +1397,7 @@
 "local": false,
 "more": 0,
 "cool": false,
-"score": 0.84
+"score": 0.83
 },
 {
 "b": "ASML",
@@ -1465,7 +1543,7 @@
 "local": true,
 "more": 0,
 "cool": false,
-"score": 2.76
+"score": 2.75
 }
 ],
 "other": [
@@ -1804,7 +1882,7 @@
 "local": true,
 "more": 2,
 "cool": false,
-"score": 4.13
+"score": 4.12
 },
 {
 "b": "Lufthansa",
@@ -1828,7 +1906,7 @@
 "local": true,
 "more": 0,
 "cool": false,
-"score": 4.11
+"score": 4.1
 },
 {
 "b": "KTM",
@@ -1850,7 +1928,7 @@
 "local": false,
 "more": 0,
 "cool": false,
-"score": 1.76
+"score": 1.75
 },
 {
 "b": "Anthropic",
@@ -1872,7 +1950,7 @@
 "local": false,
 "more": 0,
 "cool": false,
-"score": 0.74
+"score": 0.73
 }
 ],
 "other": [
@@ -1995,7 +2073,7 @@
 "local": false,
 "more": 0,
 "cool": false,
-"score": 0.71
+"score": 0.7
 },
 {
 "b": "Rolex",
@@ -2017,7 +2095,7 @@
 "local": false,
 "more": 0,
 "cool": false,
-"score": 0.62
+"score": 0.61
 }
 ],
 "other": [
@@ -2152,7 +2230,7 @@
 "local": false,
 "more": 0,
 "cool": false,
-"score": 4.45
+"score": 4.43
 },
 {
 "b": "Chubb",
@@ -2174,7 +2252,7 @@
 "local": true,
 "more": 0,
 "cool": false,
-"score": 4.1
+"score": 4.09
 }
 ],
 "other": [
@@ -2295,7 +2373,7 @@
 "local": true,
 "more": 0,
 "cool": false,
-"score": 2.13
+"score": 2.12
 },
 {
 "b": "Lukoil",
@@ -2317,7 +2395,7 @@
 "local": true,
 "more": 0,
 "cool": false,
-"score": 1.21
+"score": 1.2
 },
 {
 "b": "Meta / OpenAI / Anthropic",
@@ -2339,7 +2417,7 @@
 "local": false,
 "more": 0,
 "cool": false,
-"score": 0.52
+"score": 0.51
 }
 ],
 "other": [
@@ -2467,7 +2545,7 @@
 "local": true,
 "more": 1,
 "cool": false,
-"score": 11.7
+"score": 11.66
 },
 {
 "b": "American Express",
@@ -2498,7 +2576,7 @@
 "local": true,
 "more": 0,
 "cool": false,
-"score": 5.97
+"score": 5.95
 },
 {
 "b": "Visa",
@@ -2520,7 +2598,7 @@
 "local": false,
 "more": 0,
 "cool": false,
-"score": 1.44
+"score": 1.43
 },
 {
 "b": "BlackRock",
@@ -2710,7 +2788,7 @@
 "local": true,
 "more": 0,
 "cool": false,
-"score": 3.25
+"score": 3.24
 },
 {
 "b": "Boeing",
@@ -2732,7 +2810,7 @@
 "local": true,
 "more": 0,
 "cool": false,
-"score": 3.01
+"score": 3.0
 },
 {
 "b": "Meta",
@@ -2754,7 +2832,7 @@
 "local": true,
 "more": 0,
 "cool": false,
-"score": 3.01
+"score": 3.0
 },
 {
 "b": "Chery",
@@ -2776,7 +2854,7 @@
 "local": true,
 "more": 0,
 "cool": false,
-"score": 2.98
+"score": 2.97
 },
 {
 "b": "Nike",
@@ -2798,7 +2876,7 @@
 "local": true,
 "more": 0,
 "cool": false,
-"score": 2.97
+"score": 2.96
 },
 {
 "b": "Lululemon",
@@ -2829,7 +2907,7 @@
 "local": true,
 "more": 0,
 "cool": false,
-"score": 2.84
+"score": 2.83
 },
 {
 "b": "Apple",
@@ -2853,7 +2931,7 @@
 "local": true,
 "more": 0,
 "cool": false,
-"score": 2.72
+"score": 2.71
 },
 {
 "b": "ByteDance",
@@ -2875,7 +2953,7 @@
 "local": true,
 "more": 0,
 "cool": false,
-"score": 2.65
+"score": 2.64
 },
 {
 "b": "Citigroup / Mastercard",
@@ -2897,7 +2975,7 @@
 "local": true,
 "more": 0,
 "cool": false,
-"score": 2.53
+"score": 2.52
 },
 {
 "b": "Tesla",
@@ -2919,7 +2997,7 @@
 "local": true,
 "more": 0,
 "cool": false,
-"score": 2.17
+"score": 2.16
 },
 {
 "b": "Visa",
@@ -2941,7 +3019,7 @@
 "local": true,
 "more": 0,
 "cool": false,
-"score": 2.08
+"score": 2.07
 },
 {
 "b": "IHG",
@@ -2963,29 +3041,7 @@
 "local": true,
 "more": 0,
 "cool": false,
-"score": 1.74
-},
-{
-"b": "Asics",
-"sec": "Sportswear",
-"sig": [
-"expand"
-],
-"h": [
-{
-"t": "ASICS launches campaign to get people moving as inactivity rises in China",
-"u": "https://news.google.com/rss/articles/CBMifkFVX3lxTE43MTE1NWZ3NlVCRHlVN1pPVlIzYWJ5ZklHN0w4c0hMM2x6cEMyaXpKRHU3Zjh3M3VCQUdHRWRXdUNvY3JPVWNJRG93cjVtZTNrRTEySmpoeTl4cEFtMi1aQUZfVnhJRFVaZWpOSHYtbHFQS1dWTTBHckhBNnhIZw?oc=5",
-"s": "China Daily",
-"at": "2026-10-11T07:27:04Z",
-"sig": [
-"expand"
-]
-}
-],
-"local": true,
-"more": 0,
-"cool": false,
-"score": 1.4
+"score": 1.73
 },
 {
 "b": "Li-Ning",
@@ -3007,7 +3063,7 @@
 "local": false,
 "more": 0,
 "cool": false,
-"score": 1.3
+"score": 1.29
 },
 {
 "b": "Volvo / Nvidia",
@@ -3029,7 +3085,7 @@
 "local": false,
 "more": 0,
 "cool": false,
-"score": 1.28
+"score": 1.27
 },
 {
 "b": "Lotte",
@@ -3051,7 +3107,7 @@
 "local": false,
 "more": 0,
 "cool": false,
-"score": 0.72
+"score": 0.71
 }
 ],
 "other": [
@@ -3150,7 +3206,7 @@
 ]
 }
 ],
-"n": 16
+"n": 15
 },
 "ES": {
 "brands": [
@@ -3183,7 +3239,7 @@
 "local": true,
 "more": 0,
 "cool": false,
-"score": 7.6
+"score": 7.58
 },
 {
 "b": "Netflix",
@@ -3217,7 +3273,7 @@
 "local": true,
 "more": 0,
 "cool": false,
-"score": 5.5
+"score": 5.48
 },
 {
 "b": "Uber",
@@ -3249,7 +3305,7 @@
 "local": true,
 "more": 0,
 "cool": false,
-"score": 5.33
+"score": 5.31
 },
 {
 "b": "Uniqlo",
@@ -3280,7 +3336,7 @@
 "local": true,
 "more": 0,
 "cool": false,
-"score": 3.52
+"score": 3.5
 },
 {
 "b": "Movistar",
@@ -3302,7 +3358,7 @@
 "local": false,
 "more": 0,
 "cool": false,
-"score": 1.82
+"score": 1.81
 },
 {
 "b": "Meliá",
@@ -3324,7 +3380,7 @@
 "local": true,
 "more": 0,
 "cool": false,
-"score": 1.81
+"score": 1.8
 },
 {
 "b": "Deutsche Bank",
@@ -3346,7 +3402,7 @@
 "local": true,
 "more": 0,
 "cool": false,
-"score": 1.49
+"score": 1.48
 },
 {
 "b": "Telefónica",
@@ -3368,7 +3424,7 @@
 "local": false,
 "more": 0,
 "cool": false,
-"score": 0.58
+"score": 0.57
 }
 ],
 "other": [
@@ -3499,7 +3555,7 @@
 "local": false,
 "more": 0,
 "cool": false,
-"score": 2.78
+"score": 2.77
 },
 {
 "b": "Equinor",
@@ -3521,7 +3577,7 @@
 "local": true,
 "more": 0,
 "cool": false,
-"score": 2.64
+"score": 2.63
 },
 {
 "b": "Heineken",
@@ -3711,7 +3767,7 @@
 "local": true,
 "more": 0,
 "cool": false,
-"score": 2.91
+"score": 2.9
 },
 {
 "b": "Lavazza",
@@ -3733,7 +3789,7 @@
 "local": true,
 "more": 0,
 "cool": false,
-"score": 2.63
+"score": 2.62
 },
 {
 "b": "Shell",
@@ -3755,7 +3811,7 @@
 "local": true,
 "more": 0,
 "cool": false,
-"score": 2.04
+"score": 2.03
 },
 {
 "b": "Stellantis",
@@ -3777,7 +3833,7 @@
 "local": true,
 "more": 0,
 "cool": false,
-"score": 1.68
+"score": 1.67
 },
 {
 "b": "Barilla",
@@ -3799,7 +3855,7 @@
 "local": false,
 "more": 0,
 "cool": false,
-"score": 1.34
+"score": 1.33
 },
 {
 "b": "Louis Vuitton / Dior",
@@ -3821,7 +3877,7 @@
 "local": false,
 "more": 0,
 "cool": false,
-"score": 0.57
+"score": 0.56
 }
 ],
 "other": [
@@ -3959,7 +4015,7 @@
 "local": true,
 "more": 2,
 "cool": false,
-"score": 11.42
+"score": 11.37
 },
 {
 "b": "BYD",
@@ -3990,7 +4046,7 @@
 "local": true,
 "more": 0,
 "cool": false,
-"score": 4.65
+"score": 4.63
 },
 {
 "b": "Mercedes-Benz / BMW",
@@ -4012,7 +4068,7 @@
 "local": true,
 "more": 0,
 "cool": false,
-"score": 3.29
+"score": 3.28
 },
 {
 "b": "Saab",
@@ -4034,7 +4090,7 @@
 "local": true,
 "more": 0,
 "cool": false,
-"score": 2.55
+"score": 2.54
 },
 {
 "b": "Samsung",
@@ -4078,7 +4134,7 @@
 "local": true,
 "more": 0,
 "cool": false,
-"score": 2.19
+"score": 2.18
 },
 {
 "b": "Bosch",
@@ -4100,7 +4156,7 @@
 "local": false,
 "more": 0,
 "cool": false,
-"score": 1.13
+"score": 1.12
 }
 ],
 "other": [
@@ -4219,7 +4275,7 @@
 "local": true,
 "more": 0,
 "cool": false,
-"score": 1.79
+"score": 1.78
 },
 {
 "b": "Uzum",
@@ -4250,7 +4306,7 @@
 "local": true,
 "more": 0,
 "cool": false,
-"score": 1.43
+"score": 1.42
 }
 ],
 "other": [
@@ -4380,7 +4436,7 @@
 "local": true,
 "more": 0,
 "cool": false,
-"score": 3.6
+"score": 3.58
 },
 {
 "b": "KFC",
@@ -4402,7 +4458,7 @@
 "local": true,
 "more": 0,
 "cool": false,
-"score": 2.69
+"score": 2.68
 },
 {
 "b": "IKEA",
@@ -4424,7 +4480,7 @@
 "local": true,
 "more": 0,
 "cool": false,
-"score": 1.81
+"score": 1.8
 },
 {
 "b": "DP World",
@@ -4455,7 +4511,7 @@
 "local": false,
 "more": 0,
 "cool": false,
-"score": 1.08
+"score": 1.07
 }
 ],
 "other": [
@@ -4657,7 +4713,7 @@
 "local": true,
 "more": 1,
 "cool": false,
-"score": 12.62
+"score": 12.58
 },
 {
 "b": "Asics",
@@ -4697,7 +4753,7 @@
 "local": true,
 "more": 2,
 "cool": false,
-"score": 10.31
+"score": 10.26
 },
 {
 "b": "Dyson",
@@ -4739,7 +4795,47 @@
 "local": true,
 "more": 0,
 "cool": false,
-"score": 8.93
+"score": 8.9
+},
+{
+"b": "HP",
+"sec": "Tech",
+"sig": [
+"expand"
+],
+"h": [
+{
+"t": "Fieldmarshal Launches India’s First ARAI Approved TREM V Compliant Single Cylinder Diesel Engines In 15 HP & 18 HP Categories",
+"u": "https://news.google.com/rss/articles/CBMikgJBVV95cUxQd0xBYUJmSjhnU2FkX0xsUzZ6c0lkb1pZOVN1MzMxUGw5R0VMUllaYzJCRHdnY1l2al9kTHBNUGhkSVVtaUZxeUZLRkxra2JLdmFuYXdCYlRLRTNYUWZjUWZmY2otYjB0cGp6Z2pFS25zb0ZmVFRYZDBvaDNPdmNvdzlCNmRTaEY0ZUlIeDF6R3k5VW5HTkZEbm1QUmlIWFM0QXNrTUk5a0VucEVnelF3ZmE2MzN1Zy12dnVvdTctZ18xVm9oSWJJbWc4Z3Y5Q1QxblBLOER0RlhRUmZlZmZyMjF4VmJWUk5DUFNGMThJWUVvMmN1U01lV3d5SjAxekNzbzhFSVlMbzJ1TUZzb3FjeENR0gGSAkFVX3lxTFB3TEFhQmZKOGdTYWRfTGxTNnpzSWRvWlk5U3UzMzFQbDlHRUxSWVpjMkJEd2djWXZqX2RMcE1QaGRJVW1pRnF5RktGTGtrYkt2YW5hd0JiVEtFM1hRZmNRZmZjai1iMHRwanpnakVLbnNvRmZUVFhkMG9oM092Y293OUI2ZFNoRjRlSUh4MXpHeTlVbkdORkRubVBSaUhYUzRBc2tNSTlrRW5wRWd6UXdmYTYzM3VnLXZ2dW91Ny1nXzFWb2hJYkltZzhndjlDVDFuUEs4RHRGWFFSZmVmZnIyMXhWYlZSTkNQU0YxOElZRW8yY3VTTWVXd3lKMDF6Q3NvOEVJWUxvMnVNRnNvcWN4Q1E?oc=5",
+"s": "Outlook Business",
+"at": "2026-10-17T09:51:18Z",
+"sig": [
+"expand"
+]
+},
+{
+"t": "Fieldmarshal Launches India’s First ARAI Approved TREM V Compliant Single Cylinder Diesel Engines in 15 HP & 18 HP Categories",
+"u": "https://news.google.com/rss/articles/CBMi_gFBVV95cUxPUVVmc2xQT3ZZaFhSN1hmRExKVDB5cVNmdDBON09sOEVsbi1zLTFwZTVwQXFyWFM5QXJZSlFXU3ktMG1jRGw0RmdkMC1jRWZaN21zdENjcklwTjFvZE5WeTM3Z1hyXzlfcXN1UUg5T3VOR1VBT3RrU2g3OFRwYTlTSmlOSjJ2TFZ3M3lsOHRYeTkyX1kyMzVDM1AxNkdheG14M01JMWMtaXlEUHRUeHlySUZJb1p2bnRaSnlKdEcyVHpLR2l2STFGXzZ2Qk16TkFFWnJzcmEzMjZscF93SGUyTmtsY1doR1JQNGhES0F2TmVabDNHZzlLTkxaR0VyZw?oc=5",
+"s": "Press Trust of India",
+"at": "2026-10-15T13:32:44Z",
+"sig": [
+"expand"
+]
+},
+{
+"t": "Fieldmarshal Launches India's First ARAI Approved TREM V Compliant Single Cylinder Diesel Engines in 15 HP & 18 HP Categories",
+"u": "https://news.google.com/rss/articles/CBMivAJBVV95cUxQRkljN3M3MUtMUVBJdzRMbWZXT2djUjUzV2I5SmZTRG03cE14aGNMeXB2cmY4eF8yeVRvM0dXbFJQRXpRLVktQWNoUmRERTNqOENDMVY2OGVGNkF4TElSSTR6cVoweXVURnhnaWRGQ2RpOUlPUHlsWDhUTnUzRlVjTWZMQV9iODZhM21ROVhDcnRLT2ZXT1NsSHhYejg0cl9MSkN2b0cySU9BOENTSVB3NFpwVVZLcmRpcjk4eTJOT2c4U2M4WnEwdVNERDhoRndlbkZmR1VKX3dEbjA1VUpUbGM3MjBlNGhwMmVGSVNRdkZDekxiX3N0cmtaQ3NIRnczcXVMWDlURXQxdVBGS1dORjRuWE5hUzdmcnVzVDE3azRqajgxQzAtd3VCOERndXlGNTRDTEdCOUFEam5J0gG8AkFVX3lxTFBGSWM3czcxS0xRUEl3NExtZldPZ2NSNTNXYjlKZlNEbTdwTXhoY0x5cHZyZjh4XzJ5VG8zR1dsUlBFelEtWS1BY2hSZERFM2o4Q0MxVjY4ZUY2QXhMSVJJNHpxWjB5dVRGeGdpZEZDZGk5SU9QeWxYOFROdTNGVWNNZkxBX2I4NmEzbVE5WENydEtPZldPU2xIeFh6ODRyX0xKQ3ZvRzJJT0E4Q1NJUHc0WnBVVktyZGlyOTh5Mk5PZzhTYzhacTB1U0REOGhGd2VuRmZHVUpfd0RuMDVVSlRsYzcyMGU0aHAyZUZJU1F2RkN6TGJfc3Rya1pDc0hGdzNxdUxYOVRFdDF1UEZLV05GNG5YTmFTN2ZydXNUMTdrNGpqODFDMC13dUI4RGd1eUY1NENMR0I5QURqbkk?oc=5",
+"s": "Business Standard",
+"at": "2026-10-15T07:00:15Z",
+"sig": [
+"expand"
+]
+}
+],
+"local": true,
+"more": 0,
+"cool": false,
+"score": 8.49
 },
 {
 "b": "Hyundai",
@@ -4780,47 +4876,7 @@
 "local": true,
 "more": 1,
 "cool": false,
-"score": 8.53
-},
-{
-"b": "HP",
-"sec": "Tech",
-"sig": [
-"expand"
-],
-"h": [
-{
-"t": "Fieldmarshal Launches India’s First ARAI Approved TREM V Compliant Single Cylinder Diesel Engines In 15 HP & 18 HP Categories",
-"u": "https://news.google.com/rss/articles/CBMikgJBVV95cUxQd0xBYUJmSjhnU2FkX0xsUzZ6c0lkb1pZOVN1MzMxUGw5R0VMUllaYzJCRHdnY1l2al9kTHBNUGhkSVVtaUZxeUZLRkxra2JLdmFuYXdCYlRLRTNYUWZjUWZmY2otYjB0cGp6Z2pFS25zb0ZmVFRYZDBvaDNPdmNvdzlCNmRTaEY0ZUlIeDF6R3k5VW5HTkZEbm1QUmlIWFM0QXNrTUk5a0VucEVnelF3ZmE2MzN1Zy12dnVvdTctZ18xVm9oSWJJbWc4Z3Y5Q1QxblBLOER0RlhRUmZlZmZyMjF4VmJWUk5DUFNGMThJWUVvMmN1U01lV3d5SjAxekNzbzhFSVlMbzJ1TUZzb3FjeENR0gGSAkFVX3lxTFB3TEFhQmZKOGdTYWRfTGxTNnpzSWRvWlk5U3UzMzFQbDlHRUxSWVpjMkJEd2djWXZqX2RMcE1QaGRJVW1pRnF5RktGTGtrYkt2YW5hd0JiVEtFM1hRZmNRZmZjai1iMHRwanpnakVLbnNvRmZUVFhkMG9oM092Y293OUI2ZFNoRjRlSUh4MXpHeTlVbkdORkRubVBSaUhYUzRBc2tNSTlrRW5wRWd6UXdmYTYzM3VnLXZ2dW91Ny1nXzFWb2hJYkltZzhndjlDVDFuUEs4RHRGWFFSZmVmZnIyMXhWYlZSTkNQU0YxOElZRW8yY3VTTWVXd3lKMDF6Q3NvOEVJWUxvMnVNRnNvcWN4Q1E?oc=5",
-"s": "Outlook Business",
-"at": "2026-10-17T09:51:18Z",
-"sig": [
-"expand"
-]
-},
-{
-"t": "Fieldmarshal Launches India’s First ARAI Approved TREM V Compliant Single Cylinder Diesel Engines in 15 HP & 18 HP Categories",
-"u": "https://news.google.com/rss/articles/CBMi_gFBVV95cUxPUVVmc2xQT3ZZaFhSN1hmRExKVDB5cVNmdDBON09sOEVsbi1zLTFwZTVwQXFyWFM5QXJZSlFXU3ktMG1jRGw0RmdkMC1jRWZaN21zdENjcklwTjFvZE5WeTM3Z1hyXzlfcXN1UUg5T3VOR1VBT3RrU2g3OFRwYTlTSmlOSjJ2TFZ3M3lsOHRYeTkyX1kyMzVDM1AxNkdheG14M01JMWMtaXlEUHRUeHlySUZJb1p2bnRaSnlKdEcyVHpLR2l2STFGXzZ2Qk16TkFFWnJzcmEzMjZscF93SGUyTmtsY1doR1JQNGhES0F2TmVabDNHZzlLTkxaR0VyZw?oc=5",
-"s": "Press Trust of India",
-"at": "2026-10-15T13:32:44Z",
-"sig": [
-"expand"
-]
-},
-{
-"t": "Fieldmarshal Launches India's First ARAI Approved TREM V Compliant Single Cylinder Diesel Engines in 15 HP & 18 HP Categories",
-"u": "https://news.google.com/rss/articles/CBMivAJBVV95cUxQRkljN3M3MUtMUVBJdzRMbWZXT2djUjUzV2I5SmZTRG03cE14aGNMeXB2cmY4eF8yeVRvM0dXbFJQRXpRLVktQWNoUmRERTNqOENDMVY2OGVGNkF4TElSSTR6cVoweXVURnhnaWRGQ2RpOUlPUHlsWDhUTnUzRlVjTWZMQV9iODZhM21ROVhDcnRLT2ZXT1NsSHhYejg0cl9MSkN2b0cySU9BOENTSVB3NFpwVVZLcmRpcjk4eTJOT2c4U2M4WnEwdVNERDhoRndlbkZmR1VKX3dEbjA1VUpUbGM3MjBlNGhwMmVGSVNRdkZDekxiX3N0cmtaQ3NIRnczcXVMWDlURXQxdVBGS1dORjRuWE5hUzdmcnVzVDE3azRqajgxQzAtd3VCOERndXlGNTRDTEdCOUFEam5J0gG8AkFVX3lxTFBGSWM3czcxS0xRUEl3NExtZldPZ2NSNTNXYjlKZlNEbTdwTXhoY0x5cHZyZjh4XzJ5VG8zR1dsUlBFelEtWS1BY2hSZERFM2o4Q0MxVjY4ZUY2QXhMSVJJNHpxWjB5dVRGeGdpZEZDZGk5SU9QeWxYOFROdTNGVWNNZkxBX2I4NmEzbVE5WENydEtPZldPU2xIeFh6ODRyX0xKQ3ZvRzJJT0E4Q1NJUHc0WnBVVktyZGlyOTh5Mk5PZzhTYzhacTB1U0REOGhGd2VuRmZHVUpfd0RuMDVVSlRsYzcyMGU0aHAyZUZJU1F2RkN6TGJfc3Rya1pDc0hGdzNxdUxYOVRFdDF1UEZLV05GNG5YTmFTN2ZydXNUMTdrNGpqODFDMC13dUI4RGd1eUY1NENMR0I5QURqbkk?oc=5",
-"s": "Business Standard",
-"at": "2026-10-15T07:00:15Z",
-"sig": [
-"expand"
-]
-}
-],
-"local": true,
-"more": 0,
-"cool": false,
-"score": 8.52
+"score": 8.49
 },
 {
 "b": "Rolls-Royce",
@@ -4860,7 +4916,7 @@
 "local": true,
 "more": 0,
 "cool": false,
-"score": 8.19
+"score": 8.16
 },
 {
 "b": "Tesla",
@@ -4891,7 +4947,7 @@
 "local": true,
 "more": 0,
 "cool": false,
-"score": 6.47
+"score": 6.45
 },
 {
 "b": "BYD",
@@ -4924,7 +4980,7 @@
 "local": true,
 "more": 0,
 "cool": false,
-"score": 6.26
+"score": 6.24
 },
 {
 "b": "Marriott",
@@ -4955,7 +5011,7 @@
 "local": true,
 "more": 0,
 "cool": false,
-"score": 4.13
+"score": 4.11
 },
 {
 "b": "Nike",
@@ -4977,7 +5033,7 @@
 "local": true,
 "more": 0,
 "cool": false,
-"score": 2.97
+"score": 2.96
 },
 {
 "b": "Logitech",
@@ -4999,7 +5055,7 @@
 "local": true,
 "more": 0,
 "cool": false,
-"score": 2.92
+"score": 2.91
 },
 {
 "b": "Oppo",
@@ -5021,7 +5077,7 @@
 "local": true,
 "more": 0,
 "cool": false,
-"score": 2.25
+"score": 2.24
 },
 {
 "b": "Nestlé",
@@ -5043,7 +5099,7 @@
 "local": true,
 "more": 0,
 "cool": false,
-"score": 2.11
+"score": 2.1
 },
 {
 "b": "Bridgestone",
@@ -5065,7 +5121,7 @@
 "local": true,
 "more": 0,
 "cool": false,
-"score": 2.06
+"score": 2.05
 },
 {
 "b": "OpenAI",
@@ -5087,7 +5143,7 @@
 "local": false,
 "more": 0,
 "cool": false,
-"score": 1.69
+"score": 1.68
 },
 {
 "b": "Diageo",
@@ -5109,7 +5165,7 @@
 "local": true,
 "more": 0,
 "cool": false,
-"score": 1.67
+"score": 1.66
 },
 {
 "b": "McLaren / Etihad",
@@ -5131,7 +5187,7 @@
 "local": false,
 "more": 0,
 "cool": false,
-"score": 1.23
+"score": 1.22
 }
 ],
 "other": [
@@ -5268,7 +5324,7 @@
 "local": true,
 "more": 0,
 "cool": false,
-"score": 6.45
+"score": 6.43
 },
 {
 "b": "Sony",
@@ -5299,7 +5355,7 @@
 "local": true,
 "more": 0,
 "cool": false,
-"score": 4.26
+"score": 4.24
 },
 {
 "b": "Samsung",
@@ -5321,7 +5377,7 @@
 "local": true,
 "more": 0,
 "cool": false,
-"score": 2.26
+"score": 2.25
 },
 {
 "b": "Amazon",
@@ -5343,7 +5399,7 @@
 "local": true,
 "more": 0,
 "cool": false,
-"score": 1.68
+"score": 1.67
 },
 {
 "b": "Jumeirah",
@@ -5550,7 +5606,7 @@
 "local": true,
 "more": 0,
 "cool": false,
-"score": 9.49
+"score": 9.46
 },
 {
 "b": "Canada Goose",
@@ -5574,7 +5630,7 @@
 "local": true,
 "more": 0,
 "cool": false,
-"score": 4.92
+"score": 4.91
 },
 {
 "b": "Expedia",
@@ -5598,7 +5654,7 @@
 "local": false,
 "more": 0,
 "cool": false,
-"score": 3.84
+"score": 3.83
 },
 {
 "b": "Visa",
@@ -5620,7 +5676,7 @@
 "local": true,
 "more": 0,
 "cool": false,
-"score": 3.4
+"score": 3.39
 },
 {
 "b": "Nintendo",
@@ -5642,7 +5698,7 @@
 "local": true,
 "more": 0,
 "cool": false,
-"score": 2.97
+"score": 2.96
 },
 {
 "b": "Samsung",
@@ -5664,7 +5720,7 @@
 "local": true,
 "more": 0,
 "cool": false,
-"score": 2.92
+"score": 2.91
 },
 {
 "b": "Prime Video",
@@ -5686,7 +5742,7 @@
 "local": true,
 "more": 0,
 "cool": false,
-"score": 2.46
+"score": 2.45
 },
 {
 "b": "Airbus",
@@ -5708,7 +5764,7 @@
 "local": true,
 "more": 0,
 "cool": false,
-"score": 2.34
+"score": 2.33
 },
 {
 "b": "Amazon",
@@ -5870,7 +5926,7 @@
 "local": true,
 "more": 0,
 "cool": false,
-"score": 7.64
+"score": 7.61
 },
 {
 "b": "Nubank",
@@ -5903,7 +5959,7 @@
 "local": false,
 "more": 0,
 "cool": false,
-"score": 3.3
+"score": 3.28
 },
 {
 "b": "Shopee",
@@ -5925,7 +5981,7 @@
 "local": false,
 "more": 0,
 "cool": false,
-"score": 1.58
+"score": 1.57
 },
 {
 "b": "BlackRock",
@@ -5947,7 +6003,7 @@
 "local": false,
 "more": 0,
 "cool": false,
-"score": 0.99
+"score": 0.98
 },
 {
 "b": "Samsung",
@@ -6103,7 +6159,7 @@
 "local": true,
 "more": 0,
 "cool": false,
-"score": 7.3
+"score": 7.28
 },
 {
 "b": "Revolut",
@@ -6134,7 +6190,7 @@
 "local": true,
 "more": 0,
 "cool": false,
-"score": 2.64
+"score": 2.63
 },
 {
 "b": "Mastercard",
@@ -6156,7 +6212,7 @@
 "local": true,
 "more": 0,
 "cool": false,
-"score": 1.68
+"score": 1.67
 },
 {
 "b": "Geely",
@@ -6178,7 +6234,7 @@
 "local": false,
 "more": 0,
 "cool": false,
-"score": 1.55
+"score": 1.54
 }
 ],
 "other": [
@@ -6315,7 +6371,7 @@
 "local": true,
 "more": 0,
 "cool": false,
-"score": 11.4
+"score": 11.37
 },
 {
 "b": "YPF",
@@ -6475,7 +6531,7 @@
 "local": true,
 "more": 1,
 "cool": false,
-"score": 4.9
+"score": 4.88
 },
 {
 "b": "Geely",
@@ -6497,7 +6553,7 @@
 "local": false,
 "more": 0,
 "cool": false,
-"score": 0.55
+"score": 0.54
 },
 {
 "b": "Shell",
@@ -6519,7 +6575,7 @@
 "local": false,
 "more": 0,
 "cool": false,
-"score": 0.55
+"score": 0.54
 },
 {
 "b": "Amazon",
@@ -6661,7 +6717,7 @@
 "local": true,
 "more": 0,
 "cool": false,
-"score": 4.06
+"score": 4.05
 },
 {
 "b": "Standard Chartered",
@@ -6694,7 +6750,7 @@
 "local": false,
 "more": 0,
 "cool": false,
-"score": 3.27
+"score": 3.25
 },
 {
 "b": "Lexus",
@@ -6716,7 +6772,7 @@
 "local": false,
 "more": 0,
 "cool": false,
-"score": 0.86
+"score": 0.85
 },
 {
 "b": "Etisalat",
@@ -6738,7 +6794,7 @@
 "local": false,
 "more": 0,
 "cool": false,
-"score": 0.84
+"score": 0.83
 },
 {
 "b": "TikTok",
@@ -6760,7 +6816,7 @@
 "local": false,
 "more": 0,
 "cool": false,
-"score": 0.79
+"score": 0.78
 },
 {
 "b": "Huawei",
@@ -6921,7 +6977,7 @@
 "local": true,
 "more": 4,
 "cool": false,
-"score": 19.15
+"score": 19.08
 },
 {
 "b": "Qatar Airways",
@@ -6963,7 +7019,7 @@
 "local": true,
 "more": 0,
 "cool": false,
-"score": 8.35
+"score": 8.32
 },
 {
 "b": "Visit Qatar",
@@ -6997,7 +7053,7 @@
 "local": true,
 "more": 0,
 "cool": false,
-"score": 6.73
+"score": 6.71
 },
 {
 "b": "Mubadala",
@@ -7021,7 +7077,7 @@
 "local": true,
 "more": 0,
 "cool": false,
-"score": 3.15
+"score": 3.14
 },
 {
 "b": "Microsoft",
@@ -7043,7 +7099,7 @@
 "local": true,
 "more": 0,
 "cool": false,
-"score": 2.98
+"score": 2.97
 }
 ],
 "other": [
@@ -7184,7 +7240,7 @@
 "local": true,
 "more": 1,
 "cool": false,
-"score": 8.12
+"score": 8.09
 },
 {
 "b": "Kia",
@@ -7224,7 +7280,7 @@
 "local": true,
 "more": 0,
 "cool": false,
-"score": 7.54
+"score": 7.51
 },
 {
 "b": "Shinhan",
@@ -7258,7 +7314,7 @@
 "local": true,
 "more": 0,
 "cool": false,
-"score": 3.53
+"score": 3.51
 },
 {
 "b": "Intel",
@@ -7280,7 +7336,7 @@
 "local": true,
 "more": 0,
 "cool": false,
-"score": 2.64
+"score": 2.63
 },
 {
 "b": "Kirin",
@@ -7302,7 +7358,7 @@
 "local": true,
 "more": 0,
 "cool": false,
-"score": 2.32
+"score": 2.31
 },
 {
 "b": "Hanwha",
@@ -7324,7 +7380,7 @@
 "local": true,
 "more": 0,
 "cool": false,
-"score": 2.12
+"score": 2.11
 },
 {
 "b": "Lotte",
@@ -7357,7 +7413,7 @@
 "local": true,
 "more": 0,
 "cool": false,
-"score": 1.99
+"score": 1.98
 },
 {
 "b": "Hyundai",
@@ -7379,7 +7435,7 @@
 "local": true,
 "more": 0,
 "cool": false,
-"score": 1.83
+"score": 1.82
 },
 {
 "b": "Lexus",
@@ -7540,7 +7596,7 @@
 "local": true,
 "more": 1,
 "cool": false,
-"score": 9.95
+"score": 9.91
 },
 {
 "b": "Singtel",
@@ -7574,7 +7630,7 @@
 "local": false,
 "more": 0,
 "cool": false,
-"score": 6.3
+"score": 6.28
 },
 {
 "b": "Mazda",
@@ -7596,7 +7652,7 @@
 "local": true,
 "more": 0,
 "cool": false,
-"score": 2.87
+"score": 2.86
 },
 {
 "b": "OpenAI",
@@ -7618,7 +7674,7 @@
 "local": true,
 "more": 0,
 "cool": false,
-"score": 2.73
+"score": 2.72
 },
 {
 "b": "NTT",
@@ -7640,7 +7696,7 @@
 "local": true,
 "more": 0,
 "cool": false,
-"score": 2.57
+"score": 2.56
 },
 {
 "b": "Marriott",
@@ -7662,7 +7718,7 @@
 "local": true,
 "more": 0,
 "cool": false,
-"score": 1.72
+"score": 1.71
 },
 {
 "b": "Hyundai / Singapore Airlines",
@@ -7684,7 +7740,7 @@
 "local": true,
 "more": 0,
 "cool": false,
-"score": 1.7
+"score": 1.69
 },
 {
 "b": "Revolut",
@@ -7706,7 +7762,7 @@
 "local": true,
 "more": 0,
 "cool": false,
-"score": 1.49
+"score": 1.48
 }
 ],
 "other": [
@@ -7829,7 +7885,7 @@
 "local": true,
 "more": 0,
 "cool": false,
-"score": 2.22
+"score": 2.21
 }
 ],
 "other": [
@@ -7969,14 +8025,14 @@
 "AU:1": "2026-10-17T21:48:32Z",
 "RU:0": "2026-10-18T07:03:50Z",
 "RU:1": "2026-10-18T07:03:50Z",
-"PE:0": "2026-10-17T20:49:05Z",
-"PE:1": "2026-10-17T20:49:05Z",
-"DE:0": "2026-10-17T20:49:05Z",
-"DE:1": "2026-10-17T20:49:05Z",
-"FR:0": "2026-10-17T20:49:05Z",
-"FR:1": "2026-10-17T20:49:05Z",
-"UA:0": "2026-10-17T20:49:05Z",
-"UA:1": "2026-10-17T20:49:05Z",
+"PE:0": "2026-10-18T07:50:38Z",
+"PE:1": "2026-10-18T07:50:38Z",
+"DE:0": "2026-10-18T07:50:38Z",
+"DE:1": "2026-10-18T07:50:38Z",
+"FR:0": "2026-10-18T07:50:38Z",
+"FR:1": "2026-10-18T07:50:38Z",
+"UA:0": "2026-10-18T07:50:38Z",
+"UA:1": "2026-10-18T07:50:38Z",
 "CZ:0": "2026-10-17T21:48:32Z",
 "CZ:1": "2026-10-17T21:48:32Z",
 "TH:0": "2026-10-17T21:48:32Z",
@@ -8001,8 +8057,8 @@
 "CN:1": "2026-10-18T07:03:50Z",
 "ES:0": "2026-10-18T07:03:50Z",
 "ES:1": "2026-10-18T07:03:50Z",
-"NL:0": "2026-10-17T19:44:58Z",
-"NL:1": "2026-10-17T19:44:58Z",
+"NL:0": "2026-10-18T07:50:38Z",
+"NL:1": "2026-10-18T07:50:38Z",
 "IT:0": "2026-10-17T21:48:32Z",
 "IT:1": "2026-10-17T21:48:32Z",
 "HU:0": "2026-10-18T05:50:48Z",
