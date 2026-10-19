@@ -710,6 +710,10 @@ dialog.rsd[open]{animation:pop .28s ease}
 .ev .nl.wait{font-style:italic}
 .ev .e72 b.me{box-shadow:0 0 0 2px var(--white)}
 .ev .e72 b em{font-style:normal;font-weight:400;opacity:.75;margin-left:4px}
+/* Scouting Corner prospects: gold outline with binoculars, so they never look like 72 players */
+.ev .e72 b.sc{background:transparent;color:var(--gold);box-shadow:inset 0 0 0 1.5px var(--gold);display:inline-flex;align-items:center;gap:4px}
+.ev .e72 b.sc.me{box-shadow:inset 0 0 0 1.5px var(--gold),0 0 0 2px var(--white)}
+.ev .e72 b.sc svg{width:13px;height:10px;flex:none}
 /* colour groups: sg1 Slams & Finals, sg2 1000, sg3 500, sg4 250, sg5 Challenger/WTA/ITF 125 down to 50, sg6 35 down to 15, sg7 ITF Juniors, sg8 Tennis Europe */
 .sg1{--t:#F3CF8E;--tb:rgba(243,207,142,.16);--fs:21px;--pad:15px}
 .sg2{--t:#D0A579;--tb:rgba(208,165,121,.12);--fs:18px;--pad:13px}
@@ -1219,9 +1223,9 @@ body.on-home > footer{display:none}
   .sq-line .chips::-webkit-scrollbar{display:none}
   .sq-line .chips{touch-action:pan-x pan-y;overscroll-behavior-x:contain;-webkit-overflow-scrolling:touch}
   /* Tour Schedule: "Any 72 player" as a small pill like the buttons, and a slimmer search box */
-  #schPLine{grid-template-columns:50px auto minmax(0,1fr)}
+  /* three chips fill the row, so the player / prospect picker goes on its own line under them */
   #schPLine>.chips{grid-column:2;-webkit-mask-image:none;mask-image:none;padding-right:0}
-  #schP{grid-column:3;grid-row:1;justify-self:start;width:100%;max-width:150px;text-overflow:ellipsis;height:27px;padding:0 24px 0 11px;font:10px var(--display);letter-spacing:.07em;text-transform:uppercase;color:var(--muted);background-position:calc(100% - 14px) 11px,calc(100% - 9px) 11px}
+  #schP{grid-column:2;grid-row:2;justify-self:start;width:100%;max-width:240px;text-overflow:ellipsis;height:27px;padding:0 24px 0 11px;font:10px var(--display);letter-spacing:.07em;text-transform:uppercase;color:var(--muted);background-position:calc(100% - 14px) 11px,calc(100% - 9px) 11px}
   #schQ{height:30px;font-size:12px;padding:0 12px}
   .sq-line .chip{flex:none}
   .sq-line.sq-search{display:flex;padding-top:0}
@@ -1655,14 +1659,14 @@ dialog.tmd[open]{animation:pop .28s ease}
       <div>
         <div class="eyebrow">SeventyTwo Sports Group</div>
         <h1>Tour Schedule</h1>
-        <p class="sub">Every tournament to the end of the year, biggest first in each week. Colour and size show how big an event is. 72 players show on the events they are entered in, as far ahead as entry lists are published.</p>
+        <p class="sub">Every tournament to the end of the year, biggest first in each week. Colour and size show how big an event is. 72 players (gold) and Scouting Corner prospects (gold outline, binoculars) show on the events they are entered in, as far ahead as entry lists are published.</p>
       </div>
     </div>
     <div class="stale" id="staleSch" hidden></div>
     <div class="sq-filters">
       <div class="sq-line"><span class="sq-lbl">Tour</span><div class="chips" id="schTours" role="group" aria-label="Tour"></div></div>
       <div class="sq-line" id="schLvlLine" hidden><span class="sq-lbl">Level</span><div class="chips" id="schLvls" role="group" aria-label="Level"></div></div>
-      <div class="sq-line" id="schPLine"><span class="sq-lbl">Players</span><div class="chips" role="group" aria-label="Players"><button class="chip sch72 on" data-e="all">All events</button><button class="chip sch72" data-e="72">72 entered</button></div><select class="sq-in" id="schP" aria-label="72 player"></select></div>
+      <div class="sq-line" id="schPLine"><span class="sq-lbl">Players</span><div class="chips" role="group" aria-label="Players"><button class="chip sch72 on" data-e="all">All events</button><button class="chip sch72" data-e="72">72 entered</button><button class="chip sch72" data-e="sc">Prospects entered</button></div><select class="sq-in" id="schP" aria-label="72 player or prospect"></select></div>
       <div class="sq-line sq-search"><input class="sq-in" id="schQ" type="search" placeholder="Search tournament or place" aria-label="Search tournament or place"></div>
     </div>
     <div class="sch-key" id="schKey"></div>
@@ -1924,7 +1928,7 @@ function route(){
   }
   // coming to Tour Schedule from another tab always starts on All tours, All levels, All events
   if (tab === "schedule" && window._tab !== "schedule") {
-    Object.assign(SCH, { tour: "all", lvl: "all", e72: false, p: "", q: "" });
+    Object.assign(SCH, { tour: "all", lvl: "all", e: "all", p: "", q: "" });
     $("#schQ").value = "";
     if (SCHED) renderSchedule();
   }
@@ -3352,7 +3356,7 @@ async function loadNews(){
   try { const r = await fetch("news.json?t=" + Date.now(), { cache: "no-store" }); if (r.ok) NEWS = await r.json(); else if (!NEWS) NEWS = { items: [] }; } catch (e) { if (!NEWS) NEWS = { items: [] }; }
   renderNews(); renderHome();
 }
-const SCH = { tour: "all", lvl: "all", e72: false, p: "", q: "" };
+const SCH = { tour: "all", lvl: "all", e: "all", p: "", q: "" };  // e: all events / "72" entered / "sc" prospects entered; p: roster id or "sc:" + prospect key
 const SCH_TOURS = [["all", "All"], ["atp", "ATP Tour"], ["wta", "WTA Tour"], ["ch", "Challenger"], ["itfm", "Men's ITF"], ["itfw", "Women's ITF & WTA 125"], ["jun", "ITF Juniors"], ["te", "Tennis Europe"]];
 // colour groups, in the order they are listed each week: Slams, 1000, 500, 250, 125 to 50, 35 to 15, ITF Juniors, Tennis Europe (within each group, biggest number first)
 const SCH_GROUPS = ["Grand Slams & Finals", "1000", "500 & team finals", "250", "125 to 50", "35 to 15", "ITF Juniors", "Tennis Europe"];
@@ -3385,14 +3389,21 @@ function renderSchedule(){
   const sx = [$("#schTours").scrollLeft, $("#schLvls").scrollLeft];
   $("#schTours").innerHTML = SCH_TOURS.map(([k, l]) => `<button class="chip scht${SCH.tour === k ? " on" : ""}" data-t="${k}">${l}</button>`).join("");
   $("#schTours").scrollLeft = sx[0];
-  document.querySelectorAll(".sch72").forEach(b => b.classList.toggle("on", (b.dataset.e === "72") === SCH.e72));
+  document.querySelectorAll(".sch72").forEach(b => b.classList.toggle("on", b.dataset.e === SCH.e));
   if (!SCHED) return;
+  // Scouting Corner prospects on the watch list now (a removed one disappears here too), shown as "sc:<key>"
+  const scP = CORNER ? cnShown() : {};
+  const scOf = e => (e.esc || []).filter(x => scP[x.id]).map(x => ({ ...x, id: "sc:" + x.id }));
   const evs = SCHED.events || [];
-  // one 72 player's events: every roster player, by surname, with how many events they are entered in
+  // one 72 player's or prospect's events: everyone, by surname, with how many events they are entered in
   const cnt = {};
-  for (const e of evs) for (const x of e.e72 || []) cnt[x.id] = (cnt[x.id] || 0) + 1;
-  $("#schP").innerHTML = `<option value="">Any 72 player</option>` + [...ROSTER].sort((a, b) => a.last.localeCompare(b.last, "en")).map(p =>
-    `<option value="${esc(p.id)}"${SCH.p === p.id ? " selected" : ""}>${esc(p.first + " " + p.last)}${cnt[p.id] ? ` (${cnt[p.id]})` : ""}</option>`).join("");
+  for (const e of evs) for (const x of [...(e.e72 || []), ...scOf(e)]) cnt[x.id] = (cnt[x.id] || 0) + 1;
+  const scLast = n => n.split(" ").slice(-1)[0];
+  if (SCH.p.startsWith("sc:") && !scP[SCH.p.slice(3)]) SCH.p = "";
+  $("#schP").innerHTML = `<option value="">Any 72 player or prospect</option><optgroup label="72 players">` + [...ROSTER].sort((a, b) => a.last.localeCompare(b.last, "en")).map(p =>
+    `<option value="${esc(p.id)}"${SCH.p === p.id ? " selected" : ""}>${esc(p.first + " " + p.last)}${cnt[p.id] ? ` (${cnt[p.id]})` : ""}</option>`).join("") + "</optgroup>"
+    + (Object.keys(scP).length ? `<optgroup label="Scouting Corner prospects">` + Object.entries(scP).sort(([, a], [, b]) => scLast(a.name).localeCompare(scLast(b.name), "en")).map(([k, p]) =>
+      `<option value="sc:${esc(k)}"${SCH.p === "sc:" + k ? " selected" : ""}>${esc(p.name)}${cnt["sc:" + k] ? ` (${cnt["sc:" + k]})` : ""}</option>`).join("") + "</optgroup>" : "");
   // level chips for the chosen tour, biggest first
   const lv = SCH.tour === "all" ? [] : [...new Map(evs.filter(e => e.tour === SCH.tour).sort((a, b) => a.tier - b.tier || schLvl(a).localeCompare(schLvl(b), "en", { numeric: true })).map(e => [schLvl(e), 1])).keys()];
   if (SCH.lvl !== "all" && !lv.includes(SCH.lvl)) SCH.lvl = "all";
@@ -3402,7 +3413,8 @@ function renderSchedule(){
   $("#schKey").innerHTML = SCH_GROUPS.map((t, i) => `<span class="sg${i + 1}"><i></i>${t}</span>`).join("");
   const q = sqKey(SCH.q);
   const rows = evs.filter(e => (SCH.tour === "all" || e.tour === SCH.tour) && (SCH.lvl === "all" || schLvl(e) === SCH.lvl)
-    && (!SCH.e72 || (e.e72 || []).length) && (!SCH.p || (e.e72 || []).some(x => x.id === SCH.p)) && (!q || sqKey(e.name + e.place).includes(q)));
+    && (SCH.e !== "72" || (e.e72 || []).length) && (SCH.e !== "sc" || scOf(e).length)
+    && (!SCH.p || [...(e.e72 || []), ...scOf(e)].some(x => x.id === SCH.p)) && (!q || sqKey(e.name + e.place).includes(q)));
   const from = SCHED.from || ukDate();
   const weeks = new Map();
   // an event that runs over more than one week (Grand Slams, Shanghai, Indian Wells...) is listed in every week it covers
@@ -3411,7 +3423,9 @@ function renderSchedule(){
     for (const w of ws.length ? ws : [schMonday(from)]) { if (!weeks.has(w)) weeks.set(w, []); weeks.get(w).push(e); }
   }
   const wkOf = (e, w) => { const all = schWeeks(e); return all.length > 1 ? `Week ${all.indexOf(w) + 1} of ${all.length}` : ""; };
-  const nm = id => byId[id] ? `${byId[id].first[0]}. ${byId[id].last}` : id;
+  const nm = id => { if (id.startsWith("sc:")) { const n = scP[id.slice(3)].name.split(" "); return n.length > 1 ? `${n[0][0]}. ${n.slice(1).join(" ")}` : n[0]; }
+    return byId[id] ? `${byId[id].first[0]}. ${byId[id].last}` : id; };
+  const chip = x => `<b class="${x.id.startsWith("sc:") ? "sc" : ""}${x.id === SCH.p ? " me" : ""}" title="${esc(x.id.startsWith("sc:") ? "Scouting Corner prospect · " + x.how : x.how)}">${x.id.startsWith("sc:") ? SQ_BINO : ""}${esc(nm(x.id))}<em>${esc(x.how)}</em></b>`;
   // red line before the first week that starts after the entry-list cut-off: no 72 entries are shown from there on
   const cutTo = SCHED.entriesTo, cutWk = cutTo && [...weeks.keys()].sort().find(w => w > cutTo);
   const cut = w => w === cutWk ? `<div class="sch-cut"><b>Entry lists not out yet</b>Entry lists are only published about 4 weeks before each event, so 72 players are shown for events starting up to ${schFmt(cutTo, { year:"numeric" })}. Events below this line won't show 72 players until their lists come out.</div>` : "";
@@ -3421,20 +3435,20 @@ function renderSchedule(){
         <div class="nm">${esc(e.name)}</div>
         <span class="cat">${esc(e.tour === "te" ? schLvl(e) : e.cat)}</span>
         <div class="mt">${esc([e.place, e.surface, e.weekOnly ? "" : `${schFmt(e.start)} – ${schFmt(e.end)}`, wkOf(e, w), (e.ages || []).length ? e.ages.map(a => "U" + a).join("/") : "", e.status].filter(Boolean).join(" · "))}</div>
-        ${(e.e72 || []).length ? `<div class="e72">${e.e72.map(x => `<b${x.id === SCH.p ? ' class="me"' : ""} title="${esc(x.how)}">${esc(nm(x.id))}<em>${esc(x.how)}</em></b>`).join("")}</div>`
+        ${(e.e72 || []).length || scOf(e).length ? `<div class="e72">${[...(e.e72 || []), ...scOf(e)].map(chip).join("")}</div>`
           : e.list === "out" ? `<div class="nl">Entry list out · no 72 players</div>` : e.list === "none" ? `<div class="nl wait">Entry list not out yet</div>` : ""}
       </a>`).join("")}
-    </section>`).join("") : `<div class="sq-empty">${SCH.p ? `${esc(byId[SCH.p] ? byId[SCH.p].first + " " + byId[SCH.p].last : SCH.p)} isn't entered in any of these events yet. Entry lists come out about 3 to 4 weeks before each event.` : SCH.e72 ? "No 72 players are entered in these events yet. Entry lists come out about 3 to 4 weeks before each event." : "No events match these filters."}</div>`;
+    </section>`).join("") : `<div class="sq-empty">${SCH.p ? `${esc(SCH.p.startsWith("sc:") ? scP[SCH.p.slice(3)].name : byId[SCH.p] ? byId[SCH.p].first + " " + byId[SCH.p].last : SCH.p)} isn't entered in any of these events yet. Entry lists come out about 3 to 4 weeks before each event.` : SCH.e !== "all" ? `No ${SCH.e === "sc" ? "Scouting Corner prospects" : "72 players"} are entered in these events yet. Entry lists come out about 3 to 4 weeks before each event.` : "No events match these filters."}</div>`;
   const up = SCHED.updated ? new Date(SCHED.updated) : null;
   setStale("#staleSch", up && Date.now() - up > 3 * 864e5 ? `<b>Heads up:</b> the schedule was last updated ${up.toLocaleDateString("en-GB", { timeZone: MYTZ, day:"numeric", month:"long" })}, so it may be out of date.` : "");
-  $("#schSrc").innerHTML = `Updated every morning. 72 entries are shown for events up to ${schFmt(SCHED.entriesTo || from, { year:"numeric" })}, about as far ahead as entry lists are published: ITF from the official acceptance lists, WTA and WTA 125 from the WTA player lists, Tennis Europe from each player's Tennis Europe entries, and ATP and Challenger when any of live-tennis.eu, Tick Tock Tennis or Spazio Tennis lists the player (left out if any of them shows a withdrawal), then from the draw once it is out. Sources: ATP Tour and Challenger calendars from Wikipedia's 2026 season pages (ATP events show the week only), WTA, ITF and Tennis Europe.`;
+  $("#schSrc").innerHTML = `Updated every morning. 72 entries are shown for events up to ${schFmt(SCHED.entriesTo || from, { year:"numeric" })}, about as far ahead as entry lists are published: ITF from the official acceptance lists, WTA and WTA 125 from the WTA player lists, Tennis Europe from each player's Tennis Europe entries, and ATP and Challenger when any of live-tennis.eu, Tick Tock Tennis or Spazio Tennis lists the player (left out if any of them shows a withdrawal), then from the draw once it is out. Scouting Corner prospects are found the same way, only through the ITF, Tennis Europe and ATP/WTA links on their Scouting Corner card (never guessed), so a prospect with no link for that level isn't looked for there. Sources: ATP Tour and Challenger calendars from Wikipedia's 2026 season pages (ATP events show the week only), WTA, ITF and Tennis Europe.`;
 }
 document.addEventListener("click", e => {
   const t = e.target.closest(".scht, .schl, .sch72");
   if (!t) return;
   if (t.classList.contains("scht")) { SCH.tour = t.dataset.t; SCH.lvl = "all"; }
   else if (t.classList.contains("schl")) SCH.lvl = t.dataset.l;
-  else SCH.e72 = t.dataset.e === "72";
+  else SCH.e = t.dataset.e;
   renderSchedule();
 });
 $("#schP").addEventListener("change", e => { SCH.p = e.target.value; renderSchedule(); });
@@ -4131,7 +4145,7 @@ async function loadCorner(){
     if (r.ok) { const j = await r.json(); CN_SHEET = j.prospects || []; CN_REMOVED = j.removed || []; CN_ASKED = j.asked || []; CN_SHEET_OK = Array.isArray(j.prospects); }
   } catch (e) {}
   await cmP;
-  renderCorner(); renderHome(); renderScouting();
+  renderCorner(); renderHome(); renderScouting(); renderSchedule();
 }
 /* ---------- Comments on players (Scouting Corner cards and every Filtered Rankings row) ----------
    Kept on the "Comments" tab of Tobey's Google Sheet (scripts/visit_log.gs), one row each, and matched to a

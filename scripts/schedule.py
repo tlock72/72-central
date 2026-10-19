@@ -3,7 +3,8 @@
 
 Builds schedule.json: every tournament from this week to the end of the year on the ATP Tour, WTA Tour,
 ATP Challenger Tour, WTA 125, ITF men's and women's World Tennis Tour, ITF Juniors and Tennis Europe,
-plus which 72 players are entered in the next few weeks (as far ahead as entry lists are published).
+plus which 72 players are entered in the next few weeks (as far ahead as entry lists are published),
+and the same for Scouting Corner prospects ("esc"), matched only through the links prospects.py has made.
 
 Sources (all free, no key):
   - ATP Tour and Challenger Tour: Wikipedia's "2026 ATP Tour" and "2026 ATP Challenger Tour" pages
@@ -349,10 +350,11 @@ def te_pick(TE, url, page, field, value):
                headers={"Content-Type": "application/x-www-form-urlencoded"})
 
 
-def te_lists(TE, events, profiles, prev_e72):
+def te_lists(TE, events, profiles, prev_e72, extra=None):
     """72 juniors on each Tennis Europe entry / acceptance list (published a few weeks before the event,
-    one page per age group, e.g. BS14 / GS14). An event whose lists couldn't all be read keeps yesterday's entries."""
-    mine = {pid.upper(): rid for rid, pid in profiles.items() if ":" not in rid and pid}
+    one page per age group, e.g. BS14 / GS14). An event whose lists couldn't all be read keeps yesterday's entries.
+    extra: more profile ids to look for (Scouting Corner prospects)."""
+    mine = {**(extra or {}), **{pid.upper(): rid for rid, pid in profiles.items() if ":" not in rid and pid}}
     failed = []
     for e in events:
         if e["tour"] != "te" or not e.get("teId") or not in_window(e["start"], e["end"]):
@@ -582,7 +584,7 @@ def ev_key(e):
     return (e.get("src"), e.get("name"), e.get("start"))
 
 
-def atp_entries(events, errors):
+def atp_entries(events, errors, extra=None):
     """72 men entered in ATP / Challenger events. A player is shown if any one of live-tennis.eu, Tick Tock Tennis or
     Spazio Tennis lists him for the event, unless any of them marks him as withdrawn. Each site can fail on its own;
     only if all three fail are yesterday's entries kept."""
@@ -590,7 +592,7 @@ def atp_entries(events, errors):
     if not soon:
         return {}  # off-season: no ATP or Challenger events in the next few weeks
     need = min(15, soon)  # names that must match the calendar before the week columns are trusted
-    men = {pkey(n): rid for rid, (n, t) in ROSTER.items() if t == "atp"}
+    men = {**(extra or {}), **{pkey(n): rid for rid, (n, t) in ROSTER.items() if t == "atp"}}
     everyone, got, sp_listed = {}, {}, set()
 
     def lt():
@@ -673,10 +675,11 @@ def draw_entries(events):
             e72[:] = [x for x in e72 if x["id"] != rid] + [{"id": rid, "how": "In the draw"}]
 
 
-def espn_draws(events):
+def espn_draws(events, extra=None):
     """ATP / WTA / WTA 125 events whose draw ESPN has published: every 72 player placed in it is shown, including
-    those whose first opponent isn't known yet (a bye, or a qualifier to come). Qualifying-only players say so."""
-    names = {(t, " ".join(sorted(espn.fold(n)))): rid for rid, (n, t) in ROSTER.items()}
+    those whose first opponent isn't known yet (a bye, or a qualifier to come). Qualifying-only players say so.
+    extra: more players to look for, {roster-style id: (name, tour)} (Scouting Corner prospects)."""
+    names = {(t, " ".join(sorted(espn.fold(n)))): rid for rid, (n, t) in {**(extra or {}), **ROSTER}.items()}
     found = 0
     for league in ("atp", "wta"):
         for d in (0, 6):
@@ -707,7 +710,28 @@ def espn_draws(events):
                     for rid, qual in ours.items():
                         e72[:] = [x for x in e72 if x["id"] != rid] + [{"id": rid, "how": "Qualifying draw" if qual else "In the draw"}]
                         found += 1
-    print(f"ESPN draws: {found} places for 72 players")
+    print(f"ESPN draws: {found} places for 72 players and prospects")
+
+
+# ---------------- Scouting Corner prospects ----------------
+SC = "sc:"  # prospects go through the same lists as the 72 players as "sc:<corner.json key>", then move to "esc"
+
+
+def prospects():
+    """Scouting Corner prospects from corner.json (prospects.py) with only the stages it has linked: ITF id, Tennis
+    Europe profile id and ATP/WTA name. Unsure or missing links are never used, so nobody is guessed onto a list."""
+    c = load("corner.json", {})
+    gone = set(c.get("removed") or [])
+    out = {}
+    for k, p in (c.get("players") or {}).items():
+        links = p.get("links") or {}
+        ok = lambda s: links.get(s) if (links.get(s) or {}).get("status") == "linked" else {}
+        if k in gone:
+            continue
+        pro = ok("pro")
+        out[SC + k] = {"itf": ok("itf").get("id"), "te": ok("te").get("id"),
+                       "pro": (pro.get("name"), pro.get("tour")) if pro.get("name") and pro.get("tour") in ("atp", "wta") else None}
+    return out
 
 
 def main():
@@ -762,13 +786,16 @@ def main():
         e.pop("list", None)
 
     # ---- 72 entries, only for events whose entry lists are out ----
-    prev_e72 = {(e.get("src"), e.get("name"), e.get("start")): e.get("e72") for e in prev.get("events") or [] if e.get("e72")}
-    wta72 = {key(n): rid for rid, (n, t) in ROSTER.items() if t == "wta"}
+    prev_e72 = {(e.get("src"), e.get("name"), e.get("start")): (e.get("e72") or []) + [dict(p, id=SC + p["id"]) for p in e.get("esc") or []]
+                for e in prev.get("events") or [] if e.get("e72") or e.get("esc")}
+    sc = prospects()  # Scouting Corner: matched the same way as the 72 players; a 72 player always wins a clash
+    pro_sc = {rid: p["pro"] for rid, p in sc.items() if p["pro"]}
+    wta72 = {**{key(n): rid for rid, (n, t) in pro_sc.items() if t == "wta"}, **{key(n): rid for rid, (n, t) in ROSTER.items() if t == "wta"}}
     ids = {**(load("titles.json", {}).get("ids") or {})}
     for rid, p in (load("itf.json", {}).get("players") or {}).items():
         if p.get("itfId"):
             ids[rid] = p["itfId"]
-    itf72 = {int(v): rid for rid, v in ids.items() if v}
+    itf72 = {**{int(p["itf"]): rid for rid, p in sc.items() if p["itf"]}, **{int(v): rid for rid, v in ids.items() if v}}
     itf_blocked = not itf_ok
     for e in sorted(events, key=lambda e: e["start"]):
         if not in_window(e["start"], e["end"]):
@@ -789,13 +816,14 @@ def main():
             print("entry list failed", e["name"], x)
             e["e72"] = prev_e72.get((e.get("src"), e["name"], e["start"])) or []
     if TE:
-        failed = te_lists(TE, events, load("te.json", {}).get("profiles") or {}, prev_e72)
+        failed = te_lists(TE, events, load("te.json", {}).get("profiles") or {}, prev_e72,
+                          {str(p["te"]).upper(): rid for rid, p in sc.items() if p["te"]})
         if failed:
             errors["te-entries"] = {"at": NOW.isoformat(timespec="seconds"),
                                     "msg": f"{len(failed)} Tennis Europe entry list(s) couldn't be read, e.g. {failed[0]}"}
     atp_window = [e for e in events if e["tour"] in ("atp", "ch") and in_window(e["start"], e["end"])]
     try:
-        byev = atp_entries(events, errors)
+        byev = atp_entries(events, errors, {pkey(n): rid for rid, (n, t) in pro_sc.items() if t == "atp"})
         for e in atp_window:
             e["e72"] = byev.get(ev_key(e), [])
             if not e["e72"] and e["start"] <= T.isoformat():
@@ -809,7 +837,7 @@ def main():
             e["e72"] = [p for p in prev_e72.get(ev_key(e)) or [] if p["how"] != "In the draw"]
     draw_entries(events)
     try:
-        espn_draws(events)
+        espn_draws(events, pro_sc)
     except Exception as x:
         print("ESPN draws failed (entries from the other sources still show):", x)
         errors["espn-draws"] = {"at": NOW.isoformat(timespec="seconds"), "msg": str(x)[:200]}
@@ -819,6 +847,10 @@ def main():
             e.pop(k, None)
         for p in e.get("e72") or []:
             p.pop("carried", None)
+        e["esc"] = [dict(p, id=p["id"][len(SC):]) for p in e.get("e72") or [] if p["id"].startswith(SC)]
+        e["e72"] = [p for p in e.get("e72") or [] if not p["id"].startswith(SC)]
+        if not e["esc"]:
+            e.pop("esc")
         if e.get("list") == "none" and e["start"] <= T.isoformat():
             e.pop("list")
         if not e.get("e72"):
@@ -828,7 +860,8 @@ def main():
             "entriesTo": (T + timedelta(days=ENTRY_DAYS)).isoformat(), "done": done, "errors": errors, "checks": CHECKS, "events": events}
     with open(OUT, "w", encoding="utf-8") as f:
         json.dump(data, f, ensure_ascii=False, separators=(",", ":"))
-    print(f"schedule.json: {len(events)} events, {sum(1 for e in events if e.get('e72'))} with 72 players entered, errors: {list(errors)}")
+    print(f"schedule.json: {len(events)} events, {sum(1 for e in events if e.get('e72'))} with 72 players entered, "
+          f"{sum(1 for e in events if e.get('esc'))} with prospects entered, errors: {list(errors)}")
 
 
 if __name__ == "__main__":
