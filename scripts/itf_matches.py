@@ -131,6 +131,10 @@ def main():
         v = out.get(k)
         return NOW - datetime.fromisoformat(v.replace("Z", "+00:00")) if v else timedelta(days=99)
     force = os.environ.get("SOURCE") == "manual"
+    # when this junior's matches were last read (before this run): a match still unplayed then and finished now,
+    # with both on today's UK date, was played today even when the order of play never listed it (Junior Finals)
+    last = max((out.get(k) or "" for k in ("tried", "quick")), default="")
+    seen_today = bool(last) and datetime.fromisoformat(last.replace("Z", "+00:00")).astimezone(UK).date() == T
     previous = {m["matchId"]: m for m in out.get("matches") or []}
     # juniors with a match today or earlier that isn't shown as finished yet
     waiting = {m.get("p1Id") or m.get("p2Id") for m in previous.values()
@@ -195,6 +199,8 @@ def main():
                     if rc in ("W", "L"):
                         prev = previous.get(mid) or {}
                         date = o.get("date") or (None if prev.get("tbc") else prev.get("date"))
+                        if not date and prev.get("tbc") and prev.get("status") == "scheduled" and seen_today:
+                            date = T.isoformat()
                         if not date:
                             print("result left out, day not on the order of play:", rid, name, rnd, oname)
                             continue  # can't tell which day it was played, so leave it out rather than guess
