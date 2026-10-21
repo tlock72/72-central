@@ -2920,7 +2920,7 @@ function addItfMatches(st, im, src = "itf"){
   const seen = new Set((st.matches || []).flatMap(m => [m.p1Id, m.p2Id].filter(Boolean).map(id => `${m.date}|${id}|${last(m.p1Id === id ? m.p2 : m.p1)}`)));
   // round-robin events (Junior Finals, group stages): every group match is in the draw from day one, so only the
   // next one is shown. A match on the order of play hides the group's "Day TBC" ones; with none on it yet, the
-  // "Day TBC" ones become one match against whichever group opponent is next
+  // "Day TBC" ones become one match against "TBC" (the ITF doesn't say which group opponent comes next)
   const grp = {};
   for (const m of im.matches || []) if (m.status === "scheduled" && /^group/i.test(m.round || "")) (grp[`${m.p1Id || m.p2Id}|${m.tournament}`] ||= []).push(m);
   const skip = new Set(), opps = new Map();
@@ -2929,8 +2929,7 @@ function addItfMatches(st, im, src = "itf"){
     if (!tbc.length || (tbc.length === 1 && tbc.length === g.length)) continue;
     if (tbc.length < g.length) { tbc.forEach(m => skip.add(m)); continue; }
     tbc.slice(1).forEach(m => skip.add(m));
-    const o = tbc.map(m => m.p1Id ? m.p2 : m.p1);
-    opps.set(tbc[0], o.slice(0, -1).join(", ") + " or " + o.at(-1));
+    opps.set(tbc[0], "TBC");
   }
   for (const m of im.matches || []) {
     const id = m.p1Id || m.p2Id, opp = m.p1Id ? m.p2 : m.p1;
