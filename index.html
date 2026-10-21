@@ -2918,10 +2918,26 @@ function addItfMatches(st, im, src = "itf"){
   const last = s => (s || "").split(" ").pop().toLowerCase();
   const nm = id => byId[id] ? `${byId[id].first[0]}. ${byId[id].last}` : "";
   const seen = new Set((st.matches || []).flatMap(m => [m.p1Id, m.p2Id].filter(Boolean).map(id => `${m.date}|${id}|${last(m.p1Id === id ? m.p2 : m.p1)}`)));
+  // round-robin events (Junior Finals, group stages): every group match is in the draw from day one, so only the
+  // next one is shown. A match on the order of play hides the group's "Day TBC" ones; with none on it yet, the
+  // "Day TBC" ones become one match against whichever group opponent is next
+  const grp = {};
+  for (const m of im.matches || []) if (m.status === "scheduled" && /^group/i.test(m.round || "")) (grp[`${m.p1Id || m.p2Id}|${m.tournament}`] ||= []).push(m);
+  const skip = new Set(), opps = new Map();
+  for (const g of Object.values(grp)) {
+    const tbc = g.filter(m => m.tbc);
+    if (!tbc.length || (tbc.length === 1 && tbc.length === g.length)) continue;
+    if (tbc.length < g.length) { tbc.forEach(m => skip.add(m)); continue; }
+    tbc.slice(1).forEach(m => skip.add(m));
+    const o = tbc.map(m => m.p1Id ? m.p2 : m.p1);
+    opps.set(tbc[0], o.slice(0, -1).join(", ") + " or " + o.at(-1));
+  }
   for (const m of im.matches || []) {
     const id = m.p1Id || m.p2Id, opp = m.p1Id ? m.p2 : m.p1;
-    if (!byId[id] || seen.has(`${m.date}|${id}|${last(opp)}`)) continue;
-    st.matches.push({ ...m, p1: m.p1 || nm(m.p1Id), p2: m.p2 || nm(m.p2Id) });
+    if (!byId[id] || skip.has(m) || seen.has(`${m.date}|${id}|${last(opp)}`)) continue;
+    const x = { ...m, p1: m.p1 || nm(m.p1Id), p2: m.p2 || nm(m.p2Id) };
+    if (opps.has(m)) x[m.p1Id ? "p2" : "p1"] = opps.get(m);
+    st.matches.push(x);
   }
 }
 /* ---------- Scouting HQ (scouting.json, rebuilt weekly by scripts/scouting.py) ----------

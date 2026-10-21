@@ -92,9 +92,23 @@ def order_of_play(key, cache):
                 if sc.lower().startswith("starting at") and not first:
                     first = sc[11:].strip()
                 out[m.get("matchId")] = {"date": day, "slot": slot_text(court.get("courtName") or "Court", sc, first),
-                                         "court": court.get("courtName") or ""}
+                                         "court": court.get("courtName") or "", "txt": json.dumps(m, ensure_ascii=False).lower()}
     cache[key] = out
     return out
+
+
+def surname(rid):
+    # the junior's surname from ROSTER in update.py (read as text, so update.py isn't run)
+    m = re.search(rf'"{re.escape(rid)}": \("([^"]+)"', open("scripts/update.py").read())
+    return m[1].split()[-1].lower() if m else ""
+
+
+def by_names(oop, pid, me, opp):
+    """Order-of-play slot for a match listed under another match number (round-robin events such as the
+    Junior Finals): the one slot naming our junior (ITF id or surname) and the opponent's surname, else nothing."""
+    fam = (opp.get("familyName") or "").lower()
+    hits = [v for v in oop.values() if fam and fam in v["txt"] and (str(pid) in v["txt"] or (me and me in v["txt"]))]
+    return hits[0] if len(hits) == 1 else {}
 
 
 def score_of(match, won):
@@ -173,7 +187,7 @@ def main():
                     if qual:
                         rnd = "Q-" + rnd if rnd else "Qualifying"
                     oname = short(opp.get("givenName"), opp.get("familyName"))
-                    o = oop.get(mid) or {}
+                    o = oop.get(mid) or by_names(oop, pid, surname(me), opp)
                     rc = (m.get("resultCode") or "").upper()
                     status_code = (m.get("resultStatusCode") or "").upper()
                     base = {"matchId": mid, "source": "itf", "tournament": name, "category": f"ITF Juniors · {t.get('tourCode') or ''}".strip(" ·"),
@@ -182,6 +196,7 @@ def main():
                         prev = previous.get(mid) or {}
                         date = o.get("date") or (None if prev.get("tbc") else prev.get("date"))
                         if not date:
+                            print("result left out, day not on the order of play:", rid, name, rnd, oname)
                             continue  # can't tell which day it was played, so leave it out rather than guess
                         won = rc == "W"
                         sc = score_of(m, won)
