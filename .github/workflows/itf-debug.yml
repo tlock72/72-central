@@ -1,0 +1,9 @@
+name: ITF Junior Finals check (one-off)
+on:
+  workflow_dispatch: {}
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v6
+      - run: python3 scripts/itf_debug.py
