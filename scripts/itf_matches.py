@@ -103,6 +103,15 @@ def surname(rid):
     return m[1].split()[-1].lower() if m else ""
 
 
+def event_zone(key):
+    """The event's time zone from the nation in its ITF key ("j-jm-chn-2026-001" -> CHN), using TZ_NAT in index.html
+    (read as text). None for nations with several zones (USA, Australia...), and then UK dates are used as before."""
+    nat = (key.split("-") + ["", "", ""])[2].upper()
+    block = open("index.html", encoding="utf-8").read().split("const TZ_NAT", 1)[-1].split(".split(", 1)[0]
+    m = re.search(rf"\b{nat} [^=|]*=([^|\"]+)", block) if len(nat) == 3 else None
+    return ZoneInfo(m[1]) if m and m[1] != "*" else None
+
+
 def by_names(oop, pid, me, opp):
     """Order-of-play slot for a match listed under another match number (round-robin events such as the
     Junior Finals): the one slot naming our junior (ITF id or surname) and the opponent's surname, else nothing."""
@@ -131,10 +140,10 @@ def main():
         v = out.get(k)
         return NOW - datetime.fromisoformat(v.replace("Z", "+00:00")) if v else timedelta(days=99)
     force = os.environ.get("SOURCE") == "manual"
-    # when this junior's matches were last read (before this run): a match still unplayed then and finished now,
-    # with both on today's UK date, was played today even when the order of play never listed it (Junior Finals)
+    # when a "Day TBC" match was last read still unplayed: if it is finished now and both reads fall on the same day
+    # where the event is played, it was played that day even though the order of play never listed it (Junior Finals).
+    # Uses the event's own date, as Chengdu plays overnight UK time, before the first check of the UK day.
     last = max((out.get(k) or "" for k in ("tried", "quick")), default="")
-    seen_today = bool(last) and datetime.fromisoformat(last.replace("Z", "+00:00")).astimezone(UK).date() == T
     previous = {m["matchId"]: m for m in out.get("matches") or []}
     # juniors with a match today or earlier that isn't shown as finished yet
     waiting = {m.get("p1Id") or m.get("p2Id") for m in previous.values()
@@ -173,6 +182,7 @@ def main():
             if not start or end < T - timedelta(days=2) or start > T + timedelta(days=2):
                 continue
             key = (t.get("tournamentLink") or "").rstrip("/").split("/")[-1]
+            zone = event_zone(key) or UK
             name = re.sub(r"\s*\(.*\)\s*$", "", t.get("tournamentName") or "")
             try:
                 oop = order_of_play(key, cache) if key else {}
@@ -199,8 +209,11 @@ def main():
                     if rc in ("W", "L"):
                         prev = previous.get(mid) or {}
                         date = o.get("date") or (None if prev.get("tbc") else prev.get("date"))
-                        if not date and prev.get("tbc") and prev.get("status") == "scheduled" and seen_today:
-                            date = T.isoformat()
+                        seen = prev.get("seen") or last
+                        if not date and prev.get("tbc") and prev.get("status") == "scheduled" and seen:
+                            day = datetime.fromisoformat(seen.replace("Z", "+00:00")).astimezone(zone).date()
+                            if day == NOW.astimezone(zone).date():
+                                date = day.isoformat()
                         if not date:
                             print("result left out, day not on the order of play:", rid, name, rnd, oname)
                             continue  # can't tell which day it was played, so leave it out rather than guess
@@ -232,6 +245,7 @@ def main():
                                           p1="", p1Id=me, p2=oname, p2Id=None, slot=slot)
                         if tbc:
                             found[mid]["tbc"] = True
+                            found[mid]["seen"] = NOW.strftime("%Y-%m-%dT%H:%M:%SZ")   # still unplayed at this read
                         if o.get("court"):
                             found[mid]["court"] = o["court"]
         if blocked:
