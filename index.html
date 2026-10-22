@@ -2140,8 +2140,8 @@ function card(m){
     : pending ? `<span class="when fin">${esc(dayLabel(md(m)))} · result pending</span>`
     : `<span class="when ${today ? "today" : ""}">${esc(dayTxt(m))}</span>`;
   const times = !fin && !live && !pending
-    ? (m.source === "itf" || m.source === "te"
-      ? `<div class="times"><span>Order of play</span><b>${m.slot ? esc(m.slot) + " (local time)" : "Time TBC"}</b></div>`
+    ? (m.source === "itf" || m.source === "te" || m.oop
+      ? `<div class="times"><span>Order of play</span><b>${m.slot ? esc(m.slot) + " (local time)" : "Time TBC"}</b>${m.oop ? asOf(m.timeAt) : ""}</div>`
       : `<div class="times"><span>Approx. start</span>${m.time ? twoTimes(ukMoment(m.date, m.time), m).reduce((h, x, i, a) => i % 2 ? h : h + `<b>${esc(x)}<i>${esc(a[i + 1])}</i></b>`, "") : "<b>Time TBC</b>"}${asOf(m.timeAt)}</div>`) : "";
   // result tiles: the court played on (when the feed gave one)
   const rs = fin && m.court ? [`Played on <b>${esc(m.court)}</b>`] : [];
@@ -2262,7 +2262,7 @@ function renderScores(){
     const up = mine.filter(m => (m.status !== "finished" || md(m) === today) && md(m) >= today).sort((a,b) => key(a).localeCompare(key(b)))[0];
     const last = mine.filter(m => m.status === "finished" && md(m) < today).sort((a,b) => key(b).localeCompare(key(a)))[0];
     let st = "No match scheduled", on = false;
-    if (up) { const opp = up.p1Id === p.id ? up.p2 : up.p1; st = `${dayTxt(up)}${up.time ? " ~" + clock(ukMoment(up.date, up.time), MYTZ, md(up)) + " your time" : ""} · vs ${opp} · ${up.tournament}`; on = md(up) === today; }
+    if (up) { const opp = up.p1Id === p.id ? up.p2 : up.p1; st = `${dayTxt(up)}${up.time ? " ~" + clock(ukMoment(up.date, up.time), MYTZ, md(up)) + " your time" : up.oop ? " · " + up.slot + " (local time)" : ""} · vs ${opp} · ${up.tournament}`; on = md(up) === today; }
     else if (last) { const w = (last.winner === 1 && last.p1Id === p.id) || (last.winner === 2 && last.p2Id === p.id); st = `${w ? "Won" : "Lost"} ${last.round || ""} · ${last.tournament} · ${dayLabel(md(last))}`; }
     if (STATE?.status?.[p.id]) st = STATE.status[p.id];
     const link = safeUrl(p.sofa);
@@ -4426,10 +4426,10 @@ function renderHome(){
   const live = ms.filter(m => m.status === "live");
   if (STATE) {
     const tday = ms.filter(m => md(m) === today);
-    const nxt = ms.filter(m => m.status === "scheduled" && (md(m) > today || (md(m) === today && m.time)))
+    const nxt = ms.filter(m => m.status === "scheduled" && (md(m) > today || (md(m) === today && (m.time || m.oop))))
       .sort((a, b) => `${a.tbc ? "9" : a.date} ${a.time || "99"}`.localeCompare(`${b.tbc ? "9" : b.date} ${b.time || "99"}`))[0];
     $("#hpT1").innerHTML = `${tday.length}<small>${tday.length === 1 ? "match" : "matches"} today</small>`;
-    $("#hpS1").innerHTML = live.length ? `${live.length} in progress right now` : nxt ? `Next: ${nm(nxt)} · ${dayTxt(nxt)}${nxt.time ? " " + esc(clock(ukMoment(nxt.date, nxt.time), MYTZ, md(nxt))) + " your time" : ""}` : "Nothing else scheduled yet";
+    $("#hpS1").innerHTML = live.length ? `${live.length} in progress right now` : nxt ? `Next: ${nm(nxt)} · ${dayTxt(nxt)}${nxt.time ? " " + esc(clock(ukMoment(nxt.date, nxt.time), MYTZ, md(nxt))) + " your time" : nxt.oop ? " · " + esc(nxt.slot) + " (local time)" : ""}` : "Nothing else scheduled yet";
   }
   // 02 Rankings: the roster's highest-ranked player
   const ranked = ROSTER.map(p => ({ p, r: playerRank(p.id) })).filter(o => o.r).sort((a, b) => a.r - b.r);
@@ -4617,6 +4617,12 @@ async function load(){
     STATE = await r.json();
     try { const rm = await fetch("itfm.json?t=" + Date.now(), { cache: "no-store" }); if (rm.ok) addItfMatches(STATE, await rm.json()); } catch (e) {}
     try { const rt = await fetch("te.json?t=" + Date.now(), { cache: "no-store" }); if (rt.ok) addItfMatches(STATE, await rt.json(), "te"); } catch (e) {}
+    // our pros' ITF World Tennis Tour matches: the ITF's own order of play (itf_oop.py) replaces the Live Tennis API's
+    // estimated start time, which is often just when play starts that day. If the ITF has it on another day, that day wins.
+    try { const ro = await fetch("itfoop.json?t=" + Date.now(), { cache: "no-store" }); if (ro.ok) { const oop = (await ro.json()).matches || {};
+      for (const m of STATE.matches || []) { const o = oop[m.apiId]; if (!o || m.status !== "scheduled" || !o.slot) continue;
+        // the feed's own time is dropped everywhere (home, roster), so it can never show next to the official slot
+        Object.assign(m, { date: o.date, time: "", slot: o.slot, oop: true, timeAt: o.at || m.timeAt }); } } } catch (e) {}
     try { const ri = await fetch("itf.json?t=" + Date.now(), { cache: "no-store" }); if (ri.ok) ITF = await ri.json(); } catch (e) {}
     try { const rl = await fetch("titles.json?t=" + Date.now(), { cache: "no-store" }); if (rl.ok) TITLES = await rl.json(); } catch (e) {}
     normalizeMatches(STATE);
