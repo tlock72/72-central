@@ -16,6 +16,8 @@ UK = ZoneInfo("Europe/London")
 ROUNDS = {"final": "Final", "semifinal": "SF", "quarterfinal": "QF", "round 1": "1R", "round 2": "2R", "round 3": "3R",
           "round 4": "4R", "round of 16": "R16", "qualifying 1st round": "Q1", "qualifying 2nd round": "Q2",
           "qualifying 3rd round": "Q3", "qualifying final": "Q final"}
+# Exhibitions never shown on the site (Tobey's call), matched on the event / tournament name
+SKIP = re.compile(r"six\W*kings|6\W*kings", re.I)
 
 
 def fold(s):
@@ -84,6 +86,8 @@ def fetch(roster, events, now, matches=()):
             day = (today + timedelta(days=d)).strftime("%Y%m%d")
             js = get(f"{SITE}/{league}/scoreboard?dates={day}")
             for ev in js.get("events") or []:
+                if SKIP.search(f'{ev.get("name") or ""} {ev.get("shortName") or ""}'):
+                    continue
                 for g in ev.get("groupings") or []:
                     slug = (g.get("grouping") or {}).get("slug") or ""
                     if slug not in ("mens-singles", "womens-singles"):

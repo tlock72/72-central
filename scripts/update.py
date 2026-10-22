@@ -431,6 +431,10 @@ def main():
     elif (data.get("conflicts") or {}).get("date") != today_s:
         data.pop("conflicts", None)
 
+    # Exhibitions such as the Six Kings Slam are never shown, from either feed (espn.SKIP)
+    for k in [k for k, m in new.items() if espn.SKIP.search(m.get("tournament") or "")]:
+        del new[k]
+
     # 4e) A player has only one match to play per tournament at a time. The feed sometimes keeps an old draw
     #     line after the opponent changed (a lucky loser came in), or lists a match it has guessed ahead of
     #     the draw (the next round at an exhibition such as the Six Kings Slam). So:
