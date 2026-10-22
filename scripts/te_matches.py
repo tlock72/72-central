@@ -178,16 +178,30 @@ def main():
         data = json.load(open("te.json"))
     except (FileNotFoundError, json.JSONDecodeError):
         data = {}
-    # once a day, from 07:30 UK
-    if data.get("day") == T.isoformat() or (UK_NOW.hour, UK_NOW.minute) < (7, 30):
-        print("Tennis Europe already checked today or before 07:30 UK"); return
+    previous = {m["matchId"]: m for m in data.get("matches") or []}
+    # a full check once a day, from 07:30 UK. In between, a quick check every hour (until 22:00 UK) re-reads only
+    # the juniors in the middle of an event (a match yesterday or later), as the next day's matches are often
+    # listed after the morning check (Junior Masters round robin).
+    only = None
+    if (UK_NOW.hour, UK_NOW.minute) < (7, 30):
+        print("Tennis Europe: before 07:30 UK"); return
+    if data.get("day") == T.isoformat():
+        busy = {m.get("p1Id") or m.get("p2Id") for m in previous.values() if m["date"] >= (T - timedelta(days=1)).isoformat()}
+        quick = data.get("quick")
+        due = not quick or NOW - datetime.fromisoformat(quick.replace("Z", "+00:00")) >= timedelta(minutes=55)
+        if not busy or not due or UK_NOW.hour >= 22:
+            print("Tennis Europe already checked today - next check later"); return
+        only = busy
+        data["quick"] = NOW.strftime("%Y-%m-%dT%H:%M:%SZ")
+        print("Tennis Europe quick check for", ", ".join(sorted(busy)))
     data["day"] = T.isoformat()
     profiles = data.setdefault("profiles", {})
-    previous = {m["matchId"]: m for m in data.get("matches") or []}
     found = {}
     try:
         consent()
         for rid, names in PLAYERS.items():
+            if only is not None and rid not in only:
+                continue
             pid = profiles.get(rid) or KNOWN.get(rid)
             if not pid:
                 if profiles.get(rid + ":none") and T.day > 7:
@@ -212,7 +226,9 @@ def main():
         return
     keep_from = (T - timedelta(days=7)).isoformat()
     for mid, m in previous.items():
-        if mid not in found and m["status"] == "finished" and m["date"] >= keep_from:
+        if only is not None and (m.get("p1Id") or m.get("p2Id")) not in only and m["date"] >= keep_from:
+            found.setdefault(mid, m)   # quick check: everyone else's matches stay as they were
+        elif mid not in found and m["status"] == "finished" and m["date"] >= keep_from:
             found[mid] = m
     data["matches"] = sorted(found.values(), key=lambda m: (m["date"], m["tournament"]))
     data["checked"] = NOW.strftime("%Y-%m-%dT%H:%M:%SZ")
