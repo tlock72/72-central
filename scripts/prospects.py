@@ -241,6 +241,17 @@ ROUNDS = {"1st round": "R1", "2nd round": "R2", "3rd round": "R3", "4th round": 
           "round of 64": "R64", "round of 32": "R32", "round of 16": "R16", "quarter-final": "QF", "semi-final": "SF", "final": "F"}
 
 
+def playoff(draw, rnd):
+    """Placing play-offs (Junior Finals: "3rd to 4th Play-off", "5th to 8th Play-off") call their deciding match
+    "Final" too, so only the 1st-place play-off keeps its round name; the rest say which places they're for."""
+    m = re.match(r"(\d+(?:st|nd|rd|th)) to (\d+(?:st|nd|rd|th)) play-?off", (draw or "").strip().lower())
+    if not m or m[1] == "1st":
+        return rnd
+    if int(m[2][:-2]) - int(m[1][:-2]) == 1:
+        return f"{m[1]}/{m[2]} place play-off"
+    return f"{m[1]}-{m[2]} place play-off {rnd}".strip()
+
+
 def itf_results(pid, circuit, src):
     """Singles matches of the last 12 months on one ITF circuit (JT juniors, MT men, WT women; MT/WT include ATP/WTA events)."""
     out, skip = [], 0
@@ -258,7 +269,7 @@ def itf_results(pid, circuit, src):
                     if not opp or not opp.get("familyName"):
                         continue  # bye, or opponent not decided yet
                     rnd = (m.get("roundGroup") or {}).get("Value") or ""
-                    rnd = ROUNDS.get(rnd.lower(), rnd)
+                    rnd = playoff(ev.get("drawType"), ROUNDS.get(rnd.lower(), rnd))
                     rc = (m.get("resultCode") or "").upper()
                     code = (m.get("resultStatusCode") or "").upper()
                     sets = []

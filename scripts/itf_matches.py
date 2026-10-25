@@ -28,6 +28,17 @@ ROUNDS = {"1st round": "R1", "2nd round": "R2", "3rd round": "R3", "4th round": 
           "quarter-final": "QF", "quarter-finals": "QF", "semi-final": "SF", "semi-finals": "SF", "final": "Final"}
 
 
+def playoff(draw, rnd):
+    """Placing play-offs (Junior Finals: "3rd to 4th Play-off", "5th to 8th Play-off") call their deciding match
+    "Final" too, so only the 1st-place play-off keeps its round name; the rest say which places they're for."""
+    m = re.match(r"(\d+(?:st|nd|rd|th)) to (\d+(?:st|nd|rd|th)) play-?off", (draw or "").strip().lower())
+    if not m or m[1] == "1st":
+        return rnd
+    if int(m[2][:-2]) - int(m[1][:-2]) == 1:
+        return f"{m[1]}/{m[2]} place play-off"
+    return f"{m[1]}-{m[2]} place play-off {rnd}".strip()
+
+
 class Blocked(Exception):
     pass
 
@@ -198,6 +209,7 @@ def main():
                         continue  # bye or opponent not decided yet
                     mid = m.get("matchId")
                     rnd = ROUNDS.get(((m.get("roundGroup") or {}).get("Value") or "").lower(), (m.get("roundGroup") or {}).get("Value") or "")
+                    rnd = playoff(ev.get("drawType"), rnd)
                     if qual:
                         rnd = "Q-" + rnd if rnd else "Qualifying"
                     oname = short(opp.get("givenName"), opp.get("familyName"))
