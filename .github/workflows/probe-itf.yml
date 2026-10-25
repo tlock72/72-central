@@ -1,0 +1,26 @@
+name: Probe ITF round labels (temporary)
+on:
+  push:
+    branches: [probe-itf-round]
+jobs:
+  probe:
+    runs-on: ubuntu-latest
+    steps:
+      - run: |
+          python3 - <<'PY'
+          import json, time, urllib.request, urllib.parse
+          UA = "72HubRankings/1.0 (+https://github.com/tlock72/72-central; one-off check)"
+          def get(path, **p):
+              time.sleep(5)
+              u = "https://www.itftennis.com/tennis/api" + path + "?" + urllib.parse.urlencode(p)
+              r = urllib.request.urlopen(urllib.request.Request(u, headers={"User-Agent": UA, "Accept": "application/json"}), timeout=30)
+              b = r.read().decode("utf-8", "replace")
+              return json.loads(b) if b.lstrip()[:1] in "{[" else b[:300]
+          for pid in (800570117, 800644962):
+              a = get("/PlayerApi/GetPlayerActivity", circuitCode="JT", matchTypeCode="S", playerId=pid, skip=0, take=1)
+              print("=== ACT", pid); print(json.dumps(a, ensure_ascii=False))
+          days = get("/TournamentApi/GetOrderOfPlayDays", tournamentKey="j-jm-chn-2026-001")
+          print("=== DAYS"); print(json.dumps(days, ensure_ascii=False))
+          for d in (days if isinstance(days, list) else [])[-2:]:
+              print("=== OOP", d.get("playDate")); print(json.dumps(get("/TournamentApi/GetOrderOfPlay", orderOfPlayDayId=d["orderOfPlayDayId"]), ensure_ascii=False))
+          PY
