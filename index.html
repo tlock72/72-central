@@ -2674,8 +2674,10 @@ function cardNums(x, rank){
     const last = hasTourTitle(x) ? [pad2(titleSum(tl)), "Titles"] : [pad2(itf ? itf.n : null), "ITF titles"];
     return [[rank ? pad2(rank) : "—", "Ranking"], [pad2(careerHigh(x)), "Career high"], last];
   }
-  const it = itfOf(x.id);
-  return [[it?.rank ? pad2(it.rank) : "—", "ITF junior"], [rank ? rank : "—", byId[x.id].tour === "WTA" ? "WTA rank" : "ATP rank"], [x.born ?? "—", "Born"]];
+  const it = itfOf(x.id), tr = byId[x.id].tour === "WTA" ? "WTA rank" : "ATP rank";
+  // no ITF junior ranking but an ATP/WTA one: lead with the ATP/WTA rank and its career high instead of a blank ITF junior
+  if (!it?.rank && rank) return [[rank, tr], [pad2(careerHigh(x)), "Career high"], [x.born ?? "—", "Born"]];
+  return [[it?.rank ? pad2(it.rank) : "—", "ITF junior"], [rank ? rank : "—", tr], [x.born ?? "—", "Born"]];
 }
 function renderPlayers(){
   const list = playerList();
