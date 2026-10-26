@@ -2675,7 +2675,8 @@ function cardNums(x, rank){
     return [[rank ? pad2(rank) : "—", "Ranking"], [pad2(careerHigh(x)), "Career high"], last];
   }
   const it = itfOf(x.id);
-  return [[it?.rank ? pad2(it.rank) : "—", "ITF junior"], [rank ? rank : "—", byId[x.id].tour === "WTA" ? "WTA rank" : "ATP rank"], [x.born ?? "—", "Born"]];
+  // ATP/WTA rank only once inside the top 500
+  return [[it?.rank ? pad2(it.rank) : "—", "ITF junior"], [rank && rank <= 500 ? rank : "—", byId[x.id].tour === "WTA" ? "WTA rank" : "ATP rank"], [x.born ?? "—", "Born"]];
 }
 function renderPlayers(){
   const list = playerList();
