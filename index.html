@@ -2732,11 +2732,12 @@ function juniorBody(x, p, rank){
   const te = (!it?.rank || it.rank > 500) ? teU14Of(x.id) : null;
   // career high from the player's Tennis Europe profile (te.json), shown only if it fits the current rank
   const teHi = te && (TEJ?.ranks?.[x.id] || []).find(r => /14 & under/i.test(r.cat || ""))?.high;
+  const proHi = careerHigh(x);
   const tiles = [
-    // a ranking she or he doesn't have yet (ITF junior or ATP/WTA) is left out rather than shown as a dash
-    it?.rank ? [`<small>#</small>${it.rank}`, "ITF junior ranking", it.high ? `Career high <b>#${it.high}</b>` : ""] : null,
+    // an ITF junior or ATP/WTA ranking the player has never had is left out; one they had before shows "not ranked" with the career high
+    it?.rank || it?.high ? [it?.rank ? `<small>#</small>${it.rank}` : "—", "ITF junior ranking" + (it?.rank ? "" : " · not ranked"), it?.high ? `Career high <b>#${it.high}</b>` : ""] : null,
     te ? [`<small>#</small>${te[0]}`, "Tennis Europe U14 ranking", teHi && teHi <= te[0] ? `Career high <b>#${teHi}</b>` : ""] : null,
-    rank ? [`<small>#</small>${rank}`, `${p.tour} ranking`, ""] : null,
+    rank || proHi ? [rank ? `<small>#</small>${rank}` : "—", `${p.tour} ranking` + (rank ? "" : " · not ranked"), proHi ? `Career high <b>#${proHi}</b>` : ""] : null,
     [String(x.born ?? "—"), "Born", ""],
   ].filter(Boolean);
   const hl = [...(x.hl || []), ...[x.head, x.head2].filter(Boolean).map(([k, v]) => `${k} #${v}`)];
