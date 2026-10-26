@@ -331,49 +331,7 @@ def te_born(pid):
     return y if y and 1990 <= y <= T.year - 5 else None
 
 
-def te_ranking(pid):
-    """The Tennis Europe Ranking table on the profile (not the Race to Monte-Carlo table below it).
-    Also returns the link to the player's own page in that ranking (used for past weeks), or None."""
-    from bs4 import BeautifulSoup
-    page = TE.fetch(f"/player-profile/{pid}/ranking")
-    soup = BeautifulSoup(page, "html.parser")
-    links = sorted(set(re.findall(r'href="/ranking/player\.aspx\?id=(\d+)&(?:amp;)?player=(\d+)"', page)))
-    week = None
-    for tbl in soup.find_all("table"):
-        trs = tbl.find_all("tr")
-        cells = [[c.get_text(" ", strip=True).lower() for c in tr.find_all(["th", "td"])] for tr in trs]
-        hi = next((i for i, c in enumerate(cells) if "rank" in c), None)
-        if hi is None:
-            continue
-        # the table's own title: a heading inside it, or the rows above the column names, else the heading before it
-        inner = tbl.find(["caption", "h2", "h3", "h4", "h5"])
-        title = (inner.get_text(" ", strip=True) if inner else "") or " ".join(" ".join(c) for c in cells[:hi])
-        if not title:
-            prev = tbl.find_previous(["h2", "h3", "h4", "h5", "caption"])
-            title = prev.get_text(" ", strip=True) if prev else ""
-        if "tennis europe ranking" not in title.lower() or "race" in title.lower():
-            continue
-        heads = cells[hi]
-        wk = re.search(r"\b(\d{1,2})-(\d{4})\b", title)
-        if wk:
-            week = date.fromisocalendar(int(wk[2]), int(wk[1]), 1).isoformat()
-        rows = []
-        for tr in trs[hi + 1:]:
-            cells = [c.get_text(" ", strip=True) for c in tr.find_all(["th", "td"])]
-            if len(cells) != len(heads):
-                continue
-            row = dict(zip(heads, cells))
-
-            def num(k):
-                m = re.match(r"\d+", row.get(k) or "")
-                return int(m[0]) if m else None
-            best = re.match(r"(\d+)\s+(\d{1,2})-(\d{4})", row.get("best") or "")
-            rows.append({"cat": row.get("category") or cells[0], "rank": num("rank"), "week": week,
-                         "high": int(best[1]) if best else num("best"),
-                         "highWeek": date.fromisocalendar(int(best[3]), int(best[2]), 1).isoformat() if best else None,
-                         "pts": num("total points") or num("points")})
-        return [r for r in rows if r["rank"]], links
-    return [], links
+te_ranking = TE.ranking  # the profile's Tennis Europe Ranking table (in te_matches.py, also used for 72 players)
 
 
 # ---------- Tennis Europe: past ranking weeks (for the 1 week / 3 month / 12 month moves) ----------

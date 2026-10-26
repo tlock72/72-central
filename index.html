@@ -2703,9 +2703,11 @@ function juniorBody(x, p, rank){
   const it = itfOf(x.id);
   // Tennis Europe U14 players whose ITF junior ranking is outside the top 500 (or who have none) also show their TE U14 rank
   const te = (!it?.rank || it.rank > 500) ? teU14Of(x.id) : null;
+  // career high from the player's Tennis Europe profile (te.json), shown only if it fits the current rank
+  const teHi = te && (TEJ?.ranks?.[x.id] || []).find(r => /14 & under/i.test(r.cat || ""))?.high;
   const tiles = [
     [it?.rank ? `<small>#</small>${it.rank}` : "—", "ITF junior ranking" + (it?.rank ? "" : " · not ranked"), it?.high ? `Career high <b>#${it.high}</b>` : ""],
-    te ? [`<small>#</small>${te[0]}`, "Tennis Europe U14 ranking", ""] : null,
+    te ? [`<small>#</small>${te[0]}`, "Tennis Europe U14 ranking", teHi && teHi <= te[0] ? `Career high <b>#${teHi}</b>` : ""] : null,
     [rank ? `<small>#</small>${rank}` : "—", `${p.tour} ranking`, ""],
     [String(x.born), "Born", ""],
   ].filter(Boolean);
@@ -2959,7 +2961,7 @@ function addItfMatches(st, im, src = "itf"){
 /* ---------- Scouting HQ (scouting.json, rebuilt weekly by scripts/scouting.py) ----------
    ITF Boys / ITF Girls come from itfjr.json (scripts/itf_jr_list.py, Mondays), TE U14 Boys / Girls from terank.json
    (scripts/te_rank_list.py). Juniors are all under 18, so on those the age filter is by birth year only. */
-let SCOUT = null, ITFJR = null, TERANK = null, BEST = null;
+let SCOUT = null, ITFJR = null, TERANK = null, BEST = null, TEJ = null; // TEJ = te.json (ranks{rid}: TE ranks and career highs)
 const sqTe = () => SQ.t === "teb14" || SQ.t === "teg14";
 const sqJr = () => SQ.t === "itfb" || SQ.t === "itfg" || sqTe();
 const sqSrcData = () => sqTe() ? TERANK : sqJr() ? ITFJR : SCOUT;
@@ -4633,7 +4635,7 @@ async function load(){
     if (!r.ok) throw new Error(r.status);
     STATE = await r.json();
     try { const rm = await fetch("itfm.json?t=" + Date.now(), { cache: "no-store" }); if (rm.ok) addItfMatches(STATE, await rm.json()); } catch (e) {}
-    try { const rt = await fetch("te.json?t=" + Date.now(), { cache: "no-store" }); if (rt.ok) addItfMatches(STATE, await rt.json(), "te"); } catch (e) {}
+    try { const rt = await fetch("te.json?t=" + Date.now(), { cache: "no-store" }); if (rt.ok) { TEJ = await rt.json(); addItfMatches(STATE, TEJ, "te"); } } catch (e) {}
     // our pros' ITF World Tennis Tour matches: the ITF's own order of play (itf_oop.py) replaces the Live Tennis API's
     // estimated start time, which is often just when play starts that day. If the ITF has it on another day, that day wins.
     try { const ro = await fetch("itfoop.json?t=" + Date.now(), { cache: "no-store" }); if (ro.ok) { const oop = (await ro.json()).matches || {};
