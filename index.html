@@ -362,6 +362,12 @@ blockquote.q cite{display:block;margin-top:12px;font-style:normal;font-family:va
 .champ.sign .k{color:var(--gold)}
 .champ.sign::after{background:linear-gradient(100deg,transparent 30%,rgba(208,165,121,.22) 50%,transparent 70%)}
 .champ + .champ{margin-top:6px}
+/* signings' names open their roster profile: a soft glow pulses round each one to invite a tap */
+.champ.sign a{position:relative;z-index:1;display:inline-block;color:var(--white);font-weight:700;text-decoration:none;padding:1px 9px;margin:0 -3px;border-radius:999px;animation:signPulse 2.4s ease-in-out infinite}
+.champ.sign a:nth-of-type(2n){animation-delay:1.2s}
+.champ.sign a:hover,.champ.sign a:focus-visible{color:var(--navy);background:var(--gold);animation:none;outline:none}
+@keyframes signPulse{0%,100%{box-shadow:0 0 0 0 rgba(208,165,121,0);background:transparent}50%{box-shadow:0 0 0 3px rgba(208,165,121,.28);background:rgba(208,165,121,.18)}}
+@media (prefers-reduced-motion:reduce){.champ.sign a{animation:none;text-decoration:underline;text-underline-offset:3px}}
 .stale{margin:18px 0 6px;padding:12px 16px;border-radius:12px;border:1px solid rgba(232,144,143,.5);background:rgba(232,144,143,.10);color:#F3C1C0;font-size:13px;line-height:1.5}
 .stale b{color:#fff}
 .pnav{display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:10px;border-top:1px solid var(--line);padding-top:20px}
@@ -1865,10 +1871,10 @@ const ROSTER = [
   { id:"luchetti", first:"Giulia", last:"Luchetti", tour:"WTA", country:"ITA" },
 ];
 /* new signings banner: each name shows for 5 days from the day signed (UK date, YYYY-MM-DD), then drops off by itself.
-   To add one, copy a line and change the name and date. */
+   To add one, copy a line and change the name, date and id (the roster id, which makes the name open their profile). */
 const SIGNINGS = [
-  { name:"Arina Guslinskaia", date:"2026-10-26" },
-  { name:"Giulia Luchetti", date:"2026-10-26" },
+  { name:"Arina Guslinskaia", id:"guslinskaia", date:"2026-10-26" },
+  { name:"Giulia Luchetti", id:"luchetti", date:"2026-10-26" },
 ];
 const byId = Object.fromEntries(ROSTER.map(p => [p.id, p]));
 const $ = s => document.querySelector(s);
@@ -2204,7 +2210,7 @@ function renderChamps(){
     return `<b>${esc(p.first[0])}. ${esc(p.last)}</b> won ${esc(tn)}${lvl ? " " + esc(lvl) : ""} (${esc(dayLabel(md(m)))})`;
   }).join("<i>·</i>");
   el.innerHTML = (wins.length ? `<div class="champ">🏆 <span class="k">Congratulations</span><span class="w"><span class="trk">${txt}</span></span></div>` : "")
-    + (signs.length ? `<div class="champ sign">✍️ <span class="k">${signs.length > 1 ? "New signings" : "New signing"}</span><span class="w"><span class="trk">Welcome to 72<i>·</i>${signs.map(s => `<b>${esc(s.name)}</b>`).join("<i>·</i>")}</span></span></div>` : "");
+    + (signs.length ? `<div class="champ sign">✍️ <span class="k">${signs.length > 1 ? "New signings" : "New signing"}</span><span class="w"><span class="trk">Welcome to 72<i>·</i>${signs.map(s => profById[s.id] ? `<a href="#players/${esc(s.id)}">${esc(s.name)}</a>` : `<b>${esc(s.name)}</b>`).join("<i>·</i>")}</span></span></div>` : "");
   // ticker: "Congratulations" stays put, the wins slide back and forth on one line
   fitChamps();
 }
