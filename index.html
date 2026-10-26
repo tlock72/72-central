@@ -357,6 +357,11 @@ blockquote.q cite{display:block;margin-top:12px;font-style:normal;font-family:va
 @keyframes tick{0%,8%{transform:translateX(0)}92%,100%{transform:translateX(var(--dist,0px))}}
 .champ .w b{font-weight:700}
 .champ .w i{font-style:normal;opacity:.6;margin:0 8px}
+/* new signings strip: same ticker as the winners one, navy with a gold edge so the two look different when both show */
+.champ.sign{background:linear-gradient(120deg,var(--navy-3),#0B1230);color:var(--text);border:1px solid var(--gold)}
+.champ.sign .k{color:var(--gold)}
+.champ.sign::after{background:linear-gradient(100deg,transparent 30%,rgba(208,165,121,.22) 50%,transparent 70%)}
+.champ + .champ{margin-top:6px}
 .stale{margin:18px 0 6px;padding:12px 16px;border-radius:12px;border:1px solid rgba(232,144,143,.5);background:rgba(232,144,143,.10);color:#F3C1C0;font-size:13px;line-height:1.5}
 .stale b{color:#fff}
 .pnav{display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:10px;border-top:1px solid var(--line);padding-top:20px}
@@ -1859,6 +1864,12 @@ const ROSTER = [
   { id:"liu", first:"Xichen", last:"Liu", tour:"ATP", country:"CHN" },
   { id:"luchetti", first:"Giulia", last:"Luchetti", tour:"WTA", country:"ITA" },
 ];
+/* new signings banner: each name shows for 5 days from the day signed (UK date, YYYY-MM-DD), then drops off by itself.
+   To add one, copy a line and change the name and date. */
+const SIGNINGS = [
+  { name:"Arina Guslinskaia", date:"2026-10-26" },
+  { name:"Giulia Luchetti", date:"2026-10-26" },
+];
 const byId = Object.fromEntries(ROSTER.map(p => [p.id, p]));
 const $ = s => document.querySelector(s);
 const esc = s => String(s ?? "").replace(/[&<>"']/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
@@ -2180,29 +2191,33 @@ function renderChamps(){
   const wins = (STATE?.matches || []).filter(m => m.status === "finished" && /^(final|f)$/i.test((m.round || "").trim()) && m.date >= cutoff && m.winner && utrFirst(m))
     .map(m => ({ m, id: m.winner === 1 ? m.p1Id : m.p2Id })).filter(w => byId[w.id])
     .sort((a, b) => b.m.date.localeCompare(a.m.date));
-  const el = $("#champs"), key = wins.map(w => w.m.date + w.id + w.m.tournament).join("|");
+  // signings: from the day signed up to and including 4 days later (5 days in all)
+  const today = ukDate(), signs = SIGNINGS.filter(s => s.date <= today && today < new Date(Date.parse(s.date) + 5 * 864e5).toISOString().slice(0, 10));
+  const el = $("#champs"), key = wins.map(w => w.m.date + w.id + w.m.tournament).concat(signs.map(s => s.name)).join("|");
   if (el.dataset.k === key) return;  // unchanged: don't restart the ticker
   el.dataset.k = key;
-  el.hidden = !wins.length;
+  el.hidden = !wins.length && !signs.length;
   const txt = wins.map(({ m, id }) => {
     const p = byId[id], lvl = (m.category || "").replace(/^ITF /, "");
     // the feed sometimes puts the level in the name too ("W35 Lagos"): take it out so it isn't said twice
     const tn = lvl ? m.tournament.replace(new RegExp("^" + lvl.replace(/\W/g, "\\$&") + "\\s+", "i"), "") : m.tournament;
     return `<b>${esc(p.first[0])}. ${esc(p.last)}</b> won ${esc(tn)}${lvl ? " " + esc(lvl) : ""} (${esc(dayLabel(md(m)))})`;
   }).join("<i>·</i>");
-  el.innerHTML = wins.length ? `<div class="champ">🏆 <span class="k">Congratulations</span><span class="w"><span class="trk">${txt}</span></span></div>` : "";
+  el.innerHTML = (wins.length ? `<div class="champ">🏆 <span class="k">Congratulations</span><span class="w"><span class="trk">${txt}</span></span></div>` : "")
+    + (signs.length ? `<div class="champ sign">✍️ <span class="k">${signs.length > 1 ? "New signings" : "New signing"}</span><span class="w"><span class="trk">Welcome to 72<i>·</i>${signs.map(s => `<b>${esc(s.name)}</b>`).join("<i>·</i>")}</span></span></div>` : "");
   // ticker: "Congratulations" stays put, the wins slide back and forth on one line
   fitChamps();
 }
 // slides one way, pauses, then slides back (ping-pong) - only when the wins don't all fit on one line
 function fitChamps(){
-  const c = document.querySelector("#champs .champ"); if (!c) return;
-  const w = c.querySelector(".w"), t = c.querySelector(".trk");
-  if (!w.clientWidth) return;  // page not visible yet; measured again when it is
-  const dist = w.clientWidth - t.scrollWidth;
-  c.style.setProperty("--dist", dist + "px");
-  c.style.setProperty("--dur", Math.max(5, Math.abs(dist) / 40) + "s");
-  c.classList.toggle("scroll", dist < 0);
+  document.querySelectorAll("#champs .champ").forEach(c => {
+    const w = c.querySelector(".w"), t = c.querySelector(".trk");
+    if (!w.clientWidth) return;  // page not visible yet; measured again when it is
+    const dist = w.clientWidth - t.scrollWidth;
+    c.style.setProperty("--dist", dist + "px");
+    c.style.setProperty("--dur", Math.max(5, Math.abs(dist) / 40) + "s");
+    c.classList.toggle("scroll", dist < 0);
+  });
 }
 window.addEventListener("resize", fitChamps);
 /* plain warnings when the automatic updates have fallen behind, so old data is never mistaken for current */
