@@ -29,7 +29,7 @@ JUNIORS = {
     "vmakarova": ("Varvara Makarova", 800822494, "G"), "dotsenko": ("Ekaterina Dotsenko", 800677532, "G"),
     "lin": ("Yu Jun Lin", 800739107, "G"), "newman": ("Welles Newman", 800705703, "G"),
     "kanabar": ("Jensi Dipakbhai Kanabar", 800741292, "G"), "kurylova": ("Nicole Kurylova", 800743118, "G"),
-    "iwasa": ("Ayaka Iwasa", 800722468, "G"),
+    "iwasa": ("Ayaka Iwasa", 800722468, "G"), "luchetti": ("Giulia Luchetti", 800709933, "G"),
 }
 
 

@@ -42,6 +42,7 @@ ROSTER = {
     "skryp": ("Violetta Skryp", "wta"), "kurylova": ("Nicole Kurylova", "wta"),
     "dudeney": ("Alicia Dudeney", "wta"), "mmakarova": ("Mariia Makarova", "wta"), "vmakarova": ("Varvara Makarova", "wta"),
     "momot": ("Henry Momot", "atp"), "kanabar": ("Jensi Kanabar", "wta"), "liu": ("Xichen Liu", "atp"),
+    "luchetti": ("Giulia Luchetti", "wta"),
 }
 # Players whose name is shared with others: pick the one born in this year
 BORN = {"ivanov": "2008", "liu": "2015"}

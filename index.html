@@ -1853,6 +1853,7 @@ const ROSTER = [
   { id:"momot", first:"Henry", last:"Momot", tour:"ATP", country:"GBR" },
   { id:"kanabar", first:"Jensi", last:"Kanabar", tour:"WTA", country:"IND" },
   { id:"liu", first:"Xichen", last:"Liu", tour:"ATP", country:"CHN" },
+  { id:"luchetti", first:"Giulia", last:"Luchetti", tour:"WTA", country:"ITA" },
 ];
 const byId = Object.fromEntries(ROSTER.map(p => [p.id, p]));
 const $ = s => document.querySelector(s);
@@ -2536,6 +2537,9 @@ const JUNIOR_PROFILES = [
   { id:"liu", grp:"U14", born:2015, nat:"Chinese", ig:"lxc20150730",
     partners:["Yonex"],
     res:{2026:["U12 Rafa Nadal Tour Madrid","U12 Rafa Nadal Tour Valldoreix","U12 Comunitat Valenciana Championship"],2025:["U10 Jiangsu Province Championship"]} },
+  { id:"luchetti", grp:"U14", born:2012, nat:"Italian", head:["Best Tennis Europe U14 ranking",4],
+    hl:["U14 World Team champion 2026","U14 European doubles champion 2026","Drottningens Pris (TE U14 Super Category) champion 2026"], partners:["HEAD","ASICS"],
+    res:{2026:["World Tennis 14&U Junior Team Finals, Prostějov (Champion)","European Junior Championships U14, Most (Doubles champion)","Drottningens Pris, Stockholm TE U14 Super Category (Champion)","Bors Breclav Open TE U14 Cat. 2 (Champion)","Frýdek-Místek, Czechia ITF J30 (Doubles champion, Singles SF)","Bad Waltersdorf, Austria ITF J60 (Doubles champion)","Bistrița, Romania ITF J60 (SF)","Žilina, Slovakia ITF J60 (SF)"],2024:["Italian U12 Champion (Coppa Lambertenghi)","Neride Cup, Rakovník TE U12 Cat. 1 (Champion)","U12 Summer Cup with Italy"],2023:["Italian U11 Champion"],2022:["Lemon Bowl U10, Rome (RU)"]} },
 ];
 JUNIOR_PROFILES.forEach(j => j.kind = "junior");
 const ALL_PROFILES = [...PROFILES, ...JUNIOR_PROFILES];
@@ -2547,6 +2551,7 @@ const DOB = {
   qi:"2010-05-04", svitolina:"1994-09-12", bejlek:"2006-01-31", starodubtseva:"2000-02-17", kasatkina:"1997-05-07", sawangkaew:"2002-07-10",
   jones:"2000-09-19", romero:"2002-04-06", ristic:"2006-05-17", rajeshwaran:"2009-06-12", dotsenko:"2011-10-07", newman:"2010-02-11",
   lin:"2010-06-10", mackenzie:"2008-01-15", dudeney:"2003-05-28", jabeur:"1994-08-28", pinera:"2010-09-28", kanabar:"2011-11-30", mmakarova:"2010-01-14",
+  luchetti:"2012-08-06",
 };
 const ageOn = iso => { const d = new Date(iso + "T12:00:00Z"), n = new Date(ukDate() + "T12:00:00Z");
   let a = n.getUTCFullYear() - d.getUTCFullYear();
