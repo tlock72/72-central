@@ -295,6 +295,7 @@ html.prof-lock body{position:fixed;left:0;right:0;width:100%;overflow:hidden}
 .big{display:grid;grid-template-columns:repeat(4,1fr);gap:12px}
 .big.b3{grid-template-columns:repeat(3,1fr)}
 .big.b2{grid-template-columns:repeat(2,1fr)}
+.big.b1{grid-template-columns:1fr}
 /* career high: a quiet line under the ranking it belongs to */
 .big i.ch{display:block;font-style:normal;font-size:11px;color:var(--muted);margin-top:6px;letter-spacing:.02em}
 .big i.ch b{display:inline;font-family:inherit;font-size:inherit;font-weight:600;color:var(--white)}
@@ -357,6 +358,17 @@ blockquote.q cite{display:block;margin-top:12px;font-style:normal;font-family:va
 @keyframes tick{0%,8%{transform:translateX(0)}92%,100%{transform:translateX(var(--dist,0px))}}
 .champ .w b{font-weight:700}
 .champ .w i{font-style:normal;opacity:.6;margin:0 8px}
+/* new signings strip: same ticker as the winners one, navy with a gold edge so the two look different when both show */
+.champ.sign{background:linear-gradient(120deg,var(--navy-3),#0B1230);color:var(--text);border:1px solid var(--gold)}
+.champ.sign .k{color:var(--gold)}
+.champ.sign::after{background:linear-gradient(100deg,transparent 30%,rgba(208,165,121,.22) 50%,transparent 70%)}
+.champ + .champ{margin-top:6px}
+/* signings' names open their roster profile: a soft glow pulses round each one to invite a tap */
+.champ.sign a{position:relative;z-index:1;display:inline-block;color:var(--white);font-weight:700;text-decoration:none;padding:1px 9px;margin:0 -3px;border-radius:999px;animation:signPulse 2.4s ease-in-out infinite}
+.champ.sign a:nth-of-type(2n){animation-delay:1.2s}
+.champ.sign a:hover,.champ.sign a:focus-visible{color:var(--navy);background:var(--gold);animation:none;outline:none}
+@keyframes signPulse{0%,100%{box-shadow:0 0 0 0 rgba(208,165,121,0);background:transparent}50%{box-shadow:0 0 0 3px rgba(208,165,121,.28);background:rgba(208,165,121,.18)}}
+@media (prefers-reduced-motion:reduce){.champ.sign a{animation:none;text-decoration:underline;text-underline-offset:3px}}
 .stale{margin:18px 0 6px;padding:12px 16px;border-radius:12px;border:1px solid rgba(232,144,143,.5);background:rgba(232,144,143,.10);color:#F3C1C0;font-size:13px;line-height:1.5}
 .stale b{color:#fff}
 .pnav{display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:10px;border-top:1px solid var(--line);padding-top:20px}
@@ -1858,6 +1870,13 @@ const ROSTER = [
   { id:"kanabar", first:"Jensi", last:"Kanabar", tour:"WTA", country:"IND" },
   { id:"liu", first:"Xichen", last:"Liu", tour:"ATP", country:"CHN" },
   { id:"luchetti", first:"Giulia", last:"Luchetti", tour:"WTA", country:"ITA" },
+  { id:"guslinskaia", first:"Arina", last:"Guslinskaia", tour:"WTA", country:"RUS" },
+];
+/* new signings banner: each name shows for 5 days from the day signed (UK date, YYYY-MM-DD), then drops off by itself.
+   To add one, copy a line and change the name, date and id (the roster id, which makes the name open their profile). */
+const SIGNINGS = [
+  { name:"Arina Guslinskaia", id:"guslinskaia", date:"2026-10-26" },
+  { name:"Giulia Luchetti", id:"luchetti", date:"2026-10-26" },
 ];
 const byId = Object.fromEntries(ROSTER.map(p => [p.id, p]));
 const $ = s => document.querySelector(s);
@@ -2180,29 +2199,33 @@ function renderChamps(){
   const wins = (STATE?.matches || []).filter(m => m.status === "finished" && /^(final|f)$/i.test((m.round || "").trim()) && m.date >= cutoff && m.winner && utrFirst(m))
     .map(m => ({ m, id: m.winner === 1 ? m.p1Id : m.p2Id })).filter(w => byId[w.id])
     .sort((a, b) => b.m.date.localeCompare(a.m.date));
-  const el = $("#champs"), key = wins.map(w => w.m.date + w.id + w.m.tournament).join("|");
+  // signings: from the day signed up to and including 4 days later (5 days in all)
+  const today = ukDate(), signs = SIGNINGS.filter(s => s.date <= today && today < new Date(Date.parse(s.date) + 5 * 864e5).toISOString().slice(0, 10));
+  const el = $("#champs"), key = wins.map(w => w.m.date + w.id + w.m.tournament).concat(signs.map(s => s.name)).join("|");
   if (el.dataset.k === key) return;  // unchanged: don't restart the ticker
   el.dataset.k = key;
-  el.hidden = !wins.length;
+  el.hidden = !wins.length && !signs.length;
   const txt = wins.map(({ m, id }) => {
     const p = byId[id], lvl = (m.category || "").replace(/^ITF /, "");
     // the feed sometimes puts the level in the name too ("W35 Lagos"): take it out so it isn't said twice
     const tn = lvl ? m.tournament.replace(new RegExp("^" + lvl.replace(/\W/g, "\\$&") + "\\s+", "i"), "") : m.tournament;
     return `<b>${esc(p.first[0])}. ${esc(p.last)}</b> won ${esc(tn)}${lvl ? " " + esc(lvl) : ""} (${esc(dayLabel(md(m)))})`;
   }).join("<i>·</i>");
-  el.innerHTML = wins.length ? `<div class="champ">🏆 <span class="k">Congratulations</span><span class="w"><span class="trk">${txt}</span></span></div>` : "";
+  el.innerHTML = (wins.length ? `<div class="champ">🏆 <span class="k">Congratulations</span><span class="w"><span class="trk">${txt}</span></span></div>` : "")
+    + (signs.length ? `<div class="champ sign">✍️ <span class="k">${signs.length > 1 ? "New signings" : "New signing"}</span><span class="w"><span class="trk">Welcome to 72<i>·</i>${signs.map(s => profById[s.id] ? `<a href="#players/${esc(s.id)}">${esc(s.name)}</a>` : `<b>${esc(s.name)}</b>`).join("<i>·</i>")}</span></span></div>` : "");
   // ticker: "Congratulations" stays put, the wins slide back and forth on one line
   fitChamps();
 }
 // slides one way, pauses, then slides back (ping-pong) - only when the wins don't all fit on one line
 function fitChamps(){
-  const c = document.querySelector("#champs .champ"); if (!c) return;
-  const w = c.querySelector(".w"), t = c.querySelector(".trk");
-  if (!w.clientWidth) return;  // page not visible yet; measured again when it is
-  const dist = w.clientWidth - t.scrollWidth;
-  c.style.setProperty("--dist", dist + "px");
-  c.style.setProperty("--dur", Math.max(5, Math.abs(dist) / 40) + "s");
-  c.classList.toggle("scroll", dist < 0);
+  document.querySelectorAll("#champs .champ").forEach(c => {
+    const w = c.querySelector(".w"), t = c.querySelector(".trk");
+    if (!w.clientWidth) return;  // page not visible yet; measured again when it is
+    const dist = w.clientWidth - t.scrollWidth;
+    c.style.setProperty("--dist", dist + "px");
+    c.style.setProperty("--dur", Math.max(5, Math.abs(dist) / 40) + "s");
+    c.classList.toggle("scroll", dist < 0);
+  });
 }
 window.addEventListener("resize", fitChamps);
 /* plain warnings when the automatic updates have fallen behind, so old data is never mistaken for current */
@@ -2300,7 +2323,7 @@ function renderItf(){
     .sort((a, b) => (a.d.rank ?? 1e9) - (b.d.rank ?? 1e9) || a.x.born - b.x.born || a.p.last.localeCompare(b.p.last));
   const html = list => list.map(({ x, p, d }) => `<div class="rk">
       <div class="no ${d.rank ? "" : "na"}">${d.rank ? `<span class="hash">#</span>${d.rank}` : "—"}</div>
-      <div class="who">${nmLink(p)}<div class="ct">${esc([p.country, "b. " + x.born, d.rank ? "" : d.high ? "No current ITF junior ranking" : (x.head ? `${x.head[0]} #${x.head[1]}` : "Not ITF-ranked")].filter(Boolean).join(" · "))}${d.high ? `<span class="ptm"> · best #${d.high}</span>` : ""}${rs72Btn(p.id)}</div></div>
+      <div class="who">${nmLink(p)}<div class="ct">${esc([p.country, x.born ? "b. " + x.born : "", d.rank ? "" : d.high ? "No current ITF junior ranking" : (x.head ? `${x.head[0]} #${x.head[1]}` : "Not ITF-ranked")].filter(Boolean).join(" · "))}${d.high ? `<span class="ptm"> · best #${d.high}</span>` : ""}${rs72Btn(p.id)}</div></div>
       <div class="pts">${d.high ? "#" + d.high : ""}<small>${d.high ? "BEST" : ""}</small></div>
       ${mv(d.rank ? d.move : null)}</div>`).join("");
   const b = rows("ATP"), g = rows("WTA");
@@ -2544,6 +2567,10 @@ const JUNIOR_PROFILES = [
   { id:"luchetti", grp:"U14", born:2012, nat:"Italian", ig:"giulia_tennis_", head:["Best Tennis Europe U14 ranking",4],
     hl:["U14 World Team champion 2026","U14 European doubles champion 2026","Drottningens Pris (TE U14 Super Category) champion 2026"], partners:["HEAD","ASICS"],
     res:{2026:["World Tennis 14&U Junior Team Finals, Prostějov (Champion)","European Junior Championships U14, Most (Doubles champion)","Drottningens Pris, Stockholm TE U14 Super Category (Champion)","Bors Breclav Open TE U14 Cat. 2 (Champion)","Frýdek-Místek, Czechia ITF J30 (Doubles champion, Singles SF)","Bad Waltersdorf, Austria ITF J60 (Doubles champion)","Bistrița, Romania ITF J60 (SF)","Žilina, Slovakia ITF J60 (SF)"],2024:["Italian U12 Champion (Coppa Lambertenghi)","Neride Cup, Rakovník TE U12 Cat. 1 (Champion)","U12 Summer Cup with Italy"],2023:["Italian U11 Champion"],2022:["Lemon Bowl U10, Rome (RU)"]} },
+  { id:"guslinskaia", grp:"U12", nat:"Russian", ig:"arinaguslinskaia",
+    hl:["TEJT U12 Cap d'Agde champion 2025 & 2026","TEJT U12 Cattenom champion 2026"],
+    partners:["Tecnifibre","Lacoste"],
+    res:{2026:["Top 10-12 Bressuire, France TE U12 Cat. 1 (QF, from qualifying)","TEJT U12 Cattenom, France TE U12 Cat. 2 (Champion)","TEJT U12 Cap d'Agde, France TE U12 Cat. 2 (Champion)","All In Open, Villeneuve-Loubet, France TE U12 Cat. 1 (QF)","Open Super 12 Auray, France TE U12 Cat. 1 (QF, from qualifying)"],2025:["Memorial Antonio Luzio Vaz, Portugal TE U12 Cat. 1 (R16)","Bad Waltersdorf Junior Trophy, Austria TE U14 Cat. 3 (qualified)","Openbenjamins Gradignan-Gironde, France TE U12 Cat. 1 (R16, from qualifying)","Junior Tour U12 Tennis Belulla, Spain TE U12 Cat. 2 (R16)","Tennis Europe U14 d'Annecy, France TE U14 Cat. 2 (R32, from qualifying)","TEJT U12 Cap d'Agde, France TE U12 Cat. 2 (Champion)","Braga Open, Portugal TE U12 Cat. 2","Leiria, Portugal TE U12 Cat. 2 (SF)"],2024:["Eminent Podgorica, Montenegro TE U12 Cat. 2 (QF)","Podgorica Rio Verde, Montenegro TE U12 Cat. 2 (QF)"]} },
 ];
 JUNIOR_PROFILES.forEach(j => j.kind = "junior");
 const ALL_PROFILES = [...PROFILES, ...JUNIOR_PROFILES];
@@ -2555,7 +2582,7 @@ const DOB = {
   qi:"2010-05-04", svitolina:"1994-09-12", bejlek:"2006-01-31", starodubtseva:"2000-02-17", kasatkina:"1997-05-07", sawangkaew:"2002-07-10",
   jones:"2000-09-19", romero:"2002-04-06", ristic:"2006-05-17", rajeshwaran:"2009-06-12", dotsenko:"2011-10-07", newman:"2010-02-11",
   lin:"2010-06-10", mackenzie:"2008-01-15", dudeney:"2003-05-28", jabeur:"1994-08-28", pinera:"2010-09-28", kanabar:"2011-11-30", mmakarova:"2010-01-14",
-  luchetti:"2012-08-06",
+  luchetti:"2012-08-06", guslinskaia:"2014-02-13",
 };
 const ageOn = iso => { const d = new Date(iso + "T12:00:00Z"), n = new Date(ukDate() + "T12:00:00Z");
   let a = n.getUTCFullYear() - d.getUTCFullYear();
@@ -2632,7 +2659,7 @@ function resOf(x){
 }
 // Pros sit under their tour. Juniors join ATP/WTA once they hold an ATP/WTA ranking, otherwise they are Next Gen.
 // Under-18s show under their tour AND Next Gen. Older juniors join their tour once ranked, otherwise Next Gen.
-const under18 = x => x.kind === "junior" && new Date().getFullYear() - x.born <= 18;
+const under18 = x => x.kind === "junior" && (!x.born || new Date().getFullYear() - x.born <= 18);  // no year of birth yet: still a junior
 const groupsOf = (x, p) => x.kind !== "junior" ? [p.tour] : under18(x) ? [p.tour, "NEXT"] : playerRank(x.id) ? [p.tour] : ["NEXT"];
 function playerList(){
   const key = o => o.x.kind === "junior" ? (o.rank ? 2e4 + o.rank : 4e4 + (o.itf ?? 9e3)) : (o.rank ?? 1e4);
@@ -2648,7 +2675,7 @@ function cardNums(x, rank){
     return [[rank ? pad2(rank) : "—", "Ranking"], [pad2(careerHigh(x)), "Career high"], last];
   }
   const it = itfOf(x.id);
-  return [[it?.rank ? pad2(it.rank) : "—", "ITF junior"], [rank ? rank : "—", byId[x.id].tour === "WTA" ? "WTA rank" : "ATP rank"], [x.born, "Born"]];
+  return [[it?.rank ? pad2(it.rank) : "—", "ITF junior"], [rank ? rank : "—", byId[x.id].tour === "WTA" ? "WTA rank" : "ATP rank"], [x.born ?? "—", "Born"]];
 }
 function renderPlayers(){
   const list = playerList();
@@ -2660,7 +2687,7 @@ function renderPlayers(){
       <div class="top"><span class="tr">${ng ? "NEXT GEN" : p.tour}</span><span class="cc">${esc(x.kind === "junior" ? x.grp + " · " + p.country : p.country)}</span></div>
       <div class="fn">${esc(p.first)}</div>
       <div class="ln">${esc(p.last)}</div>
-      <div class="meta">${x.kind === "junior" ? `Born ${x.born}` : x.age} · ${esc(x.nat)}</div>
+      <div class="meta">${x.kind === "junior" ? `Born ${x.born ?? "—"}` : x.age} · ${esc(x.nat)}</div>
       <div class="nums">${cardNums(x, rank).map(([v, k]) => `<div><b>${esc(v)}</b><span>${esc(k)}</span></div>`).join("")}</div>
       <span class="go">View profile <i>→</i></span>
     </button>`;
@@ -2705,15 +2732,17 @@ function juniorBody(x, p, rank){
   const te = (!it?.rank || it.rank > 500) ? teU14Of(x.id) : null;
   // career high from the player's Tennis Europe profile (te.json), shown only if it fits the current rank
   const teHi = te && (TEJ?.ranks?.[x.id] || []).find(r => /14 & under/i.test(r.cat || ""))?.high;
+  const proHi = careerHigh(x);
   const tiles = [
-    [it?.rank ? `<small>#</small>${it.rank}` : "—", "ITF junior ranking" + (it?.rank ? "" : " · not ranked"), it?.high ? `Career high <b>#${it.high}</b>` : ""],
+    // an ITF junior or ATP/WTA ranking the player has never had is left out; one they had before shows "not ranked" with the career high
+    it?.rank || it?.high ? [it?.rank ? `<small>#</small>${it.rank}` : "—", "ITF junior ranking" + (it?.rank ? "" : " · not ranked"), it?.high ? `Career high <b>#${it.high}</b>` : ""] : null,
     te ? [`<small>#</small>${te[0]}`, "Tennis Europe U14 ranking", teHi && teHi <= te[0] ? `Career high <b>#${teHi}</b>` : ""] : null,
-    [rank ? `<small>#</small>${rank}` : "—", `${p.tour} ranking`, ""],
-    [String(x.born), "Born", ""],
+    rank || proHi ? [rank ? `<small>#</small>${rank}` : "—", `${p.tour} ranking` + (rank ? "" : " · not ranked"), proHi ? `Career high <b>#${proHi}</b>` : ""] : null,
+    [String(x.born ?? "—"), "Born", ""],
   ].filter(Boolean);
   const hl = [...(x.hl || []), ...[x.head, x.head2].filter(Boolean).map(([k, v]) => `${k} #${v}`)];
   const res = resOf(x), years = Object.keys(res).sort((a, b) => b - a);
-  return `<div class="big${tiles.length === 3 ? " b3" : ""}">${tiles.map(([v, k, ch]) => `<div><b>${v}</b><span>${esc(k)}</span>${ch ? `<i class="ch">${ch}</i>` : ""}</div>`).join("")}</div>
+  return `<div class="big${tiles.length < 4 ? " b" + tiles.length : ""}">${tiles.map(([v, k, ch]) => `<div><b>${v}</b><span>${esc(k)}</span>${ch ? `<i class="ch">${ch}</i>` : ""}</div>`).join("")}</div>
       ${hl.length ? `<section><h3 class="pk">Highlights</h3><div class="hls">${hl.map(h => `<span>★ ${esc(h)}</span>`).join("")}</div></section>` : ""}
       ${x.partners.length ? `<section><h3 class="pk">Partner line-up</h3>${partnersHtml(x.partners, x.id)}</section>` : ""}
       <section><h3 class="pk">Results</h3><div class="yrs">${years.map(y => `<div class="yr"><b>${y}</b><ul>${res[y].map(r => `<li>${esc(r)}</li>`).join("")}</ul></div>`).join("")}</div></section>`;
@@ -2796,7 +2825,7 @@ function openProfile(id){
   if (i < 0) i = nav.findIndex(o => o.x.id === id);
   const prev = nav[(i - 1 + nav.length) % nav.length], next = nav[(i + 1) % nav.length];
   const facts = x.kind === "junior"
-    ? [["Born", x.dob ? fmtDob(x.dob) : x.born], ...(x.dob ? [["Age", x.age]] : []), ["Nationality", x.nat], ["Age group", x.grp], ...(x.ig ? [["Instagram", "@" + x.ig]] : [])]
+    ? [["Born", x.dob ? fmtDob(x.dob) : x.born ?? "—"], ...(x.dob ? [["Age", x.age]] : []), ["Nationality", x.nat], ["Age group", x.grp], ...(x.ig ? [["Instagram", "@" + x.ig]] : [])]
     : [["Age", x.age], ...(x.dob ? [["Born", fmtDob(x.dob)]] : []), ["Nationality", x.nat], ["Plays", x.plays], ["Tour", p.tour]];
   $("#prof").innerHTML = `
     <div class="ph">

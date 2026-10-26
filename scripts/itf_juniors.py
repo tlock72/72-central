@@ -30,6 +30,7 @@ JUNIORS = {
     "lin": ("Yu Jun Lin", 800739107, "G"), "newman": ("Welles Newman", 800705703, "G"),
     "kanabar": ("Jensi Dipakbhai Kanabar", 800741292, "G"), "kurylova": ("Nicole Kurylova", 800743118, "G"),
     "iwasa": ("Ayaka Iwasa", 800722468, "G"), "luchetti": ("Giulia Luchetti", 800709933, "G"),
+    "guslinskaia": ("Arina Guslinskaia", None, "G"),
 }
 
 
