@@ -1869,6 +1869,7 @@ const ROSTER = [
   { id:"kanabar", first:"Jensi", last:"Kanabar", tour:"WTA", country:"IND" },
   { id:"liu", first:"Xichen", last:"Liu", tour:"ATP", country:"CHN" },
   { id:"luchetti", first:"Giulia", last:"Luchetti", tour:"WTA", country:"ITA" },
+  { id:"guslinskaia", first:"Arina", last:"Guslinskaia", tour:"WTA", country:"RUS" },
 ];
 /* new signings banner: each name shows for 5 days from the day signed (UK date, YYYY-MM-DD), then drops off by itself.
    To add one, copy a line and change the name, date and id (the roster id, which makes the name open their profile). */
@@ -2321,7 +2322,7 @@ function renderItf(){
     .sort((a, b) => (a.d.rank ?? 1e9) - (b.d.rank ?? 1e9) || a.x.born - b.x.born || a.p.last.localeCompare(b.p.last));
   const html = list => list.map(({ x, p, d }) => `<div class="rk">
       <div class="no ${d.rank ? "" : "na"}">${d.rank ? `<span class="hash">#</span>${d.rank}` : "—"}</div>
-      <div class="who">${nmLink(p)}<div class="ct">${esc([p.country, "b. " + x.born, d.rank ? "" : d.high ? "No current ITF junior ranking" : (x.head ? `${x.head[0]} #${x.head[1]}` : "Not ITF-ranked")].filter(Boolean).join(" · "))}${d.high ? `<span class="ptm"> · best #${d.high}</span>` : ""}${rs72Btn(p.id)}</div></div>
+      <div class="who">${nmLink(p)}<div class="ct">${esc([p.country, x.born ? "b. " + x.born : "", d.rank ? "" : d.high ? "No current ITF junior ranking" : (x.head ? `${x.head[0]} #${x.head[1]}` : "Not ITF-ranked")].filter(Boolean).join(" · "))}${d.high ? `<span class="ptm"> · best #${d.high}</span>` : ""}${rs72Btn(p.id)}</div></div>
       <div class="pts">${d.high ? "#" + d.high : ""}<small>${d.high ? "BEST" : ""}</small></div>
       ${mv(d.rank ? d.move : null)}</div>`).join("");
   const b = rows("ATP"), g = rows("WTA");
@@ -2565,6 +2566,10 @@ const JUNIOR_PROFILES = [
   { id:"luchetti", grp:"U14", born:2012, nat:"Italian", ig:"giulia_tennis_", head:["Best Tennis Europe U14 ranking",4],
     hl:["U14 World Team champion 2026","U14 European doubles champion 2026","Drottningens Pris (TE U14 Super Category) champion 2026"], partners:["HEAD","ASICS"],
     res:{2026:["World Tennis 14&U Junior Team Finals, Prostějov (Champion)","European Junior Championships U14, Most (Doubles champion)","Drottningens Pris, Stockholm TE U14 Super Category (Champion)","Bors Breclav Open TE U14 Cat. 2 (Champion)","Frýdek-Místek, Czechia ITF J30 (Doubles champion, Singles SF)","Bad Waltersdorf, Austria ITF J60 (Doubles champion)","Bistrița, Romania ITF J60 (SF)","Žilina, Slovakia ITF J60 (SF)"],2024:["Italian U12 Champion (Coppa Lambertenghi)","Neride Cup, Rakovník TE U12 Cat. 1 (Champion)","U12 Summer Cup with Italy"],2023:["Italian U11 Champion"],2022:["Lemon Bowl U10, Rome (RU)"]} },
+  { id:"guslinskaia", grp:"U12", nat:"Russian",
+    hl:["TEJT U12 Cap d'Agde champion 2025 & 2026","TEJT U12 Cattenom champion 2026"],
+    partners:[],
+    res:{2026:["Top 10-12 Bressuire, France TE U12 Cat. 1 (QF, from qualifying)","TEJT U12 Cattenom, France TE U12 Cat. 2 (Champion)","TEJT U12 Cap d'Agde, France TE U12 Cat. 2 (Champion)","All In Open, Villeneuve-Loubet, France TE U12 Cat. 1 (QF)","Open Super 12 Auray, France TE U12 Cat. 1 (QF, from qualifying)"],2025:["Memorial Antonio Luzio Vaz, Portugal TE U12 Cat. 1 (R16)","Bad Waltersdorf Junior Trophy, Austria TE U14 Cat. 3 (qualified)","Openbenjamins Gradignan-Gironde, France TE U12 Cat. 1 (R16, from qualifying)","Junior Tour U12 Tennis Belulla, Spain TE U12 Cat. 2 (R16)","Tennis Europe U14 d'Annecy, France TE U14 Cat. 2 (R32, from qualifying)","TEJT U12 Cap d'Agde, France TE U12 Cat. 2 (Champion)","Braga Open, Portugal TE U12 Cat. 2","Leiria, Portugal TE U12 Cat. 2 (SF)"],2024:["Eminent Podgorica, Montenegro TE U12 Cat. 2 (QF)","Podgorica Rio Verde, Montenegro TE U12 Cat. 2 (QF)"]} },
 ];
 JUNIOR_PROFILES.forEach(j => j.kind = "junior");
 const ALL_PROFILES = [...PROFILES, ...JUNIOR_PROFILES];
@@ -2653,7 +2658,7 @@ function resOf(x){
 }
 // Pros sit under their tour. Juniors join ATP/WTA once they hold an ATP/WTA ranking, otherwise they are Next Gen.
 // Under-18s show under their tour AND Next Gen. Older juniors join their tour once ranked, otherwise Next Gen.
-const under18 = x => x.kind === "junior" && new Date().getFullYear() - x.born <= 18;
+const under18 = x => x.kind === "junior" && (!x.born || new Date().getFullYear() - x.born <= 18);  // no year of birth yet: still a junior
 const groupsOf = (x, p) => x.kind !== "junior" ? [p.tour] : under18(x) ? [p.tour, "NEXT"] : playerRank(x.id) ? [p.tour] : ["NEXT"];
 function playerList(){
   const key = o => o.x.kind === "junior" ? (o.rank ? 2e4 + o.rank : 4e4 + (o.itf ?? 9e3)) : (o.rank ?? 1e4);
@@ -2669,7 +2674,7 @@ function cardNums(x, rank){
     return [[rank ? pad2(rank) : "—", "Ranking"], [pad2(careerHigh(x)), "Career high"], last];
   }
   const it = itfOf(x.id);
-  return [[it?.rank ? pad2(it.rank) : "—", "ITF junior"], [rank ? rank : "—", byId[x.id].tour === "WTA" ? "WTA rank" : "ATP rank"], [x.born, "Born"]];
+  return [[it?.rank ? pad2(it.rank) : "—", "ITF junior"], [rank ? rank : "—", byId[x.id].tour === "WTA" ? "WTA rank" : "ATP rank"], [x.born ?? "—", "Born"]];
 }
 function renderPlayers(){
   const list = playerList();
@@ -2681,7 +2686,7 @@ function renderPlayers(){
       <div class="top"><span class="tr">${ng ? "NEXT GEN" : p.tour}</span><span class="cc">${esc(x.kind === "junior" ? x.grp + " · " + p.country : p.country)}</span></div>
       <div class="fn">${esc(p.first)}</div>
       <div class="ln">${esc(p.last)}</div>
-      <div class="meta">${x.kind === "junior" ? `Born ${x.born}` : x.age} · ${esc(x.nat)}</div>
+      <div class="meta">${x.kind === "junior" ? `Born ${x.born ?? "—"}` : x.age} · ${esc(x.nat)}</div>
       <div class="nums">${cardNums(x, rank).map(([v, k]) => `<div><b>${esc(v)}</b><span>${esc(k)}</span></div>`).join("")}</div>
       <span class="go">View profile <i>→</i></span>
     </button>`;
@@ -2730,7 +2735,7 @@ function juniorBody(x, p, rank){
     [it?.rank ? `<small>#</small>${it.rank}` : "—", "ITF junior ranking" + (it?.rank ? "" : " · not ranked"), it?.high ? `Career high <b>#${it.high}</b>` : ""],
     te ? [`<small>#</small>${te[0]}`, "Tennis Europe U14 ranking", teHi && teHi <= te[0] ? `Career high <b>#${teHi}</b>` : ""] : null,
     [rank ? `<small>#</small>${rank}` : "—", `${p.tour} ranking`, ""],
-    [String(x.born), "Born", ""],
+    [String(x.born ?? "—"), "Born", ""],
   ].filter(Boolean);
   const hl = [...(x.hl || []), ...[x.head, x.head2].filter(Boolean).map(([k, v]) => `${k} #${v}`)];
   const res = resOf(x), years = Object.keys(res).sort((a, b) => b - a);
@@ -2817,7 +2822,7 @@ function openProfile(id){
   if (i < 0) i = nav.findIndex(o => o.x.id === id);
   const prev = nav[(i - 1 + nav.length) % nav.length], next = nav[(i + 1) % nav.length];
   const facts = x.kind === "junior"
-    ? [["Born", x.dob ? fmtDob(x.dob) : x.born], ...(x.dob ? [["Age", x.age]] : []), ["Nationality", x.nat], ["Age group", x.grp], ...(x.ig ? [["Instagram", "@" + x.ig]] : [])]
+    ? [["Born", x.dob ? fmtDob(x.dob) : x.born ?? "—"], ...(x.dob ? [["Age", x.age]] : []), ["Nationality", x.nat], ["Age group", x.grp], ...(x.ig ? [["Instagram", "@" + x.ig]] : [])]
     : [["Age", x.age], ...(x.dob ? [["Born", fmtDob(x.dob)]] : []), ["Nationality", x.nat], ["Plays", x.plays], ["Tour", p.tour]];
   $("#prof").innerHTML = `
     <div class="ph">
