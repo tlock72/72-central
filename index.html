@@ -2321,11 +2321,9 @@ function renderItf(){
     ? `<b>Heads up:</b> the ITF junior rankings were last updated ${ic ? ic.toLocaleDateString("en-GB", { day:"numeric", month:"long", timeZone:"UTC" }) : "a while ago"}, so they may be out of date.` : "");
   const rows = tour => JUNIOR_PROFILES.map(x => ({ x, p: byId[x.id], d: itfOf(x.id) || {} })).filter(o => o.p && o.p.tour === tour && o.d.rank)
     .sort((a, b) => (a.d.rank ?? 1e9) - (b.d.rank ?? 1e9) || a.x.born - b.x.born || a.p.last.localeCompare(b.p.last));
-  // a junior inside the ATP/WTA top 500 also shows that ranking (same weekly list as the ATP & WTA view)
-  const proTop = p => { const n = playerRank(p.id); return n && n <= 500 ? `${p.tour} #${n}` : ""; };
   const html = list => list.map(({ x, p, d }) => `<div class="rk">
       <div class="no ${d.rank ? "" : "na"}">${d.rank ? `<span class="hash">#</span>${d.rank}` : "—"}</div>
-      <div class="who">${nmLink(p)}<div class="ct">${esc([p.country, x.born ? "b. " + x.born : "", d.rank ? "" : d.high ? "No current ITF junior ranking" : (x.head ? `${x.head[0]} #${x.head[1]}` : "Not ITF-ranked"), proTop(p)].filter(Boolean).join(" · "))}${d.high ? `<span class="ptm"> · best #${d.high}</span>` : ""}${rs72Btn(p.id)}</div></div>
+      <div class="who">${nmLink(p)}<div class="ct">${esc([p.country, x.born ? "b. " + x.born : "", d.rank ? "" : d.high ? "No current ITF junior ranking" : (x.head ? `${x.head[0]} #${x.head[1]}` : "Not ITF-ranked")].filter(Boolean).join(" · "))}${d.high ? `<span class="ptm"> · best #${d.high}</span>` : ""}${rs72Btn(p.id)}</div></div>
       <div class="pts">${d.high ? "#" + d.high : ""}<small>${d.high ? "BEST" : ""}</small></div>
       ${mv(d.rank ? d.move : null)}</div>`).join("");
   const b = rows("ATP"), g = rows("WTA");
