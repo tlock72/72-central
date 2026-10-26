@@ -23,8 +23,10 @@ PLAYERS = {
     "newman": "Welles Newman", "tarlazzi": "Diego Tarlazzi", "kanabar": "Jensi Kanabar|Jensi Dipakbhai Kanabar",
     "farkxodov": "Saidaslam Farkxodov", "kurylova": "Nicole Kurylova", "iwasa": "Ayaka Iwasa",
     "mateo": "Jorge Mateo Moreno|Jorge Mateo", "davies": "Fletcher Davies", "momot": "Henry Momot", "liu": "Xichen Liu",
+    "luchetti": "Giulia Luchetti",
 }
-KNOWN = {"momot": "84A53D21-B1AC-4757-BE1B-0896A13174DD", "davies": "6B0C03DA-40B9-4FC3-9768-0FCD24CFEA83"}
+KNOWN = {"momot": "84A53D21-B1AC-4757-BE1B-0896A13174DD", "davies": "6B0C03DA-40B9-4FC3-9768-0FCD24CFEA83",
+         "luchetti": "2F65EB7D-F034-4088-A2F5-86292F475429"}
 ROUNDS = {"round of 128": "R128", "round of 64": "R64", "round of 32": "R32", "round of 16": "R16",
           "quarter final": "QF", "quarter-final": "QF", "semi final": "SF", "semi-final": "SF", "final": "Final"}
 
