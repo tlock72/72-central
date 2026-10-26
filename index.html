@@ -294,6 +294,10 @@ dialog.prof{overflow-x:hidden;overflow-y:auto;overscroll-behavior:contain}
 html.prof-lock body{position:fixed;left:0;right:0;width:100%;overflow:hidden}
 .big{display:grid;grid-template-columns:repeat(4,1fr);gap:12px}
 .big.b3{grid-template-columns:repeat(3,1fr)}
+.big.b2{grid-template-columns:repeat(2,1fr)}
+/* career high: a quiet line under the ranking it belongs to */
+.big i.ch{display:block;font-style:normal;font-size:11px;color:var(--muted);margin-top:6px;letter-spacing:.02em}
+.big i.ch b{display:inline;font-family:inherit;font-size:inherit;font-weight:600;color:var(--white)}
 .big div{border:1px solid var(--line-2);border-radius:16px;padding:18px;background:rgba(255,255,255,.025)}
 .big b{display:block;font-family:var(--display);font-size:40px;font-weight:600;color:var(--white);line-height:1;font-variant-numeric:tabular-nums}
 .big b small{font-size:18px;color:var(--gold);margin-right:2px;font-weight:500}
@@ -1331,7 +1335,7 @@ body.on-home > footer{display:none}
   .pk{font-size:10px;letter-spacing:.18em;margin-bottom:9px}
   .big,.big.b3{gap:6px}
   .big div{padding:10px 12px;border-radius:12px}
-  .big b{font-size:24px}.big b small{font-size:13px}
+  .big b{font-size:24px}.big b small{font-size:13px}.big i.ch{font-size:10px;margin-top:4px}
   .big span{font-size:8.5px;letter-spacing:.1em;margin-top:5px;line-height:1.35}
   .tg{gap:8px}
   .tb{padding:11px 13px;border-radius:12px}
@@ -2675,9 +2679,9 @@ function proBody(x, p, rank){
     return `<div class="tb"><div class="h"><span>${esc(t.k)}</span><b>${pad2(t.n)}</b></div>${bar}</div>`;
   };
   const tour = hasTourTitle(x);
-  return `<div class="big${tour ? "" : " b3"}">
-        <div><b>${rank ? `<small>#</small>${rank}` : "—"}</b><span>Current ${p.tour} ranking</span></div>
-        <div><b>${x.junior ? `<small>#</small>${x.junior}` : best ? `<small>#</small>${best}` : "—"}</b><span>${x.junior ? "Highest ITF junior ranking" : "Career-high ranking"}</span></div>
+  const ch = [best ? `Career high <b>#${best}</b>` : "", x.junior ? `Highest ITF junior <b>#${x.junior}</b>` : ""].filter(Boolean).join(" · ");
+  return `<div class="big${tour ? " b3" : " b2"}">
+        <div><b>${rank ? `<small>#</small>${rank}` : "—"}</b><span>Current ${p.tour} ranking</span>${ch ? `<i class="ch">${ch}</i>` : ""}</div>
         ${tour ? `<div><b>${pad2(titles)}</b><span>Career titles${titleExcl(tl)}</span></div>` : ""}
         <div><b>${reach ? fmtN(reach) : "—"}</b><span>Social following</span></div>
       </div>
@@ -2689,17 +2693,25 @@ function proBody(x, p, rank){
       </div></section>` : ""}
       ${x.quote ? `<blockquote class="q"><p>${esc(x.quote[0])}</p><cite>${esc(x.quote[1])}</cite></blockquote>` : ""}`;
 }
+/* a junior's row on the Tennis Europe U14 list (terank.json): by roster id, else exact name + nation */
+function teU14Of(id){
+  const r = byId[id], L = TERANK?.[(r?.tour === "ATP" ? "b" : "g") + "14"]?.players;
+  if (!r || !L) return null;
+  return L.find(q => q[8] === id) || L.find(q => !q[8] && q[2] === r.country && norm(q[1]) === norm(r.first + " " + r.last)) || null;
+}
 function juniorBody(x, p, rank){
   const it = itfOf(x.id);
+  // Tennis Europe U14 players whose ITF junior ranking is outside the top 500 (or who have none) also show their TE U14 rank
+  const te = (!it?.rank || it.rank > 500) ? teU14Of(x.id) : null;
   const tiles = [
-    [it?.rank ? `<small>#</small>${it.rank}` : "—", "ITF junior ranking" + (it?.rank ? "" : " · not ranked")],
-    [it?.high ? `<small>#</small>${it.high}` : "—", "ITF junior career high"],
-    [rank ? `<small>#</small>${rank}` : "—", `${p.tour} ranking`],
-    [String(x.born), "Born"],
-  ];
+    [it?.rank ? `<small>#</small>${it.rank}` : "—", "ITF junior ranking" + (it?.rank ? "" : " · not ranked"), it?.high ? `Career high <b>#${it.high}</b>` : ""],
+    te ? [`<small>#</small>${te[0]}`, "Tennis Europe U14 ranking", ""] : null,
+    [rank ? `<small>#</small>${rank}` : "—", `${p.tour} ranking`, ""],
+    [String(x.born), "Born", ""],
+  ].filter(Boolean);
   const hl = [...(x.hl || []), ...[x.head, x.head2].filter(Boolean).map(([k, v]) => `${k} #${v}`)];
   const res = resOf(x), years = Object.keys(res).sort((a, b) => b - a);
-  return `<div class="big">${tiles.map(([v, k]) => `<div><b>${v}</b><span>${esc(k)}</span></div>`).join("")}</div>
+  return `<div class="big${tiles.length === 3 ? " b3" : ""}">${tiles.map(([v, k, ch]) => `<div><b>${v}</b><span>${esc(k)}</span>${ch ? `<i class="ch">${ch}</i>` : ""}</div>`).join("")}</div>
       ${hl.length ? `<section><h3 class="pk">Highlights</h3><div class="hls">${hl.map(h => `<span>★ ${esc(h)}</span>`).join("")}</div></section>` : ""}
       ${x.partners.length ? `<section><h3 class="pk">Partner line-up</h3>${partnersHtml(x.partners, x.id)}</section>` : ""}
       <section><h3 class="pk">Results</h3><div class="yrs">${years.map(y => `<div class="yr"><b>${y}</b><ul>${res[y].map(r => `<li>${esc(r)}</li>`).join("")}</ul></div>`).join("")}</div></section>`;
