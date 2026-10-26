@@ -295,6 +295,7 @@ html.prof-lock body{position:fixed;left:0;right:0;width:100%;overflow:hidden}
 .big{display:grid;grid-template-columns:repeat(4,1fr);gap:12px}
 .big.b3{grid-template-columns:repeat(3,1fr)}
 .big.b2{grid-template-columns:repeat(2,1fr)}
+.big.b1{grid-template-columns:1fr}
 /* career high: a quiet line under the ranking it belongs to */
 .big i.ch{display:block;font-style:normal;font-size:11px;color:var(--muted);margin-top:6px;letter-spacing:.02em}
 .big i.ch b{display:inline;font-family:inherit;font-size:inherit;font-weight:600;color:var(--white)}
@@ -2732,14 +2733,15 @@ function juniorBody(x, p, rank){
   // career high from the player's Tennis Europe profile (te.json), shown only if it fits the current rank
   const teHi = te && (TEJ?.ranks?.[x.id] || []).find(r => /14 & under/i.test(r.cat || ""))?.high;
   const tiles = [
-    [it?.rank ? `<small>#</small>${it.rank}` : "—", "ITF junior ranking" + (it?.rank ? "" : " · not ranked"), it?.high ? `Career high <b>#${it.high}</b>` : ""],
+    // a ranking she or he doesn't have yet (ITF junior or ATP/WTA) is left out rather than shown as a dash
+    it?.rank ? [`<small>#</small>${it.rank}`, "ITF junior ranking", it.high ? `Career high <b>#${it.high}</b>` : ""] : null,
     te ? [`<small>#</small>${te[0]}`, "Tennis Europe U14 ranking", teHi && teHi <= te[0] ? `Career high <b>#${teHi}</b>` : ""] : null,
-    [rank ? `<small>#</small>${rank}` : "—", `${p.tour} ranking`, ""],
+    rank ? [`<small>#</small>${rank}`, `${p.tour} ranking`, ""] : null,
     [String(x.born ?? "—"), "Born", ""],
   ].filter(Boolean);
   const hl = [...(x.hl || []), ...[x.head, x.head2].filter(Boolean).map(([k, v]) => `${k} #${v}`)];
   const res = resOf(x), years = Object.keys(res).sort((a, b) => b - a);
-  return `<div class="big${tiles.length === 3 ? " b3" : ""}">${tiles.map(([v, k, ch]) => `<div><b>${v}</b><span>${esc(k)}</span>${ch ? `<i class="ch">${ch}</i>` : ""}</div>`).join("")}</div>
+  return `<div class="big${tiles.length < 4 ? " b" + tiles.length : ""}">${tiles.map(([v, k, ch]) => `<div><b>${v}</b><span>${esc(k)}</span>${ch ? `<i class="ch">${ch}</i>` : ""}</div>`).join("")}</div>
       ${hl.length ? `<section><h3 class="pk">Highlights</h3><div class="hls">${hl.map(h => `<span>★ ${esc(h)}</span>`).join("")}</div></section>` : ""}
       ${x.partners.length ? `<section><h3 class="pk">Partner line-up</h3>${partnersHtml(x.partners, x.id)}</section>` : ""}
       <section><h3 class="pk">Results</h3><div class="yrs">${years.map(y => `<div class="yr"><b>${y}</b><ul>${res[y].map(r => `<li>${esc(r)}</li>`).join("")}</ul></div>`).join("")}</div></section>`;
