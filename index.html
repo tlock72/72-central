@@ -1904,6 +1904,8 @@ function md(m){
 }
 // the day shown for a match: "Day TBC" while its day isn't set yet, otherwise Today / Tomorrow / the date
 const dayTxt = m => m.tbc && m.status !== "finished" ? "Day TBC" : dayLabel(md(m));
+// qualifying filled in from the ITF's results (update.py itf_qualifying): the ITF gives the event, not the day
+const resDay = m => m.noDay ? "Day not given" : dayLabel(md(m));
 function dayLabel(iso){
   const today = myDate();
   const t = new Date(today + "T12:00:00Z"), d = new Date(iso + "T12:00:00Z");
@@ -2160,7 +2162,7 @@ function card(m){
   const delayed = live && !!m.delay;
   const when = delayed ? `<span class="when delayed"><span class="pulse"></span>In progress<span class="dtag">Delayed</span></span>`
     : live ? `<span class="when live"><span class="pulse"></span>In progress</span>`
-    : fin ? `<span class="when fin"><span class="rtag">${wl === "win72" ? "72 win" : wl === "loss72" ? "72 loss" : "Result"}</span>${esc(dayLabel(md(m)))}</span>`
+    : fin ? `<span class="when fin"><span class="rtag">${wl === "win72" ? "72 win" : wl === "loss72" ? "72 loss" : "Result"}</span>${esc(resDay(m))}</span>`
     : pending ? `<span class="when fin">${esc(dayLabel(md(m)))} · result pending</span>`
     : `<span class="when ${today ? "today" : ""}">${esc(dayTxt(m))}</span>`;
   const times = !fin && !live && !pending
@@ -2291,7 +2293,7 @@ function renderScores(){
     const last = mine.filter(m => m.status === "finished" && md(m) < today).sort((a,b) => key(b).localeCompare(key(a)))[0];
     let st = "No match scheduled", on = false;
     if (up) { const opp = up.p1Id === p.id ? up.p2 : up.p1; st = `${dayTxt(up)}${up.time ? " ~" + clock(ukMoment(up.date, up.time), MYTZ, md(up)) + " your time" : up.oop ? " · " + up.slot + " (local time)" : ""} · vs ${opp} · ${up.tournament}`; on = md(up) === today; }
-    else if (last) { const w = (last.winner === 1 && last.p1Id === p.id) || (last.winner === 2 && last.p2Id === p.id); st = `${w ? "Won" : "Lost"} ${last.round || ""} · ${last.tournament} · ${dayLabel(md(last))}`; }
+    else if (last) { const w = (last.winner === 1 && last.p1Id === p.id) || (last.winner === 2 && last.p2Id === p.id); st = `${w ? "Won" : "Lost"} ${last.round || ""} · ${last.tournament} · ${resDay(last)}`; }
     if (STATE?.status?.[p.id]) st = STATE.status[p.id];
     const link = safeUrl(p.sofa);
     const rank = rks[p.id]?.rank ?? null;

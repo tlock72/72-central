@@ -11,7 +11,7 @@ data.json back. Free plan = 100 requests/day, so calls are kept small:
   - once a week (Mon):    1 call per player (rankings)
   - first run only:       1 call per player (find their API ids -> players.json)
 """
-import json, os, sys, time, urllib.parse, urllib.request, urllib.error
+import json, os, re, sys, time, urllib.parse, urllib.request, urllib.error
 import espn  # ESPN's free scoreboard: the main source for ATP and WTA matches (no key, no daily limit)
 from datetime import date, datetime, timedelta, timezone
 from zoneinfo import ZoneInfo
@@ -178,6 +178,51 @@ def settle(aid, m, d=None):
 
 
 # ---------------------------------------------------------------- main
+def itf_qualifying(matches, cutoff):
+    """Qualifying results the feed never listed (it often skips small ITF qualifying draws), taken from the ITF's own
+    results in results/ (written by lookup_results.py, no feed calls). The ITF gives the event's dates but not the
+    day of the match, so these carry noDay (the page says "day not given"); date is the event's start, for sorting
+    and the 7-day cutoff only. Rebuilt every run, so one the feed picks up later isn't shown twice."""
+    ids = (load("titles.json", {}).get("ids") or {})
+    by_itf = {str(v): rid for rid, v in ids.items() if rid in ROSTER and v}
+    files = {}
+    for f in load("results/index.json", []):
+        rec = load(f"results/{f}.json", {})
+        rid = by_itf.get(str(rec.get("itf") or ""))
+        if rid and len(rec.get("results") or []) > len(files.get(rid, {}).get("results") or []):
+            files[rid] = rec
+    def category_of(r):
+        lvl = re.match(r"([MW]\d+)\b", r.get("t") or "")
+        return ("ITF " + lvl[1]) if r.get("cat") == "ITF" and lvl else "Challenger"
+    rnd = {"Q-R1": "Q1", "Q-R2": "Q2", "Q-R3": "Q3", "Q-F": "Q final"}
+    out = []
+    for rid, rec in files.items():
+        mine = [m for m in matches if rid in (m.get("p1Id"), m.get("p2Id"))]
+        for r in rec.get("results") or []:
+            if r.get("src") != "itf-pro" or not (r.get("r") or "").startswith("Q-") or r.get("res") not in ("W", "L"):
+                continue
+            if r.get("cat") not in ("ITF", "CH") or (r.get("start") or "") < cutoff:
+                continue  # ATP/WTA events come from ESPN; older than the site's 7 days
+            opp = " ".join(w.title() if w.isupper() and not w.endswith(".") else w for w in (r.get("o") or "").split())
+            words = {w for w in norm(opp).split() if len(w) > 1}
+            if not words or any(words & {w for w in norm(m["p2"] if m.get("p1Id") == rid else m["p1"]).split() if len(w) > 1}
+                                for m in mine):
+                continue  # already on the site from a feed
+            wo, won = r.get("s") == "walkover", r["res"] == "W"
+            # the ITF gives the score from our player's side; the page lists the winner first, from their side
+            sc = "" if wo else r.get("s") or ""
+            if not won:
+                sc = re.sub(r"(\d+)-(\d+)", r"\2-\1", sc)
+            m = {"src": "itfres", "date": r["start"], "noDay": True, "time": "", "tournament": r.get("t") or "",
+                 "category": category_of(r), "round": rnd.get(r["r"], "Q") + (" (walkover)" if wo else ""),
+                 "p1": short(ROSTER[rid][0]) if won else opp, "p1Id": rid if won else None,
+                 "p2": opp if won else short(ROSTER[rid][0]), "p2Id": None if won else rid,
+                 "status": "finished", "score": sc, "winner": 1,
+                 "note": "Result from the ITF's own records (our score feed didn't list this match)."}
+            out.append(m)
+    return out
+
+
 def main():
     if not KEY:
         sys.exit("LIVETENNIS_API_KEY is not set")
@@ -486,7 +531,7 @@ def main():
     def key(m):
         return (m["date"], tuple(sorted(norm(m["p1"]).split()[-1:] + norm(m["p2"]).split()[-1:])))
     api_keys = {key(m) for m in new.values()}
-    manual = [m for m in data["matches"] if not m.get("apiId") and key(m) not in api_keys
+    manual = [m for m in data["matches"] if not m.get("apiId") and m.get("src") != "itfres" and key(m) not in api_keys
               and not any(same(m, x, days=2) for x in new.values())]
     cutoff = (NOW - timedelta(days=7)).astimezone(UK).strftime("%Y-%m-%d")
     today = uk_now.strftime("%Y-%m-%d")
@@ -499,6 +544,7 @@ def main():
         if m["status"] == "scheduled" and m["date"] and m["date"] < (uk_now - timedelta(days=2)).strftime("%Y-%m-%d"):
             continue  # result never arrived; shown as 'result pending' for 2 days, then dropped
         merged.append(m)
+    merged += itf_qualifying(merged, cutoff)
 
     # 5b) When a match finished ("Finished by 14:43 UK" on its result tile). Only recorded when the previous run,
     #     at most 45 minutes earlier, still had it unfinished, so the time is never more than one run out.
