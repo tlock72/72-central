@@ -182,8 +182,7 @@ def itf_missed(matches, cutoff):
     """ITF and Challenger results the feed never listed (it often skips small ITF qualifying draws), taken from the ITF's own
     results in results/ (written by lookup_results.py, no feed calls). The ITF gives the event's dates but not the
     day of the match, so these carry noDay (the page says "day not given"); date is the event's start, for sorting
-    and the 7-day cutoff only. Every missed qualifying match is shown, but only each player's last missed main-draw
-    match. Rebuilt every run, so one the feed picks up later isn't shown twice."""
+    and the 7-day cutoff only. Only each player's last missed match is shown (qualifying or main draw). Rebuilt every run, so one the feed picks up later isn't shown twice."""
     ids = (load("titles.json", {}).get("ids") or {})
     by_itf = {str(v): rid for rid, v in ids.items() if rid in ROSTER and v}
     files = {}
@@ -196,10 +195,10 @@ def itf_missed(matches, cutoff):
         lvl = re.match(r"([MW]\d+)\b", r.get("t") or "")
         return ("ITF " + lvl[1]) if r.get("cat") == "ITF" and lvl else "Challenger"
     rnd = {"Q-R1": "Q1", "Q-R2": "Q2", "Q-R3": "Q3", "Q-F": "Q final", "F": "Final"}
-    stage = ["R1", "R128", "R2", "R64", "R3", "R32", "R4", "R16", "QF", "SF", "F"]
+    stage = ["Q-R1", "Q-R2", "Q-R3", "Q-F", "R1", "R128", "R2", "R64", "R3", "R32", "R4", "R16", "QF", "SF", "F"]
     out = []
     for rid, rec in files.items():
-        main = None  # (start, stage, match): the last missed main-draw match
+        last = None  # (start, stage, match): the last missed match
         mine = [m for m in matches if rid in (m.get("p1Id"), m.get("p2Id"))]
         for r in rec.get("results") or []:
             if r.get("src") != "itf-pro" or r.get("res") not in ("W", "L"):
@@ -222,14 +221,11 @@ def itf_missed(matches, cutoff):
                  "p2": opp if won else short(ROSTER[rid][0]), "p2Id": None if won else rid,
                  "status": "finished", "score": sc, "winner": 1,
                  "note": "Result from the ITF's own records (our score feed didn't list this match)."}
-            if r["r"].startswith("Q-"):
-                out.append(m)
-            else:
-                at = (r["start"], stage.index(r["r"]) if r["r"] in stage else -1)
-                if not main or at > main[:2]:
-                    main = (*at, m)
-        if main:
-            out.append(main[2])
+            at = (r["start"], stage.index(r["r"]) if r["r"] in stage else -1)
+            if not last or at > last[:2]:
+                last = (*at, m)
+        if last:
+            out.append(last[2])
     return out
 
 
