@@ -178,11 +178,12 @@ def settle(aid, m, d=None):
 
 
 # ---------------------------------------------------------------- main
-def itf_qualifying(matches, cutoff):
-    """Qualifying results the feed never listed (it often skips small ITF qualifying draws), taken from the ITF's own
+def itf_missed(matches, cutoff):
+    """ITF and Challenger results the feed never listed (it often skips small ITF qualifying draws), taken from the ITF's own
     results in results/ (written by lookup_results.py, no feed calls). The ITF gives the event's dates but not the
     day of the match, so these carry noDay (the page says "day not given"); date is the event's start, for sorting
-    and the 7-day cutoff only. Rebuilt every run, so one the feed picks up later isn't shown twice."""
+    and the 7-day cutoff only. Every missed qualifying match is shown, but only each player's last missed main-draw
+    match. Rebuilt every run, so one the feed picks up later isn't shown twice."""
     ids = (load("titles.json", {}).get("ids") or {})
     by_itf = {str(v): rid for rid, v in ids.items() if rid in ROSTER and v}
     files = {}
@@ -194,12 +195,14 @@ def itf_qualifying(matches, cutoff):
     def category_of(r):
         lvl = re.match(r"([MW]\d+)\b", r.get("t") or "")
         return ("ITF " + lvl[1]) if r.get("cat") == "ITF" and lvl else "Challenger"
-    rnd = {"Q-R1": "Q1", "Q-R2": "Q2", "Q-R3": "Q3", "Q-F": "Q final"}
+    rnd = {"Q-R1": "Q1", "Q-R2": "Q2", "Q-R3": "Q3", "Q-F": "Q final", "F": "Final"}
+    stage = ["R1", "R128", "R2", "R64", "R3", "R32", "R4", "R16", "QF", "SF", "F"]
     out = []
     for rid, rec in files.items():
+        main = None  # (start, stage, match): the last missed main-draw match
         mine = [m for m in matches if rid in (m.get("p1Id"), m.get("p2Id"))]
         for r in rec.get("results") or []:
-            if r.get("src") != "itf-pro" or not (r.get("r") or "").startswith("Q-") or r.get("res") not in ("W", "L"):
+            if r.get("src") != "itf-pro" or r.get("res") not in ("W", "L"):
                 continue
             if r.get("cat") not in ("ITF", "CH") or (r.get("start") or "") < cutoff:
                 continue  # ATP/WTA events come from ESPN; older than the site's 7 days
@@ -214,12 +217,19 @@ def itf_qualifying(matches, cutoff):
             if not won:
                 sc = re.sub(r"(\d+)-(\d+)", r"\2-\1", sc)
             m = {"src": "itfres", "date": r["start"], "noDay": True, "time": "", "tournament": r.get("t") or "",
-                 "category": category_of(r), "round": rnd.get(r["r"], "Q") + (" (walkover)" if wo else ""),
+                 "category": category_of(r), "round": rnd.get(r["r"], r["r"]) + (" (walkover)" if wo else ""),
                  "p1": short(ROSTER[rid][0]) if won else opp, "p1Id": rid if won else None,
                  "p2": opp if won else short(ROSTER[rid][0]), "p2Id": None if won else rid,
                  "status": "finished", "score": sc, "winner": 1,
                  "note": "Result from the ITF's own records (our score feed didn't list this match)."}
-            out.append(m)
+            if r["r"].startswith("Q-"):
+                out.append(m)
+            else:
+                at = (r["start"], stage.index(r["r"]) if r["r"] in stage else -1)
+                if not main or at > main[:2]:
+                    main = (*at, m)
+        if main:
+            out.append(main[2])
     return out
 
 
@@ -544,7 +554,7 @@ def main():
         if m["status"] == "scheduled" and m["date"] and m["date"] < (uk_now - timedelta(days=2)).strftime("%Y-%m-%d"):
             continue  # result never arrived; shown as 'result pending' for 2 days, then dropped
         merged.append(m)
-    merged += itf_qualifying(merged, cutoff)
+    merged += itf_missed(merged, cutoff)
 
     # 5b) When a match finished ("Finished by 14:43 UK" on its result tile). Only recorded when the previous run,
     #     at most 45 minutes earlier, still had it unfinished, so the time is never more than one run out.

@@ -1904,7 +1904,7 @@ function md(m){
 }
 // the day shown for a match: "Day TBC" while its day isn't set yet, otherwise Today / Tomorrow / the date
 const dayTxt = m => m.tbc && m.status !== "finished" ? "Day TBC" : dayLabel(md(m));
-// qualifying filled in from the ITF's results (update.py itf_qualifying): the ITF gives the event, not the day
+// qualifying filled in from the ITF's results (update.py itf_missed): the ITF gives the event, not the day
 const resDay = m => m.noDay ? "Day not given" : dayLabel(md(m));
 function dayLabel(iso){
   const today = myDate();
