@@ -208,6 +208,18 @@ def main():
                     if not te_ok:
                         P.TE.consent(); te_ok = True
                     res = P.te_results(m[1].upper(), rname)
+                    if rid and itf_ids.get(rid) and not off["itf"]:
+                        # a 72 junior also playing ITF pro events (Futures): their ITF results too, so update.py's
+                        # itf_missed() can show a result the score feed never listed
+                        try:
+                            res += P.itf_results(str(itf_ids[rid]), "MT" if g == "M" else "WT", "itf-pro")
+                            rec["itf"] = str(itf_ids[rid])
+                        except P.Blocked as e:
+                            print(" ", e, "- ITF left alone for 3 hours")
+                            off["itf"] = True
+                            blocked["itf"] = P.iso(NOW)
+                        except Exception as e:
+                            print("  ITF results failed:", e)
             elif tour in ("itfb", "itfg"):
                 m = re.search(r"/players/[^/]+/(\d+)/", rurl or "")
                 if not m:

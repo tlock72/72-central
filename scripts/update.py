@@ -44,6 +44,8 @@ ROSTER = {
     "momot": ("Henry Momot", "atp"), "kanabar": ("Jensi Kanabar", "wta"), "liu": ("Xichen Liu", "atp"),
     "luchetti": ("Giulia Luchetti", "wta"), "guslinskaia": ("Arina Guslinskaia", "wta"),
 }
+# Other spellings tried in the player search when the roster name finds nobody (e.g. Uzbek "x" written "kh")
+ALIASES = {"farkxodov": ["Saidaslam Farkhodov", "Saidislam Farkhodov"]}
 # Players whose name is shared with others: pick the one born in this year
 BORN = {"ivanov": "2008", "liu": "2015"}
 
@@ -266,16 +268,22 @@ def main():
         if searched >= 3 or CALLS >= MAX_CALLS - 12 or spent + CALLS >= 40 or os.environ.get("RANKINGS") == "1":
             break  # finish the rest next run (the Monday rankings run keeps its calls for the rankings)
         searched += 1
-        try:
-            res = api("/players", search=full, limit=50 if rid in BORN else 20).get("data", [])
-        except Exception as e:
-            print("player search failed", rid, e); break
-        want = norm(full).split()
-        def same_person(p):
-            have = norm(p.get("name")).split()
-            return want[-1] in have and any(h[:1] == want[0][:1] for h in have if h != want[-1])
-        cands = [p for p in res if not p.get("is_doubles_team") and (p.get("tour") or tour) in (tour, "itf", "challenger", "juniors")
-                 and same_person(p) and (rid not in BORN or (p.get("birthday") or "").startswith(BORN[rid]))]
+        cands, failed = [], False
+        for name in [full] + ALIASES.get(rid, []):
+            if cands or CALLS >= MAX_CALLS - 12:
+                break
+            try:
+                res = api("/players", search=name, limit=50 if rid in BORN else 20).get("data", [])
+            except Exception as e:
+                print("player search failed", rid, e); failed = True; break
+            want = norm(name).split()
+            def same_person(p):
+                have = norm(p.get("name")).split()
+                return want[-1] in have and any(h[:1] == want[0][:1] for h in have if h != want[-1])
+            cands = [p for p in res if not p.get("is_doubles_team") and (p.get("tour") or tour) in (tour, "itf", "challenger", "juniors")
+                     and same_person(p) and (rid not in BORN or (p.get("birthday") or "").startswith(BORN[rid]))]
+        if failed:
+            break
         cands.sort(key=lambda p: (p.get("ranking_status") != "ranked", p.get("ranking") is None, not p.get("birthday")))
         hit = cands[0] if cands else None
         players[rid] = {"apiId": hit["id"] if hit else None, "apiName": hit["name"] if hit else None, "checked": NOW.isoformat(),
