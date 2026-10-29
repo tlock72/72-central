@@ -4,7 +4,8 @@
 Builds schedule.json: every tournament from this week to the end of the year on the ATP Tour, WTA Tour,
 ATP Challenger Tour, WTA 125, ITF men's and women's World Tennis Tour, ITF Juniors and Tennis Europe,
 plus which 72 players are entered in the next few weeks (as far ahead as entry lists are published),
-and the same for Scouting Corner prospects ("esc"), matched only through the links prospects.py has made.
+and the same for Scouting Corner prospects ("esc"), matched only through the links prospects.py has made,
+and for the computerised suggestions ("esg", from suggest.json: ITF id, Tennis Europe profile, ATP/WTA name).
 
 Sources (all free, no key):
   - ATP Tour and Challenger Tour: Wikipedia's "2026 ATP Tour" and "2026 ATP Challenger Tour" pages
@@ -734,6 +735,30 @@ def prospects():
     return out
 
 
+SG = "sg:"  # computerised suggestions, the same way as "sg:<suggest.json key>", then moved to "esg"
+
+
+def suggestions():
+    """The computerised suggestions picked in the last few days (suggest.json, by suggest_results.py): the ITF id it found
+    by name + nationality (never a guess), the ATP/WTA name from the official list, or the Tennis Europe profile linked
+    in terank.json. Matched like the prospects, so a suggested player shows on the acceptance lists they're on."""
+    te = {}
+    for cat, rows in ((c, (load("terank.json", {}).get(c) or {}).get("players") or []) for c in ("b14", "g14")):
+        for r in rows:
+            m = re.search(r"player-profile/([0-9A-Fa-f-]{36})", (r[7] if len(r) > 7 else "") or "")
+            if m:
+                te[cat + ":" + " ".join(sorted(re.sub(r"[^a-z ]", "", unicodedata.normalize("NFKD", r[1] or "").encode("ascii", "ignore")
+                                                         .decode().lower().replace("-", " ")).split()))] = m[1].upper()
+    out, since = {}, (T - timedelta(days=2)).isoformat()
+    for k, r in (load("suggest.json", {}).get("players") or {}).items():
+        tour = k.split(":")[0]
+        if (r.get("day") or "") < since or not r.get("name"):
+            continue  # not on the lists any more
+        out[SG + k] = {"itf": r.get("itf") if tour in ("atp", "wta") else None, "te": te.get(k) if tour in ("b14", "g14") else None,
+                       "pro": (r["name"], tour) if tour in ("atp", "wta") else None}
+    return out
+
+
 def main():
     prev = load(OUT, {})
     old = {}
@@ -787,8 +812,10 @@ def main():
 
     # ---- 72 entries, only for events whose entry lists are out ----
     prev_e72 = {(e.get("src"), e.get("name"), e.get("start")): (e.get("e72") or []) + [dict(p, id=SC + p["id"]) for p in e.get("esc") or []]
-                for e in prev.get("events") or [] if e.get("e72") or e.get("esc")}
-    sc = prospects()  # Scouting Corner: matched the same way as the 72 players; a 72 player always wins a clash
+                + [dict(p, id=SG + p["id"]) for p in e.get("esg") or []]
+                for e in prev.get("events") or [] if e.get("e72") or e.get("esc") or e.get("esg")}
+    # Scouting Corner: matched the same way as the 72 players; a 72 player always wins a clash, then a watch list prospect
+    sc = {**suggestions(), **prospects()}
     pro_sc = {rid: p["pro"] for rid, p in sc.items() if p["pro"]}
     wta72 = {**{key(n): rid for rid, (n, t) in pro_sc.items() if t == "wta"}, **{key(n): rid for rid, (n, t) in ROSTER.items() if t == "wta"}}
     ids = {**(load("titles.json", {}).get("ids") or {})}
@@ -847,21 +874,23 @@ def main():
             e.pop(k, None)
         for p in e.get("e72") or []:
             p.pop("carried", None)
-        e["esc"] = [dict(p, id=p["id"][len(SC):]) for p in e.get("e72") or [] if p["id"].startswith(SC)]
-        e["e72"] = [p for p in e.get("e72") or [] if not p["id"].startswith(SC)]
-        if not e["esc"]:
-            e.pop("esc")
+        for f, pre in (("esc", SC), ("esg", SG)):
+            e[f] = [dict(p, id=p["id"][len(pre):]) for p in e.get("e72") or [] if p["id"].startswith(pre)]
+            if not e[f]:
+                e.pop(f)
+        e["e72"] = [p for p in e.get("e72") or [] if not p["id"].startswith((SC, SG))]
         if e.get("list") == "none" and e["start"] <= T.isoformat():
             e.pop("list")
         if not e.get("e72"):
             e.pop("e72", None)
     events.sort(key=lambda e: (e["start"], e["tier"], e["name"]))
     data = {"updated": NOW.isoformat(timespec="seconds"), "from": FROM.isoformat(), "to": TO.isoformat(),
-            "entriesTo": (T + timedelta(days=ENTRY_DAYS)).isoformat(), "done": done, "errors": errors, "checks": CHECKS, "events": events}
+            "entriesTo": (T + timedelta(days=ENTRY_DAYS)).isoformat(),
+            "sgFrom": sum(1 for k in sc if k.startswith(SG)), "done": done, "errors": errors, "checks": CHECKS, "events": events}
     with open(OUT, "w", encoding="utf-8") as f:
         json.dump(data, f, ensure_ascii=False, separators=(",", ":"))
     print(f"schedule.json: {len(events)} events, {sum(1 for e in events if e.get('e72'))} with 72 players entered, "
-          f"{sum(1 for e in events if e.get('esc'))} with prospects entered, errors: {list(errors)}")
+          f"{sum(1 for e in events if e.get('esc'))} with prospects entered, {sum(1 for e in events if e.get('esg'))} with suggestions entered, errors: {list(errors)}")
 
 
 if __name__ == "__main__":

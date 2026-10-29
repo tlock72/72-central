@@ -498,6 +498,18 @@ select.sq-in option{background:var(--navy-2);color:var(--white)}
 .cn-open{padding:9px 20px;border-top:1px solid var(--line-2);font-family:var(--display);text-transform:uppercase;letter-spacing:.14em;font-size:11px;color:var(--gold)}
 .cn-open .ar{display:inline-grid;place-items:center;width:18px;height:18px;margin-right:8px;border:1px solid var(--gold);border-radius:50%;font-size:11px;line-height:1;letter-spacing:0;vertical-align:-3px;transition:transform .2s}
 .cn-tile:hover .cn-open{background:var(--gold-dim)}
+/* "Next tournaments" in the profile window (cnSched): date, event, how they're entered; then how far ahead the lists were read */
+.cn-scs{display:grid;gap:6px;padding:0 20px}
+.cn-sc{display:grid;grid-template-columns:auto minmax(0,1fr) auto;gap:4px 12px;align-items:baseline;padding:8px 12px;border:1px solid var(--line-2);border-radius:12px;font-size:13px}
+.cn-sc .d{font-family:var(--display);font-size:12px;letter-spacing:.04em;color:var(--gold);white-space:nowrap}
+.cn-sc .t{min-width:0}
+.cn-sc .t small{display:block;font-size:11px;color:var(--muted)}
+.cn-sc .h{font-size:11px;color:var(--muted);text-align:right}
+.cn-scn{margin:0;padding:8px 20px 4px;font-size:12px;color:var(--muted);line-height:1.5}
+.cn-scs+.cn-scn{padding-top:10px}
+.cn-scn ul{margin:4px 0 0;padding-left:18px}
+.cn-scn div{margin-top:4px}
+@media (max-width:520px){.cn-scs,.cn-scn{padding-left:12px;padding-right:12px}.cn-sc{grid-template-columns:minmax(0,1fr) auto}.cn-sc .d{grid-column:1/-1}}
 .cn-tile:hover .cn-open .ar{transform:translateX(3px)}
 dialog.cnd .cn-pf{border:0;border-radius:0;background:none;overflow:visible}
 .cn-pf h4{font-family:var(--display);font-weight:500;text-transform:uppercase;letter-spacing:.16em;font-size:11px;color:var(--gold);margin:0;padding:14px 20px 8px}
@@ -3531,6 +3543,7 @@ $("#schQ").addEventListener("input", e => { SCH.q = e.target.value; renderSchedu
 async function loadSchedule(){
   try { const r = await fetch("schedule.json?t=" + Date.now(), { cache: "no-store" }); if (r.ok) SCHED = await r.json(); else if (!SCHED) SCHED = { events: [] }; } catch (e) { if (!SCHED) SCHED = { events: [] }; }
   renderSchedule(); renderHome();
+  if ($("#cnd")?.open) cnOpen(CN.open);  // its "Next tournaments"
 }
 async function loadScouting(){
   try { const r = await fetch("scouting.json?t=" + Date.now(), { cache: "no-store" }); if (r.ok) SCOUT = await r.json(); else if (!SCOUT) SCOUT = {}; } catch (e) { if (!SCOUT) SCOUT = {}; }
@@ -3605,8 +3618,36 @@ function cnProf(k, p){
     ${path ? `<h4>Pathway</h4><div class="cn-path">${path}</div>` : ""}
     ${unsure.length ? `<div class="cn-note">${unsure.map(esc).join("<br>")}. Add the right id in prospects.json.</div>` : ""}
     ${rows.length ? `<h4>Rankings</h4><div class="sq-row h"><span>Ranking</span><span>Rank</span><span>Best</span><span>1 wk</span><span>3 mo</span><span>12 mo</span></div>${rows.join("")}` : ""}
+    ${cnSched("esc", k, cnTours(p), cnTours(p).length ? "" : "Not linked to any ITF, Tennis Europe or ATP/WTA profile yet, so no entry lists can be checked.")}
     <div class="cn-acts">${cmBtn("cn:" + k, [p.name, p.typed], "lg")}${res.length ? rsBtn("cn:" + k, p.name, meta, res) : ""}${cnRemoval(k, p.typed || p.name)}</div>
     ${cmLog("cn:" + k, p.name, [p.name, p.typed])}</div>`;
+}
+// "Next tournaments": the events schedule.py found the player on (schedule.json "esc" for the watch list, "esg" for
+// suggestions), then how far ahead it scans and, for each of the player's tours, the latest event whose list it has read
+const SCH_TN = Object.fromEntries(SCH_TOURS);
+function cnSched(field, id, tours, gap){
+  if (!SCHED) return `<h4>Next tournaments</h4><div class="cn-scn">Loading the Tour Schedule…</div>`;
+  const all = SCHED.events || [], today = myDate();
+  // suggestions are only in the scan from the first Tour Schedule update that includes them
+  if (field === "esg" && SCHED.sgFrom === undefined) return `<h4>Next tournaments</h4><div class="cn-scn">Suggested players join the daily entry-list scan from the next Tour Schedule update (each morning).</div>`;
+  const evs = all.filter(e => e.end >= today && (e[field] || []).some(p => p.id === id)).sort((a, b) => a.start.localeCompare(b.start));
+  const when = e => schFmt(e.start) + (e.end !== e.start ? " – " + schFmt(e.end) : "");
+  const rows = evs.map(e => `<div class="cn-sc"><span class="d">${esc(when(e))}</span><span class="t">${esc(e.name)}<small>${esc([SCH_TN[e.tour], e.cat, e.place].filter(Boolean).join(" · "))}</small></span><span class="h">${esc(e[field].find(p => p.id === id).how)}</span></div>`).join("");
+  const reach = tours.map(t => {
+    const last = all.filter(e => e.tour === t && e.list === "out").map(e => e.start).sort().pop();
+    return `<li><b>${esc(SCH_TN[t])}:</b> ${last ? `acceptance lists read for events up to ${esc(schFmt(last, { year: "numeric" }))}` : "no acceptance lists out yet"}</li>`;
+  }).join("");
+  const upd = SCHED.updated ? new Date(SCHED.updated).toLocaleDateString("en-GB", { day: "numeric", month: "short", timeZone: MYTZ }) : "";
+  return `<h4>Next tournaments</h4>${rows ? `<div class="cn-scs">${rows}</div>` : `<div class="cn-scn">Not on any acceptance list we've read yet.</div>`}
+    <div class="cn-scn">${SCHED.entriesTo ? `Scanning acceptance lists up to ${esc(schFmt(SCHED.entriesTo, { year: "numeric" }))}${upd ? `, last checked ${esc(upd)}` : ""}.` : ""}${reach ? `<ul>${reach}</ul>` : ""}${gap ? `<div>${esc(gap)}</div>` : ""}</div>`;
+}
+// the tours schedule.py checks a watch list prospect on, from the links prospects.py made
+function cnTours(p){
+  const L = p.links || {}, ok = s => L[s]?.status === "linked", f = p.g === "F", out = [];
+  if (ok("pro")) out.push(...(f ? ["wta"] : ["atp", "ch"]));
+  if (ok("itf")) out.push(f ? "itfw" : "itfm", ...(!p.born || new Date().getFullYear() - p.born <= 18 ? ["jun"] : []));
+  if (ok("te")) out.push("te");
+  return out;
 }
 const cnMeta = p => [p.nat, p.born ? "born " + p.born : "", p.by ? "added by " + p.by : "", p.typed ? `typed as "${p.typed}", spelling corrected from the ITF` : ""].filter(Boolean).join(" · ");
 // the ranking a tile leads with: ATP/WTA, else ITF Juniors, else the best Tennis Europe category ("Girls 14 & Under" → "U14")
@@ -3644,12 +3685,14 @@ function cnTile(k, p){
     <div class="cn-open"><span class="ar" aria-hidden="true">›</span>Profile<span class="lg">, results &amp; comments</span></div></div>`;
 }
 // the profile window: opened from a tile, redrawn whenever the watch list or comments change (keeping the scroll)
+const cnCtx = k => k.startsWith("sg:") ? k : "cn:" + k;  // the window's comment log
 function cnOpen(k){
-  const d = $("#cnd"), p = cnShown()[k];
-  if (!p) { if (d.open) d.close(); return; }
-  if (CN.open !== k) { CN.open = k; CN.rm = ""; CM.open = "cn:" + k; CM.del = ""; }  // comments open straight away
+  const d = $("#cnd"), sg = k.startsWith("sg:");
+  const x = sg && CN.view === "sug" && SG_ROWS.find(r => "sg:" + sgId(r) === k), p = !sg && CN.view !== "sug" && cnShown()[k];
+  if (!x && !p) { if (d.open) d.close(); return; }
+  if (CN.open !== k) { CN.open = k; CN.rm = ""; CM.open = cnCtx(k); CM.del = ""; }  // comments open straight away
   const y = d.scrollTop;
-  d.innerHTML = cnProf(k, p);
+  d.innerHTML = x ? sgProf(x) : cnProf(k, p);
   if (!d.open) { profLock(true); d.showModal(); d.scrollTop = 0; } else d.scrollTop = y;
 }
 // "View the last 12 months" button (watch list cards and suggestions): opens the results window in front (rsOpen)
@@ -3929,7 +3972,7 @@ function sgPick(L, wl){
     const mk = L.marks.find(t => rank <= t && (m3 === null || m3 > t));
     if (mk && m3 !== -1 && m3 !== undefined) why.unshift(`<span class="ms">Into the top ${mk}</span>`);
     if (before) why.push(before);
-    out.push({ L, rank, name: cnTidy(name), nat, born, url, score, why: why.filter(Boolean), watch, key: L.k + ":" + rank + ":" + cnSorted(name) });
+    out.push({ L, rank, w, m3, m12, week: T.week, name: cnTidy(name), nat, born, url, score, why: why.filter(Boolean), watch, key: L.k + ":" + rank + ":" + cnSorted(name) });
   }
   return { week: T.week, list: out.sort((a, b) => b.score - a.score) };
 }
@@ -3944,13 +3987,37 @@ function sgCard(x){
     act = "";
     bar = `<div class="sg-bar"><span>Add to the watch list? Everyone will see ${by ? esc(by) : "you"} added them.</span><button class="go" data-sgo="${esc(x.key)}">Add</button><button data-sgx="1">Cancel</button></div>`;
   }
-  const nm = x.url ? `<a class="nm" href="${esc(x.url)}" target="_blank" rel="noopener">${esc(x.name)}</a>` : `<span class="nm">${esc(x.name)}</span>`;
   // last 12 months of results, read by scripts/suggest_results.py (suggest.json); left off when it has none yet
-  const S = SUGG?.players?.[x.L.k + ":" + cnSorted(x.name)], res = S?.results || [], k = "sg:" + x.key.replace(/:\d+:/, ":");
+  const S = SUGG?.players?.[sgId(x)], res = S?.results || [];
   const won = res.filter(r => r.res === "W").length, lost = res.filter(r => r.res === "L").length;
-  const foot = res.length ? `<div class="sg-wl">Last 12 months <b>${won}-${lost}</b><span>${cnYears(res)}</span></div>
-    <div class="cn-acts">${rsBtn(k, x.name, meta.replace(/\u00a0/g, " "), res)}</div>` : "";
-  return `<div class="cn">${bar}<div class="cn-h">${nm}<span class="mt">${esc(meta)}</span><span class="sg-act">${act}</span></div><div class="sg-why">${x.why.join("")}</div>${foot}</div>`;
+  const foot = res.length ? `<div class="sg-wl">Last 12 months <b>${won}-${lost}</b><span>${cnYears(res)}</span></div>` : "";
+  // a tap opens the full profile (sgProf), like the watch list; the Scout button still works on the tile
+  return `<div class="cn cn-tile" data-cnp="sg:${esc(sgId(x))}" role="button" tabindex="0" aria-label="Open ${esc(x.name)}'s profile">${bar}<div class="cn-h"><span class="nm">${esc(x.name)}</span><span class="mt">${esc(meta)}</span><span class="sg-act">${act}</span></div><div class="sg-why">${x.why.join("")}</div>${foot}
+    <div class="cn-open"><span class="ar" aria-hidden="true">›</span>Profile<span class="lg">, schedule &amp; results</span></div></div>`;
+}
+// a suggestion's key: the same as suggest.json and schedule.json's "esg" (list + ":" + name words sorted)
+const sgId = x => x.L.k + ":" + cnSorted(x.name);
+const sgMeta = x => [x.nat, x.born ? "born " + x.born : "", `${x.L.tour} No. ${x.rank}`].filter(Boolean).join(" · ");
+// a suggestion's full profile, in the same window as the watch list's (cnOpen): why it was picked, its ranking,
+// the next tournaments it is entered in, the last 12 months and comments
+function sgProf(x){
+  const id = sgId(x), k = "sg:" + id, S = SUGG?.players?.[id], res = S?.results || [], meta = sgMeta(x);
+  const pro = x.L.src() === SCOUT, f = x.L.g === "F";
+  // the lists schedule.py checks for this player: ATP/WTA by name, ITF by the ITF id suggest_results.py found, Tennis Europe by profile
+  const tours = pro ? (f ? ["wta"] : ["atp", "ch"]).concat(S?.itf ? [f ? "itfw" : "itfm"] : []) : x.url ? ["te"] : [];
+  const gap = pro && !S?.itf ? (S && "itfName" in S ? "ITF lists aren't checked for this player: no single ITF profile matched their name and nationality for certain." : "ITF lists are checked once their ITF profile has been looked up.")
+    : !pro && !x.url ? "No Tennis Europe profile linked, so no entry lists can be checked." : "";
+  const lead = cnStage(x.L.tour, { status: "linked", how: "the official ranking list" }, `No. ${x.rank}`, x.url);
+  return `<div class="rs-hd"><button type="button" class="x" data-cnx="1" aria-label="Close">✕</button>
+    <div class="k">Computerised suggestion · ${esc(x.L.name)}</div><h2>${esc(x.name)}</h2>${meta ? `<div class="mt">${esc(meta)}</div>` : ""}
+    ${res.length ? rsSum(res) : `<div class="rs-ln"><span>No results in the last 12 months yet.</span></div>`}</div>
+    <div class="cn cn-pf">
+    <h4>Why suggested</h4><div class="sg-why">${x.why.join("")}</div>
+    <h4>Pathway</h4><div class="cn-path">${lead}</div>
+    <h4>Rankings</h4><div class="sq-row h"><span>Ranking</span><span>Rank</span><span>Best</span><span>1 wk</span><span>3 mo</span><span>12 mo</span></div>${cnRow(x.L.tour, x.week ? "week of " + sqFmt(x.week) : "", x.rank, undefined, x.w, x.m3, x.m12)}
+    ${cnSched("esg", id, tours, gap)}
+    <div class="cn-acts">${cmBtn(k, [x.name], "lg")}${res.length ? rsBtn(k, x.name, meta, res) : ""}</div>
+    ${cmLog(k, x.name, [x.name])}</div>`;
 }
 let SG_ROWS = [];
 function renderSuggest(){
@@ -3988,8 +4055,9 @@ function renderCorner(){
   $("#cnList").classList.toggle("cn-two", !sug);  // watch list: two tiles side by side
   if (sug) {
     document.querySelectorAll(".cng").forEach(b => b.classList.toggle("on", b.dataset.g === CN.g));
-    if ($("#cnd").open) $("#cnd").close();
-    return renderSuggest();
+    renderSuggest();
+    if ($("#cnd").open) cnOpen(CN.open);  // closes a watch list profile; a suggestion's is redrawn
+    return;
   }
   const P = cnShown(), gone = new Set(CN_REMOVED.map(cnKey));
   document.querySelectorAll(".cng").forEach(b => b.classList.toggle("on", b.dataset.g === CN.g));
@@ -4022,7 +4090,7 @@ $("#cnList").addEventListener("click", e => {
     }
     renderCorner(); return;
   }
-  // a watch list tile: open the full profile (comment buttons inside a "Looking up…" tile are handled with the comments)
+  // a watch list or suggestion tile: open the full profile (comment buttons inside a "Looking up…" tile are handled with the comments)
   const t = e.target.closest("[data-cnp]");
   if (t) { cnOpen(t.dataset.cnp); return; }
   cnRmClick(e);
@@ -4038,7 +4106,7 @@ $("#cnd").addEventListener("click", e => {
   cnRmClick(e);
 });
 $("#cnd").addEventListener("close", () => {
-  if (CM.open === "cn:" + CN.open) CM.open = "";
+  if (CN.open && CM.open === cnCtx(CN.open)) CM.open = "";
   CN.open = ""; CN.rm = ""; profLock(false);
 });
 function cnRmClick(e){
