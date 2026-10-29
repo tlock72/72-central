@@ -1519,6 +1519,8 @@ dialog.tmd[open]{animation:pop .28s ease}
   .sq-acts>button svg{width:11px;height:10px}
   .sq-row .sq-72{font-size:8px;padding:0 3px}
   .sq-row .sq-eye{padding:0 3px;margin-left:4px}
+  .sq-tbl.r4 .sq-row{grid-template-columns:31px minmax(0,1fr) 30px repeat(3,34px)}
+  .sq-tbl.r4 .sq-row .no{font-size:13.5px}
 }
 @media (max-width:360px){
   .sq-row,.sq-tbl.wp .sq-row{grid-template-columns:20px minmax(0,1fr) 28px repeat(3,30px);gap:3px;padding:6px 6px}
@@ -1527,6 +1529,8 @@ dialog.tmd[open]{animation:pop .28s ease}
   .sq-row .ct{font-size:9.5px}.sq-row .ct .sq-acts{margin-left:4px}
   .sq-acts>button{min-width:20px;padding:0 3px}
   .sq-row.h button{font-size:7.5px;letter-spacing:0}
+  .sq-tbl.r4 .sq-row{grid-template-columns:27px minmax(0,1fr) 28px repeat(3,30px)}
+  .sq-tbl.r4 .sq-row .no{font-size:12px}
 }
 </style>
 </head>
@@ -3138,6 +3142,8 @@ function renderScouting(){
   const shown = SQ.all ? rows : rows.slice(0, 100), wl = sqWatch();
   // comments: the bubble next to each name opens that player's comment log under the row
   const cmx = p => "sq:" + SQ.t + ":" + cnSorted(p.name);
+  // 4-digit ranks (1000+) need a wider rank column on phones
+  $("#sqTbl").classList.toggle("r4", shown.some(p => p.rank >= 1000));
   $("#sqTbl").innerHTML = head + (shown.length ? shown.map(p => `<div class="sq-row">
       <div class="no">${p.rank}</div>
       <div style="min-width:0">${p.url ? `<a class="nm fx" href="${esc(p.url)}" target="_blank" rel="noopener">` : `<span class="nm fx">`}<span class="nt">${esc(p.name)}</span>${p.is72 ? `<span class="sq-72">72</span>` : ""}${sqEye(p, wl)}${p.url ? "</a>" : "</span>"}<div class="ct">${esc(p.cty)}${wp && ptx(p) ? `<span class="ptm"> · ${ptx(p)}<span class="u"> pts</span></span>` : ""}${sqActs(p, wl, cmx(p))}</div></div>
