@@ -576,6 +576,11 @@ a.cn-st.ok:hover{border-color:var(--gold)}
 /* arrow in a circle: the results open in their own window in front (rsOpen) */
 .cn-more .ar{display:inline-grid;place-items:center;width:18px;height:18px;margin-right:8px;border:1px solid var(--gold);border-radius:50%;font-size:11px;line-height:1;letter-spacing:0;vertical-align:-3px;transition:transform .2s}
 .cn-more:hover .ar{transform:translateX(3px)}
+/* in the profile window's header, under the last 10: a filled gold button so it reads as something to tap */
+.cn-more.rs-go{display:inline-flex;align-items:center;margin-top:12px;padding:9px 16px;border-radius:999px;background:var(--gold);color:var(--navy);font-weight:600}
+.cn-more.rs-go .ar{border-color:var(--navy)}
+.cn-more.rs-go .n{margin-left:4px;opacity:.75}
+.cn-more.rs-go:hover{background:var(--white)}
 /* "Last 12 months" window: summary across the top, then one card per tournament, newest first */
 dialog.rsd{width:min(760px,calc(100vw - 32px));max-height:calc(100dvh - 40px);padding:0;overflow-x:hidden;overflow-y:auto;overscroll-behavior:contain;border:1px solid var(--line);border-radius:24px;background:#0B1230;color:var(--text);box-shadow:0 30px 80px rgba(0,0,0,.6)}
 dialog.rsd::backdrop{background:rgba(5,9,25,.72);backdrop-filter:blur(6px);-webkit-backdrop-filter:blur(6px)}
@@ -1310,6 +1315,7 @@ body.on-home > footer{display:none}
   .cn .sq-row .ch.note{text-align:center}
   .cn-more{padding:8px 12px;font-size:10px;letter-spacing:.08em}
   .cn-more .n{display:none}
+  .cn-more.rs-go{padding:8px 14px;font-size:10.5px}
   .cn-ft{padding:8px 12px;gap:6px}
   .cm-log{margin:0 12px 12px;padding:10px 11px}.cn-acts .cm-btn{margin-left:12px}.cm-btn{margin-left:6px}
   .cn-ft .rm{font-size:10px}
@@ -3615,13 +3621,13 @@ function cnProf(k, p){
   const unsure = ["itf", "te"].filter(s => L[s]?.status === "unsure").map(s => `${s === "te" ? "Tennis Europe" : "ITF"}: ${L[s].note || "more than one player fits"}`);
   return `<div class="rs-hd"><button type="button" class="x" data-cnx="1" aria-label="Close">✕</button>
     <div class="k">Watch list</div><h2>${esc(p.name)}</h2>${meta ? `<div class="mt">${esc(meta)}</div>` : ""}
-    ${res.length ? rsSum(res) : `<div class="rs-ln"><span>No results in the last 12 months yet.</span></div>`}</div>
+    ${res.length ? rsSum(res) + rsBtn("cn:" + k, p.name, meta, res, "rs-go") : `<div class="rs-ln"><span>No results in the last 12 months yet.</span></div>`}</div>
     <div class="cn cn-pf">
     ${path ? `<h4>Pathway</h4><div class="cn-path">${path}</div>` : ""}
     ${unsure.length ? `<div class="cn-note">${unsure.map(esc).join("<br>")}. Add the right id in prospects.json.</div>` : ""}
     ${rows.length ? `<h4>Rankings</h4><div class="sq-row h"><span>Ranking</span><span>Rank</span><span>Best</span><span>1 wk</span><span>3 mo</span><span>12 mo</span></div>${rows.join("")}` : ""}
     ${cnSched("esc", k, cnTours(p), cnTours(p).length ? "" : "Not linked to any ITF, Tennis Europe or ATP/WTA profile yet, so no entry lists can be checked.")}
-    <div class="cn-acts">${cmBtn("cn:" + k, [p.name, p.typed], "lg")}${res.length ? rsBtn("cn:" + k, p.name, meta, res) : ""}${cnRemoval(k, p.typed || p.name)}</div>
+    <div class="cn-acts">${cmBtn("cn:" + k, [p.name, p.typed], "lg")}${cnRemoval(k, p.typed || p.name)}</div>
     ${cmLog("cn:" + k, p.name, [p.name, p.typed])}</div>`;
 }
 // "Next tournaments": the events schedule.py found the player on (schedule.json "esc" for the watch list, "esg" for
@@ -3699,9 +3705,9 @@ function cnOpen(k){
 }
 // "View the last 12 months" button (watch list cards and suggestions): opens the results window in front (rsOpen)
 const RS = { k: "", f: "", src: "", all: {} };
-function rsBtn(k, name, meta, res){
+function rsBtn(k, name, meta, res, cls){
   RS.all[k] = { name, meta, res };
-  return `<button class="cn-more" data-rs="${esc(k)}"><span class="ar" aria-hidden="true">›</span>View the last 12 months <span class="n">(${res.length} match${res.length === 1 ? "" : "es"})</span></button>`;
+  return `<button class="cn-more${cls ? " " + cls : ""}" data-rs="${esc(k)}"><span class="ar" aria-hidden="true">›</span>View the last 12 months <span class="n">(${res.length} match${res.length === 1 ? "" : "es"})</span></button>`;
 }
 const RS_FINAL = /^(F|Final|Finals|Playoff Final)$/;
 // shorter round names for the narrow column: "Q-R1" → "Q1", "Q-Qualification round of 16" → "Q R16"
@@ -3719,7 +3725,7 @@ function rsSum(all){
   const form = all.filter(r => r.res === "W" || r.res === "L").slice(0, 10).reverse().map(r => `<i class="${r.res}" title="${esc(rsRd(r.r) + " " + (r.res === "W" ? "won" : "lost") + " v " + r.o)}">${r.res}</i>`).join("");
   const pct = won + lost ? Math.round(100 * won / (won + lost)) + "%" : "–";
   return `<div class="rs-st"><div><b>${won}-${lost}</b><span>Won-lost</span></div><div><b>${pct}</b><span>Win rate</span></div><div><b>${groups.length}</b><span>Tournament${groups.length === 1 ? "" : "s"}</span></div><div><b class="${titles ? "g" : ""}">${titles}</b><span>Title${titles === 1 ? "" : "s"}${finals > titles ? ` · ${finals} final${finals === 1 ? "" : "s"}` : ""}</span></div></div>
-    <div class="rs-ln">${cnYears(all) ? `<span>By year: ${cnYears(all)}</span>` : ""}${form ? `<span>Last ${form.split("<i").length - 1}<span class="rs-fm">${form}</span></span>` : ""}</div>`;
+    <div class="rs-ln">${cnYears(all) ? `<span>This year: ${cnYears(all)}</span>` : ""}${form ? `<span>Last ${form.split("<i").length - 1}<span class="rs-fm">${form}</span></span>` : ""}</div>`;
 }
 // the results window: totals across the top, then one card per tournament (newest first, deepest round first),
 // each with how far the player went. Filters: all / wins / losses, and by level when there's more than one.
@@ -3877,10 +3883,11 @@ document.addEventListener("click", e => {
   const h = rs72(b.dataset.rs72); if (h) rsSq(h.p, h.t);
 });
 // a calendar-year W-L line ("2026 30-12 · 2025 8-4") for the last 12 months of results
+// W-L this calendar year only: last year's part of the 12 months is only a few weeks, so it looked like a wrong full-year record (Tobey's call)
 function cnYears(res){
-  const y = {};
-  for (const r of res) if (r.res === "W" || r.res === "L") { const k = (r.end || "").slice(0, 4); if (k) (y[k] ||= [0, 0])[r.res === "W" ? 0 : 1]++; }
-  return Object.keys(y).sort().reverse().map(k => `${k} <b>${y[k][0]}-${y[k][1]}</b>`).join(" · ");
+  const yr = String(new Date().getFullYear()), wl = [0, 0];
+  for (const r of res) if ((r.res === "W" || r.res === "L") && (r.end || "").startsWith(yr)) wl[r.res === "W" ? 0 : 1]++;
+  return wl[0] + wl[1] ? `${yr} <b>${wl[0]}-${wl[1]}</b>` : "";
 }
 // "Request removal": anyone can ask; Tobey gets an email and nothing is removed until he approves it.
 // The device that asked gets an "Undo" button while the request is waiting (it alone has the undo code).
@@ -4012,13 +4019,13 @@ function sgProf(x){
   const lead = cnStage(x.L.tour, { status: "linked", how: "the official ranking list" }, `No. ${x.rank}`, x.url);
   return `<div class="rs-hd"><button type="button" class="x" data-cnx="1" aria-label="Close">✕</button>
     <div class="k">Computerised suggestion · ${esc(x.L.name)}</div><h2>${esc(x.name)}</h2>${meta ? `<div class="mt">${esc(meta)}</div>` : ""}
-    ${res.length ? rsSum(res) : `<div class="rs-ln"><span>No results in the last 12 months yet.</span></div>`}</div>
+    ${res.length ? rsSum(res) + rsBtn(k, x.name, meta, res, "rs-go") : `<div class="rs-ln"><span>No results in the last 12 months yet.</span></div>`}</div>
     <div class="cn cn-pf">
     <h4>Why suggested</h4><div class="sg-why">${x.why.join("")}</div>
     <h4>Pathway</h4><div class="cn-path">${lead}</div>
     <h4>Rankings</h4><div class="sq-row h"><span>Ranking</span><span>Rank</span><span>Best</span><span>1 wk</span><span>3 mo</span><span>12 mo</span></div>${cnRow(x.L.tour, x.week ? "week of " + sqFmt(x.week) : "", x.rank, undefined, x.w, x.m3, x.m12)}
     ${cnSched("esg", id, tours, gap)}
-    <div class="cn-acts">${cmBtn(k, [x.name], "lg")}${res.length ? rsBtn(k, x.name, meta, res) : ""}</div>
+    <div class="cn-acts">${cmBtn(k, [x.name], "lg")}</div>
     ${cmLog(k, x.name, [x.name])}</div>`;
 }
 let SG_ROWS = [];
