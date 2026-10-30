@@ -218,7 +218,7 @@ def wta_list(at=None):
         rows = json.loads(get(url))
         if not rows:
             break
-        out.extend(rows)
+        out.extend(r for r in rows if r and r.get("player"))  # the feed sometimes has an empty row
         if len(rows) < 100:
             break
         p += 1
@@ -226,6 +226,14 @@ def wta_list(at=None):
     if len(out) < 500:
         raise RuntimeError(f"WTA list looks short ({len(out)} players)")
     return out
+
+
+def wta_week(rows):
+    """Monday of the list's week, from the first row that gives its date (some rows have none)."""
+    for r in rows:
+        if r.get("rankedAt"):
+            return monday(date.fromisoformat(r["rankedAt"][:10])).isoformat()
+    raise RuntimeError("WTA list has no ranking date")
 
 
 def main():
@@ -310,14 +318,14 @@ def main():
     # ---- WTA ----
     try:
         cur = wta_list()
-        week = monday(date.fromisoformat(cur[0]["rankedAt"][:10])).isoformat()
+        week = wta_week(cur)
         if force or not data.get("wta") or data["wta"].get("week") != week or len(data["wta"]["players"][0]) < 10:
             cmp, prev_maps = {}, {}
             for c, d in BACK.items():
                 at = (date.fromisoformat(week) - timedelta(days=d)).isoformat()
                 lst = wta_list(at)
-                cmp[c] = monday(date.fromisoformat(lst[0]["rankedAt"][:10])).isoformat()
-                prev_maps[c] = {r["player"]["id"]: r["ranking"] for r in lst}
+                cmp[c] = wta_week(lst)
+                prev_maps[c] = {r["player"].get("id"): r["ranking"] for r in lst}
             players = []
             for r in cur:
                 p = r["player"]
