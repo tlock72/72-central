@@ -1,5 +1,5 @@
 {
-"updated": "2026-10-31T15:57:07Z",
+"updated": "2026-10-31T16:58:51Z",
 "markets": {
 "AU": {
 "brands": [
@@ -25,7 +25,7 @@
 "local": true,
 "more": 0,
 "cool": false,
-"score": 3.58
+"score": 3.57
 },
 {
 "b": "Rolex",
@@ -47,7 +47,7 @@
 "local": true,
 "more": 0,
 "cool": false,
-"score": 3.17
+"score": 3.16
 },
 {
 "b": "BYD",
@@ -69,7 +69,7 @@
 "local": true,
 "more": 0,
 "cool": false,
-"score": 2.95
+"score": 2.94
 },
 {
 "b": "Hilton",
@@ -91,7 +91,7 @@
 "local": true,
 "more": 0,
 "cool": false,
-"score": 2.89
+"score": 2.88
 },
 {
 "b": "Nissan",
@@ -113,7 +113,7 @@
 "local": true,
 "more": 0,
 "cool": false,
-"score": 2.76
+"score": 2.75
 },
 {
 "b": "Range Rover",
@@ -135,7 +135,7 @@
 "local": true,
 "more": 0,
 "cool": false,
-"score": 2.52
+"score": 2.51
 },
 {
 "b": "Paramount Global",
@@ -157,7 +157,7 @@
 "local": true,
 "more": 0,
 "cool": false,
-"score": 2.44
+"score": 2.42
 },
 {
 "b": "Samsung",
@@ -179,7 +179,7 @@
 "local": true,
 "more": 0,
 "cool": false,
-"score": 1.82
+"score": 1.8
 },
 {
 "b": "Visa",
@@ -201,7 +201,7 @@
 "local": false,
 "more": 0,
 "cool": false,
-"score": 1.76
+"score": 1.75
 }
 ],
 "other": [
@@ -306,30 +306,6 @@
 "RU": {
 "brands": [
 {
-"b": "McDonald's",
-"sec": "Food & drink",
-"sig": [
-"sponsor",
-"money"
-],
-"h": [
-{
-"t": "SPONSORSHIP: What drove McDonald’s away from its 32-year FIFA sponsorship? Looks like return on investment ...",
-"u": "https://news.google.com/rss/articles/CBMi1AFBVV95cUxPYmF3bGxLY0I4cDlrT2p3eG9mQ05HRHkwdHdjMGdzUlV2QTYyTXJmTlRIM0oxYmVqVXpSWC01ek1FVjRDbGM3Y0ZuSExBazE5Q1FPaGYwYk1VYWh4cGNZaGRyR01YTXA0MWVWLXlObXlvZ010aWxqTEs5WmdZal9kc1djVzd2MEVJTHBIT3owTm1UV1FTdnJWeVJHcVhwSjhpQW9DcXYxOUYzX0RmQTJEc2h2RFJid3BlU0ZybWZ3cWxtaGtrZHlCa05tWTRyMndwaGtMMQ?oc=5",
-"s": "The Sports Examiner",
-"at": "2026-10-27T18:59:07Z",
-"sig": [
-"sponsor",
-"money"
-]
-}
-],
-"local": false,
-"more": 0,
-"cool": false,
-"score": 3.34
-},
-{
 "b": "Naftogaz",
 "sec": "Energy & industry",
 "sig": [
@@ -349,7 +325,7 @@
 "local": true,
 "more": 0,
 "cool": false,
-"score": 2.81
+"score": 2.8
 },
 {
 "b": "Danone",
@@ -371,7 +347,7 @@
 "local": true,
 "more": 0,
 "cool": false,
-"score": 1.47
+"score": 1.46
 }
 ],
 "other": [
@@ -467,7 +443,7 @@
 ]
 }
 ],
-"n": 3
+"n": 2
 },
 "PE": {
 "brands": [
@@ -491,7 +467,7 @@
 "local": false,
 "more": 0,
 "cool": false,
-"score": 0.77
+"score": 0.76
 }
 ],
 "other": [
@@ -613,7 +589,7 @@
 "local": true,
 "more": 0,
 "cool": false,
-"score": 2.55
+"score": 2.54
 },
 {
 "b": "McDonald's",
@@ -635,7 +611,7 @@
 "local": false,
 "more": 0,
 "cool": false,
-"score": 1.48
+"score": 1.47
 },
 {
 "b": "Adidas",
@@ -657,7 +633,7 @@
 "local": false,
 "more": 0,
 "cool": false,
-"score": 0.67
+"score": 0.66
 },
 {
 "b": "Mubadala",
@@ -810,7 +786,7 @@
 "local": true,
 "more": 0,
 "cool": false,
-"score": 3.53
+"score": 3.51
 },
 {
 "b": "Amazon",
@@ -834,7 +810,7 @@
 "local": true,
 "more": 0,
 "cool": false,
-"score": 3.52
+"score": 3.5
 },
 {
 "b": "Rolex",
@@ -856,7 +832,7 @@
 "local": true,
 "more": 0,
 "cool": false,
-"score": 3.1
+"score": 3.09
 },
 {
 "b": "Nike",
@@ -878,7 +854,7 @@
 "local": true,
 "more": 0,
 "cool": false,
-"score": 2.75
+"score": 2.73
 },
 {
 "b": "Air France",
@@ -900,29 +876,7 @@
 "local": true,
 "more": 0,
 "cool": false,
-"score": 2.51
-},
-{
-"b": "Nivea",
-"sec": "Beauty & consumer goods",
-"sig": [
-"sponsor"
-],
-"h": [
-{
-"t": "A.S.O. Partners with Nivea Sun as Official Skincare Sponsor for Tour de France",
-"u": "https://news.google.com/rss/articles/CBMijgFBVV95cUxOdEpuaWk2YTBvRVRXWFY5V1lPWERhWGpFYU1JRGRxOThhbHk1MjcyQXdvV0dUeFUxaHJNcWlVTzVpSlAtUng1OW1VRGJTdHQ0SktXcW9ZNS1KX182Rl9Wb3BhRGhrMEVQczRHQ1d4REZGNHFqQV96OW4xVWduNGJxUDdrUl9pUzVpVU5BYjdR?oc=5",
-"s": "Sportscape Magazine",
-"at": "2026-10-24T16:51:13Z",
-"sig": [
-"sponsor"
-]
-}
-],
-"local": true,
-"more": 0,
-"cool": false,
-"score": 2.41
+"score": 2.5
 },
 {
 "b": "Hoka",
@@ -944,7 +898,7 @@
 "local": true,
 "more": 0,
 "cool": false,
-"score": 1.96
+"score": 1.95
 },
 {
 "b": "Movistar",
@@ -966,7 +920,7 @@
 "local": false,
 "more": 0,
 "cool": false,
-"score": 1.74
+"score": 1.72
 },
 {
 "b": "WHOOP",
@@ -988,7 +942,7 @@
 "local": false,
 "more": 0,
 "cool": false,
-"score": 1.36
+"score": 1.35
 },
 {
 "b": "Apple",
@@ -1129,7 +1083,7 @@
 ]
 }
 ],
-"n": 11
+"n": 10
 },
 "UA": {
 "brands": [
@@ -1172,7 +1126,7 @@
 "local": true,
 "more": 4,
 "cool": false,
-"score": 12.3
+"score": 12.22
 },
 {
 "b": "Vodafone",
@@ -1194,7 +1148,7 @@
 "local": true,
 "more": 0,
 "cool": false,
-"score": 2.21
+"score": 2.19
 },
 {
 "b": "Naftogaz",
@@ -1216,7 +1170,7 @@
 "local": true,
 "more": 0,
 "cool": false,
-"score": 2.09
+"score": 2.07
 }
 ],
 "other": [
@@ -1351,7 +1305,7 @@
 "local": true,
 "more": 0,
 "cool": false,
-"score": 2.86
+"score": 2.85
 },
 {
 "b": "LG Electronics",
@@ -1382,7 +1336,7 @@
 "local": false,
 "more": 0,
 "cool": false,
-"score": 2.01
+"score": 1.98
 },
 {
 "b": "Toyota",
@@ -1404,7 +1358,7 @@
 "local": true,
 "more": 0,
 "cool": false,
-"score": 1.81
+"score": 1.8
 },
 {
 "b": "Disney",
@@ -1426,7 +1380,7 @@
 "local": false,
 "more": 0,
 "cool": false,
-"score": 1.55
+"score": 1.53
 }
 ],
 "other": [
@@ -1547,7 +1501,7 @@
 "local": true,
 "more": 0,
 "cool": false,
-"score": 3.22
+"score": 3.2
 }
 ],
 "other": [
@@ -1764,7 +1718,7 @@
 "local": true,
 "more": 0,
 "cool": false,
-"score": 2.61
+"score": 2.59
 }
 ],
 "other": [
@@ -1784,6 +1738,15 @@
 "at": "2026-10-30T05:54:40Z",
 "sig": [
 "expand"
+]
+},
+{
+"t": "HELL ENERGY DRINK Returns as Title Sponsor of HORRORCON 2026 for the Third Consecutive Year",
+"u": "https://news.google.com/rss/articles/CBMizgFBVV95cUxQZWlCRjRWWXF3ZThYdU1EYkFJQ1FtOUZhSy1VUjZFRndKUlViN1ZWWHFrR1BqeDVreFc3MlY3X0ZNeTdSaXRwMFhCOHExSF9tekg2SmNoRGlvWVVWMERxZlFpWEJ3TTR3N25GS0VLa1BXUWRvVE40dHVYTHZIclRZeTNlZnVnTkd2ejVjak9PQTd5bEtQLXVrMzl5X20tYUNpQmlQa0VYZkxKV2hLR2NIdUp4RDZocU1iVkd1dDZZbVB3cDdIM3FPZjRBSWF2Zw?oc=5",
+"s": "India's News.Net",
+"at": "2026-10-30T19:03:00Z",
+"sig": [
+"sponsor"
 ]
 },
 {
@@ -1876,7 +1839,7 @@
 "local": true,
 "more": 0,
 "cool": false,
-"score": 4.2
+"score": 4.19
 },
 {
 "b": "Klarna",
@@ -1898,7 +1861,7 @@
 "local": false,
 "more": 0,
 "cool": false,
-"score": 1.71
+"score": 1.7
 }
 ],
 "other": [
@@ -1966,6 +1929,15 @@
 ]
 },
 {
+"t": "Element Biosciences Launches Diagnostic Sequencing Platform in Europe",
+"u": "https://news.google.com/rss/articles/CBMiuAFBVV95cUxNbGMxSXZHQVRNYV9JNVJiWUN3X1F5cmJiZEJXZHFhaDhGTkE0NGl3Ri1jVEJDdUtqZzRGWkNEMzB3ek52bTR0LXVvc2xwX0VtZFBySWFxY3VTQmZjU0c3cGNpajhNaVdNU191ZE51cklZQmZzSURNMWhRcUFES3NSVlRCTUpZRUdDc2s2N1QxbENEV1ZRbWNSS05sSGw4WmRMWHRibDl6Q2tXQ0dPZjlQXzl1eVZTWkdu?oc=5",
+"s": "GenomeWeb",
+"at": "2026-10-29T19:38:00Z",
+"sig": [
+"expand"
+]
+},
+{
 "t": "European Commission grants €319m funding for next-generation semiconductors",
 "u": "https://news.google.com/rss/articles/CBMirwFBVV95cUxOVlpVa09SX1Y1aVY3bEZENDhMZE44ai1iLWxkZldwWURyYUg1bDhSUEVtbTV0My02dWphMTRzUFZmR3liR1lqSldEek5yNUUzWjYtQng4SWl2Z3kzYkNOYmNqYmswRVpUSktPSUpQVkZWc3J2TTZsRUVrRWV1enh2OGFFSFI1RGNNd0pyMHJwMEp2MmxxM25ienZwaF9LOHo3eldLYWJnNEkxcjVDa1BB?oc=5",
 "s": "Innovation News Network",
@@ -1979,15 +1951,6 @@
 "u": "https://news.google.com/rss/articles/CBMiogFBVV95cUxNdi03RzI3ZC0xS3JwekdId1dtOWJfNTJyOUFTUTBsb0tIdFZlOExKOEFNcFl3b3plMVczQmM3SGhDTGJpamFWbEdaOTFBVnhkelRuXzgydGMyU01vSE9mdW5kR3l2cXlyUjhjNXJQMDktdWg3SGhuWkE1YVZqR0pON0w0ck1lMndRVXFhNmFxTWRaR2daVmc0YUNvSmxma1NrQmc?oc=5",
 "s": "Dealroom",
 "at": "2026-10-29T14:26:13Z",
-"sig": [
-"money"
-]
-},
-{
-"t": "Reusch acquires Level",
-"u": "https://news.google.com/rss/articles/CBMicEFVX3lxTFBLMXNwTjU4M0FaM3UxVjVfYldpVTZ0VjlBb3RXRkNCdEo2NXQwNHB5TW1HXzlPYXdGRHJYQkJGN3Byd0swakdSNm9qVXJmM0xiV1o4SThVajdSTEw5bmh6dDFhZWl1a290MW9Hc3V4ZnY?oc=5",
-"s": "outdoormagazine.it",
-"at": "2026-10-26T13:40:49Z",
 "sig": [
 "money"
 ]
@@ -2035,7 +1998,7 @@
 "local": true,
 "more": 1,
 "cool": false,
-"score": 10.81
+"score": 10.76
 },
 {
 "b": "Roche",
@@ -2059,7 +2022,7 @@
 "local": false,
 "more": 0,
 "cool": false,
-"score": 2.48
+"score": 2.46
 },
 {
 "b": "Allianz",
@@ -2081,7 +2044,7 @@
 "local": false,
 "more": 0,
 "cool": false,
-"score": 1.75
+"score": 1.74
 },
 {
 "b": "Haribo",
@@ -2103,7 +2066,7 @@
 "local": false,
 "more": 0,
 "cool": false,
-"score": 1.15
+"score": 1.14
 },
 {
 "b": "Anthropic",
@@ -2316,7 +2279,7 @@
 "local": false,
 "more": 5,
 "cool": false,
-"score": 11.73
+"score": 11.62
 },
 {
 "b": "IBM",
@@ -2338,7 +2301,7 @@
 "local": true,
 "more": 0,
 "cool": false,
-"score": 3.82
+"score": 3.81
 },
 {
 "b": "Salesforce",
@@ -2360,7 +2323,7 @@
 "local": false,
 "more": 0,
 "cool": false,
-"score": 2.73
+"score": 2.72
 },
 {
 "b": "Oracle",
@@ -2391,7 +2354,7 @@
 "local": false,
 "more": 0,
 "cool": false,
-"score": 1.61
+"score": 1.58
 },
 {
 "b": "OpenAI",
@@ -2413,7 +2376,7 @@
 "local": false,
 "more": 0,
 "cool": false,
-"score": 0.8
+"score": 0.79
 },
 {
 "b": "Coca-Cola",
@@ -2587,7 +2550,7 @@
 "local": true,
 "more": 0,
 "cool": false,
-"score": 4.52
+"score": 4.49
 },
 {
 "b": "Audi",
@@ -2737,7 +2700,7 @@
 "local": true,
 "more": 0,
 "cool": false,
-"score": 4.38
+"score": 4.36
 },
 {
 "b": "JSW",
@@ -2759,7 +2722,7 @@
 "local": true,
 "more": 0,
 "cool": false,
-"score": 3.37
+"score": 3.36
 },
 {
 "b": "Kweichow Moutai",
@@ -2781,7 +2744,7 @@
 "local": true,
 "more": 0,
 "cool": false,
-"score": 2.92
+"score": 2.91
 },
 {
 "b": "Fosun",
@@ -2803,7 +2766,7 @@
 "local": true,
 "more": 0,
 "cool": false,
-"score": 2.31
+"score": 2.3
 },
 {
 "b": "Hermès",
@@ -2825,7 +2788,7 @@
 "local": true,
 "more": 0,
 "cool": false,
-"score": 1.93
+"score": 1.91
 },
 {
 "b": "BYD",
@@ -2847,7 +2810,7 @@
 "local": true,
 "more": 0,
 "cool": false,
-"score": 1.84
+"score": 1.83
 },
 {
 "b": "Meituan",
@@ -2869,7 +2832,7 @@
 "local": false,
 "more": 0,
 "cool": false,
-"score": 0.84
+"score": 0.83
 }
 ],
 "other": [
@@ -2995,7 +2958,7 @@
 "local": true,
 "more": 0,
 "cool": false,
-"score": 4.6
+"score": 4.59
 },
 {
 "b": "Tencent",
@@ -3027,7 +2990,7 @@
 "local": true,
 "more": 0,
 "cool": false,
-"score": 3.94
+"score": 3.92
 },
 {
 "b": "Oppo",
@@ -3049,7 +3012,7 @@
 "local": true,
 "more": 0,
 "cool": false,
-"score": 3.4
+"score": 3.39
 },
 {
 "b": "Starbucks",
@@ -3073,7 +3036,7 @@
 "local": false,
 "more": 0,
 "cool": false,
-"score": 3.31
+"score": 3.29
 },
 {
 "b": "Visa",
@@ -3095,7 +3058,7 @@
 "local": true,
 "more": 0,
 "cool": false,
-"score": 2.86
+"score": 2.84
 },
 {
 "b": "Nvidia",
@@ -3117,7 +3080,7 @@
 "local": true,
 "more": 0,
 "cool": false,
-"score": 2.43
+"score": 2.42
 },
 {
 "b": "Samsung",
@@ -3139,7 +3102,7 @@
 "local": true,
 "more": 0,
 "cool": false,
-"score": 2.33
+"score": 2.32
 },
 {
 "b": "ByteDance",
@@ -3161,7 +3124,7 @@
 "local": true,
 "more": 0,
 "cool": false,
-"score": 2.19
+"score": 2.18
 },
 {
 "b": "Sephora",
@@ -3183,7 +3146,7 @@
 "local": true,
 "more": 0,
 "cool": false,
-"score": 2.09
+"score": 2.08
 },
 {
 "b": "Citigroup",
@@ -3205,7 +3168,7 @@
 "local": true,
 "more": 0,
 "cool": false,
-"score": 2.01
+"score": 2.0
 },
 {
 "b": "Armani",
@@ -3227,7 +3190,7 @@
 "local": true,
 "more": 0,
 "cool": false,
-"score": 1.97
+"score": 1.96
 },
 {
 "b": "Volkswagen",
@@ -3249,7 +3212,7 @@
 "local": true,
 "more": 0,
 "cool": false,
-"score": 1.68
+"score": 1.67
 }
 ],
 "other": [
@@ -3392,7 +3355,7 @@
 "local": true,
 "more": 4,
 "cool": false,
-"score": 18.77
+"score": 18.68
 },
 {
 "b": "Ryanair",
@@ -3423,7 +3386,7 @@
 "local": true,
 "more": 0,
 "cool": false,
-"score": 5.48
+"score": 5.45
 },
 {
 "b": "Revolut",
@@ -3445,7 +3408,7 @@
 "local": true,
 "more": 0,
 "cool": false,
-"score": 2.92
+"score": 2.91
 },
 {
 "b": "ING",
@@ -3467,7 +3430,7 @@
 "local": true,
 "more": 0,
 "cool": false,
-"score": 2.55
+"score": 2.53
 },
 {
 "b": "Telefónica",
@@ -3489,7 +3452,7 @@
 "local": true,
 "more": 0,
 "cool": false,
-"score": 1.41
+"score": 1.4
 }
 ],
 "other": [
@@ -3627,7 +3590,7 @@
 "local": true,
 "more": 5,
 "cool": false,
-"score": 23.53
+"score": 23.43
 },
 {
 "b": "Apple",
@@ -3649,7 +3612,7 @@
 "local": true,
 "more": 0,
 "cool": false,
-"score": 2.88
+"score": 2.87
 },
 {
 "b": "Wizz Air",
@@ -3671,7 +3634,7 @@
 "local": true,
 "more": 0,
 "cool": false,
-"score": 2.23
+"score": 2.22
 },
 {
 "b": "Hero MotoCorp",
@@ -3693,7 +3656,7 @@
 "local": true,
 "more": 0,
 "cool": false,
-"score": 2.08
+"score": 2.07
 },
 {
 "b": "TotalEnergies",
@@ -3715,7 +3678,7 @@
 "local": false,
 "more": 0,
 "cool": false,
-"score": 1.37
+"score": 1.36
 },
 {
 "b": "Philips",
@@ -3737,7 +3700,7 @@
 "local": false,
 "more": 0,
 "cool": false,
-"score": 1.31
+"score": 1.3
 },
 {
 "b": "Shell",
@@ -3759,7 +3722,7 @@
 "local": false,
 "more": 0,
 "cool": false,
-"score": 1.29
+"score": 1.28
 }
 ],
 "other": [
@@ -3901,7 +3864,7 @@
 "local": true,
 "more": 3,
 "cool": false,
-"score": 14.99
+"score": 14.91
 },
 {
 "b": "Generali",
@@ -3932,7 +3895,7 @@
 "local": true,
 "more": 0,
 "cool": false,
-"score": 8.38
+"score": 8.36
 },
 {
 "b": "DP World",
@@ -3963,7 +3926,7 @@
 "local": true,
 "more": 0,
 "cool": false,
-"score": 4.51
+"score": 4.48
 },
 {
 "b": "Umbro",
@@ -3994,7 +3957,7 @@
 "local": false,
 "more": 0,
 "cool": false,
-"score": 2.59
+"score": 2.56
 },
 {
 "b": "Mizuno",
@@ -4016,7 +3979,7 @@
 "local": false,
 "more": 0,
 "cool": false,
-"score": 2.39
+"score": 2.38
 },
 {
 "b": "Castore",
@@ -4038,7 +4001,7 @@
 "local": false,
 "more": 0,
 "cool": false,
-"score": 1.29
+"score": 1.28
 },
 {
 "b": "Prada",
@@ -4060,7 +4023,7 @@
 "local": false,
 "more": 0,
 "cool": false,
-"score": 1.06
+"score": 1.05
 },
 {
 "b": "Jaguar Land Rover / Tata Motors",
@@ -4236,7 +4199,7 @@
 "local": true,
 "more": 0,
 "cool": false,
-"score": 5.08
+"score": 5.05
 },
 {
 "b": "BYD",
@@ -4260,7 +4223,7 @@
 "local": true,
 "more": 0,
 "cool": false,
-"score": 4.06
+"score": 4.04
 },
 {
 "b": "Ryanair",
@@ -4282,7 +4245,7 @@
 "local": true,
 "more": 0,
 "cool": false,
-"score": 2.96
+"score": 2.94
 },
 {
 "b": "LG Electronics",
@@ -4304,7 +4267,7 @@
 "local": true,
 "more": 0,
 "cool": false,
-"score": 2.5
+"score": 2.49
 },
 {
 "b": "Saab",
@@ -4326,7 +4289,7 @@
 "local": true,
 "more": 0,
 "cool": false,
-"score": 1.61
+"score": 1.6
 },
 {
 "b": "MOL",
@@ -4348,7 +4311,7 @@
 "local": false,
 "more": 0,
 "cool": false,
-"score": 0.88
+"score": 0.87
 }
 ],
 "other": [
@@ -4442,7 +4405,7 @@
 "local": true,
 "more": 3,
 "cool": false,
-"score": 14.88
+"score": 14.8
 },
 {
 "b": "IHG",
@@ -4464,7 +4427,7 @@
 "local": true,
 "more": 0,
 "cool": false,
-"score": 2.82
+"score": 2.81
 },
 {
 "b": "Google",
@@ -4486,7 +4449,7 @@
 "local": true,
 "more": 0,
 "cool": false,
-"score": 2.23
+"score": 2.22
 }
 ],
 "other": [
@@ -4537,6 +4500,15 @@
 ]
 },
 {
+"t": "Uzbek Startup Delever Raises US$380,000 in Investment Round",
+"u": "https://news.google.com/rss/articles/CBMijAFBVV95cUxOTDZMemt3OUJqZ2ZtNE1GVlFiMi0wR09oc2JKbC1Xem9hXy0zaDhRZkl1b2xMemRBVEdPaTlMQUpRU19rM3VpSkZnVENEQlEzbWJxS2tTelcxY2lDbDJYbTFrOXNXcnlNcUhQQzhxbWxWZW1oaHRTUVhOdTB2WUhHbXAyekl6YWhTZ3BHag?oc=5",
+"s": "UzDaily.uz",
+"at": "2026-10-31T13:20:00Z",
+"sig": [
+"money"
+]
+},
+{
 "t": "Uzbekistan Plans to Expand Electric Train Fleet to 30",
 "u": "https://news.google.com/rss/articles/CBMihwFBVV95cUxPVkRzMjVKbDBsbXdnVUVPdWRNTWNyeTlmekNnVC1TQ2RSV1pjaW80ZmpYZC13VXFvd2xvYzRLMVpXbzFJRVZGX1pVRlNJRDF6UmdEd2E5MFl2aXBCZXQycnV2X1ctQ01TY2dZOUhOVEs5bGlfa1ZudVBIMHNfbWZTZHBSb2hOWXM?oc=5",
 "s": "UzDaily.uz",
@@ -4571,15 +4543,6 @@
 "sig": [
 "money"
 ]
-},
-{
-"t": "Amway Launches in Uzbekistan",
-"u": "https://news.google.com/rss/articles/CBMif0FVX3lxTE1BNE81UGxGbE8xQWpDSGxHSDNaVjdkRmJJM3FFaFI2NzM2WnpkN0FkNEhvRHBkOGdoNFYxTVBSSE1DenNjSzRldzVCNzY5WmVhQjVUV01FMExldW1qTmFsMzRsbC1NSHNVcVRDWVhEbERoankxS1NQbDY3WTZIMzg?oc=5",
-"s": "Direct Selling News",
-"at": "2026-10-28T07:00:00Z",
-"sig": [
-"expand"
-]
 }
 ],
 "n": 3
@@ -4606,7 +4569,7 @@
 "local": true,
 "more": 0,
 "cool": false,
-"score": 2.64
+"score": 2.62
 },
 {
 "b": "DHL",
@@ -4772,7 +4735,7 @@
 "local": true,
 "more": 0,
 "cool": false,
-"score": 3.76
+"score": 3.75
 },
 {
 "b": "Erste",
@@ -4796,7 +4759,7 @@
 "local": true,
 "more": 0,
 "cool": false,
-"score": 2.67
+"score": 2.65
 },
 {
 "b": "Anthropic",
@@ -5012,7 +4975,7 @@
 "local": true,
 "more": 0,
 "cool": false,
-"score": 5.78
+"score": 5.76
 },
 {
 "b": "Air India",
@@ -5043,7 +5006,7 @@
 "local": true,
 "more": 0,
 "cool": false,
-"score": 4.52
+"score": 4.5
 },
 {
 "b": "Diageo",
@@ -5074,7 +5037,7 @@
 "local": true,
 "more": 0,
 "cool": false,
-"score": 4.37
+"score": 4.35
 },
 {
 "b": "Hyundai",
@@ -5098,7 +5061,7 @@
 "local": true,
 "more": 0,
 "cool": false,
-"score": 4.26
+"score": 4.24
 },
 {
 "b": "McDonald's",
@@ -5130,7 +5093,7 @@
 "local": true,
 "more": 0,
 "cool": false,
-"score": 4.23
+"score": 4.2
 },
 {
 "b": "Apple",
@@ -5161,7 +5124,7 @@
 "local": true,
 "more": 0,
 "cool": false,
-"score": 3.89
+"score": 3.86
 },
 {
 "b": "IndiGo",
@@ -5183,7 +5146,7 @@
 "local": true,
 "more": 0,
 "cool": false,
-"score": 3.43
+"score": 3.42
 },
 {
 "b": "Skechers",
@@ -5205,7 +5168,7 @@
 "local": true,
 "more": 0,
 "cool": false,
-"score": 3.43
+"score": 3.42
 },
 {
 "b": "Allianz",
@@ -5227,7 +5190,7 @@
 "local": true,
 "more": 0,
 "cool": false,
-"score": 3.39
+"score": 3.38
 },
 {
 "b": "Hyatt",
@@ -5249,7 +5212,7 @@
 "local": true,
 "more": 0,
 "cool": false,
-"score": 3.36
+"score": 3.35
 },
 {
 "b": "Suzuki / Maruti Suzuki",
@@ -5271,7 +5234,7 @@
 "local": true,
 "more": 0,
 "cool": false,
-"score": 3.22
+"score": 3.2
 },
 {
 "b": "Maserati",
@@ -5293,7 +5256,7 @@
 "local": true,
 "more": 0,
 "cool": false,
-"score": 3.15
+"score": 3.14
 },
 {
 "b": "Renault",
@@ -5315,7 +5278,7 @@
 "local": true,
 "more": 0,
 "cool": false,
-"score": 3.15
+"score": 3.14
 },
 {
 "b": "Hilton",
@@ -5337,7 +5300,7 @@
 "local": true,
 "more": 0,
 "cool": false,
-"score": 3.09
+"score": 3.08
 },
 {
 "b": "Engie",
@@ -5359,7 +5322,7 @@
 "local": true,
 "more": 0,
 "cool": false,
-"score": 3.04
+"score": 3.03
 },
 {
 "b": "Nike",
@@ -5381,7 +5344,7 @@
 "local": true,
 "more": 0,
 "cool": false,
-"score": 2.93
+"score": 2.92
 },
 {
 "b": "Google",
@@ -5403,7 +5366,7 @@
 "local": true,
 "more": 0,
 "cool": false,
-"score": 2.74
+"score": 2.73
 },
 {
 "b": "Jio",
@@ -5425,7 +5388,7 @@
 "local": true,
 "more": 0,
 "cool": false,
-"score": 1.93
+"score": 1.92
 },
 {
 "b": "Starbucks",
@@ -5447,7 +5410,7 @@
 "local": false,
 "more": 0,
 "cool": false,
-"score": 1.66
+"score": 1.65
 },
 {
 "b": "L'Oréal",
@@ -5469,7 +5432,7 @@
 "local": true,
 "more": 0,
 "cool": false,
-"score": 1.59
+"score": 1.58
 }
 ],
 "other": [
@@ -5591,7 +5554,7 @@
 "local": true,
 "more": 0,
 "cool": false,
-"score": 3.04
+"score": 3.03
 },
 {
 "b": "Seiko / Mazda",
@@ -5613,7 +5576,7 @@
 "local": true,
 "more": 0,
 "cool": false,
-"score": 2.9
+"score": 2.89
 },
 {
 "b": "Nissan",
@@ -5635,7 +5598,7 @@
 "local": true,
 "more": 0,
 "cool": false,
-"score": 2.76
+"score": 2.75
 },
 {
 "b": "Samsung",
@@ -5657,7 +5620,7 @@
 "local": true,
 "more": 0,
 "cool": false,
-"score": 2.1
+"score": 2.09
 }
 ],
 "other": [
@@ -5796,7 +5759,7 @@
 "local": false,
 "more": 0,
 "cool": false,
-"score": 5.18
+"score": 5.15
 },
 {
 "b": "Walmart",
@@ -5818,7 +5781,7 @@
 "local": true,
 "more": 0,
 "cool": false,
-"score": 3.2
+"score": 3.19
 },
 {
 "b": "Air Canada",
@@ -5840,7 +5803,7 @@
 "local": true,
 "more": 0,
 "cool": false,
-"score": 2.6
+"score": 2.59
 },
 {
 "b": "Nvidia",
@@ -5862,7 +5825,7 @@
 "local": true,
 "more": 0,
 "cool": false,
-"score": 2.42
+"score": 2.41
 },
 {
 "b": "Tesla",
@@ -5884,7 +5847,7 @@
 "local": true,
 "more": 0,
 "cool": false,
-"score": 2.37
+"score": 2.36
 },
 {
 "b": "Microsoft",
@@ -5908,7 +5871,7 @@
 "local": true,
 "more": 0,
 "cool": false,
-"score": 2.12
+"score": 2.11
 },
 {
 "b": "Chery",
@@ -5930,7 +5893,7 @@
 "local": true,
 "more": 0,
 "cool": false,
-"score": 1.96
+"score": 1.95
 },
 {
 "b": "McDonald's",
@@ -5952,7 +5915,7 @@
 "local": false,
 "more": 0,
 "cool": false,
-"score": 1.49
+"score": 1.48
 }
 ],
 "other": [
@@ -6084,7 +6047,7 @@
 "local": true,
 "more": 0,
 "cool": false,
-"score": 4.1
+"score": 4.08
 },
 {
 "b": "Shell",
@@ -6106,7 +6069,7 @@
 "local": true,
 "more": 0,
 "cool": false,
-"score": 2.85
+"score": 2.83
 },
 {
 "b": "Meta",
@@ -6128,7 +6091,7 @@
 "local": true,
 "more": 0,
 "cool": false,
-"score": 2.45
+"score": 2.44
 },
 {
 "b": "Cadillac",
@@ -6150,7 +6113,7 @@
 "local": true,
 "more": 0,
 "cool": false,
-"score": 2.2
+"score": 2.19
 },
 {
 "b": "Chevron",
@@ -6174,7 +6137,7 @@
 "local": true,
 "more": 0,
 "cool": false,
-"score": 2.17
+"score": 2.16
 },
 {
 "b": "BYD",
@@ -6196,7 +6159,7 @@
 "local": true,
 "more": 0,
 "cool": false,
-"score": 1.56
+"score": 1.55
 },
 {
 "b": "Santander",
@@ -6227,7 +6190,7 @@
 "local": true,
 "more": 0,
 "cool": true,
-"score": 1.04
+"score": 1.02
 },
 {
 "b": "Itaú",
@@ -6249,7 +6212,7 @@
 "local": true,
 "more": 0,
 "cool": true,
-"score": 0.68
+"score": 0.67
 },
 {
 "b": "Binance",
@@ -6433,7 +6396,7 @@
 "local": true,
 "more": 1,
 "cool": false,
-"score": 10.99
+"score": 10.94
 },
 {
 "b": "McLaren",
@@ -6465,7 +6428,7 @@
 "local": true,
 "more": 0,
 "cool": false,
-"score": 6.11
+"score": 6.09
 },
 {
 "b": "Airbnb",
@@ -6489,7 +6452,7 @@
 "local": true,
 "more": 0,
 "cool": false,
-"score": 4.19
+"score": 4.17
 },
 {
 "b": "Garmin",
@@ -6511,7 +6474,7 @@
 "local": true,
 "more": 0,
 "cool": false,
-"score": 2.67
+"score": 2.65
 },
 {
 "b": "Visa",
@@ -6533,7 +6496,7 @@
 "local": false,
 "more": 0,
 "cool": false,
-"score": 2.39
+"score": 2.38
 },
 {
 "b": "Amazon",
@@ -6555,7 +6518,7 @@
 "local": true,
 "more": 0,
 "cool": false,
-"score": 2.31
+"score": 2.3
 },
 {
 "b": "Cisco",
@@ -6577,7 +6540,7 @@
 "local": false,
 "more": 0,
 "cool": false,
-"score": 1.15
+"score": 1.14
 }
 ],
 "other": [
@@ -6716,7 +6679,7 @@
 "local": true,
 "more": 10,
 "cool": false,
-"score": 36.2
+"score": 36.04
 }
 ],
 "other": [
@@ -6856,7 +6819,7 @@
 "local": true,
 "more": 0,
 "cool": false,
-"score": 8.47
+"score": 8.43
 },
 {
 "b": "Aramco",
@@ -6878,7 +6841,7 @@
 "local": true,
 "more": 0,
 "cool": false,
-"score": 2.92
+"score": 2.91
 },
 {
 "b": "Anthropic",
@@ -6902,7 +6865,7 @@
 "local": false,
 "more": 0,
 "cool": false,
-"score": 1.98
+"score": 1.96
 },
 {
 "b": "Ferrari",
@@ -6924,7 +6887,7 @@
 "local": true,
 "more": 0,
 "cool": false,
-"score": 1.94
+"score": 1.93
 },
 {
 "b": "Samsung / Nvidia",
@@ -6946,7 +6909,7 @@
 "local": false,
 "more": 0,
 "cool": false,
-"score": 1.1
+"score": 1.09
 },
 {
 "b": "Lexus",
@@ -6968,7 +6931,7 @@
 "local": false,
 "more": 0,
 "cool": false,
-"score": 0.92
+"score": 0.91
 },
 {
 "b": "NEOM",
@@ -6990,7 +6953,7 @@
 "local": false,
 "more": 0,
 "cool": false,
-"score": 0.52
+"score": 0.51
 }
 ],
 "other": [
@@ -7127,7 +7090,7 @@
 "local": true,
 "more": 1,
 "cool": false,
-"score": 8.8
+"score": 8.75
 },
 {
 "b": "Al-Futtaim / Polestar",
@@ -7167,7 +7130,7 @@
 "local": false,
 "more": 0,
 "cool": false,
-"score": 1.91
+"score": 1.88
 },
 {
 "b": "BYD",
@@ -7198,7 +7161,7 @@
 "local": false,
 "more": 0,
 "cool": false,
-"score": 1.78
+"score": 1.76
 },
 {
 "b": "McDonald's",
@@ -7220,7 +7183,7 @@
 "local": false,
 "more": 0,
 "cool": false,
-"score": 1.76
+"score": 1.74
 },
 {
 "b": "Coinbase",
@@ -7242,7 +7205,7 @@
 "local": false,
 "more": 0,
 "cool": false,
-"score": 1.43
+"score": 1.41
 },
 {
 "b": "ADNOC",
@@ -7295,7 +7258,7 @@
 "local": false,
 "more": 0,
 "cool": false,
-"score": 0.68
+"score": 0.66
 },
 {
 "b": "Meta",
@@ -7457,7 +7420,7 @@
 "local": true,
 "more": 1,
 "cool": false,
-"score": 7.31
+"score": 7.26
 },
 {
 "b": "Ooredoo",
@@ -7488,7 +7451,7 @@
 "local": true,
 "more": 0,
 "cool": false,
-"score": 5.68
+"score": 5.66
 },
 {
 "b": "Primark",
@@ -7519,7 +7482,7 @@
 "local": true,
 "more": 0,
 "cool": false,
-"score": 3.62
+"score": 3.59
 },
 {
 "b": "BlackRock",
@@ -7541,7 +7504,7 @@
 "local": true,
 "more": 0,
 "cool": false,
-"score": 1.9
+"score": 1.89
 },
 {
 "b": "QatarEnergy",
@@ -7563,7 +7526,7 @@
 "local": false,
 "more": 0,
 "cool": false,
-"score": 1.63
+"score": 1.61
 },
 {
 "b": "Google",
@@ -7585,7 +7548,7 @@
 "local": false,
 "more": 0,
 "cool": false,
-"score": 1.31
+"score": 1.29
 },
 {
 "b": "Anthropic",
@@ -7771,7 +7734,7 @@
 "local": true,
 "more": 3,
 "cool": false,
-"score": 14.58
+"score": 14.5
 },
 {
 "b": "Samsung",
@@ -7814,7 +7777,7 @@
 "local": true,
 "more": 1,
 "cool": false,
-"score": 6.51
+"score": 6.46
 },
 {
 "b": "Hyundai",
@@ -7855,7 +7818,7 @@
 "local": true,
 "more": 0,
 "cool": false,
-"score": 6.09
+"score": 6.05
 },
 {
 "b": "Amazon",
@@ -7886,7 +7849,7 @@
 "local": true,
 "more": 0,
 "cool": false,
-"score": 5.47
+"score": 5.45
 },
 {
 "b": "Alphabet",
@@ -7908,7 +7871,7 @@
 "local": true,
 "more": 0,
 "cool": false,
-"score": 3.02
+"score": 3.01
 },
 {
 "b": "Tim Hortons",
@@ -7930,7 +7893,7 @@
 "local": true,
 "more": 0,
 "cool": false,
-"score": 2.77
+"score": 2.76
 },
 {
 "b": "Disney",
@@ -7952,7 +7915,7 @@
 "local": true,
 "more": 0,
 "cool": false,
-"score": 2.54
+"score": 2.53
 },
 {
 "b": "Sephora",
@@ -7974,7 +7937,7 @@
 "local": true,
 "more": 0,
 "cool": false,
-"score": 2.28
+"score": 2.26
 },
 {
 "b": "Hyatt",
@@ -7996,7 +7959,7 @@
 "local": true,
 "more": 0,
 "cool": false,
-"score": 2.22
+"score": 2.2
 },
 {
 "b": "Tencent",
@@ -8018,7 +7981,7 @@
 "local": true,
 "more": 0,
 "cool": false,
-"score": 2.22
+"score": 2.2
 },
 {
 "b": "Marriott",
@@ -8040,7 +8003,7 @@
 "local": true,
 "more": 0,
 "cool": false,
-"score": 2.21
+"score": 2.19
 },
 {
 "b": "BYD",
@@ -8062,7 +8025,7 @@
 "local": true,
 "more": 0,
 "cool": false,
-"score": 1.76
+"score": 1.75
 },
 {
 "b": "Anthropic",
@@ -8084,7 +8047,7 @@
 "local": true,
 "more": 0,
 "cool": false,
-"score": 1.63
+"score": 1.61
 },
 {
 "b": "Bridgestone",
@@ -8106,7 +8069,7 @@
 "local": false,
 "more": 0,
 "cool": false,
-"score": 1.32
+"score": 1.3
 },
 {
 "b": "Porsche",
@@ -8258,7 +8221,7 @@
 "local": true,
 "more": 0,
 "cool": false,
-"score": 5.78
+"score": 5.75
 },
 {
 "b": "TikTok",
@@ -8280,7 +8243,7 @@
 "local": true,
 "more": 0,
 "cool": false,
-"score": 2.5
+"score": 2.49
 },
 {
 "b": "Allianz / Ping An",
@@ -8302,7 +8265,7 @@
 "local": true,
 "more": 0,
 "cool": false,
-"score": 2.44
+"score": 2.43
 },
 {
 "b": "Siemens",
@@ -8324,7 +8287,7 @@
 "local": true,
 "more": 0,
 "cool": false,
-"score": 2.14
+"score": 2.13
 },
 {
 "b": "OpenAI",
@@ -8346,7 +8309,7 @@
 "local": true,
 "more": 0,
 "cool": false,
-"score": 1.59
+"score": 1.58
 },
 {
 "b": "DBS",
@@ -8368,7 +8331,7 @@
 "local": true,
 "more": 0,
 "cool": false,
-"score": 1.39
+"score": 1.38
 },
 {
 "b": "Tesla",
@@ -8517,7 +8480,7 @@
 "local": false,
 "more": 0,
 "cool": false,
-"score": 4.64
+"score": 4.63
 },
 {
 "b": "Telia",
@@ -8539,7 +8502,7 @@
 "local": true,
 "more": 0,
 "cool": false,
-"score": 3.02
+"score": 3.01
 },
 {
 "b": "Huawei",
@@ -8561,7 +8524,7 @@
 "local": false,
 "more": 0,
 "cool": false,
-"score": 1.53
+"score": 1.52
 }
 ],
 "other": [
@@ -8716,12 +8679,12 @@
 "TH:1": "2026-10-31T15:57:07Z",
 "GB:0": "2026-10-31T15:57:07Z",
 "GB:1": "2026-10-31T15:57:07Z",
-"TN:0": "2026-10-31T10:00:37Z",
-"TN:1": "2026-10-31T10:00:37Z",
-"HR:0": "2026-10-31T10:00:37Z",
-"HR:1": "2026-10-31T10:00:37Z",
-"AT:0": "2026-10-31T10:00:37Z",
-"AT:1": "2026-10-31T10:00:37Z",
+"TN:0": "2026-10-31T16:58:51Z",
+"TN:1": "2026-10-31T16:58:51Z",
+"HR:0": "2026-10-31T16:58:51Z",
+"HR:1": "2026-10-31T16:58:51Z",
+"AT:0": "2026-10-31T16:58:51Z",
+"AT:1": "2026-10-31T16:58:51Z",
 "CH:0": "2026-10-31T13:16:30Z",
 "CH:1": "2026-10-31T13:16:30Z",
 "US:0": "2026-10-31T13:16:30Z",
@@ -8732,16 +8695,16 @@
 "HK:1": "2026-10-31T14:01:05Z",
 "CN:0": "2026-10-31T14:01:05Z",
 "CN:1": "2026-10-31T14:01:05Z",
-"ES:0": "2026-10-31T10:00:37Z",
-"ES:1": "2026-10-31T10:00:37Z",
+"ES:0": "2026-10-31T16:58:51Z",
+"ES:1": "2026-10-31T16:58:51Z",
 "NL:0": "2026-10-31T13:16:30Z",
 "NL:1": "2026-10-31T13:16:30Z",
 "IT:0": "2026-10-31T14:57:19Z",
 "IT:1": "2026-10-31T14:57:19Z",
 "HU:0": "2026-10-31T10:00:37Z",
 "HU:1": "2026-10-31T10:00:37Z",
-"UZ:0": "2026-10-31T09:01:28Z",
-"UZ:1": "2026-10-31T09:01:28Z",
+"UZ:0": "2026-10-31T16:58:51Z",
+"UZ:1": "2026-10-31T16:58:51Z",
 "RO:0": "2026-10-31T14:01:05Z",
 "RO:1": "2026-10-31T14:01:05Z",
 "RS:0": "2026-10-31T14:57:19Z",
