@@ -29,7 +29,7 @@ from datetime import date, datetime, timedelta, timezone
 from zoneinfo import ZoneInfo
 
 sys.path.insert(0, os.path.dirname(__file__))
-from update import ROSTER  # roster id -> (name, "atp" / "wta")
+from update import ROSTER, ALIASES  # roster id -> (name, "atp" / "wta")
 import espn  # ESPN's free scoreboard: published ATP/WTA draws
 
 UK = ZoneInfo("Europe/London")
@@ -681,6 +681,7 @@ def espn_draws(events, extra=None):
     those whose first opponent isn't known yet (a bye, or a qualifier to come). Qualifying-only players say so.
     extra: more players to look for, {roster-style id: (name, tour)} (Scouting Corner prospects)."""
     names = {(t, " ".join(sorted(espn.fold(n)))): rid for rid, (n, t) in {**(extra or {}), **ROSTER}.items()}
+    names.update({(ROSTER[rid][1], " ".join(sorted(espn.fold(a)))): rid for rid, al in ALIASES.items() if rid in ROSTER for a in al})
     found = 0
     for league in ("atp", "wta"):
         for d in (0, 6):

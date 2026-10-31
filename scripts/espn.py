@@ -66,7 +66,7 @@ def score(c1, c2):
     return ", ".join(out)
 
 
-def fetch(roster, events, now, matches=()):
+def fetch(roster, events, now, matches=(), aliases=None):
     """roster: {rid: (full name, "atp"|"wta")}; events: schedule.json events; now: aware datetime (UTC);
     matches: the site's current matches, whose categories are reused for tournaments the calendar no longer has."""
     known = {}
@@ -77,7 +77,8 @@ def fetch(roster, events, now, matches=()):
     courts = {m["apiId"]: m["court"] for m in matches if m.get("apiId") and m.get("court")}
     names = {}
     for rid, (full, tour) in roster.items():
-        names[(tour, " ".join(sorted(fold(full))))] = rid
+        for n in [full] + (aliases or {}).get(rid, []):   # other spellings (update.ALIASES), e.g. with a middle name
+            names[(tour, " ".join(sorted(fold(n))))] = rid
     today = now.astimezone(UK).date()
     lo, hi = (today - timedelta(days=7)).isoformat(), (today + timedelta(days=7)).isoformat()
     out = {}

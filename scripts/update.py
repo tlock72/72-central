@@ -45,7 +45,9 @@ ROSTER = {
     "luchetti": ("Giulia Luchetti", "wta"), "guslinskaia": ("Arina Guslinskaia", "wta"),
 }
 # Other spellings tried in the player search when the roster name finds nobody (e.g. Uzbek "x" written "kh")
-ALIASES = {"farkxodov": ["Saidaslam Farkhodov", "Saidislam Farkhodov"]}
+# other spellings, tried in turn by the score feed search and also matched on ESPN / the Tour Schedule draws
+# (ESPN lists Jensi with her middle name)
+ALIASES = {"farkxodov": ["Saidaslam Farkhodov", "Saidislam Farkhodov"], "kanabar": ["Jensi Dipakbhai Kanabar"]}
 # Players whose name is shared with others: pick the one born in this year
 BORN = {"ivanov": "2008", "liu": "2015"}
 
@@ -326,7 +328,7 @@ def main():
     #     daily limit. The Live Tennis API is then only needed for Challengers, ITF events and juniors, and spends
     #     no lookups on a match ESPN already has. If ESPN can't be read, the Live Tennis API covers everything as before.
     try:
-        fresh = espn.fetch(ROSTER, load("schedule.json", {}).get("events") or [], NOW, data["matches"])
+        fresh = espn.fetch(ROSTER, load("schedule.json", {}).get("events") or [], NOW, data["matches"], ALIASES)
         new.update(fresh)
         data.pop("espnError", None)
         print(f"ESPN: {len(fresh)} ATP/WTA matches of ours")
