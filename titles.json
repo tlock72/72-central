@@ -53,6 +53,15 @@
  "titles": {
   "2026": [
    {
+    "id": "lin",
+    "tournament": "W35 Kunshan",
+    "tier": "W35",
+    "type": "ITF World Tennis Tour",
+    "week": "26 Oct to 01 Nov 2026",
+    "end": "2026-11-01",
+    "link": "https://www.itftennis.com/en/tournament/w35-kunshan/chn/2026/w-itf-chn-2026-036/"
+   },
+   {
     "id": "dudeney",
     "tournament": "W35 Birmingham",
     "tier": "W35",
@@ -1058,7 +1067,7 @@
    }
   ]
  },
- "checked": "2026-10-31",
+ "checked": "2026-11-01",
  "v": 3,
  "full": [
   "deminaur",
@@ -1366,9 +1375,9 @@
    "checked": "2026-10-31"
   }
  },
- "tried": "2026-10-31T23:43:13Z",
+ "tried": "2026-11-01T07:14:01Z",
  "pending": [],
  "todo": [],
- "todoMode": "career",
+ "todoMode": "daily",
  "source": "ITF singles results (itftennis.com)"
 }
