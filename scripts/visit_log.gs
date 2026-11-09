@@ -17,6 +17,9 @@
 // Filtered Rankings' "12 months" button asks GitHub for a player's last 12 months of results: each request is a row
 // on the "Lookups" tab (made automatically), GitHub reads the last 3 days of them (?kind=lookups) and, if GH_TOKEN
 // is set, is started straight away. Rows older than 3 days can be deleted at any time.
+// Scouting Corner traffic lights (green / amber / red on each watch list prospect): every change is a row on the
+// "Lights" tab (made automatically), and the newest row for a player is the light shown. "Cleared" = no light.
+// To change one by hand, add a row (or edit the newest one) with Green, Amber, Red or Cleared in the Light column.
 
 const TZ = "Europe/London";
 
@@ -73,6 +76,7 @@ function doPost(e) {
   if (d.kind === "uncomment") return undoComment(d);
   if (d.kind === "delcomment") return askDeleteComment(d);
   if (d.kind === "results") return askResults(d);
+  if (d.kind === "light") return setLight(d);
   const id = String(d.id || "").slice(0, 40), start = new Date(Number(d.start));
   if (!id || isNaN(start)) return out("bad");
   // text starting with = + - @ would be read as a formula, so it's kept as plain text
@@ -473,6 +477,50 @@ function listComments() {
   return ContentService.createTextOutput(JSON.stringify({ comments: list })).setMimeType(ContentService.MimeType.JSON);
 }
 
+// Scouting Corner traffic lights: one row per change on the "Lights" tab, so there's a history of who set what.
+const LIGHTS = { g: "Green", a: "Amber", r: "Red", x: "Cleared" };
+function setupLights() {
+  const ss = SpreadsheetApp.getActiveSpreadsheet();
+  const t = ss.getSheetByName("Lights") || ss.insertSheet("Lights");
+  t.getRange(1, 1, 1, 4).setValues([["Set", "Player", "Light", "Set by"]]).setFontWeight("bold");
+  t.setFrozenRows(1);
+  t.getRange("A:A").setNumberFormat("ddd d mmm yyyy HH:mm");
+  return t;
+}
+function setLight(d) {
+  const clean = x => String(x || "").replace(/[\u0000-\u001f]/g, "").trim();
+  const plain = t => /^[=+\-@]/.test(t) ? "'" + t : t;
+  const name = clean(d.name).replace(/\s+/g, " ").slice(0, 60);
+  if (name.length < 3 || !/^[\p{L}][\p{L} .'\-|]+$/u.test(name)) return out("bad");
+  const light = LIGHTS[clean(d.light)];
+  if (!light) return out("bad");
+  const lock = LockService.getScriptLock();
+  lock.waitLock(10000);
+  try {
+    const sh = SpreadsheetApp.getActiveSpreadsheet().getSheetByName("Lights") || setupLights();
+    sh.appendRow([new Date(), plain(name), light, plain(clean(d.by).slice(0, 30))]);
+  } finally {
+    lock.releaseLock();
+  }
+  return out("ok");
+}
+// Read by the site (?kind=lights): the newest light for each player (any accents or word order count as the same name)
+function listLights() {
+  const sh = SpreadsheetApp.getActiveSpreadsheet().getSheetByName("Lights");
+  const rows = sh && sh.getLastRow() > 1 ? sh.getRange(2, 1, sh.getLastRow() - 1, 4).getValues() : [];
+  const code = { green: "g", amber: "a", red: "r", cleared: "x" };
+  const key = s => String(s).normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLowerCase().split(/[^a-z]+/).filter(Boolean).sort().join(" ");
+  const last = {};
+  rows.forEach(r => {
+    const name = String(r[1]).replace(/^'/, "").trim(), l = code[String(r[2]).trim().toLowerCase()];
+    if (!name || !l || !(r[0] instanceof Date)) return;
+    const k = key(name);
+    if (!last[k] || r[0] >= last[k].d) last[k] = { d: r[0], name, light: l, by: String(r[3] || "").replace(/^'/, ""), at: r[0].toISOString() };
+  });
+  const list = Object.values(last).map(x => ({ name: x.name, light: x.light, by: x.by, at: x.at }));
+  return ContentService.createTextOutput(JSON.stringify({ lights: list })).setMimeType(ContentService.MimeType.JSON);
+}
+
 // Read by GitHub (scripts/prospects.py) and by the site: the names added on the site, plus removal requests
 // (names only; the request IDs and codes never leave the Sheet).
 function doGet(e) {
@@ -481,6 +529,7 @@ function doGet(e) {
   if (kind === "decidecomment") return decideCommentPage(e);
   if (kind === "comments") return listComments();
   if (kind === "lookups") return listLookups();
+  if (kind === "lights") return listLights();
   if (kind !== "prospects") return out("72 Central");
   const sh = SpreadsheetApp.getActiveSpreadsheet().getSheetByName("Prospects");
   const rows = sh && sh.getLastRow() > 1 ? sh.getRange(2, 1, sh.getLastRow() - 1, 6).getValues() : [];

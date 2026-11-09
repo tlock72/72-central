@@ -498,6 +498,20 @@ select.sq-in option{background:var(--navy-2);color:var(--white)}
 .cn-open{padding:9px 20px;border-top:1px solid var(--line-2);font-family:var(--display);text-transform:uppercase;letter-spacing:.14em;font-size:11px;color:var(--gold)}
 .cn-open .ar{display:inline-grid;place-items:center;width:18px;height:18px;margin-right:8px;border:1px solid var(--gold);border-radius:50%;font-size:11px;line-height:1;letter-spacing:0;vertical-align:-3px;transition:transform .2s}
 .cn-tile:hover .cn-open{background:var(--gold-dim)}
+/* Traffic lights (ltPick in the profile window, set on the Sheet's "Lights" tab): a coloured bar down the tile's left edge and a dot by the name */
+:root{--lt-g:#3CC47C;--lt-a:#F5A524;--lt-r:#E5484D}
+.cn-tile.lt-g{border-left:5px solid var(--lt-g)}.cn-tile.lt-a{border-left:5px solid var(--lt-a)}.cn-tile.lt-r{border-left:5px solid var(--lt-r)}
+.lt-dot{display:inline-block;width:12px;height:12px;border-radius:50%;margin-right:8px;vertical-align:1px;box-shadow:0 0 8px currentColor;background:currentColor}
+.lt-dot.g{color:var(--lt-g)}.lt-dot.a{color:var(--lt-a)}.lt-dot.r{color:var(--lt-r)}
+.lt-pick{display:flex;flex-wrap:wrap;align-items:center;gap:8px;padding:0 20px 6px}
+.lt-pick button{display:inline-flex;align-items:center;gap:7px;padding:6px 14px;border:1px solid var(--line);border-radius:999px;background:transparent;color:var(--text);font-family:var(--display);text-transform:uppercase;letter-spacing:.12em;font-size:11px;cursor:pointer}
+.lt-pick button i{width:11px;height:11px;border-radius:50%;opacity:.45}
+.lt-pick button.g i{background:var(--lt-g)}.lt-pick button.a i{background:var(--lt-a)}.lt-pick button.r i{background:var(--lt-r)}
+.lt-pick button.on i{opacity:1;box-shadow:0 0 8px currentColor}
+.lt-pick button.g.on{border-color:var(--lt-g);color:var(--lt-g)}.lt-pick button.a.on{border-color:var(--lt-a);color:var(--lt-a)}.lt-pick button.r.on{border-color:var(--lt-r);color:var(--lt-r)}
+.lt-pick button.clr{color:var(--muted);text-transform:none;letter-spacing:.02em;font-family:var(--body);font-size:12px;border-style:dashed}
+.lt-pick .who{flex:1 1 100%;font-size:11px;color:var(--muted)}
+@media (max-width:520px){.lt-pick{padding-left:12px;padding-right:12px}}
 /* "Next tournaments" in the profile window (cnSched): date, event, how they're entered; then how far ahead the lists were read */
 .cn-scs{display:grid;gap:6px;padding:0 20px}
 .cn-sc{display:grid;grid-template-columns:auto minmax(0,1fr) auto;gap:4px 12px;align-items:baseline;padding:8px 12px;border:1px solid var(--line-2);border-radius:12px;font-size:13px}
@@ -3623,6 +3637,7 @@ function cnProf(k, p){
     <div class="k">Watch list</div><h2>${esc(p.name)}</h2>${meta ? `<div class="mt">${esc(meta)}</div>` : ""}
     ${res.length ? rsSum(res) + rsBtn("cn:" + k, p.name, meta, res, "rs-go") : `<div class="rs-ln"><span>No results in the last 12 months yet.</span></div>`}</div>
     <div class="cn cn-pf">
+    ${ltPick(p)}
     ${path ? `<h4>Pathway</h4><div class="cn-path">${path}</div>` : ""}
     ${unsure.length ? `<div class="cn-note">${unsure.map(esc).join("<br>")}. Add the right id in prospects.json.</div>` : ""}
     ${rows.length ? `<h4>Rankings</h4><div class="sq-row h"><span>Ranking</span><span>Rank</span><span>Best</span><span>1 wk</span><span>3 mo</span><span>12 mo</span></div>${rows.join("")}` : ""}
@@ -3687,7 +3702,8 @@ function cnTile(k, p){
   if (n) why.push(`<span class="cm">${CM_ICON}${n}</span>`);
   const meta = [p.nat, p.born ? "born " + p.born : "", M ? `${M.lb} No. ${M.rank}`.replace(/ /g, " ") : "Not ranked yet"].filter(Boolean).join(" · ");
   const res = p.results || [], won = res.filter(r => r.res === "W").length, lost = res.filter(r => r.res === "L").length;
-  return `<div class="cn cn-tile" data-cnp="${esc(k)}" role="button" tabindex="0" aria-label="Open ${esc(p.name)}'s profile"><div class="cn-h"><span class="nm">${esc(p.name)}</span><span class="mt">${esc(meta)}</span></div>
+  const L = ltFor(p);
+  return `<div class="cn cn-tile${L ? " lt-" + L.light : ""}" data-cnp="${esc(k)}" role="button" tabindex="0" aria-label="Open ${esc(p.name)}'s profile${L ? ` (${LT_NAME[L.light]} light)` : ""}"><div class="cn-h"><span class="nm">${L ? `<span class="lt-dot ${L.light}" title="${LT_NAME[L.light]} light${L.by ? ", set by " + esc(L.by) : ""}"></span>` : ""}${esc(p.name)}</span><span class="mt">${esc(meta)}</span></div>
     <div class="sg-why">${why.filter(Boolean).join("")}</div>
     ${res.length ? `<div class="sg-wl">Last 12 months <b>${won}-${lost}</b><span>${cnYears(res)}</span></div>` : ""}
     <div class="cn-open"><span class="ar" aria-hidden="true">›</span>Profile<span class="lg">, results &amp; comments</span></div></div>`;
@@ -4287,7 +4303,7 @@ function cnSend(name, g, nat, born, by){
   renderCorner();
 }
 async function loadCorner(){
-  const cmP = loadComments();  // read alongside the rest
+  const cmP = Promise.all([loadComments(), loadLights()]);  // read alongside the rest
   try { const r = await fetch("corner.json?t=" + Date.now(), { cache: "no-store" }); if (r.ok) CORNER = await r.json(); else if (!CORNER) CORNER = { players: {} }; } catch (e) { if (!CORNER) CORNER = { players: {} }; }
   try { const r = await fetch("suggest.json?t=" + Date.now(), { cache: "no-store" }); if (r.ok) SUGG = await r.json(); } catch (e) {}
   renderCorner();  // cards straight away (comments from this device's last read); the Sheet's answers fill in below
@@ -4299,6 +4315,42 @@ async function loadCorner(){
   await cmP;
   renderCorner(); renderHome(); renderScouting(); renderSchedule();
 }
+/* ---------- Traffic lights on watch list prospects (green / amber / red) ----------
+   Set in the profile window (ltPick); each change is a row on the "Lights" tab of Tobey's Google Sheet
+   (scripts/visit_log.gs, kind: "light"), read back with ?kind=lights (the newest row per player wins, "x" = cleared).
+   Matched by name in any word order, like comments. A change made here shows at once and is kept on this device
+   until the Sheet lists it (10 minutes once the Sheet has been read). */
+const LT_NAME = { g: "Green", a: "Amber", r: "Red" };
+let LT_SHEET = [], LT_OK = false;
+try { const c = JSON.parse(localStorage.getItem("72c-ltlist") || "[]"); if (Array.isArray(c)) LT_SHEET = c; } catch (e) {}
+async function loadLights(){
+  try {
+    const r = await fetch(CORNER_URL + "?kind=lights");
+    if (r.ok) { const j = await r.json(); if (Array.isArray(j.lights)) { LT_SHEET = j.lights; LT_OK = true; try { localStorage.setItem("72c-ltlist", JSON.stringify(LT_SHEET)); } catch (e) {} } }
+  } catch (e) {}
+}
+function ltMine(){ try { return JSON.parse(localStorage.getItem("72c-lights") || "[]").filter(x => Date.now() - (x.t || 0) < (LT_OK ? 6e5 : 864e5)); } catch (e) { return []; } }
+// the player's light ({ light: g/a/r, by, at }), or null: the newest of the Sheet's and this device's
+function ltFor(p){
+  const keys = new Set([p.name, p.typed].filter(Boolean).map(cnSorted));
+  const best = [...LT_SHEET, ...ltMine()].filter(x => keys.has(cnSorted(x.name))).sort((a, b) => new Date(b.at) - new Date(a.at))[0];
+  return best && LT_NAME[best.light] ? best : null;
+}
+function ltPick(p){
+  const L = ltFor(p), name = p.typed || p.name;
+  const b = c => `<button type="button" class="${c}${L?.light === c ? " on" : ""}" data-lt="${c}" data-ltn="${esc(name)}" aria-pressed="${L?.light === c}"><i></i>${LT_NAME[c]}</button>`;
+  return `<h4>Traffic light</h4><div class="lt-pick">${b("g")}${b("a")}${b("r")}${L ? `<button type="button" class="clr" data-lt="x" data-ltn="${esc(name)}">Clear</button>` : ""}
+    <span class="who">${L ? `${LT_NAME[L.light]}${L.by ? `, set by ${esc(L.by)}` : ""} · ${esc(cmWhen(L.at))}. Everyone sees it on the tile.` : "No light yet. Pick one to show it on this prospect's tile."}</span></div>`;
+}
+document.addEventListener("click", e => {
+  const b = e.target.closest("[data-lt]");
+  if (!b) return;
+  const light = b.dataset.lt, name = b.dataset.ltn;
+  let by = ""; try { by = localStorage.getItem("72c-name") || ""; } catch (err) {}
+  try { fetch(CORNER_URL, { method: "POST", mode: "no-cors", body: JSON.stringify({ kind: "light", name, light, by }) }).catch(() => {}); } catch (err) {}
+  try { localStorage.setItem("72c-lights", JSON.stringify([...ltMine(), { name, light, by, at: new Date().toISOString(), t: Date.now() }].slice(-50))); } catch (err) {}
+  renderCorner();
+});
 /* ---------- Comments on players (Scouting Corner cards and every Filtered Rankings row) ----------
    Kept on the "Comments" tab of Tobey's Google Sheet (scripts/visit_log.gs), one row each, and matched to a
    player by name (any accents or word order), so a comment made on Filtered Rankings also shows on the
