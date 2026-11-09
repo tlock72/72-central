@@ -503,7 +503,8 @@ select.sq-in option{background:var(--navy-2);color:var(--white)}
 .cn-tile.lt-g{border-left:5px solid var(--lt-g)}.cn-tile.lt-a{border-left:5px solid var(--lt-a)}.cn-tile.lt-r{border-left:5px solid var(--lt-r)}
 .lt-dot{display:inline-block;width:12px;height:12px;border-radius:50%;margin-right:8px;vertical-align:1px;box-shadow:0 0 8px currentColor;background:currentColor}
 .lt-dot.g{color:var(--lt-g)}.lt-dot.a{color:var(--lt-a)}.lt-dot.r{color:var(--lt-r)}
-.lt-key{display:flex;flex-wrap:wrap;gap:6px 18px;font-size:12px;color:var(--muted);margin-top:4px}
+.lt-key{margin-top:8px;flex-wrap:wrap}
+.lt-key .chip{display:inline-flex;align-items:center}
 .lt-key[hidden]{display:none}
 .lt-key .lt-dot{width:10px;height:10px;margin-right:6px}
 .lt-pick button small{font-family:var(--body);text-transform:none;letter-spacing:.02em;font-size:11px;opacity:.8}
@@ -1829,9 +1830,9 @@ dialog.tmd[open]{animation:pop .28s ease}
         <input class="sq-in" id="cnQ" type="search" placeholder="Search prospect" aria-label="Search prospect">
       </div>
       <div class="sq-line" id="cnSortLine">
-        <div class="chips" role="group" aria-label="Sort"><button class="chip cns on" data-s="">Top ranked</button><button class="chip cns" data-s="young">Youngest</button><button class="chip cns" data-s="old">Oldest</button><button class="chip cns" data-s="new">Newest added</button><button class="chip cns" data-s="first">First added</button></div>
+        <div class="chips" role="group" aria-label="Sort"><button class="chip cns on" data-s="light">Traffic light</button><button class="chip cns" data-s="">Top ranked</button><button class="chip cns" data-s="young">Youngest</button><button class="chip cns" data-s="old">Oldest</button><button class="chip cns" data-s="new">Newest added</button><button class="chip cns" data-s="first">First added</button></div>
       </div>
-      <div class="lt-key" id="cnKey"><span><i class="lt-dot g"></i>Sign if we can</span><span><i class="lt-dot a"></i>Keeping an eye on</span><span><i class="lt-dot r"></i>Aware of, not pursuing</span></div>
+      <div class="chips lt-key" id="cnKey" role="group" aria-label="Traffic light"><button class="chip cnl on" data-l="">All lights</button><button class="chip cnl" data-l="g"><i class="lt-dot g"></i>Sign if we can</button><button class="chip cnl" data-l="a"><i class="lt-dot a"></i>Keeping an eye on</button><button class="chip cnl" data-l="r"><i class="lt-dot r"></i>Aware of, not pursuing</button><button class="chip cnl" data-l="none">No light</button></div>
     </div>
     <div class="cn-list" id="cnList"><div class="sq-empty">Loading the watch list…</div></div>
     <p class="src" id="cnSrc"></p>
@@ -3587,7 +3588,7 @@ async function loadScouting(){
 const CORNER_URL = "https://script.google.com/macros/s/AKfycbwzEb0YNoDmZaaJ5fQg05ubEe_lowMLiGoYaXuclycqQikOngLQEmENPN5KoL_KJXu1kA/exec";  // same as LOG_URL
 let SUGG = null;  // suggest.json: the suggestions' last 12 months of results
 let CORNER = null, CN_SHEET = [], CN_SHEET_OK = false, CN_REMOVED = [], CN_ASKED = [];
-const CN = { g: "", q: "", s: "", rm: "", view: "", add: "", open: "" };
+const CN = { g: "", q: "", s: "light", lt: "", rm: "", view: "", add: "", open: "" };
 try { CN.view = localStorage.getItem("72c-cnview") === "sug" ? "sug" : ""; } catch (e) {}
 const cnKey = s => String(s || "").split("|")[0].normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLowerCase().replace(/[^a-z]/g, "");
 const CN_SRC = { te: "Tennis Europe", "itf-jr": "ITF Juniors", "itf-pro": "Pro: ATP/WTA, Challenger, ITF" };
@@ -3934,6 +3935,8 @@ const cnOrd = r => r || 1e6, cnTeBest = p => Math.min(...(p.te || []).map(t => t
 // Anyone missing a birth year or added day goes last.
 function cnPick(a, b){
   if (!CN.s) return 0;
+  // "Traffic light" (the default): green, amber, red, then no light; A-Z by name within each
+  if (CN.s === "light") { const o = p => "gar".indexOf(ltFor(p)?.light) + 1 || 4; return o(a) - o(b) || a.name.localeCompare(b.name); }
   const age = CN.s === "young" || CN.s === "old";
   const v = p => age ? (+p.born || 0) : !p.added ? "" : p.added + String(CN_SHEET.findIndex(x => cnKey(x.name) === cnKey(p.typed || p.name)) + 1).padStart(5, "0");
   const x = v(a), y = v(b);
@@ -4092,15 +4095,17 @@ function renderCorner(){
   const P = cnShown(), gone = new Set(CN_REMOVED.map(cnKey));
   document.querySelectorAll(".cng").forEach(b => b.classList.toggle("on", b.dataset.g === CN.g));
   document.querySelectorAll(".cns").forEach(b => b.classList.toggle("on", b.dataset.s === CN.s));
+  document.querySelectorAll(".cnl").forEach(b => b.classList.toggle("on", b.dataset.l === CN.lt));
   // names added on the site that GitHub hasn't looked up yet
   const waiting = [...CN_SHEET, ...cnLocal()].filter((x, i, a) => x.name && !P[cnKey(x.name)] && !gone.has(cnKey(x.name)) && a.findIndex(y => cnKey(y.name) === cnKey(x.name)) === i);
   const q = cnKey(CN.q);
   const keep = (name, g) => (!CN.g || g === CN.g) && (!q || cnKey(name).includes(q));
-  const cards = Object.entries(P).filter(([k, p]) => keep(p.name, p.g))
+  const ltOk = p => !CN.lt || (ltFor(p)?.light || "none") === CN.lt;  // the traffic light filter
+  const cards = Object.entries(P).filter(([k, p]) => keep(p.name, p.g) && ltOk(p))
     // the picked sort first (age or day added), then ATP/WTA rank, then ITF Juniors, then best Tennis Europe rank, then name
     .sort((a, b) => cnPick(a[1], b[1]) || cnOrd(a[1].pro?.rank || a[1].itfPro?.rank) - cnOrd(b[1].pro?.rank || b[1].itfPro?.rank) || cnOrd(a[1].itfJr?.rank) - cnOrd(b[1].itfJr?.rank) || cnOrd(cnTeBest(a[1])) - cnOrd(cnTeBest(b[1])) || a[1].name.localeCompare(b[1].name))
     .map(([k, p]) => cnTile(k, p));
-  const wait = waiting.filter(x => keep(x.name, x.g)).map(x => `<div class="cn cn-wait"><div class="cn-h"><span class="nm">${esc(cnTidy(x.name))}</span><span class="mt">Looking up… usually within 10 minutes${x.by ? " · added by " + esc(x.by) : ""}</span></div>
+  const wait = waiting.filter(x => keep(x.name, x.g) && (!CN.lt || CN.lt === "none")).map(x => `<div class="cn cn-wait"><div class="cn-h"><span class="nm">${esc(cnTidy(x.name))}</span><span class="mt">Looking up… usually within 10 minutes${x.by ? " · added by " + esc(x.by) : ""}</span></div>
     <div class="cn-acts" style="padding:8px 0">${cmBtn("cnw:" + cnKey(x.name), [x.name], "lg")}</div>${cmLog("cnw:" + cnKey(x.name), cnTidy(x.name), [x.name])}</div>`);
   $("#cnList").innerHTML = [...wait, ...cards].join("") || `<div class="sq-empty">${CORNER ? (Object.keys(P).length ? "No prospect matches." : "No prospects yet. Add the first one above.") : "Loading the watch list…"}</div>`;
   $("#cnSrc").textContent = CORNER?.checked ? `Sources: Tennis Europe (internal use only), the ITF and the official ATP/WTA rankings. Last updated ${new Date(CORNER.checked).toLocaleString("en-GB", { timeZone: MYTZ, day:"numeric", month:"short", hour:"2-digit", minute:"2-digit" })} your time.` : "";
@@ -4171,6 +4176,7 @@ $("#cnList").addEventListener("submit", cnRmSubmit);
 $("#cnd").addEventListener("submit", cnRmSubmit);
 document.querySelectorAll(".cng").forEach(b => b.addEventListener("click", () => { CN.g = b.dataset.g; renderCorner(); }));
 document.querySelectorAll(".cns").forEach(b => b.addEventListener("click", () => { CN.s = b.dataset.s; renderCorner(); }));
+document.querySelectorAll(".cnl").forEach(b => b.addEventListener("click", () => { CN.lt = b.dataset.l; renderCorner(); }));
 document.querySelectorAll(".cnv").forEach(b => b.addEventListener("click", () => { CN.view = b.dataset.v; CN.add = ""; try { localStorage.setItem("72c-cnview", CN.view); } catch (e) {} renderCorner(); }));
 $("#cnQ").addEventListener("input", e => { CN.q = e.target.value; renderCorner(); });
 /* Nation box: a dropdown of nations that narrows as you type (name or 3-letter code). The code is what gets sent (ITF/IOC style, e.g. GBR, SUI, GER). */
