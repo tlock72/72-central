@@ -205,7 +205,7 @@ def itf_missed(matches, cutoff):
         last = None  # (start, stage, match): the last missed match
         mine = [m for m in matches if rid in (m.get("p1Id"), m.get("p2Id"))]
         for r in rec.get("results") or []:
-            if r.get("src") != "itf-pro" or r.get("res") not in ("W", "L"):
+            if r.get("src") != "itf-pro" or r.get("res") not in ("W", "L") or r.get("x"):  # x: Tennis Explorer fill-in, not the ITF
                 continue
             if r.get("cat") not in ("ITF", "CH") or (r.get("start") or "") < cutoff:
                 continue  # ATP/WTA events come from ESPN; older than the site's 7 days

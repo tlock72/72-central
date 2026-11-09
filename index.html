@@ -3820,7 +3820,8 @@ function rsOpen(k){
   const card = g => {
     const w = g.m.filter(m => m.res === "W").length, l = g.m.filter(m => m.res === "L").length;
     const when = g.start && g.end && g.start !== g.end ? `${fmt(g.start).replace(/ \d{4}$/, "")} – ${fmt(g.end)}` : fmt(g.end || g.start);
-    const sub = [when, g.cat, g.where, srcs.length > 1 ? CN_SRC[g.src] || g.src : ""].filter(Boolean).map(esc).join(" · ");
+    // x: this week's matches from Tennis Explorer (scripts/recent.py) until the ITF lists the tournament
+    const sub = [when, g.cat, g.where, srcs.length > 1 ? CN_SRC[g.src] || g.src : "", g.m.some(m => m.x) ? "Live results, not on the ITF yet" : ""].filter(Boolean).map(esc).join(" · ");
     return `<div class="rs-tn"><div class="rs-th"><div class="t"><b>${g.link ? `<a href="${esc(g.link)}" target="_blank" rel="noopener">${esc(g.t)}</a>` : esc(g.t)}</b><small>${sub}</small></div>
       <div class="o">${RS.f ? "" : outcome(g)}<small>${w}-${l}</small></div></div>
       ${g.m.map(m => `<div class="rs-m ${m.res}"><span class="rd" title="${esc(m.r)}">${esc(rsRd(m.r))}</span><span class="wl ${m.res}">${m.res || "–"}</span><span class="op">${m.res === "W" ? "def." : m.res === "L" ? "lost to" : "v"} ${esc(m.o)}${m.on ? `<small>${esc(m.on)}</small>` : ""}</span><span class="sc">${esc(m.s)}</span></div>`).join("")}</div>`;

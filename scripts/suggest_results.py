@@ -204,6 +204,13 @@ def main():
         res.sort(key=lambda r: (r["end"], r["start"]), reverse=True)
         rec.update({"name": c["name"], "results": res, "w": sum(r["res"] == "W" for r in res), "l": sum(r["res"] == "L" for r in res),
                     "day": T.isoformat(), "updated": P.iso(NOW)})
+    # this week's matches the ITF hasn't listed yet, from Tennis Explorer (recent.py), every 3 hours per player
+    pros = [k for k in want if want[k]["tour"] in ("atp", "wta") and (players.get(k) or {}).get("results")]
+    for k in pros:
+        players[k]["_who"] = (want[k]["name"], want[k]["nat"], want[k]["g"], True)
+    P.fill_in([players[k] for k in pros], lambda rec: rec.pop("_who"))
+    for k in pros:
+        players[k].pop("_who", None)
     # links made on the closest name are alerted once each (report_gaps.py), so a wrong one can be spotted
     data["checks"] = [f"Suggestions: {r['name']} linked to the ITF player {r['itfName']} (id {r['itf']}) by {r['how']}. "
                       f"If that's the wrong player, add their name to NO_ITF_LINK in scripts/suggest_results.py."

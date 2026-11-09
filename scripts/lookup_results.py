@@ -186,6 +186,8 @@ def main():
             continue
         row, week = find_row(tour, name, url, files)
         rec = {"tour": tour, "name": name, "day": today, "updated": P.iso(NOW)}
+        if old.get("tx"):
+            rec["tx"] = old["tx"]  # the Tennis Explorer link (recent.py) is kept
         if not row:
             if old.get("results"):  # off the list now: the results already read stay, checked again tomorrow
                 rec = dict(old, day=today)
@@ -257,6 +259,24 @@ def main():
         rec["name"] = rname
         json.dump(rec, open(path_of(tour, name), "w"), ensure_ascii=False, separators=(",", ":"))
         changed = True
+    # this week's matches the ITF hasn't listed yet, from Tennis Explorer (recent.py), every 3 hours per player
+    pending = []
+    for f in sorted(os.listdir(DIR)):
+        if f in ("status.json", INDEX_NAME) or not f.endswith(".json"):
+            continue
+        rec = P.load(os.path.join(DIR, f), {})
+        if not isinstance(rec, dict) or rec.get("tour") not in LISTS or not rec.get("results"):
+            continue
+        row, _ = find_row(rec["tour"], rec["name"], rec.get("url") or "", files)
+        rec["_who"] = (rec["name"], (row[2] if row else None) or None, LISTS[rec["tour"]][2], rec["tour"] in ("atp", "wta"))
+        rec["_f"] = os.path.join(DIR, f)
+        rec["_was"] = json.dumps(rec.get("results")) + json.dumps(rec.get("tx"))
+        pending.append(rec)
+    P.fill_in(pending, lambda rec: rec["_who"])
+    for rec in pending:
+        f, was = rec.pop("_f"), rec.pop("_was"); rec.pop("_who", None)
+        if json.dumps(rec.get("results")) + json.dumps(rec.get("tx")) != was:
+            json.dump(rec, open(f, "w"), ensure_ascii=False, separators=(",", ":")); changed = True
     have = sorted(f[:-5] for f in os.listdir(DIR) if f.endswith(".json") and f not in ("status.json", INDEX_NAME)
                   and (P.load(os.path.join(DIR, f), {}) or {}).get("results"))
     index = os.path.join(DIR, INDEX_NAME)
