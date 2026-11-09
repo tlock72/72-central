@@ -503,6 +503,10 @@ select.sq-in option{background:var(--navy-2);color:var(--white)}
 .cn-tile.lt-g{border-left:5px solid var(--lt-g)}.cn-tile.lt-a{border-left:5px solid var(--lt-a)}.cn-tile.lt-r{border-left:5px solid var(--lt-r)}
 .lt-dot{display:inline-block;width:12px;height:12px;border-radius:50%;margin-right:8px;vertical-align:1px;box-shadow:0 0 8px currentColor;background:currentColor}
 .lt-dot.g{color:var(--lt-g)}.lt-dot.a{color:var(--lt-a)}.lt-dot.r{color:var(--lt-r)}
+.lt-key{display:flex;flex-wrap:wrap;gap:6px 18px;font-size:12px;color:var(--muted);margin-top:4px}
+.lt-key[hidden]{display:none}
+.lt-key .lt-dot{width:10px;height:10px;margin-right:6px}
+.lt-pick button small{font-family:var(--body);text-transform:none;letter-spacing:.02em;font-size:11px;opacity:.8}
 .lt-pick{display:flex;flex-wrap:wrap;align-items:center;gap:8px;padding:0 20px 6px}
 .lt-pick button{display:inline-flex;align-items:center;gap:7px;padding:6px 14px;border:1px solid var(--line);border-radius:999px;background:transparent;color:var(--text);font-family:var(--display);text-transform:uppercase;letter-spacing:.12em;font-size:11px;cursor:pointer}
 .lt-pick button i{width:11px;height:11px;border-radius:50%;opacity:.45}
@@ -1827,6 +1831,7 @@ dialog.tmd[open]{animation:pop .28s ease}
       <div class="sq-line" id="cnSortLine">
         <div class="chips" role="group" aria-label="Sort"><button class="chip cns on" data-s="">Top ranked</button><button class="chip cns" data-s="young">Youngest</button><button class="chip cns" data-s="old">Oldest</button><button class="chip cns" data-s="new">Newest added</button><button class="chip cns" data-s="first">First added</button></div>
       </div>
+      <div class="lt-key" id="cnKey"><span><i class="lt-dot g"></i>Sign if we can</span><span><i class="lt-dot a"></i>Keeping an eye on</span><span><i class="lt-dot r"></i>Aware of, not pursuing</span></div>
     </div>
     <div class="cn-list" id="cnList"><div class="sq-empty">Loading the watch list…</div></div>
     <p class="src" id="cnSrc"></p>
@@ -3703,7 +3708,7 @@ function cnTile(k, p){
   const meta = [p.nat, p.born ? "born " + p.born : "", M ? `${M.lb} No. ${M.rank}`.replace(/ /g, " ") : "Not ranked yet"].filter(Boolean).join(" · ");
   const res = p.results || [], won = res.filter(r => r.res === "W").length, lost = res.filter(r => r.res === "L").length;
   const L = ltFor(p);
-  return `<div class="cn cn-tile${L ? " lt-" + L.light : ""}" data-cnp="${esc(k)}" role="button" tabindex="0" aria-label="Open ${esc(p.name)}'s profile${L ? ` (${LT_NAME[L.light]} light)` : ""}"><div class="cn-h"><span class="nm">${L ? `<span class="lt-dot ${L.light}" title="${LT_NAME[L.light]} light${L.by ? ", set by " + esc(L.by) : ""}"></span>` : ""}${esc(p.name)}</span><span class="mt">${esc(meta)}</span></div>
+  return `<div class="cn cn-tile${L ? " lt-" + L.light : ""}" data-cnp="${esc(k)}" role="button" tabindex="0" aria-label="Open ${esc(p.name)}'s profile${L ? ` (${LT_NAME[L.light]}: ${LT_MEAN[L.light]})` : ""}"><div class="cn-h"><span class="nm">${L ? `<span class="lt-dot ${L.light}" title="${LT_NAME[L.light]}: ${LT_MEAN[L.light]}${L.by ? ", set by " + esc(L.by) : ""}"></span>` : ""}${esc(p.name)}</span><span class="mt">${esc(meta)}</span></div>
     <div class="sg-why">${why.filter(Boolean).join("")}</div>
     ${res.length ? `<div class="sg-wl">Last 12 months <b>${won}-${lost}</b><span>${cnYears(res)}</span></div>` : ""}
     <div class="cn-open"><span class="ar" aria-hidden="true">›</span>Profile<span class="lg">, results &amp; comments</span></div></div>`;
@@ -4075,7 +4080,7 @@ function renderCorner(){
   if (!$("#page-corner")) return;
   const sug = CN.view === "sug";
   document.querySelectorAll(".cnv").forEach(b => b.classList.toggle("on", b.dataset.v === CN.view));
-  $(".cn-add").hidden = sug; $("#cnSortLine").hidden = sug;
+  $(".cn-add").hidden = sug; $("#cnSortLine").hidden = sug; $("#cnKey").hidden = sug;
   $("#cnQ").placeholder = sug ? "Search players" : "Search prospect";
   $("#cnList").classList.toggle("cn-two", !sug);  // watch list: two tiles side by side
   if (sug) {
@@ -4321,6 +4326,8 @@ async function loadCorner(){
    Matched by name in any word order, like comments. A change made here shows at once and is kept on this device
    until the Sheet lists it (10 minutes once the Sheet has been read). */
 const LT_NAME = { g: "Green", a: "Amber", r: "Red" };
+// what each colour means (Tobey's call); also in the key above the watch list (#cnKey)
+const LT_MEAN = { g: "Sign if we can", a: "Keeping an eye on", r: "Aware of, not pursuing" };
 let LT_SHEET = [], LT_OK = false;
 try { const c = JSON.parse(localStorage.getItem("72c-ltlist") || "[]"); if (Array.isArray(c)) LT_SHEET = c; } catch (e) {}
 async function loadLights(){
@@ -4338,9 +4345,9 @@ function ltFor(p){
 }
 function ltPick(p){
   const L = ltFor(p), name = p.typed || p.name;
-  const b = c => `<button type="button" class="${c}${L?.light === c ? " on" : ""}" data-lt="${c}" data-ltn="${esc(name)}" aria-pressed="${L?.light === c}"><i></i>${LT_NAME[c]}</button>`;
+  const b = c => `<button type="button" class="${c}${L?.light === c ? " on" : ""}" data-lt="${c}" data-ltn="${esc(name)}" aria-pressed="${L?.light === c}"><i></i>${LT_NAME[c]} <small>${LT_MEAN[c]}</small></button>`;
   return `<h4>Traffic light</h4><div class="lt-pick">${b("g")}${b("a")}${b("r")}${L ? `<button type="button" class="clr" data-lt="x" data-ltn="${esc(name)}">Clear</button>` : ""}
-    <span class="who">${L ? `${LT_NAME[L.light]}${L.by ? `, set by ${esc(L.by)}` : ""} · ${esc(cmWhen(L.at))}. Everyone sees it on the tile.` : "No light yet. Pick one to show it on this prospect's tile."}</span></div>`;
+    <span class="who">${L ? `${LT_NAME[L.light]} (${LT_MEAN[L.light].toLowerCase()})${L.by ? `, set by ${esc(L.by)}` : ""} · ${esc(cmWhen(L.at))}. Everyone sees it on the tile.` : "No light yet. Pick one to show it on this prospect's tile."}</span></div>`;
 }
 document.addEventListener("click", e => {
   const b = e.target.closest("[data-lt]");
