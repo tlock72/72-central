@@ -142,9 +142,34 @@ def score_of(match, won):
     return ", ".join(sets)
 
 
-def main():
+def roster_people():
+    """The 72 juniors: {roster id: (ITF id, surname)} from itf.json."""
+    itf = json.load(open("itf.json"))
+    return {rid: (rec.get("itfId"), surname(rid)) for rid, rec in itf.get("players", {}).items()
+            if rec.get("itfId") and not rec.get("noItf")}
+
+
+def watch_people():
+    """Scouting Corner watch list juniors (18 and under, linked to the ITF by prospects.py): {corner.json key: (ITF id,
+    surname)}. Their matches go to itfm_sc.json for the watch list's "Scores & results", never to the 72 pages."""
     try:
-        out = json.load(open("itfm.json"))
+        corner = json.load(open("corner.json"))
+    except (FileNotFoundError, json.JSONDecodeError):
+        return {}
+    out = {}
+    for k, p in (corner.get("players") or {}).items():
+        li = (p.get("links") or {}).get("itf") or {}
+        young = (p.get("born") and T.year - int(p["born"]) <= 18) or (not p.get("born") and (p.get("itfJr") or {}).get("rank"))
+        if li.get("status") == "linked" and li.get("id") and young:
+            out[k] = (li["id"], (p.get("name") or "").split()[-1].lower() if p.get("name") else "")
+    return out
+
+
+def main(path="itfm.json", people=None):
+    if people is None:
+        people = roster_people()
+    try:
+        out = json.load(open(path))
     except (FileNotFoundError, json.JSONDecodeError):
         out = {}
     def ago(k):
@@ -162,7 +187,7 @@ def main():
     if not force and NOW.astimezone(UK).hour < 7:
         return
     if not force and ago("blocked") < timedelta(hours=3):
-        print("ITF bot check was hit recently - next check later"); return
+        print("ITF bot check was hit recently - next check later"); return "blocked"
     if force or ago("tried") >= timedelta(hours=11):
         only = None   # full check
     elif waiting and ago("quick") >= timedelta(minutes=55):
@@ -173,12 +198,10 @@ def main():
         print("ITF matches checked", out.get("tried"), "- next check later"); return
     if only is None:
         out["tried"] = NOW.strftime("%Y-%m-%dT%H:%M:%SZ")
-    itf = json.load(open("itf.json"))
     found, cache, blocked, done = {}, {}, False, set()
 
-    for rid, rec in itf.get("players", {}).items():
-        pid = rec.get("itfId")
-        if not pid or rec.get("noItf") or (only is not None and rid not in only):
+    for rid, (pid, me_name) in people.items():
+        if not pid or (only is not None and rid not in only):
             continue
         try:
             act = get("/PlayerApi/GetPlayerActivity", circuitCode="JT", matchTypeCode="S", playerId=pid, skip=0, take=3)
@@ -188,6 +211,7 @@ def main():
             print("activity failed", rid, e); continue
         me = rid
         done.add(rid)
+        me_name = me_name or ""
         for t in act.get("items") or []:
             start, end = dates_of(t.get("dates"))
             if not start or end < T - timedelta(days=2) or start > T + timedelta(days=2):
@@ -213,7 +237,7 @@ def main():
                     if qual:
                         rnd = "Q-" + rnd if rnd else "Qualifying"
                     oname = short(opp.get("givenName"), opp.get("familyName"))
-                    o = oop.get(mid) or by_names(oop, pid, surname(me), opp)
+                    o = oop.get(mid) or by_names(oop, pid, me_name, opp)
                     rc = (m.get("resultCode") or "").upper()
                     status_code = (m.get("resultStatusCode") or "").upper()
                     base = {"matchId": mid, "source": "itf", "tournament": name, "category": f"ITF Juniors · {t.get('tourCode') or ''}".strip(" ·"),
@@ -267,9 +291,9 @@ def main():
         # keep what we had; try again later
         if blocked:
             out["blocked"] = NOW.strftime("%Y-%m-%dT%H:%M:%SZ")
-        with open("itfm.json", "w") as f:
+        with open(path, "w") as f:
             json.dump(out, f, ensure_ascii=False, separators=(",", ":"))
-        return
+        return "blocked" if blocked else None
 
     keep_from = (T - timedelta(days=7)).isoformat()
     merged = dict(found)
@@ -283,10 +307,15 @@ def main():
     out["matches"] = sorted(merged.values(), key=lambda m: (m["date"], m["tournament"]))
     if only is None:
         out["checked"] = NOW.strftime("%Y-%m-%dT%H:%M:%SZ")
-    with open("itfm.json", "w") as f:
+    with open(path, "w") as f:
         json.dump(out, f, ensure_ascii=False, separators=(",", ":"))
-    print(f"done: {len(out['matches'])} ITF junior matches")
+    print(f"done: {len(out['matches'])} ITF junior matches ({path})")
 
 
 if __name__ == "__main__":
-    main()
+    # the 72 juniors first, then (unless the ITF's bot check was just hit) the watch list juniors
+    if main() != "blocked":
+        sc = watch_people()
+        if sc:
+            print("Watch list juniors:", ", ".join(sorted(sc)))
+            main("itfm_sc.json", sc)

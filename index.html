@@ -4189,6 +4189,7 @@ function renderCorner(){
    never a guessed winner. Juniors (not on Tennis Explorer): their next ITF junior match once the draw is out, time not
    known. Closed by default so the tiles stay the main view; open/closed is remembered on this device. Tap = profile. */
 const CN_FEED = { open: false };
+let ITFM_SC = null, TE_SC = null;  // itfm_sc.json: the watch list juniors' ITF junior matches (scripts/itf_matches.py, about hourly)
 try { CN_FEED.open = localStorage.getItem("72c-cnfeed") === "1"; } catch (e) {}
 function cnFeed(list){
   const box = $("#cnFeed");
@@ -4214,21 +4215,35 @@ function cnFeed(list){
     else if (e.st === "done" || e.st === "open") { if (!ms || nowMs - ms <= 24 * H + 5 * H) past.push({ e, p, ms }); }  // finished within the last day
     else if (e.st === "next" && (!ms || (ms - nowMs <= 24 * H && nowMs - ms <= 3 * H))) next.push({ e, p, ms });
   }
-  // juniors: the next ITF junior match once the draw is out (no time from the ITF)
-  for (const [k, p] of list) {
-    if ((p.tx || {}).slug) continue;
-    const r = (p.results || []).filter(r => !r.res && r.o && r.start <= today && r.end >= today)[0];
-    if (r) next.push({ e: { k, t: r.t, r: r.r, o: r.o, at: "", jr: true }, p, ms: null });
+  // juniors: ITF junior matches from itfm_sc.json (draws, the ITF's own order of play and results, about hourly).
+  // The ITF gives the day and court slot in the venue's local time, not an exact start, so these show the slot.
+  const yIso = myDate(new Date(nowMs - 864e5)), tIso = myDate(new Date(nowMs + 864e5));
+  const flipSc = sc => String(sc || "").replace(/(\d+)-(\d+)/g, "$2-$1");
+  const jrMs = [...(ITFM_SC?.matches || []).map(m => ({ ...m, jrSrc: "ITF junior" })), ...(TE_SC?.matches || []).map(m => ({ ...m, jrSrc: "Tennis Europe" }))];
+  for (const m of jrMs) {
+    const k = m.p1Id || m.p2Id, p = shown.get(k);
+    if (!p) continue;
+    const opp = m.p1Id === k ? m.p2 : m.p1, base = { k, t: m.tournament, r: m.round, o: opp, jr: m.jrSrc };
+    if (m.status === "finished" && m.date >= yIso && m.date <= today) {
+      const won = m.p1Id === k;
+      past.push({ e: { ...base, st: "done", res: won ? "W" : "L", s: won ? m.score : flipSc(m.score), day: m.date }, p, ms: Date.parse(m.date + "T12:00:00Z") });
+    } else if (m.status === "scheduled" && m.date >= today && m.date <= tIso) {
+      next.push({ e: { ...base, st: "next", slot: m.tbc ? "" : m.slot, day: m.date, tbc: m.tbc }, p, ms: Date.parse(m.date + "T12:00:00Z") });
+    }
   }
   past.sort((a, b) => (b.ms || 0) - (a.ms || 0));
   next.sort((a, b) => (a.ms || 9e15) - (b.ms || 9e15));
   const row = (k, p, badge, right, right2, ev) => `<div class="cn-fr" data-cnp="${esc(k)}" role="button" tabindex="0"><span class="who">${dot(p)}${esc(p.name)}</span><span class="rs">${badge}${right}</span><span class="rs2">${esc(right2)}</span><span class="fe">${ev}</span></div>`;
   const ev = e => `<b>${esc(tidyT(e.t))}</b>${e.r ? " · " + esc(rsRd(e.r)) : ""}`;
   const liveRows = live.map(({ e, p }) => row(e.k, p, `<em class="LV">Live</em>`, `${esc(e.s)}`, `v ${e.o}${e.sets ? ` · sets ${e.sets[0]}-${e.sets[1]}` : ""}`, ev(e)));
+  const jrDay = d => d === today ? "Today" : d === yIso ? "Yesterday" : d === tIso ? "Tomorrow" : schFmt(d, { weekday: "short" });
+  const whenOf = e => e.jr ? jrDay(e.day) : when(e.at);
   const pastRows = past.map(({ e, p }) => e.st === "open"
     ? row(e.k, p, `<em>No final score yet</em>`, "", `v ${e.o} · last seen ${e.s} · ${when(e.at)}`, ev(e))
-    : row(e.k, p, `<em class="${e.res}">${e.res === "W" ? "Won" : "Lost"}</em>`, esc(e.s), `${e.res === "W" ? "def." : "lost to"} ${e.o} · ${when(e.at)}`, ev(e)));
-  const nextRows = next.map(({ e, p }) => row(e.k, p, `<em class="N">Next</em>`, esc(when(e.at)), `v ${e.o}${e.jr ? " · ITF junior" : ""}`, ev(e)));
+    : row(e.k, p, `<em class="${e.res}">${e.res === "W" ? "Won" : "Lost"}</em>`, esc(e.s), `${e.res === "W" ? "def." : "lost to"} ${e.o} · ${whenOf(e)}${e.jr ? " · " + e.jr : ""}`, ev(e)));
+  const nextRows = next.map(({ e, p }) => e.jr
+    ? row(e.k, p, `<em class="N">Next</em>`, esc(e.tbc ? "Day TBC" : jrDay(e.day)), `v ${e.o} · ${e.slot ? e.slot + " (local time)" : "court and time not out yet"} · ${e.jr}`, ev(e))
+    : row(e.k, p, `<em class="N">Next</em>`, esc(when(e.at)), `v ${e.o}`, ev(e)));
   const sum = [liveRows.length ? `${liveRows.length} live` : "", pastRows.length ? `${pastRows.length} result${pastRows.length === 1 ? "" : "s"}` : "", nextRows.length ? `${nextRows.length} coming up` : ""].filter(Boolean).join(" · ") || "No matches in the last or next 24 hours";
   const upd = CORNER.liveAt ? new Date(CORNER.liveAt).toLocaleTimeString("en-GB", { timeZone: MYTZ, hour: "2-digit", minute: "2-digit" }) : "";
   box.classList.toggle("open", CN_FEED.open);
@@ -4238,7 +4253,7 @@ function cnFeed(list){
       ${liveRows.length ? `<h5>Live</h5>${liveRows.join("")}` : ""}
       <h5>Last 24 hours</h5>${pastRows.join("") || `<p class="cn-fnone">No results in the last 24 hours.</p>`}
       <h5>Next 24 hours</h5>${nextRows.join("") || `<p class="cn-fnone">No matches scheduled in the next 24 hours yet.</p>`}
-      <p class="cn-fsrc">Pro matches from Tennis Explorer, checked about every 30 minutes${upd ? ` (last at ${esc(upd)} your time)` : ""}, so a live score can be up to half an hour behind. Juniors: next ITF junior match only.</p>
+      <p class="cn-fsrc">Pro matches from Tennis Explorer, checked about every 30 minutes${upd ? ` (last at ${esc(upd)} your time)` : ""}, so a live score can be up to half an hour behind. Juniors from the ITF's and Tennis Europe's draws and orders of play, checked about every hour (neither has live scores).</p>
     </div>`;
 }
 $("#cnFeed").addEventListener("click", e => {
@@ -4461,6 +4476,9 @@ async function loadCorner(){
   const cmP = Promise.all([loadComments(), loadLights()]);  // read alongside the rest
   try { const r = await fetch("corner.json?t=" + Date.now(), { cache: "no-store" }); if (r.ok) CORNER = await r.json(); else if (!CORNER) CORNER = { players: {} }; } catch (e) { if (!CORNER) CORNER = { players: {} }; }
   try { const r = await fetch("suggest.json?t=" + Date.now(), { cache: "no-store" }); if (r.ok) SUGG = await r.json(); } catch (e) {}
+  // watch list juniors' ITF and Tennis Europe matches (itf_matches.py / te_matches.py, about hourly)
+  try { const r = await fetch("itfm_sc.json?t=" + Date.now(), { cache: "no-store" }); if (r.ok) ITFM_SC = await r.json(); } catch (e) {}
+  try { const r = await fetch("te_sc.json?t=" + Date.now(), { cache: "no-store" }); if (r.ok) TE_SC = await r.json(); } catch (e) {}
   renderCorner();  // cards straight away (comments from this device's last read); the Sheet's answers fill in below
   // names added on the site but not looked up yet (the Sheet's list; skipped quietly if it can't be read)
   try {

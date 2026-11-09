@@ -220,9 +220,27 @@ def ranking(pid):
     return [], links
 
 
-def main():
+def watch_people():
+    """Scouting Corner watch list juniors linked to a Tennis Europe profile by prospects.py: ({corner.json key: names},
+    {key: profile id}). Their matches go to te_sc.json for the watch list's "Scores & results", never to the 72 pages."""
     try:
-        data = json.load(open("te.json"))
+        corner = json.load(open("corner.json"))
+    except (FileNotFoundError, json.JSONDecodeError):
+        return {}, {}
+    names, ids = {}, {}
+    for k, p in (corner.get("players") or {}).items():
+        lt = (p.get("links") or {}).get("te") or {}
+        if lt.get("status") == "linked" and lt.get("id") and p.get("name"):
+            names[k] = "|".join(dict.fromkeys([p["name"], p.get("typed") or p["name"]]))
+            ids[k] = lt["id"]
+    return names, ids
+
+
+def main(path="te.json", players=None, known=None, ranks=True):
+    players = PLAYERS if players is None else players
+    known = KNOWN if known is None else known
+    try:
+        data = json.load(open(path))
     except (FileNotFoundError, json.JSONDecodeError):
         data = {}
     previous = {m["matchId"]: m for m in data.get("matches") or []}
@@ -246,10 +264,10 @@ def main():
     found = {}
     try:
         consent()
-        for rid, names in PLAYERS.items():
+        for rid, names in players.items():
             if only is not None and rid not in only:
                 continue
-            pid = profiles.get(rid) or KNOWN.get(rid)
+            pid = known.get(rid) if path != "te.json" else (profiles.get(rid) or known.get(rid))
             if not pid:
                 if profiles.get(rid + ":none") and T.day > 7:
                     continue  # no Tennis Europe profile; looked again on the first days of each month
@@ -267,7 +285,7 @@ def main():
                 raise
             except Exception as e:
                 print("failed", rid, e)
-            if only is None:
+            if only is None and ranks:
                 # rank and career high per category (profile page); kept as it was if the page can't be read
                 try:
                     rows, _ = ranking(pid)
@@ -279,9 +297,9 @@ def main():
                     print("ranking failed", rid, e)
     except Stop as e:
         print(e, "- keeping yesterday's data")
-        with open("te.json", "w") as f:
+        with open(path, "w") as f:
             json.dump(data, f, ensure_ascii=False, separators=(",", ":"))
-        return
+        return "stopped"
     keep_from = (T - timedelta(days=7)).isoformat()
     for mid, m in previous.items():
         if only is not None and (m.get("p1Id") or m.get("p2Id")) not in only and m["date"] >= keep_from:
@@ -290,10 +308,15 @@ def main():
             found[mid] = m
     data["matches"] = sorted(found.values(), key=lambda m: (m["date"], m["tournament"]))
     data["checked"] = NOW.strftime("%Y-%m-%dT%H:%M:%SZ")
-    with open("te.json", "w") as f:
+    with open(path, "w") as f:
         json.dump(data, f, ensure_ascii=False, separators=(",", ":"))
-    print(f"done: {len(data['matches'])} Tennis Europe matches; profiles {sum(1 for k in profiles if ':' not in k)}")
+    print(f"done: {len(data['matches'])} Tennis Europe matches ({path}); profiles {sum(1 for k in profiles if ':' not in k)}")
 
 
 if __name__ == "__main__":
-    main()
+    # the 72 juniors first, then (unless Tennis Europe stopped us) the watch list juniors with a linked profile
+    if main() != "stopped":
+        names, ids = watch_people()
+        if names:
+            print("Watch list juniors:", ", ".join(sorted(names)))
+            main("te_sc.json", names, ids, ranks=False)
