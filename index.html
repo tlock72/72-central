@@ -520,6 +520,12 @@ select.sq-in option{background:var(--navy-2);color:var(--white)}
 .cn.lt-g{border-left:5px solid var(--lt-g)}.cn.lt-a{border-left:5px solid var(--lt-a)}.cn.lt-r{border-left:5px solid var(--lt-r)}
 .lt-dot{display:inline-block;width:12px;height:12px;border-radius:50%;margin-right:8px;vertical-align:1px;box-shadow:0 0 8px currentColor;background:currentColor}
 .lt-dot.g{color:var(--lt-g)}.lt-dot.a{color:var(--lt-a)}.lt-dot.r{color:var(--lt-r)}
+/* Sort + traffic light: two small drop-downs on one line (cnSort / cnLight) instead of rows of buttons */
+.cn-pick{gap:8px}
+.cn-sel{display:flex;align-items:center;gap:8px;flex:0 1 auto;min-width:0}
+.cn-sel>span{font-family:var(--display);font-size:11px;letter-spacing:.14em;text-transform:uppercase;color:var(--muted)}
+#page-corner .cn-sel select.sq-in{flex:0 1 auto;width:auto;max-width:230px;height:34px;font-size:13px}
+#page-corner .cn-sel select.sq-in.on{border-color:var(--gold);color:var(--gold)}
 .lt-key{margin-top:8px;flex-wrap:wrap}
 .lt-key .chip{display:inline-flex;align-items:center}
 .lt-key[hidden]{display:none}
@@ -1344,7 +1350,12 @@ body.on-home > footer{display:none}
   #page-corner .sq-line{display:flex}
   #page-corner .sq-line .chips{flex:none;-webkit-mask-image:none;mask-image:none;padding-right:0}
   #page-corner .sq-line .sq-in{flex:1 1 0}
-  #page-corner #cnSortLine .chips{flex:1 1 auto;flex-wrap:wrap}
+  #page-corner #cnSortLine.cn-pick{display:grid!important;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:8px;width:100%;align-self:stretch;justify-self:stretch}
+  #page-corner #cnSortLine.cn-pick[hidden]{display:none!important}
+  #page-corner #cnSortLine>.cn-sel{width:100%;grid-column:auto}
+  #page-corner .cn-sel{gap:6px}
+  #page-corner .cn-sel>span{font-size:10px;letter-spacing:.1em}
+  #page-corner .cn-sel select.sq-in{flex:1 1 auto;width:100%;max-width:none;height:30px;font-size:12px;padding-left:12px;padding-right:26px;background-position:calc(100% - 14px) 12px,calc(100% - 9px) 12px;text-overflow:ellipsis}
   .stale{margin:8px 0 6px;padding:9px 12px;font-size:12px}
   .src{font-size:11px;margin-top:12px}
   /* Scouting Corner */
@@ -1895,10 +1906,14 @@ dialog.tmd[open]{animation:pop .28s ease}
         <div class="chips" role="group" aria-label="Show"><button class="chip cng on" data-g="">Everyone</button><button class="chip cng" data-g="M">Male</button><button class="chip cng" data-g="F">Female</button></div>
         <input class="sq-in" id="cnQ" type="search" placeholder="Search prospect" aria-label="Search prospect">
       </div>
-      <div class="sq-line" id="cnSortLine">
-        <div class="chips" role="group" aria-label="Sort"><button class="chip cns on" data-s="light">Traffic light</button><button class="chip cns" data-s="">Top ranked</button><button class="chip cns" data-s="young">Youngest</button><button class="chip cns" data-s="old">Oldest</button><button class="chip cns" data-s="new">Newest added</button><button class="chip cns" data-s="first">First added</button></div>
+      <div class="sq-line cn-pick" id="cnSortLine">
+        <label class="cn-sel"><span>Sort</span><select class="sq-in" id="cnSort" aria-label="Sort the watch list">
+          <option value="light">Traffic light</option><option value="">Top ranked</option><option value="young">Youngest</option>
+          <option value="old">Oldest</option><option value="new">Newest added</option><option value="first">First added</option></select></label>
+        <label class="cn-sel"><span>Light</span><select class="sq-in" id="cnLight" aria-label="Show by traffic light">
+          <option value="">All</option><option value="g">🟢 Sign if we can</option><option value="a">🟠 Keeping an eye on</option>
+          <option value="r">🔴 Aware of, not pursuing</option><option value="none">No light</option></select></label>
       </div>
-      <div class="chips lt-key" id="cnKey" role="group" aria-label="Traffic light"><button class="chip cnl on" data-l="">All lights</button><button class="chip cnl" data-l="g"><i class="lt-dot g"></i>Sign if we can</button><button class="chip cnl" data-l="a"><i class="lt-dot a"></i>Keeping an eye on</button><button class="chip cnl" data-l="r"><i class="lt-dot r"></i>Aware of, not pursuing</button><button class="chip cnl" data-l="none">No light</button></div>
     </div>
     <div class="cn-feed" id="cnFeed" hidden></div>
     <div class="cn-list" id="cnList"><div class="sq-empty">Loading the watch list…</div></div>
@@ -4153,7 +4168,7 @@ function renderCorner(){
   if (!$("#page-corner")) return;
   const sug = CN.view === "sug";
   document.querySelectorAll(".cnv").forEach(b => b.classList.toggle("on", b.dataset.v === CN.view));
-  $(".cn-add").hidden = sug; $("#cnSortLine").hidden = sug; $("#cnKey").hidden = sug;
+  $(".cn-add").hidden = sug; $("#cnSortLine").hidden = sug;
   $("#cnQ").placeholder = sug ? "Search players" : "Search prospect";
   $("#cnList").classList.toggle("cn-two", !sug);  // watch list: two tiles side by side
   if (sug) {
@@ -4164,8 +4179,8 @@ function renderCorner(){
   }
   const P = cnShown(), gone = new Set(CN_REMOVED.map(cnKey));
   document.querySelectorAll(".cng").forEach(b => b.classList.toggle("on", b.dataset.g === CN.g));
-  document.querySelectorAll(".cns").forEach(b => b.classList.toggle("on", b.dataset.s === CN.s));
-  document.querySelectorAll(".cnl").forEach(b => b.classList.toggle("on", b.dataset.l === CN.lt));
+  $("#cnSort").value = CN.s; $("#cnLight").value = CN.lt;
+  $("#cnLight").classList.toggle("on", !!CN.lt);  // gold while it's filtering
   // names added on the site that GitHub hasn't looked up yet
   const waiting = [...CN_SHEET, ...cnLocal()].filter((x, i, a) => x.name && !P[cnKey(x.name)] && !gone.has(cnKey(x.name)) && a.findIndex(y => cnKey(y.name) === cnKey(x.name)) === i);
   const q = cnKey(CN.q);
@@ -4326,8 +4341,8 @@ const cnRmSubmit = e => {
 $("#cnList").addEventListener("submit", cnRmSubmit);
 $("#cnd").addEventListener("submit", cnRmSubmit);
 document.querySelectorAll(".cng").forEach(b => b.addEventListener("click", () => { CN.g = b.dataset.g; renderCorner(); }));
-document.querySelectorAll(".cns").forEach(b => b.addEventListener("click", () => { CN.s = b.dataset.s; renderCorner(); }));
-document.querySelectorAll(".cnl").forEach(b => b.addEventListener("click", () => { CN.lt = b.dataset.l; renderCorner(); }));
+$("#cnSort").addEventListener("change", e => { CN.s = e.target.value; renderCorner(); });
+$("#cnLight").addEventListener("change", e => { CN.lt = e.target.value; renderCorner(); });
 document.querySelectorAll(".cnv").forEach(b => b.addEventListener("click", () => { CN.view = b.dataset.v; CN.add = ""; renderCorner(); }));
 $("#cnQ").addEventListener("input", e => { CN.q = e.target.value; renderCorner(); });
 /* Nation box: a dropdown of nations that narrows as you type (name or 3-letter code). The code is what gets sent (ITF/IOC style, e.g. GBR, SUI, GER). */
