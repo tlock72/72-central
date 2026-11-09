@@ -525,6 +525,37 @@ select.sq-in option{background:var(--navy-2);color:var(--white)}
 .lt-key[hidden]{display:none}
 .lt-key .lt-dot{width:10px;height:10px;margin-right:6px}
 .lt-pick button small{font-family:var(--body);text-transform:none;letter-spacing:.02em;font-size:11px;opacity:.8}
+/* Watch list "Scores & results" (cnFeed): one slim bar above the tiles, closed by default; opens to a compact list */
+.cn-feed{margin:0 0 14px;border:1px solid var(--line-2);border-radius:14px;background:linear-gradient(180deg,var(--navy-2),rgba(17,27,63,.55))}
+.cn-feed[hidden]{display:none}
+.cn-feed>button{display:flex;align-items:center;gap:10px;width:100%;padding:10px 16px;background:none;border:0;color:var(--text);cursor:pointer;text-align:left;font:inherit}
+.cn-feed>button b{font-family:var(--display);font-weight:500;text-transform:uppercase;letter-spacing:.14em;font-size:12px;color:var(--gold);white-space:nowrap}
+.cn-feed>button span{flex:1;min-width:0;font-size:12px;color:var(--muted);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.cn-feed>button i{font-style:normal;color:var(--gold);font-size:16px;line-height:1;transition:transform .2s}
+.cn-feed.open>button i{transform:rotate(90deg)}
+.cn-fd{display:none;padding:0 16px 12px}
+.cn-feed.open .cn-fd{display:block}
+.cn-fd h5{margin:10px 0 6px;font-family:var(--display);font-weight:500;text-transform:uppercase;letter-spacing:.14em;font-size:10.5px;color:var(--muted)}
+.cn-fr{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:2px 12px;align-items:baseline;padding:8px 10px;border-top:1px solid var(--line-2);font-size:13px;cursor:pointer;border-radius:8px}
+.cn-fr:hover,.cn-fr:focus-visible{background:var(--gold-dim);outline:none}
+.cn-fr .who{font-weight:600;color:var(--white);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.cn-fr .who .lt-dot{width:9px;height:9px;margin-right:6px;vertical-align:0}
+.cn-fr .fe{grid-column:1;min-width:0;font-size:12px;color:var(--muted);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.cn-fr .fe b{font-weight:500;color:var(--text)}
+.cn-fr .rs{grid-column:2;grid-row:1;text-align:right;white-space:nowrap;font-size:12px;color:var(--text)}
+.cn-fr .rs em{font-style:normal;display:inline-block;margin-right:6px;padding:1px 7px;border-radius:6px;font-family:var(--display);font-size:11px;letter-spacing:.04em;color:var(--navy);background:var(--muted)}
+.cn-fr .rs em.W{background:var(--up)}.cn-fr .rs em.L{background:var(--down)}.cn-fr .rs em.N,.cn-fr .rs em.C{background:var(--gold)}
+.cn-fr .rs2{grid-column:2;grid-row:2;text-align:right;font-size:11px;color:var(--muted);white-space:nowrap}
+.cn-fnone{margin:4px 0 0;font-size:12px;color:var(--muted)}
+.cn-fmore{margin-top:6px;background:none;border:0;padding:4px 0;color:var(--gold);font:inherit;font-size:12px;cursor:pointer}
+@media (max-width:640px){
+  .cn-feed{margin-bottom:10px}
+  .cn-feed>button{padding:9px 12px}.cn-feed>button b{font-size:11px}.cn-feed>button span{font-size:11px}
+  .cn-fd{padding:0 8px 10px}
+  .cn-fr{padding:7px 6px;font-size:12px;column-gap:8px}
+  .cn-fr .fe{grid-column:1/-1;grid-row:3;white-space:normal}
+  .cn-fr .rs2{grid-column:1/-1;grid-row:2;text-align:left;white-space:normal}
+}
 .lt-pick{display:flex;flex-wrap:wrap;align-items:center;gap:8px;padding:0 20px 6px}
 .lt-pick button{display:inline-flex;align-items:center;gap:7px;padding:6px 14px;border:1px solid var(--line);border-radius:999px;background:transparent;color:var(--text);font-family:var(--display);text-transform:uppercase;letter-spacing:.12em;font-size:11px;cursor:pointer}
 .lt-pick button i{width:11px;height:11px;border-radius:50%;opacity:.45}
@@ -1863,6 +1894,7 @@ dialog.tmd[open]{animation:pop .28s ease}
       </div>
       <div class="chips lt-key" id="cnKey" role="group" aria-label="Traffic light"><button class="chip cnl on" data-l="">All lights</button><button class="chip cnl" data-l="g"><i class="lt-dot g"></i>Sign if we can</button><button class="chip cnl" data-l="a"><i class="lt-dot a"></i>Keeping an eye on</button><button class="chip cnl" data-l="r"><i class="lt-dot r"></i>Aware of, not pursuing</button><button class="chip cnl" data-l="none">No light</button></div>
     </div>
+    <div class="cn-feed" id="cnFeed" hidden></div>
     <div class="cn-list" id="cnList"><div class="sq-empty">Loading the watch list…</div></div>
     <p class="src" id="cnSrc"></p>
   </div>
@@ -3602,7 +3634,7 @@ $("#schQ").addEventListener("input", e => { SCH.q = e.target.value; renderSchedu
 async function loadSchedule(){
   try { const r = await fetch("schedule.json?t=" + Date.now(), { cache: "no-store" }); if (r.ok) SCHED = await r.json(); else if (!SCHED) SCHED = { events: [] }; } catch (e) { if (!SCHED) SCHED = { events: [] }; }
   renderSchedule(); renderHome();
-  if ($("#cnd")?.open) cnOpen(CN.open);  // its "Next tournaments"
+  if (CORNER) renderCorner();  // the watch list's "Scores & results" (coming up) and an open profile's "Next tournaments"
 }
 async function loadScouting(){
   try { const r = await fetch("scouting.json?t=" + Date.now(), { cache: "no-store" }); if (r.ok) SCOUT = await r.json(); else if (!SCOUT) SCOUT = {}; } catch (e) { if (!SCOUT) SCOUT = {}; }
@@ -4139,10 +4171,83 @@ function renderCorner(){
     .map(([k, p]) => cnTile(k, p));
   const wait = waiting.filter(x => keep(x.name, x.g) && ltOk(x)).map(x => { const L = ltFor(x); return `<div class="cn cn-wait${L ? " lt-" + L.light : ""}"><div class="cn-h"><span class="nm">${L ? `<span class="lt-dot ${L.light}" title="${LT_NAME[L.light]}: ${LT_MEAN[L.light]}"></span>` : ""}${esc(cnTidy(x.name))}</span><span class="mt">Looking up… usually within 10 minutes${x.by ? " · added by " + esc(x.by) : ""}</span></div>
     <div class="cn-acts" style="padding:8px 0">${cmBtn("cnw:" + cnKey(x.name), [x.name], "lg")}</div>${cmLog("cnw:" + cnKey(x.name), cnTidy(x.name), [x.name])}</div>`; });
+  cnFeed(Object.entries(P).filter(([k, p]) => keep(p.name, p.g) && ltOk(p)));
   $("#cnList").innerHTML = [...wait, ...cards].join("") || `<div class="sq-empty">${CORNER ? (Object.keys(P).length ? "No prospect matches." : "No prospects yet. Add the first one above.") : "Loading the watch list…"}</div>`;
   $("#cnSrc").textContent = CORNER?.checked ? `Sources: Tennis Europe (internal use only), the ITF and the official ATP/WTA rankings. Last updated ${new Date(CORNER.checked).toLocaleString("en-GB", { timeZone: MYTZ, day:"numeric", month:"short", hour:"2-digit", minute:"2-digit" })} your time.` : "";
   if ($("#cnd").open) cnOpen(CN.open);
 }
+/* Watch list "Scores & results": the shown prospects' results of the last 10 days (newest first; this week's matches
+   come from Tennis Explorer until the ITF lists the tournament, ITF results only give the tournament's dates), their
+   next match once the draw is out, and tournaments they're entered in over the next 2 weeks (schedule.json "esc").
+   Closed by default so the tiles stay the main view; open/closed is remembered on this device. Tap a row = profile. */
+const CN_FEED = { open: false, all: false };
+try { CN_FEED.open = localStorage.getItem("72c-cnfeed") === "1"; } catch (e) {}
+function cnFeed(list){
+  const box = $("#cnFeed");
+  if (!box) return;
+  box.hidden = CN.view === "sug" || !CORNER;
+  if (box.hidden) return;
+  const today = myDate(), add = (d, n) => new Date(Date.parse(d + "T12:00:00Z") + n * 864e5).toISOString().slice(0, 10);
+  const from = add(today, -10), to = add(today, 14);
+  const day = d => schFmt(d, { weekday: "short" });
+  const span = (a, b) => a === b ? schFmt(a) : `${schFmt(a)} – ${schFmt(b)}`;
+  const dot = p => { const L = ltFor(p); return L ? `<span class="lt-dot ${L.light}" title="${LT_NAME[L.light]}: ${LT_MEAN[L.light]}"></span>` : ""; };
+  // results: one row per player and tournament (newest first), with how far they got and their last match
+  const res = [], soon = [];
+  for (const [k, p] of list) {
+    const groups = new Map();
+    for (const r of p.results || []) {
+      const when = r.day || r.end;
+      if (!r.res || when < from || r.start > today) continue;
+      const id = r.t + "|" + r.start;
+      if (!groups.has(id)) groups.set(id, { k, p, m: [], when });
+      const g = groups.get(id); g.m.push(r); if (when > g.when) g.when = when;
+    }
+    res.push(...groups.values());
+    // coming up: the next match once the draw is out, else the first tournament they're in (main draw or qualifying
+    // before alternate spots), with how many more follow in the next 2 weeks
+    const nx = (p.results || []).filter(r => !r.res && r.o && r.end >= today).sort((a, b) => a.start.localeCompare(b.start))[0];
+    const evs = (SCHED?.events || []).map(e => ({ e, me: (e.esc || []).find(x => x.id === k) })).filter(x => x.me && x.e.end >= today && x.e.start <= to)
+      .filter(x => !nx || x.e.start !== nx.start)
+      .sort((a, b) => /alternate/i.test(a.me.how) - /alternate/i.test(b.me.how) || a.e.start.localeCompare(b.e.start));
+    if (nx || evs.length) soon.push({ k, p, nx, evs, sort: nx ? nx.start : evs[0].e.start });
+  }
+  res.sort((a, b) => b.when.localeCompare(a.when) || a.p.name.localeCompare(b.p.name));
+  soon.sort((a, b) => !a.nx - !b.nx || a.sort.localeCompare(b.sort) || a.p.name.localeCompare(b.p.name));
+  const row = (k, p, right, right2, ev, sub) => `<div class="cn-fr" data-cnp="${esc(k)}" role="button" tabindex="0"><span class="who">${dot(p)}${esc(p.name)}</span><span class="rs">${right}</span><span class="rs2">${esc(right2)}</span><span class="fe"><b>${esc(ev)}</b>${sub ? " · " + esc(sub) : ""}</span></div>`;
+  const rd = r => r.r ? rsRd(r.r) : "";
+  const resRows = res.map(({ k, p, m, when }) => {
+    const top = m[0], w = m.filter(x => x.res === "W").length, l = m.length - w;
+    const out = RS_FINAL.test(top.r) ? (top.res === "W" ? ["C", "Champion"] : ["L", "Runner-up"]) : top.res === "W" ? ["W", rd(top) ? "Won " + rd(top) : "Won"] : ["L", rd(top) ? "Out in " + rd(top) : "Lost"];
+    const last = `${top.res === "W" ? "def." : "lost to"} ${top.o}${top.s ? " " + top.s : ""}`;
+    return row(k, p, `<em class="${out[0]}">${esc(out[1])}</em>${w}-${l}`, last,
+      top.t, [top.cat, top.day ? day(top.day) : "week of " + schFmt(top.start), top.x ? "live results" : ""].filter(Boolean).join(" · "));
+  });
+  const upRows = soon.map(({ k, p, nx, evs }) => {
+    const more = evs.length - (nx ? 0 : 1), plus = more > 0 ? ` (+${more} more)` : "";
+    if (nx) return row(k, p, `<em class="N">Next</em>${esc(rd(nx))} v ${esc(nx.o)}`, "time not known yet" + plus, nx.t, [nx.cat, span(nx.start, nx.end)].filter(Boolean).join(" · "));
+    const { e, me } = evs[0];
+    return row(k, p, esc(span(e.start, e.end)), me.how + plus, e.name, [SCH_TN[e.tour], e.place].filter(Boolean).join(" · "));
+  });
+  const n = res.length, m = soon.length;
+  const sum = !n && !m ? "No results in the last 10 days, nothing entered in the next 2 weeks" :
+    [n ? `${n} tournament${n === 1 ? "" : "s"} in the last 10 days` : "", m ? `${m} player${m === 1 ? "" : "s"} with events coming up` : ""].filter(Boolean).join(" · ");
+  const cap = 6, more = !CN_FEED.all && resRows.length > cap;
+  box.classList.toggle("open", CN_FEED.open);
+  box.innerHTML = `<button type="button" id="cnFeedT" aria-expanded="${CN_FEED.open}"><b>Scores &amp; results</b><span>${esc(sum)}</span><i aria-hidden="true">›</i></button>
+    <div class="cn-fd">
+      ${upRows.length ? `<h5>Coming up (next 2 weeks)</h5>${upRows.join("")}` : ""}
+      <h5>Last 10 days</h5>${resRows.length ? (more ? resRows.slice(0, cap) : resRows).join("") : `<p class="cn-fnone">No results in the last 10 days.</p>`}
+      ${more ? `<button type="button" class="cn-fmore" id="cnFeedAll">Show all ${resRows.length}</button>` : ""}
+    </div>`;
+}
+$("#cnFeed").addEventListener("click", e => {
+  if (e.target.closest("#cnFeedT")) { CN_FEED.open = !CN_FEED.open; try { localStorage.setItem("72c-cnfeed", CN_FEED.open ? "1" : "0"); } catch (err) {} renderCorner(); return; }
+  if (e.target.closest("#cnFeedAll")) { CN_FEED.all = true; renderCorner(); return; }
+  const r = e.target.closest("[data-cnp]");
+  if (r) cnOpen(r.dataset.cnp);
+});
+$("#cnFeed").addEventListener("keydown", e => { const r = e.target.closest(".cn-fr"); if (r && (e.key === "Enter" || e.key === " ")) { e.preventDefault(); cnOpen(r.dataset.cnp); } });
 $("#cnList").addEventListener("click", e => {
   // Suggestions: "Scout" adds the player to the watch list (the same as the "Add a prospect" box)
   const sa = e.target.closest("[data-sga]"), sg = e.target.closest("[data-sgo]");
