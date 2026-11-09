@@ -531,8 +531,8 @@ select.sq-in option{background:var(--navy-2);color:var(--white)}
 .cn-feed>button{display:flex;align-items:center;gap:10px;width:100%;padding:10px 16px;background:none;border:0;color:var(--text);cursor:pointer;text-align:left;font:inherit}
 .cn-feed>button b{font-family:var(--display);font-weight:500;text-transform:uppercase;letter-spacing:.14em;font-size:12px;color:var(--gold);white-space:nowrap}
 .cn-feed>button span{flex:1;min-width:0;font-size:12px;color:var(--muted);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
-.cn-feed>button i{font-style:normal;color:var(--gold);font-size:16px;line-height:1;transition:transform .2s}
-.cn-feed.open>button i{transform:rotate(90deg)}
+.cn-feed>button>i{font-style:normal;color:var(--gold);font-size:16px;line-height:1;transition:transform .2s}
+.cn-feed.open>button>i{transform:rotate(90deg)}
 .cn-fd{display:none;padding:0 16px 12px}
 .cn-feed.open .cn-fd{display:block}
 .cn-fd h5{margin:10px 0 6px;font-family:var(--display);font-weight:500;text-transform:uppercase;letter-spacing:.14em;font-size:10.5px;color:var(--muted)}
@@ -546,6 +546,12 @@ select.sq-in option{background:var(--navy-2);color:var(--white)}
 .cn-fr .rs em{font-style:normal;display:inline-block;margin-right:6px;padding:1px 7px;border-radius:6px;font-family:var(--display);font-size:11px;letter-spacing:.04em;color:var(--navy);background:var(--muted)}
 .cn-fr .rs em.W{background:var(--up)}.cn-fr .rs em.L{background:var(--down)}.cn-fr .rs em.N,.cn-fr .rs em.C{background:var(--gold)}
 .cn-fr .rs2{grid-column:2;grid-row:2;text-align:right;font-size:11px;color:var(--muted);white-space:nowrap}
+.cn-fr .rs em.LV{background:#E5484D;color:#fff;animation:lvPulse 1.6s ease-in-out infinite}
+.cn-feed .lvdot{display:inline-block;width:8px;height:8px;border-radius:50%;background:#E5484D;margin-right:6px;vertical-align:1px;animation:lvPulse 1.6s ease-in-out infinite}
+.cn-feed>button span .lvdot{font-style:normal}
+@keyframes lvPulse{50%{opacity:.45}}
+@media (prefers-reduced-motion:reduce){.cn-fr .rs em.LV,.cn-feed .lvdot{animation:none}}
+.cn-fsrc{margin:10px 0 0;font-size:11px;color:var(--muted-2);line-height:1.4}
 .cn-fnone{margin:4px 0 0;font-size:12px;color:var(--muted)}
 .cn-fmore{margin-top:6px;background:none;border:0;padding:4px 0;color:var(--gold);font:inherit;font-size:12px;cursor:pointer}
 @media (max-width:640px){
@@ -4176,74 +4182,67 @@ function renderCorner(){
   $("#cnSrc").textContent = CORNER?.checked ? `Sources: Tennis Europe (internal use only), the ITF and the official ATP/WTA rankings. Last updated ${new Date(CORNER.checked).toLocaleString("en-GB", { timeZone: MYTZ, day:"numeric", month:"short", hour:"2-digit", minute:"2-digit" })} your time.` : "";
   if ($("#cnd").open) cnOpen(CN.open);
 }
-/* Watch list "Scores & results": the shown prospects' results of the last 10 days (newest first; this week's matches
-   come from Tennis Explorer until the ITF lists the tournament, ITF results only give the tournament's dates), their
-   next match once the draw is out, and tournaments they're entered in over the next 2 weeks (schedule.json "esc").
-   Closed by default so the tiles stay the main view; open/closed is remembered on this device. Tap a row = profile. */
-const CN_FEED = { open: false, all: false };
+/* Watch list "Scores & results": like the 72 Competition Zone, for the shown watch list players: live matches, results
+   of the last 24 hours and matches in the next 24 hours. From corner.json "live" (scripts/recent.py live(), Tennis
+   Explorer, refreshed every Scouting Corner run, about every 30 minutes): a match is only "finished" with the final
+   score from the player's own Tennis Explorer page; a score with no final result 5 hours after the start says so,
+   never a guessed winner. Juniors (not on Tennis Explorer): their next ITF junior match once the draw is out, time not
+   known. Closed by default so the tiles stay the main view; open/closed is remembered on this device. Tap = profile. */
+const CN_FEED = { open: false };
 try { CN_FEED.open = localStorage.getItem("72c-cnfeed") === "1"; } catch (e) {}
 function cnFeed(list){
   const box = $("#cnFeed");
   if (!box) return;
   box.hidden = CN.view === "sug" || !CORNER;
   if (box.hidden) return;
-  const today = myDate(), add = (d, n) => new Date(Date.parse(d + "T12:00:00Z") + n * 864e5).toISOString().slice(0, 10);
-  const from = add(today, -10), to = add(today, 14);
-  const day = d => schFmt(d, { weekday: "short" });
-  const span = (a, b) => a === b ? schFmt(a) : `${schFmt(a)} – ${schFmt(b)}`;
+  const shown = new Map(list), nowMs = Date.now(), H = 36e5;
   const dot = p => { const L = ltFor(p); return L ? `<span class="lt-dot ${L.light}" title="${LT_NAME[L.light]}: ${LT_MEAN[L.light]}"></span>` : ""; };
-  // results: one row per player and tournament (newest first), with how far they got and their last match
-  const res = [], soon = [];
-  for (const [k, p] of list) {
-    const groups = new Map();
-    for (const r of p.results || []) {
-      const when = r.day || r.end;
-      if (!r.res || when < from || r.start > today) continue;
-      const id = r.t + "|" + r.start;
-      if (!groups.has(id)) groups.set(id, { k, p, m: [], when });
-      const g = groups.get(id); g.m.push(r); if (when > g.when) g.when = when;
-    }
-    res.push(...groups.values());
-    // coming up: the next match once the draw is out, else the first tournament they're in (main draw or qualifying
-    // before alternate spots), with how many more follow in the next 2 weeks
-    const nx = (p.results || []).filter(r => !r.res && r.o && r.end >= today).sort((a, b) => a.start.localeCompare(b.start))[0];
-    const evs = (SCHED?.events || []).map(e => ({ e, me: (e.esc || []).find(x => x.id === k) })).filter(x => x.me && x.e.end >= today && x.e.start <= to)
-      .filter(x => !nx || x.e.start !== nx.start)
-      .sort((a, b) => /alternate/i.test(a.me.how) - /alternate/i.test(b.me.how) || a.e.start.localeCompare(b.e.start));
-    if (nx || evs.length) soon.push({ k, p, nx, evs, sort: nx ? nx.start : evs[0].e.start });
+  const today = myDate(), dayOf = ms => myDate(new Date(ms));
+  const when = at => {
+    if (!at) return "time not known yet";
+    const ms = Date.parse(at), d = dayOf(ms), t = new Date(ms).toLocaleTimeString("en-GB", { timeZone: MYTZ, hour: "2-digit", minute: "2-digit" });
+    const y = myDate(new Date(nowMs - 864e5)), tm = myDate(new Date(nowMs + 864e5));
+    return (d === today ? "Today" : d === y ? "Yesterday" : d === tm ? "Tomorrow" : new Date(ms).toLocaleDateString("en-GB", { timeZone: MYTZ, weekday: "short" })) + " " + t;
+  };
+  const tidyT = t => String(t || "").replace(/\b\w/g, c => c.toUpperCase());
+  const live = [], past = [], next = [];
+  for (const e of CORNER.live || []) {
+    const p = shown.get(e.k);
+    if (!p) continue;
+    const ms = e.at ? Date.parse(e.at) : null;
+    if (e.st === "live") live.push({ e, p });
+    else if (e.st === "done" || e.st === "open") { if (!ms || nowMs - ms <= 24 * H + 5 * H) past.push({ e, p, ms }); }  // finished within the last day
+    else if (e.st === "next" && (!ms || (ms - nowMs <= 24 * H && nowMs - ms <= 3 * H))) next.push({ e, p, ms });
   }
-  res.sort((a, b) => b.when.localeCompare(a.when) || a.p.name.localeCompare(b.p.name));
-  soon.sort((a, b) => !a.nx - !b.nx || a.sort.localeCompare(b.sort) || a.p.name.localeCompare(b.p.name));
-  const row = (k, p, right, right2, ev, sub) => `<div class="cn-fr" data-cnp="${esc(k)}" role="button" tabindex="0"><span class="who">${dot(p)}${esc(p.name)}</span><span class="rs">${right}</span><span class="rs2">${esc(right2)}</span><span class="fe"><b>${esc(ev)}</b>${sub ? " · " + esc(sub) : ""}</span></div>`;
-  const rd = r => r.r ? rsRd(r.r) : "";
-  const resRows = res.map(({ k, p, m, when }) => {
-    const top = m[0], w = m.filter(x => x.res === "W").length, l = m.length - w;
-    const out = RS_FINAL.test(top.r) ? (top.res === "W" ? ["C", "Champion"] : ["L", "Runner-up"]) : top.res === "W" ? ["W", rd(top) ? "Won " + rd(top) : "Won"] : ["L", rd(top) ? "Out in " + rd(top) : "Lost"];
-    const last = `${top.res === "W" ? "def." : "lost to"} ${top.o}${top.s ? " " + top.s : ""}`;
-    return row(k, p, `<em class="${out[0]}">${esc(out[1])}</em>${w}-${l}`, last,
-      top.t, [top.cat, top.day ? day(top.day) : "week of " + schFmt(top.start), top.x ? "live results" : ""].filter(Boolean).join(" · "));
-  });
-  const upRows = soon.map(({ k, p, nx, evs }) => {
-    const more = evs.length - (nx ? 0 : 1), plus = more > 0 ? ` (+${more} more)` : "";
-    if (nx) return row(k, p, `<em class="N">Next</em>${esc(rd(nx))} v ${esc(nx.o)}`, "time not known yet" + plus, nx.t, [nx.cat, span(nx.start, nx.end)].filter(Boolean).join(" · "));
-    const { e, me } = evs[0];
-    return row(k, p, esc(span(e.start, e.end)), me.how + plus, e.name, [SCH_TN[e.tour], e.place].filter(Boolean).join(" · "));
-  });
-  const n = res.length, m = soon.length;
-  const sum = !n && !m ? "No results in the last 10 days, nothing entered in the next 2 weeks" :
-    [n ? `${n} tournament${n === 1 ? "" : "s"} in the last 10 days` : "", m ? `${m} player${m === 1 ? "" : "s"} with events coming up` : ""].filter(Boolean).join(" · ");
-  const cap = 6, more = !CN_FEED.all && resRows.length > cap;
+  // juniors: the next ITF junior match once the draw is out (no time from the ITF)
+  for (const [k, p] of list) {
+    if ((p.tx || {}).slug) continue;
+    const r = (p.results || []).filter(r => !r.res && r.o && r.start <= today && r.end >= today)[0];
+    if (r) next.push({ e: { k, t: r.t, r: r.r, o: r.o, at: "", jr: true }, p, ms: null });
+  }
+  past.sort((a, b) => (b.ms || 0) - (a.ms || 0));
+  next.sort((a, b) => (a.ms || 9e15) - (b.ms || 9e15));
+  const row = (k, p, badge, right, right2, ev) => `<div class="cn-fr" data-cnp="${esc(k)}" role="button" tabindex="0"><span class="who">${dot(p)}${esc(p.name)}</span><span class="rs">${badge}${right}</span><span class="rs2">${esc(right2)}</span><span class="fe">${ev}</span></div>`;
+  const ev = e => `<b>${esc(tidyT(e.t))}</b>${e.r ? " · " + esc(rsRd(e.r)) : ""}`;
+  const liveRows = live.map(({ e, p }) => row(e.k, p, `<em class="LV">Live</em>`, `${esc(e.s)}`, `v ${e.o}${e.sets ? ` · sets ${e.sets[0]}-${e.sets[1]}` : ""}`, ev(e)));
+  const pastRows = past.map(({ e, p }) => e.st === "open"
+    ? row(e.k, p, `<em>No final score yet</em>`, "", `v ${e.o} · last seen ${e.s} · ${when(e.at)}`, ev(e))
+    : row(e.k, p, `<em class="${e.res}">${e.res === "W" ? "Won" : "Lost"}</em>`, esc(e.s), `${e.res === "W" ? "def." : "lost to"} ${e.o} · ${when(e.at)}`, ev(e)));
+  const nextRows = next.map(({ e, p }) => row(e.k, p, `<em class="N">Next</em>`, esc(when(e.at)), `v ${e.o}${e.jr ? " · ITF junior" : ""}`, ev(e)));
+  const sum = [liveRows.length ? `${liveRows.length} live` : "", pastRows.length ? `${pastRows.length} result${pastRows.length === 1 ? "" : "s"}` : "", nextRows.length ? `${nextRows.length} coming up` : ""].filter(Boolean).join(" · ") || "No matches in the last or next 24 hours";
+  const upd = CORNER.liveAt ? new Date(CORNER.liveAt).toLocaleTimeString("en-GB", { timeZone: MYTZ, hour: "2-digit", minute: "2-digit" }) : "";
   box.classList.toggle("open", CN_FEED.open);
-  box.innerHTML = `<button type="button" id="cnFeedT" aria-expanded="${CN_FEED.open}"><b>Scores &amp; results</b><span>${esc(sum)}</span><i aria-hidden="true">›</i></button>
+  box.classList.toggle("haslive", liveRows.length > 0);
+  box.innerHTML = `<button type="button" id="cnFeedT" aria-expanded="${CN_FEED.open}"><b>Scores &amp; results</b><span>${liveRows.length ? `<i class="lvdot"></i>` : ""}${esc(sum)}</span><i aria-hidden="true">›</i></button>
     <div class="cn-fd">
-      ${upRows.length ? `<h5>Coming up (next 2 weeks)</h5>${upRows.join("")}` : ""}
-      <h5>Last 10 days</h5>${resRows.length ? (more ? resRows.slice(0, cap) : resRows).join("") : `<p class="cn-fnone">No results in the last 10 days.</p>`}
-      ${more ? `<button type="button" class="cn-fmore" id="cnFeedAll">Show all ${resRows.length}</button>` : ""}
+      ${liveRows.length ? `<h5>Live</h5>${liveRows.join("")}` : ""}
+      <h5>Last 24 hours</h5>${pastRows.join("") || `<p class="cn-fnone">No results in the last 24 hours.</p>`}
+      <h5>Next 24 hours</h5>${nextRows.join("") || `<p class="cn-fnone">No matches scheduled in the next 24 hours yet.</p>`}
+      <p class="cn-fsrc">Pro matches from Tennis Explorer, checked about every 30 minutes${upd ? ` (last at ${esc(upd)} your time)` : ""}, so a live score can be up to half an hour behind. Juniors: next ITF junior match only.</p>
     </div>`;
 }
 $("#cnFeed").addEventListener("click", e => {
   if (e.target.closest("#cnFeedT")) { CN_FEED.open = !CN_FEED.open; try { localStorage.setItem("72c-cnfeed", CN_FEED.open ? "1" : "0"); } catch (err) {} renderCorner(); return; }
-  if (e.target.closest("#cnFeedAll")) { CN_FEED.all = true; renderCorner(); return; }
   const r = e.target.closest("[data-cnp]");
   if (r) cnOpen(r.dataset.cnp);
 });
