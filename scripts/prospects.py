@@ -252,6 +252,24 @@ def playoff(draw, rnd):
     return f"{m[1]}-{m[2]} place play-off {rnd}".strip()
 
 
+def fill_in(recs, who):
+    """recent.topup() for each record (who(rec) -> name, nat, g, ATP/WTA list player), within the time budget;
+    a Tennis Explorer problem stops it for this run (the ITF results stay as they are)."""
+    import recent
+    for rec in recs:
+        if out_of_time():
+            print("time budget used - Tennis Explorer fill-in carries on next run"); return
+        name, nat, g, pro = who(rec)
+        if not name:
+            continue
+        try:
+            recent.topup(rec, name, nat, g, pro)
+        except recent.Stop as e:
+            print(" ", e, "- Tennis Explorer fill-in skipped this run"); return
+        except Exception as e:
+            print("  Tennis Explorer fill-in failed for", name, ":", e)
+
+
 def itf_results(pid, circuit, src):
     """Singles matches of the last 12 months on one ITF circuit (JT juniors, MT men, WT women; MT/WT include ATP/WTA events)."""
     out, skip = [], 0
@@ -716,6 +734,9 @@ def main():
         if done_all:
             rec["day"] = T.isoformat()
         rec["updated"] = iso(NOW)
+
+    # this week's matches the ITF hasn't listed yet, from Tennis Explorer (recent.py), every 3 hours per player
+    fill_in(players.values(), lambda rec: (rec.get("name"), rec.get("nat"), rec.get("g"), bool(rec.get("pro"))))
 
     # anything a person needs to check (report_gaps.py alerts each message once, so no times in the text)
     for k, rec in players.items():
