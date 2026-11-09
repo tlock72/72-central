@@ -737,6 +737,17 @@ def main():
 
     # this week's matches the ITF hasn't listed yet, from Tennis Explorer (recent.py), every 3 hours per player
     fill_in(players.values(), lambda rec: (rec.get("name"), rec.get("nat"), rec.get("g"), bool(rec.get("pro"))))
+    # the watch list's "Scores & results" on the site: live / last 24 hours / next 24 hours, every run (recent.live)
+    import recent
+    slugs = {(r.get("tx") or {}).get("slug"): k for k, r in players.items() if (r.get("tx") or {}).get("slug")}
+    if slugs:
+        try:
+            data["live"] = recent.live(slugs)
+            data["liveAt"] = iso(NOW)
+        except recent.Stop as e:
+            print(" ", e, "- watch list scores not refreshed this run")
+        except Exception as e:
+            print("  watch list scores failed:", e)
 
     # anything a person needs to check (report_gaps.py alerts each message once, so no times in the text)
     for k, rec in players.items():

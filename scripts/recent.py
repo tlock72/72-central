@@ -21,7 +21,8 @@ BASE = "https://www.tennisexplorer.com"
 UA = "72HubRankings/1.0 (+https://github.com/tlock72/72-central; scouting list, one request every few seconds)"
 PAUSE = 3
 EVERY = timedelta(hours=3)      # each player's fill-in is rebuilt this often
-RETRY = timedelta(days=7)       # a player not found on Tennis Explorer is searched again after this
+RETRY = timedelta(days=7)
+LINK_V = 2                      # raise when find() gets better, so players not found before are searched again       # a player not found on Tennis Explorer is searched again after this
 DAYS = 21                       # how far back the fill-in looks (the ITF is never this far behind)
 SKIP = re.compile(r"league|bundesliga|exhibition|utr|team|hopman|laver|united cup|davis|billie jean|king cup", re.I)
 ROUND = {"1R": "R1", "2R": "R2", "3R": "R3", "4R": "R4", "F": "F", "SF": "SF", "QF": "QF"}
@@ -62,7 +63,7 @@ def get(path):
 
 
 # Tennis Explorer's own nation codes where they differ from the ITF / ATP / WTA ones
-NAT = {"SER": "SRB", "BLG": "BUL", "HON": "HKG", "NZ": "NZL", "MON": "MON", "SLO": "SLO", "CRO": "CRO"}
+NAT = {"SER": "SRB", "BLG": "BUL", "HON": "HKG", "NZ": "NZL", "URY": "URU", "PRT": "POR", "ROM": "ROU"}
 
 
 # Players the search can't single out (very common names), pinned by hand: name as on the ranking list -> the slug in
@@ -102,6 +103,8 @@ def find(name, nat, g):
         rest = [w for w in mine if w not in last]
         if last and set(last) <= set(mine) and len(rest) == len(first) == 1 and first[0][:3] == rest[0][:3]:
             close.append(x["url"])
+        elif set(mine) < set(last + first) and len(last + first) == len(mine) + 1:
+            close.append(x["url"])  # one extra first name on Tennis Explorer ("Maria Aran Teixido Garcia")
     for hits, how in ((exact, ""), (close, "close spelling")):
         if len(hits) == 1:
             return hits[0], how
@@ -158,7 +161,8 @@ def matches(slug, year):
         opp = f"{m[2][0]}. {m[1]}" if m else opp
         q = rnd.upper().startswith("Q-")
         r = ROUND.get(rnd[2:] if q else rnd, rnd[2:] if q else rnd)
-        out.append({"day": date(year, int(d[2]), int(d[1])), "head": head, "r": ("Q-" if q else "") + r, "o": opp,
+        mid = re.search(r"match-detail/\?id=(\d+)", sc[1])
+        out.append({"id": mid[1] if mid else "", "day": date(year, int(d[2]), int(d[1])), "head": head, "r": ("Q-" if q else "") + r, "o": opp,
                     "res": "W" if me == 0 else "L", "s": "walkover" if walkover else (s if me == 0 else flip(s))})
     return out
 
@@ -215,11 +219,11 @@ def topup(rec, name, nat, g, pro=False, force=False):
     sig = f'{len(base)}|{base[0].get("start") if base else ""}|{base[0].get("t") if base else ""}|{len(had)}'
     if not force and ago(tx.get("at")) < EVERY and tx.get("sig") == sig:
         return False
-    if not tx.get("slug") and ago(tx.get("tried")) < RETRY and tx:
+    if not tx.get("slug") and ago(tx.get("tried")) < RETRY and tx.get("v") == LINK_V:
         return False
     if not tx.get("slug"):
         slug, note = find(name, nat, g)
-        tx = {"q": [name, nat, g], "tried": iso(now())}
+        tx = {"q": [name, nat, g], "tried": iso(now()), "v": LINK_V}
         if not slug:
             tx["note"] = note
             rec["tx"] = tx
@@ -253,3 +257,99 @@ def topup(rec, name, nat, g, pro=False, force=False):
     if extra:
         print(f"  Tennis Explorer: {len(extra)} recent match{'es' if len(extra) != 1 else ''} the ITF hasn't listed yet")
     return True
+
+
+# ---------- Watch list "Scores & results": live / last 24 hours / next 24 hours ----------
+# Tennis Explorer's day pages (/matches/?type=all, every ATP, WTA, Challenger and ITF singles match of a day, times in
+# the GMT offset the page states) give each match's start time and the score at the time of reading. Those pages don't
+# mark retirements, walkovers or the end of a match, so a match only counts as finished once it is on the player's own
+# page (matches(), by Tennis Explorer's match id) with its final score; until then a score is "live", and once 5 hours
+# have passed since the start with no final score it is "no final score yet" (never a guessed result).
+LIVE_FOR = timedelta(hours=5)
+
+
+def opp_name(raw):
+    raw = re.sub(r"<[^>]+>", "", raw).strip()
+    m = re.match(r"(.+?)\s+([A-Z][\w'-]*)\.?$", raw)
+    return f"{m[2][0]}. {m[1]}" if m else raw
+
+
+def day_page(d):
+    """Singles matches on Tennis Explorer's page for day d: [{id, t, link, at (UTC iso or ""), p: [(slug, name)] x2,
+    sets: [a, b] or None, games: ["6-3", ...] from player 1's side}]."""
+    page = get(f"/matches/?type=all&year={d.year}&month={d.month:02d}&day={d.day:02d}")
+    off = re.search(r"GMT([+-]\d{1,2})", page)
+    if not off or "<table" not in page:
+        raise Stop("Tennis Explorer's day page didn't answer as expected")
+    tz = timezone(timedelta(hours=int(off[1])))
+    out, head, i = [], None, page.find('<table class="result')
+    rows = re.findall(r'<tr(?: id="([rs]\d+b?)")? class="([^"]*)"[^>]*>(.*?)</tr>', page[i:], re.S)
+    k = 0
+    while k < len(rows):
+        rid, cls, row = rows[k]
+        if "head" in cls:
+            a = re.search(r'<td class="t-name"[^>]*>(?:<a href="([^"]+)">)?(.*?)(?:</a>)?</td>', row, re.S)
+            name = re.sub(r"<[^>]+>|&nbsp;", " ", a[2] if a else "")
+            head = {"t": re.sub(r"\s+", " ", name).strip(), "link": (BASE + a[1]) if a and a[1] else ""}
+            k += 1; continue
+        if not rid or rid.endswith("b") or k + 1 >= len(rows) or rows[k + 1][0] != rid + "b" or not head:
+            k += 1; continue
+        a, b = row, rows[k + 1][2]
+        k += 2
+        pa = re.search(r'<td class="t-name"><a href="/player/([^/"]+)/">(.*?)</a>', a)
+        pb = re.search(r'<td class="t-name"><a href="/player/([^/"]+)/">(.*?)</a>', b)
+        if not pa or not pb:
+            continue  # doubles (two names a side) or no player link
+        tm = re.search(r'<td class="first time"[^>]*>\s*(\d{2}):(\d{2})', a)
+        at = datetime(d.year, d.month, d.day, int(tm[1]), int(tm[2]), tzinfo=tz).astimezone(timezone.utc) if tm else None
+        res = lambda r: (re.search(r'<td class="result">\s*(\d+)\s*</td>', r) or [None, None])[1]
+        sa, sb = res(a), res(b)
+        ga = [score_of(x) for x in re.findall(r'<td class="score">(.*?)</td>', a, re.S)]
+        gb = [score_of(x) for x in re.findall(r'<td class="score">(.*?)</td>', b, re.S)]
+        games = []
+        for x, y in zip(ga, gb):
+            if not x or not y or not re.match(r"\d", x) or not re.match(r"\d", y):
+                break
+            tx_, ty = re.match(r"(\d+)(?:\((\d+)\))?", x), re.match(r"(\d+)(?:\((\d+)\))?", y)
+            tb = tx_[2] or ty[2]
+            games.append(f"{tx_[1]}-{ty[1]}" + (f"({tb})" if tb else ""))
+        mid = re.search(r"match-detail/\?id=(\d+)", a)
+        out.append({"id": mid[1] if mid else "", "t": head["t"], "link": head["link"], "at": iso(at) if at else "",
+                    "p": [(pa[1], pa[2]), (pb[1], pb[2])], "sets": [int(sa), int(sb)] if sa is not None and sb is not None else None,
+                    "games": games})
+    return out
+
+
+def live(slugs):
+    """slugs: {Tennis Explorer slug: watch list key}. Their singles matches from yesterday to tomorrow (Tennis
+    Explorer's days), each {k, id, t, link, at, o, st: live / done / open / next, res, s (from our player's side), sets}."""
+    today = now().date()
+    found = []
+    for d in (today - timedelta(days=1), today, today + timedelta(days=1)):
+        for m in day_page(d):
+            me = 0 if m["p"][0][0] in slugs else 1 if m["p"][1][0] in slugs else -1
+            if me >= 0:
+                found.append((me, m))
+    done = {}
+    for slug in {m["p"][me][0] for me, m in found}:
+        for x in matches(slug, today.year)[:8]:  # the player's own page: finished matches with their final scores
+            if x["id"]:
+                done[x["id"]] = x
+    out = []
+    for me, m in found:
+        slug, k = m["p"][me][0], slugs[m["p"][me][0]]
+        g = m["games"] if me == 0 else [flip(x) for x in m["games"]]
+        e = {"k": k, "id": m["id"], "t": m["t"], "link": m["link"], "at": m["at"], "o": opp_name(m["p"][1 - me][1])}
+        f = done.get(m["id"])
+        if f:
+            e.update(st="done", res=f["res"], s=f["s"], r=f["r"])
+        elif not g:
+            e["st"] = "next"
+        elif m["at"] and ago(m["at"]) > LIVE_FOR:
+            e.update(st="open", s=", ".join(g))   # a score but no final result after 5 hours: shown, never decided
+        else:
+            e.update(st="live", s=", ".join(g))
+            if m["sets"]:
+                e["sets"] = m["sets"] if me == 0 else m["sets"][::-1]
+        out.append(e)
+    return sorted(out, key=lambda e: e["at"] or "9")
