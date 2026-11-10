@@ -89,15 +89,6 @@
     "link": "https://www.itftennis.com/en/tournament/w15-monastir/tun/2026/w-itf-tun-2026-035/"
    },
    {
-    "id": "dotsenko",
-    "tournament": "W15 Monastir",
-    "tier": "W15",
-    "type": "ITF World Tennis Tour",
-    "week": "21 Sep to 27 Sep 2026",
-    "end": "2026-09-27",
-    "link": "https://www.itftennis.com/en/tournament/w15-monastir/tun/2026/w-itf-tun-2026-034/"
-   },
-   {
     "id": "bonding",
     "tournament": "M15 Columbia, SC",
     "tier": "M15",
@@ -105,6 +96,15 @@
     "week": "21 Sep to 27 Sep 2026",
     "end": "2026-09-27",
     "link": "https://www.itftennis.com/en/tournament/m15-columbia-sc/usa/2026/m-itf-usa-2026-039/"
+   },
+   {
+    "id": "dotsenko",
+    "tournament": "W15 Monastir",
+    "tier": "W15",
+    "type": "ITF World Tennis Tour",
+    "week": "21 Sep to 27 Sep 2026",
+    "end": "2026-09-27",
+    "link": "https://www.itftennis.com/en/tournament/w15-monastir/tun/2026/w-itf-tun-2026-034/"
    },
    {
     "id": "ristic",
@@ -179,15 +179,6 @@
     "link": "https://www.itftennis.com/en/tournament/w15-orlando-fl/usa/2026/w-itf-usa-2026-013/"
    },
    {
-    "id": "dudeney",
-    "tournament": "W15 Monastir",
-    "tier": "W15",
-    "type": "ITF World Tennis Tour",
-    "week": "23 Mar to 29 Mar 2026",
-    "end": "2026-03-29",
-    "link": "https://www.itftennis.com/en/tournament/w15-monastir/tun/2026/w-itf-tun-2026-013/"
-   },
-   {
     "id": "ivanov",
     "tournament": "M25 Tarragona",
     "tier": "M25",
@@ -195,6 +186,15 @@
     "week": "23 Mar to 29 Mar 2026",
     "end": "2026-03-29",
     "link": "https://www.itftennis.com/en/tournament/m25-tarragona/esp/2026/m-itf-esp-2026-009/"
+   },
+   {
+    "id": "dudeney",
+    "tournament": "W15 Monastir",
+    "tier": "W15",
+    "type": "ITF World Tennis Tour",
+    "week": "23 Mar to 29 Mar 2026",
+    "end": "2026-03-29",
+    "link": "https://www.itftennis.com/en/tournament/w15-monastir/tun/2026/w-itf-tun-2026-013/"
    },
    {
     "id": "dudeney",
@@ -1067,7 +1067,7 @@
    }
   ]
  },
- "checked": "2026-11-09",
+ "checked": "2026-11-10",
  "v": 3,
  "full": [
   "deminaur",
@@ -1245,165 +1245,139 @@
    "rank": 3,
    "itf": 3,
    "seen": 6,
-   "week": "2026-11-02",
-   "checked": "2026-11-09"
+   "week": "2026-11-09",
+   "checked": "2026-11-10"
   },
   "bejlek": {
    "rank": 28,
    "itf": 28,
    "seen": 28,
-   "week": "2026-11-02",
-   "checked": "2026-11-09"
+   "week": "2026-11-09",
+   "checked": "2026-11-10"
   },
   "starodubtseva": {
    "rank": 42,
    "itf": 42,
    "seen": 42,
-   "week": "2026-11-02",
-   "checked": "2026-11-09"
+   "week": "2026-11-09",
+   "checked": "2026-11-10"
   },
   "sawangkaew": {
    "rank": 77,
    "itf": 77,
    "seen": 77,
-   "week": "2026-11-02",
-   "checked": "2026-11-09"
+   "week": "2026-11-09",
+   "checked": "2026-11-10"
   },
   "jones": {
    "rank": 65,
    "itf": 65,
    "seen": 71,
-   "week": "2026-11-02",
-   "checked": "2026-11-09"
+   "week": "2026-11-09",
+   "checked": "2026-11-10"
   },
   "jabeur": {
    "rank": 2,
    "itf": 2,
-   "week": "2026-11-02",
-   "checked": "2026-11-09"
+   "week": "2026-11-09",
+   "checked": "2026-11-10"
   },
   "romero": {
-   "rank": 123,
-   "itf": 123,
-   "seen": 129,
-   "week": "2026-11-02",
-   "checked": "2026-11-09"
+   "rank": 111,
+   "itf": 111,
+   "seen": 111,
+   "week": "2026-11-09",
+   "checked": "2026-11-10"
   },
   "ristic": {
    "rank": 182,
    "itf": 182,
    "seen": 182,
-   "week": "2026-11-02",
-   "checked": "2026-11-09"
+   "week": "2026-11-09",
+   "checked": "2026-11-10"
   },
   "rajeshwaran": {
-   "rank": 642,
-   "itf": 642,
-   "seen": 649,
-   "week": "2026-11-02",
-   "checked": "2026-11-09"
+   "rank": 489,
+   "itf": 489,
+   "seen": 489,
+   "week": "2026-11-09",
+   "checked": "2026-11-10"
   },
   "dotsenko": {
    "rank": 757,
    "itf": 757,
    "seen": 757,
-   "week": "2026-11-02",
-   "checked": "2026-11-09"
+   "week": "2026-11-09",
+   "checked": "2026-11-10"
   },
   "newman": {
    "rank": 885,
    "itf": 885,
    "seen": 890,
-   "week": "2026-11-02",
-   "checked": "2026-11-09"
+   "week": "2026-11-09",
+   "checked": "2026-11-10"
   },
   "lin": {
-   "rank": 865,
-   "itf": 865,
-   "seen": 865,
-   "week": "2026-11-02",
-   "checked": "2026-11-09"
+   "rank": 639,
+   "itf": 639,
+   "seen": 639,
+   "week": "2026-11-09",
+   "checked": "2026-11-10"
   },
   "pinera": {
    "rank": 1382,
    "itf": 1382,
-   "week": "2026-11-02",
-   "checked": "2026-11-09"
+   "week": "2026-11-09",
+   "checked": "2026-11-10"
   },
   "iwasa": {
-   "week": "2026-11-02",
-   "checked": "2026-11-09"
+   "week": "2026-11-09",
+   "checked": "2026-11-10"
   },
   "skryp": {
-   "week": "2026-11-02",
-   "checked": "2026-11-09"
+   "week": "2026-11-09",
+   "checked": "2026-11-10"
   },
   "kurylova": {
-   "week": "2026-11-02",
-   "checked": "2026-11-09"
+   "week": "2026-11-09",
+   "checked": "2026-11-10"
   },
   "dudeney": {
    "rank": 200,
    "itf": 200,
    "seen": 200,
-   "week": "2026-11-02",
-   "checked": "2026-11-09"
+   "week": "2026-11-09",
+   "checked": "2026-11-10"
   },
   "mmakarova": {
-   "week": "2026-11-02",
-   "checked": "2026-11-09"
+   "week": "2026-11-09",
+   "checked": "2026-11-10"
   },
   "vmakarova": {
-   "week": "2026-11-02",
-   "checked": "2026-11-09"
+   "week": "2026-11-09",
+   "checked": "2026-11-10"
   },
   "kanabar": {
-   "rank": 1439,
-   "itf": 1439,
-   "week": "2026-11-02",
-   "checked": "2026-11-09"
+   "rank": 1285,
+   "itf": 1285,
+   "week": "2026-11-09",
+   "checked": "2026-11-10"
   },
   "kasatkina": {
    "rank": 8,
    "itf": 8,
    "seen": 22,
-   "week": "2026-11-02",
-   "checked": "2026-11-09"
+   "week": "2026-11-09",
+   "checked": "2026-11-10"
   },
   "luchetti": {
-   "week": "2026-11-02",
-   "checked": "2026-11-09"
+   "week": "2026-11-09",
+   "checked": "2026-11-10"
   }
  },
- "tried": "2026-11-10T07:21:44Z",
+ "tried": "2026-11-10T07:46:06Z",
  "pending": [],
- "todo": [
-  "svitolina",
-  "bejlek",
-  "starodubtseva",
-  "kasatkina",
-  "sawangkaew",
-  "jones",
-  "jabeur",
-  "romero",
-  "ristic",
-  "rajeshwaran",
-  "dotsenko",
-  "newman",
-  "lin",
-  "pinera",
-  "iwasa",
-  "skryp",
-  "kurylova",
-  "dudeney",
-  "mmakarova",
-  "vmakarova",
-  "momot",
-  "kanabar",
-  "liu",
-  "luchetti",
-  "guslinskaia"
- ],
+ "todo": [],
  "todoMode": "daily",
  "source": "ITF singles results (itftennis.com)"
 }
