@@ -26,7 +26,7 @@ ITF = "https://www.itftennis.com/tennis/api"
 UA = "72HubRankings/1.0 (+https://github.com/tlock72/72-central; past junior results, one request every few seconds)"
 PAUSE = 3.5
 BUDGET = float(os.environ.get("BUDGET", 25 * 60))   # seconds of requests per run (hourly runs: ~16,000 requests in ~1.5 days)
-START = date(2022, 11, 1)                           # results from here make the rankings from Nov 2023 on
+START = date(2023, 1, 1)   # the ITF's J30-J500 grades began in 2023 (before: Grade A, 1-5, other points): rankings from Jan 2024
 DIR = "itfjr_rebuild"
 STATE, OUT, PROG, HIST = f"{DIR}/state.json", "itfjr_rebuilt.json", "itfjr_prog.json", "itfjr_history.json"
 NOW = datetime.now(timezone.utc)
@@ -93,8 +93,10 @@ def get(path, **q):
             if i == 2:
                 raise
             time.sleep(10 * (i + 1))
-    if not body.lstrip().startswith(("{", "[")):
+    if "_incapsula_resource" in body[:3000].lower() or "imperva" in body[:3000].lower():
         raise Blocked("ITF answered with its bot check")
+    if not body.lstrip().startswith(("{", "[")):
+        raise ValueError(f"no data in the ITF's answer ({body[:80]!r})")  # e.g. team events: an error page, not the bot check
     return json.loads(body)
 
 
@@ -231,6 +233,9 @@ def draws(state):
         for ev in cal[mo]["events"]:
             k = ev["key"]
             if k in done or not ev["end"] or ev["end"] >= (TODAY - timedelta(days=2)).isoformat() or tries.get(k, 0) >= 3:
+                continue
+            if ev["cat"] not in POINTS["S"] and ev["cat"] != "JM":
+                done[k] = "skip"  # team events (GC) and anything else that earns no junior ranking points
                 continue
             if left() < 30:
                 if raw is not None:
@@ -429,7 +434,8 @@ def main():
     state["checked"] = NOW.isoformat(timespec="seconds")
     save(STATE, state)
     cal = state.get("cal", {})
-    todo = sum(1 for mo in cal for ev in cal[mo]["events"] if ev["key"] not in state.get("done", {}) and ev["end"] and ev["end"] < (TODAY - timedelta(days=2)).isoformat())
+    todo = sum(1 for mo in cal for ev in cal[mo]["events"] if ev["key"] not in state.get("done", {}) and state.get("tries", {}).get(ev["key"], 0) < 3
+               and ev["end"] and ev["end"] < (TODAY - timedelta(days=2)).isoformat() and (ev["cat"] in POINTS["S"] or ev["cat"] == "JM"))
     print(f"events still to read: {todo}")
     out = load(OUT, {})
     out.update({"checked": state["checked"], "todo": todo, "errors": errors})

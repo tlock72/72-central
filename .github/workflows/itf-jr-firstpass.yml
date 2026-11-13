@@ -1,6 +1,6 @@
 name: Past ITF junior results - first pass (branch only, temporary)
 # Collects the ITF junior draws on this branch before it is merged, so the hourly job on main starts nearly done.
-# Collects only (COLLECT_ONLY): the rankings are worked out and checked on main. Delete this file before merging.
+# Collects only (COLLECT_ONLY): the rankings are worked out and checked on main. Delete this file before merging. (restart 2)
 on:
   push:
     branches: [claude/beautiful-brahmagupta-g62e7d]
