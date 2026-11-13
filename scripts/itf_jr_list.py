@@ -38,7 +38,7 @@ BACK = {"w": 7, "m3": 91, "m12": 364}  # 1 week, 13 weeks, 52 weeks
 GENDERS = {"b": "B", "g": "G"}         # itfjr.json key -> ITF playerTypeCode
 NOW = datetime.now(timezone.utc)
 FORCE = os.environ.get("FORCE") == "1"
-YE_BACK = 3          # official year-end lists: last year and the 2 before (End 2025, 2024, 2023)
+YE_BACK = 4          # official year-end lists: last year and the 3 before (End 2025, 2024, 2023, 2022)
 YE_BUDGET = 15 * 60  # seconds a run may spend reading new year-end lists (each is read once, kept for good)
 START = time.time()
 
@@ -146,9 +146,9 @@ def read_list(code, year=None):
             slug = re.sub(r"[^a-z]+", "-", name.lower()).strip("-")
             url = (("https://www.itftennis.com" + link) if str(link or "").startswith("/") else link) \
                 or f"https://www.itftennis.com/en/players/{slug}/{pid}/{nat.lower()}/jt/s/overview/"
-            mv = p.get("rankMovement")
+            mv, pts = p.get("rankMovement"), pick(p, "pointsRankingTotal", "points")
             out.append({"id": int(pid), "rank": int(rank), "name": name, "nat": nat, "born": born(p), "url": url,
-                        "mv": int(mv) if isinstance(mv, (int, float)) else None})
+                        "mv": int(mv) if isinstance(mv, (int, float)) else None, "pts": pts})
         skip += len(items)  # the ITF may send fewer than asked for per page
         if page == 0 and total and len(items) < TAKE and int(total) > len(items) * MAX_PAGES:
             raise RuntimeError(f"the ITF only sends {len(items)} players a page, too few to read {total}")
@@ -203,7 +203,9 @@ def year_end(hist, key, code, year):
         rows, when = read_list(code, year=year)
         if len(rows) < 300:
             raise RuntimeError(f"the {year} year-end list has only {len(rows)} players")
-        ye[str(year)] = {"date": when, "ranks": {str(r["id"]): r["rank"] for r in rows}}
+        ye[str(year)] = {"date": when, "ranks": {str(r["id"]): r["rank"] for r in rows},  # points + birth years: checks for
+                         "points": {str(r["id"]): r["pts"] for r in rows if r["pts"] is not None},  # itf_jr_rebuild.py
+                         "born": {str(r["id"]): r["born"] for r in rows if r["born"]}}
         print(f"{key}: {year} year-end list read, {len(rows)} players ({when})", flush=True)
     return ye[str(year)]
 
@@ -278,6 +280,8 @@ def main():
     hist = load(HIST, {})
     errors = out.setdefault("errors", {})
     roster = {p["itfId"]: rid for rid, p in (itf.get("players") or {}).items() if p.get("itfId")}
+    rebuilt = load("itfjr_rebuilt.json", {})
+    rebuilt = rebuilt if rebuilt.get("ok") else {}  # only once every rebuilt list matched the official ones
     ye_years = [NOW.year - 1 - i for i in range(YE_BACK)]  # End 2025, 2024, 2023: official year-end lists
     changed = False
     try:
@@ -287,6 +291,7 @@ def main():
         print("backfill failed:", e)
         errors["backfill"] = {"at": NOW.isoformat(timespec="seconds"), "msg": str(e)[:200]}
     bf_new = (hist.get("backfill") or {}).get("done", "") > (out.get("updated") or "")
+    bf_new = bf_new or (rebuilt.get("built") or "") > (out.get("updated") or "")  # newly passed rebuilt weeks
     for key, code in GENDERS.items():
         try:
             wk = week_of(peek(code))
@@ -331,6 +336,7 @@ def main():
             del h[w]  # older than the 12-month move needs
             depth.pop(w, None)
         cmp = {k: past(h, wk, d) for k, d in BACK.items()}
+        h_rb = {}
         last = (date.fromisoformat(wk) - timedelta(days=7)).isoformat()
         sign = hist.setdefault("mvSign", {}).get(key)
         if cmp["w"] == last:  # we have last week ourselves: learn (or re-check) which way round rankMovement is
@@ -341,7 +347,17 @@ def main():
             cmp["w"] = last
             print(f"  1-week moves from the ITF's own rankMovement (last week, {last}, wasn't read here)")
 
+        rb = (rebuilt.get("weeks") or {}).get(key) or {}
+        for k, d in BACK.items():
+            if not cmp[k] and rb:
+                w = past(rb, wk, d)
+                if w:
+                    cmp[k], h_rb[k] = w, rb[w]
+                    print(f"  {k} move from the rebuilt week of {w}")
+
         def mv(r, k):  # rank then; None = not ranked then, -1 = not tracked then
+            if k in h_rb:
+                return h_rb[k].get(str(r["id"]))  # a rebuilt week is the whole list: missing = not ranked then
             if k == "w" and use_mv:
                 return (r["rank"] + sign * r["mv"]) if r["mv"] is not None else -1
             if not cmp[k]:

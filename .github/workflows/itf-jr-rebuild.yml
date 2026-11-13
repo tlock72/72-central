@@ -1,0 +1,44 @@
+name: Past ITF junior rankings (rebuilt)
+# Collects every ITF junior draw since Nov 2022 (about 16,000 requests the first time, ~1.5 days of hourly runs),
+# rebuilds the boys' and girls' rankings for past Mondays, and only publishes them once they match every official
+# list we hold (scripts/itf_jr_rebuild.py). After that each run only reads the past week's new events.
+on:
+  schedule:
+    - cron: "47 * * * *"
+  workflow_dispatch: {}
+concurrency:
+  group: itf-jr-rebuild
+  cancel-in-progress: false
+permissions:
+  contents: write
+  issues: write
+jobs:
+  rebuild:
+    runs-on: ubuntu-latest
+    timeout-minutes: 50
+    steps:
+      - uses: actions/checkout@v6
+        with:
+          ref: main
+      - name: Collect ITF junior results and rebuild past rankings (no Claude)
+        run: python3 -u scripts/itf_jr_rebuild.py
+      - name: Use the rebuilt weeks in the junior lists once they have passed their checks
+        run: |
+          python3 - <<'PY' && python3 -u scripts/itf_jr_list.py || true
+          import json, sys
+          r = json.load(open("itfjr_rebuilt.json")) if __import__("os").path.exists("itfjr_rebuilt.json") else {}
+          o = json.load(open("itfjr.json"))
+          sys.exit(0 if r.get("ok") and (r.get("built") or "") > (o.get("updated") or "") else 1)
+          PY
+      - name: Save changes
+        run: |
+          git config user.name "72 Hub updater"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add itfjr_rebuild $(ls itfjr_rebuilt.json itfjr_prog.json 2>/dev/null) itfjr.json itfjr_history.json
+          git diff --cached --quiet && echo "No changes" || (git commit -q -m "Rebuild past ITF junior rankings" && (git pull -q --rebase -X theirs && git push || (git rebase --abort; echo "push failed, next run catches up")))
+      - name: Tell Tobey about anything missed (GitHub issue + email)
+        if: always()
+        continue-on-error: true
+        run: python3 scripts/report_gaps.py
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}

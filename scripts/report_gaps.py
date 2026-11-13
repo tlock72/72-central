@@ -175,6 +175,14 @@ def gaps():
         for k, ye in (src.get("errors") or {}).items():  # ITF juniors: official year-end lists ("End 2025/2024/2023"), keys like "bye2024"
             if re.fullmatch(t + r"ye\d{4}", k) and ukday(ye.get("at")) == TODAY:
                 out.append(f"Filtered Rankings: the {name} year-end list couldn't be read on {TODAY} ({ye.get('msg')}). It tries again next run.")
+    # 6a2) past ITF junior rankings rebuilt from results (itfjr_rebuilt.json): the check against the official lists failed
+    rb = load("itfjr_rebuilt.json")
+    e = (rb.get("errors") or {}).get("check")
+    if e and ukday(e.get("at")) == TODAY:
+        worst = sorted(rb.get("check") or [], key=lambda c: c.get("top500") or 0)[:3]
+        misses = ", ".join("{} {}%".format(c.get("list"), round(100 * (c.get("top500") or 0))) for c in worst)
+        out.append(f"Filtered Rankings: the rebuilt past ITF junior rankings didn't match the official lists on {TODAY}, "
+                   f"so they aren't used (worst: {misses}).")
     # 6b) Tour schedule (schedule.json, once a day): a source that failed today, or no update for 3 days
     sc = load("schedule.json")
     parts = {"atp": "the ATP Tour calendar (Wikipedia)", "challenger": "the Challenger calendar (Wikipedia)", "wta": "the WTA calendar",

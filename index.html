@@ -438,6 +438,19 @@ select.sq-in option{background:var(--navy-2);color:var(--white)}
 .sq-tbl.wp .sq-row{grid-template-columns:64px minmax(0,1fr) 78px 64px repeat(3,74px)}
 .sq-tbl.ye .sq-row{grid-template-columns:64px minmax(0,1fr) 64px repeat(4,74px)}
 .sq-ye{margin:0 0 12px}.sq-ye[hidden]{display:none}
+/* ITF Boys / Girls: the rank opens the month-by-month progression window (#prgd) */
+.sq-row button.no.prg{padding:0;text-align:left;cursor:pointer;text-decoration:underline dotted rgba(208,165,121,.55);text-underline-offset:5px;text-decoration-thickness:1px}
+.sq-row button.no.prg:hover{color:var(--white)}
+.pg-bd{padding:16px 22px 22px}
+.pg-bd svg{display:block;width:100%;height:auto}
+.pg-note{font-size:12px;color:var(--muted);line-height:1.5;margin:10px 0 0}
+.pg-tbl{margin-top:14px;display:grid;grid-template-columns:repeat(auto-fill,minmax(112px,1fr));gap:6px}
+.pg-tbl div{border:1px solid var(--line-2);border-radius:10px;padding:6px 9px;font-size:11px;color:var(--muted)}
+.pg-tbl b{display:block;font-family:var(--display);font-size:17px;color:var(--white);font-weight:600}
+.pg-tbl .rb{border-style:dashed}
+.pg-wait{padding:26px 22px;color:var(--muted);font-size:14px;line-height:1.55}
+.pg-wait b{display:block;color:var(--white);font-size:16px;margin-bottom:4px}
+@media (max-width:640px){.pg-bd{padding:12px 12px 16px}.pg-tbl{grid-template-columns:repeat(auto-fill,minmax(78px,1fr))}.pg-tbl b{font-size:15px}.pg-note{font-size:11.5px}}
 .sq-row .pt{text-align:right;font-family:var(--display);font-size:16px;color:var(--text);font-variant-numeric:tabular-nums}
 .sq-row .ct .ptm{display:none}
 .sq-eye{display:inline-flex;align-items:center;justify-content:center;color:var(--gold);border:1px solid var(--gold);border-radius:4px;padding:1px 4px;margin-left:6px;vertical-align:1px;line-height:0}
@@ -1939,6 +1952,7 @@ dialog.tmd[open]{animation:pop .28s ease}
   <dialog class="prof" id="prof" aria-label="Player profile"></dialog>
   <dialog class="rsd cnd" id="cnd" aria-label="Prospect profile"></dialog>
   <dialog class="rsd" id="resd" aria-label="Last 12 months of results"></dialog>
+  <dialog class="rsd" id="prgd" aria-label="Ranking progression"></dialog>
   <dialog class="stg" id="sets" aria-label="Settings">
     <h2>Settings</h2>
     <label for="setName">Your first name</label>
@@ -3287,7 +3301,7 @@ function renderScouting(){
   // 4-digit ranks (1000+) need a wider rank column on phones
   $("#sqTbl").classList.toggle("r4", shown.some(p => p.rank >= 1000));
   $("#sqTbl").innerHTML = head + (shown.length ? shown.map(p => `<div class="sq-row">
-      <div class="no">${p.rank}</div>
+      ${prgId(p) ? `<button type="button" class="no prg" data-prg="${prgId(p)}" data-nm="${esc(p.name)}" data-ct="${esc(p.cty)}" title="Ranking progression since late 2023">${p.rank}</button>` : `<div class="no">${p.rank}</div>`}
       <div style="min-width:0">${p.url ? `<a class="nm fx" href="${esc(p.url)}" target="_blank" rel="noopener">` : `<span class="nm fx">`}<span class="nt">${esc(p.name)}</span>${p.is72 ? `<span class="sq-72">72</span>` : ""}${sqEye(p, wl)}${p.url ? "</a>" : "</span>"}<div class="ct">${esc(p.cty)}${wp && ptx(p) ? `<span class="ptm"> · ${ptx(p)}<span class="u"> pts</span></span>` : ""}${sqActs(p, wl, cmx(p))}</div></div>
       ${wp ? `<div class="pt">${ptx(p) || "—"}</div>` : ""}<div class="by">${p.born || "—"}${p.born && !jr ? `<small>U${year - p.born}</small>` : ""}</div>
       ${sqCell(p.rank, p.w)}${sqCell(p.rank, p.m3)}${sqCell(p.rank, p.m12)}${yeOn ? sqCell(p.rank, p.ye) : ""}
@@ -3915,6 +3929,57 @@ $("#resd").addEventListener("click", e => {
   const y = d.scrollTop; rsOpen(RS.k); d.scrollTop = y;
 });
 $("#resd").addEventListener("close", () => { if (!$("#cnd").open && !$("#prof").open) profLock(false); clearTimeout(RS.poll); });
+/* ITF Boys / Girls: tap a player's rank for their ranking on the first Monday of every month since late 2023
+   (itfjr_prog.json, written by scripts/itf_jr_rebuild.py: rebuilt from the ITF's own results and only published once
+   every rebuilt list matched the official ITF lists we hold; official weekly lists after that). Loaded only when opened. */
+let PROG = null;
+const prgId = p => (sqJr() && !sqTe() && /\/(\d{6,})\//.exec(p.url || "")?.[1]) || "";
+async function prgOpen(g, pid, name, cty){
+  const d = $("#prgd");
+  const head = `<div class="rs-hd"><button type="button" class="x" data-pgx="1" aria-label="Close">✕</button>
+    <div class="k">ITF junior ranking · progression</div><h2>${esc(name)}</h2><div class="mt">${esc(cty || "")} · ${g === "b" ? "Boys" : "Girls"}</div></div>`;
+  if (!d.open) { profLock(true); d.showModal(); d.scrollTop = 0; }
+  if (!PROG) {
+    d.innerHTML = head + `<div class="pg-wait"><div class="sp"></div>Loading…</div>`;
+    try { const r = await fetch("itfjr_prog.json?t=" + Date.now(), { cache: "no-store" }); PROG = r.ok ? await r.json() : {}; } catch (e) { PROG = {}; }
+    if (!d.open) return;
+  }
+  const row = PROG[g]?.[pid], dates = PROG.dates || [];
+  if (!row || !dates.length) {
+    d.innerHTML = head + `<div class="pg-wait"><b>${PROG.dates ? "No monthly ranking for this player yet" : "Still being rebuilt"}</b>${PROG.dates
+      ? "This player wasn't ranked on any of the first Mondays we hold."
+      : "The ITF doesn't publish past junior rankings, so they are being worked out again from the ITF's own results, week by week back to late 2023. They appear here once every rebuilt list has matched the official ITF lists we hold."}</div>`;
+    return;
+  }
+  const pts = dates.map((dt, i) => ({ dt, r: row[i], rb: PROG.rebuiltTo && dt <= PROG.rebuiltTo })).filter(x => x.r);
+  const W = 700, H = 260, L = 46, R = 12, T = 14, B = 30;
+  const hi = Math.max(...pts.map(x => x.r)), lo = Math.min(...pts.map(x => x.r));
+  const ly = v => Math.log10(v), y0 = ly(Math.max(1, lo * 0.8)), y1 = ly(hi * 1.25);
+  const X = i => L + (W - L - R) * (dates.length > 1 ? i / (dates.length - 1) : .5), Y = r => T + (H - T - B) * (ly(r) - y0) / ((y1 - y0) || 1);
+  const ix = dt => dates.indexOf(dt);
+  const ticks = [1, 2, 5, 10, 20, 50, 100, 200, 500, 1000, 2000, 5000].filter(v => v >= lo * 0.8 && v <= hi * 1.25);
+  let path = "", prev = -2;
+  pts.forEach(x => { const i = ix(x.dt); path += `${i === prev + 1 ? "L" : "M"}${X(i).toFixed(1)},${Y(x.r).toFixed(1)}`; prev = i; });
+  const years = [...new Set(dates.map(dt => dt.slice(0, 4)))].map(y => ({ y, i: dates.findIndex(dt => dt.startsWith(y)) }))
+    .filter((o, k, a) => !a[k + 1] || X(a[k + 1].i) - X(o.i) > 48);  // a year with only a month or two: no label to collide with the next
+  const cut = PROG.rebuiltTo ? X(ix(PROG.rebuiltTo)) : null;
+  const fmt = dt => new Date(dt + "T12:00:00Z").toLocaleDateString("en-GB", { month: "short", year: "2-digit", timeZone: "UTC" });
+  const best = pts.reduce((m, x) => !m || x.r < m.r ? x : m, null), last = pts[pts.length - 1];
+  d.innerHTML = head + `<div class="pg-bd">
+    <svg viewBox="0 0 ${W} ${H}" role="img" aria-label="Monthly ranking of ${esc(name)}">
+      ${ticks.map(v => `<line x1="${L}" x2="${W - R}" y1="${Y(v)}" y2="${Y(v)}" stroke="rgba(255,255,255,.07)"/><text x="${L - 8}" y="${Y(v) + 4}" text-anchor="end" font-size="13" fill="#8C95B5">${v}</text>`).join("")}
+      ${years.map(o => `<text x="${X(o.i)}" y="${H - 8}" font-size="13" fill="#8C95B5">${o.y}</text>`).join("")}
+      ${cut ? `<line x1="${cut}" x2="${cut}" y1="${T}" y2="${H - B}" stroke="rgba(208,165,121,.35)" stroke-dasharray="4 4"/>` : ""}
+      <path d="${path}" fill="none" stroke="#D0A579" stroke-width="2.4" stroke-linejoin="round" stroke-linecap="round"/>
+      ${pts.map(x => `<circle cx="${X(ix(x.dt))}" cy="${Y(x.r)}" r="3" fill="#D0A579"><title>${fmt(x.dt)}: ${x.r}</title></circle>`).join("")}
+    </svg>
+    <p class="pg-note">Rank on the first Monday of each month (lower is better). Best: <b>${best.r}</b> (${fmt(best.dt)}). Latest here: <b>${last.r}</b> (${fmt(last.dt)}).
+      ${PROG.rebuiltTo ? `Up to ${fmt(PROG.rebuiltTo)} (dashed boxes, left of the dashed line) the ranks are rebuilt from the ITF's own results with the ITF's ranking rules, and were only published after matching every official ITF list we hold; after that they are the ITF's own weekly lists.` : ""}</p>
+    <div class="pg-tbl">${pts.slice().reverse().map(x => `<div class="${x.rb ? "rb" : ""}"><b>${x.r}</b>${fmt(x.dt)}</div>`).join("")}</div></div>`;
+}
+document.addEventListener("click", e => { const b = e.target.closest("button.prg"); if (b) prgOpen(SQ.t === "itfb" ? "b" : "g", b.dataset.prg, b.dataset.nm, b.dataset.ct); });
+$("#prgd").addEventListener("click", e => { const d = $("#prgd"); if (e.target === d || e.target.closest("[data-pgx]")) d.close(); });
+$("#prgd").addEventListener("close", () => { if (!$("#cnd").open && !$("#prof").open && !$("#resd").open) profLock(false); });
 /* Filtered Rankings: "12 months" on every row. Results already on the site (watch list, suggestions, or someone
    asked for this player before: results/<list>-<name words sorted>.json) open at once. Otherwise, or if they're
    not from today, the Sheet asks GitHub (results.yml, scripts/lookup_results.py) to read them, and this window
