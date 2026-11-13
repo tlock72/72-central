@@ -225,7 +225,7 @@ def draws(state):
     cal = state.get("cal", {})
     done = state.setdefault("done", {})       # tournament key -> UK date read (or "skip")
     tries = state.setdefault("tries", {})
-    for mo in sorted(cal):
+    for mo in sorted(cal, reverse=True):  # newest first: the last 12 months (checkable against our weekly lists) come in first
         raw_path = f"{DIR}/raw/{mo}.json"
         raw = None
         for ev in cal[mo]["events"]:
