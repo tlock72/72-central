@@ -24,8 +24,8 @@ from datetime import date, datetime, timedelta, timezone
 
 ITF = "https://www.itftennis.com/tennis/api"
 UA = "72HubRankings/1.0 (+https://github.com/tlock72/72-central; past junior results, one request every few seconds)"
-PAUSE = 3.5
-BUDGET = float(os.environ.get("BUDGET", 25 * 60))   # seconds of requests per run (hourly runs: ~16,000 requests in ~1.5 days)
+PAUSE = 10   # the ITF's draw pages are touchy: at 3.5 s it showed its bot check within a minute (Nov 2026)
+BUDGET = float(os.environ.get("BUDGET", 25 * 60))   # seconds of requests per run
 START = date(2023, 1, 1)   # the ITF's J30-J500 grades began in 2023 (before: Grade A, 1-5, other points): rankings from Jan 2024
 DIR = "itfjr_rebuild"
 STATE, OUT, PROG, HIST = f"{DIR}/state.json", "itfjr_rebuilt.json", "itfjr_prog.json", "itfjr_history.json"
@@ -243,10 +243,11 @@ def draws(state):
                 return False
             raw = raw if raw is not None else load(raw_path, {})
             try:
+                # which draws the event has, and its numeric id (the draw request needs it; the calendar gives none)
                 f = get("/TournamentApi/GetEventFilters", tournamentKey=k)
-                tid, tt = f.get("tournamentId"), f.get("tourType") or "N"
+                tid, tt, combos = f.get("tournamentId"), f.get("tourType") or "N", list(leaves(f.get("filters")))
                 got = []
-                for leaf in leaves(f.get("filters")):
+                for leaf in combos:
                     cls = leaf.get("eventClassificationCode") or ""
                     if cls == "Q":
                         continue  # qualifying earns no junior ranking points
@@ -257,7 +258,8 @@ def draws(state):
                             tourType=tt, tournamentId=tid, weekNumber=0)
                     d = {"p": leaf.get("playerTypeCode"), "m": leaf.get("matchTypeCode"), "c": cls, "s": leaf.get("drawsheetStructureCode")}
                     d["r"], d["n"] = parse_ko(s) if d["s"] == "KO" else parse_rr(s)
-                    got.append(d)
+                    if d["r"] or d["s"] != "KO":  # an event without (say) a girls' doubles draw answers with an empty sheet
+                        got.append(d)
                 raw[k] = {**{x: ev[x] for x in ("cat", "name", "start", "end")}, "d": got}
                 done[k] = TODAY.isoformat()
             except Blocked:

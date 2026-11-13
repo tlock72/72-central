@@ -1,6 +1,7 @@
 name: Past ITF junior results - first pass (branch only, temporary)
-# Collects the ITF junior draws on this branch before it is merged, so the hourly job on main starts nearly done.
-# Collects only (COLLECT_ONLY): the rankings are worked out and checked on main. Delete this file before merging. (restart 2)
+# Collects the ITF junior draws on this branch before it is merged, so the hourly job on main starts well ahead.
+# Collects only (COLLECT_ONLY): the rankings are worked out and checked on main. Delete this file before merging.
+# One request every 10 s; if the ITF shows its bot check, the script leaves it alone for 3 hours (this job waits).
 on:
   push:
     branches: [claude/beautiful-brahmagupta-g62e7d]
@@ -23,9 +24,14 @@ jobs:
         run: |
           git config user.name "72 Hub updater"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          for i in $(seq 1 13); do
+          end=$(( $(date +%s) + 335*60 ))
+          i=0
+          while [ $(date +%s) -lt $(( end - 27*60 )) ]; do
+            i=$((i+1))
             python3 -u scripts/itf_jr_rebuild.py || true
             git add itfjr_rebuild $(ls itfjr_rebuilt.json 2>/dev/null)
             git diff --cached --quiet || { git commit -q -m "Collect past ITF junior results (round $i)"; git pull -q --rebase -X ours || true; git push -q || true; }
-            python3 -c "import json,sys; s=json.load(open('itfjr_rebuild/state.json')); r=json.load(open('itfjr_rebuilt.json')); sys.exit(1 if s.get('blockedAt') or r.get('todo')==0 else 0)" || { echo "stopping: done or bot check"; break; }
+            python3 -c "import json,sys; r=json.load(open('itfjr_rebuilt.json')); sys.exit(1 if r.get('todo')==0 else 0)" || { echo "all collected"; break; }
+            # bot check: the script leaves the ITF alone for 3 hours; wait here in 5-minute steps rather than spin
+            python3 -c "import json,sys,datetime as d; s=json.load(open('itfjr_rebuild/state.json')); b=s.get('blockedAt'); sys.exit(0 if b and d.datetime.now(d.timezone.utc)-d.datetime.fromisoformat(b)<d.timedelta(hours=3) else 1)" && sleep 300 || true
           done
