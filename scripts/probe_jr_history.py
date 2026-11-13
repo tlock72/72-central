@@ -1,19 +1,18 @@
-"""One-off check (safe to delete): can past ITF junior rankings be rebuilt from the ITF's own results + points?
-Reads how a public project computes junior ranking points from ITF data (its code and rules file), and shows the
-raw shape of the ITF's results calls for one 72 junior. A handful of ITF requests; stops at the bot check."""
+"""One-off check (safe to delete): request formats for the ITF junior calendar, draws and points breakdown,
+and the junior ranking rules a public project uses. About 6 ITF requests; stops at the bot check."""
 import json, re, subprocess, time, urllib.parse, urllib.request
 
 UA = "72HubRankings/1.0 (+https://github.com/tlock72/72-central; one-off check)"
 ITF = "https://www.itftennis.com/tennis/api"
-for repo in ("genaromoraes/itf-juniors-live-ranking", "genaromoraes/versaoantiga_itf-juniors-live-ranking"):
-    d = "/tmp/" + repo.split("/")[1]
-    subprocess.run(["git", "clone", "-q", "--depth", "1", f"https://github.com/{repo}.git", d], check=True)
-    out = subprocess.run(["bash", "-c", f"cd {d} && grep -rhoE 'tennis/api/[A-Za-z]+/[A-Za-z]+[^\"\\x27 `]*' --include=*.js --include=*.mjs --include=*.ts --include=*.py --include=*.json . | sed 's/[?].*//' | sort | uniq -c | sort -rn | head -40"], capture_output=True, text=True).stdout
-    print(f"===== {repo} ITF calls used:\n{out}")
-    out = subprocess.run(["bash", "-c", f"cd {d} && ls -R | head -80; for f in $(find . -name '*rules*' -o -name '*points-table*' -o -name '*points_table*' | grep -v node_modules | head -5); do echo \"--- $f\"; head -c 3000 $f; echo; done"], capture_output=True, text=True).stdout
-    print(out)
-    out = subprocess.run(["bash", "-c", f"cd {d} && for f in data/clean/points_ledger.csv data/player-points.csv; do [ -f $f ] && echo \"--- $f ($(wc -l < $f) lines)\" && head -4 $f | cut -c1-600; done; grep -rn 'best\\|melhores\\|countin\\|weight\\|0.25\\|25%' --include=*.js --include=*.mjs --include=*.py . 2>/dev/null | grep -v node_modules | head -25"], capture_output=True, text=True).stdout
-    print(out)
+d = "/tmp/new"; subprocess.run(["git", "clone", "-q", "--depth", "1", "https://github.com/genaromoraes/itf-juniors-live-ranking.git", d], check=True)
+o = "/tmp/old"; subprocess.run(["git", "clone", "-q", "--depth", "1", "https://github.com/genaromoraes/versaoantiga_itf-juniors-live-ranking.git", o], check=True)
+sh = lambda c: subprocess.run(["bash", "-c", c], capture_output=True, text=True).stdout
+print("===== rules file\n" + sh(f"cat {o}/pipeline/rules/itf-juniors-2026.json"))
+print("===== draw/event/points calls in code (with context)\n" + sh(
+    f"cd {d} && grep -rn -B3 -A12 'GetDrawsheet\\|GetEventFilters\\|GetRankingPoints' --include=*.mjs --include=*.js --include=*.py scripts pipeline lib 2>/dev/null | grep -v node_modules | head -150"))
+print("===== old collector\n" + sh(f"grep -n -B2 -A10 'GetDrawsheet\\|GetEventFilters\\|GetCalendar' {o}/pipeline/lib/itf-weekly-collector.mjs | head -120"))
+print("===== points tables / categories / qualifying / bonus mentions\n" + sh(
+    f"cd {d} && grep -rn 'qualif\\|Qualif\\|bonus\\|JM\\b\\|Junior Finals\\|J-JM\\|18 years\\|age' --include=*.mjs scripts 2>/dev/null | head -40"))
 
 
 def get(path, **q):
@@ -29,17 +28,12 @@ def get(path, **q):
     return b
 
 
-JR = 800570117  # Jamie Mackenzie
-b = get("/PlayerApi/GetPlayerActivity", circuitCode="JT", matchTypeCode="S", playerId=JR, skip=0, take=2)
-try:
-    d = json.loads(b)
-    print("===== GetPlayerActivity keys:", list(d) if isinstance(d, dict) else type(d))
-    it = (d.get("items") or [])[:1]
-    print(json.dumps(it, indent=1)[:4000])
-    print("totalItems", d.get("totalItems"))
-except Exception:
-    print("activity raw:", b[:800])
-b = get("/PlayerApi/GetPlayerActivity", circuitCode="JT", matchTypeCode="D", playerId=JR, skip=0, take=1)
-print("===== doubles activity:", b[:1500])
-b = get("/PlayerApi/GetPlayerActivity", circuitCode="JT", matchTypeCode="S", playerId=JR, skip=0, take=1, year=2023)
-print("===== activity year=2023:", b[:1200])
+cal = json.loads(get("/TournamentApi/GetCalendar", circuitCode="JT", searchString="", skip=0, take=100, nationCodes="", zoneCodes="",
+                     dateFrom="2024-03-01", dateTo="2024-03-31", indoorOutdoor="", categories="", isOrderAscending="true", orderField="startDate", surfaceCodes=""))
+print("===== calendar March 2024:", cal.get("totalItems"), "events; first:", json.dumps((cal.get("items") or [None])[0])[:900])
+print("categories:", sorted({t.get("category") for t in cal.get("items") or []}))
+key = next((t["tournamentKey"] for t in cal.get("items") or [] if t.get("category") == "J300"), (cal.get("items") or [{}])[0].get("tournamentKey"))
+print("tournament:", key)
+ef = get("/TournamentApi/GetEventFilters", tournamentKey=key)
+print("===== event filters:", ef[:1500])
+print("PROBE_DONE_SETUP")
