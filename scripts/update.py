@@ -506,9 +506,12 @@ def main():
     # Two ways of naming rounds: the Live Tennis API's (R32, R16...) and ESPN's (1R, 2R...). They are only compared within one.
     orders = [["Q1", "Q2", "Q3", "Q final", "R128", "R64", "R32", "R16", "QF", "SF", "Final"],
               ["Q1", "Q2", "Q3", "Q final", "1R", "2R", "3R", "4R", "QF", "SF", "Final"]]
+    # Round-robin events (WTA/ATP Finals, Next Gen Finals): every group match is real and a player plays several
+    # in the same round, so neither rule applies to them (they hid Svitolina's whole WTA Finals group in Nov 2026).
+    robin = lambda m: re.search(r"group|robin", m.get("round") or "", re.I)
     clashes = []
     for rid in {r for m in new.values() for r in ours(m)}:
-        mine = [(k, m) for k, m in new.items() if rid in ours(m)]
+        mine = [(k, m) for k, m in new.items() if rid in ours(m) and not robin(m)]
         done = {(m["tournament"], (m.get("round") or "").replace(" (walkover)", "")) for _, m in mine if m["status"] == "finished"}
         for k, m in mine:
             if m["status"] in ("scheduled", "live") and m.get("round") and (m["tournament"], m["round"]) in done:
