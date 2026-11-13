@@ -437,6 +437,7 @@ select.sq-in option{background:var(--navy-2);color:var(--white)}
 /* ATP/WTA: a ranking points column after the player (phones show the points in the country line instead) */
 .sq-tbl.wp .sq-row{grid-template-columns:64px minmax(0,1fr) 78px 64px repeat(3,74px)}
 .sq-tbl.ye .sq-row{grid-template-columns:64px minmax(0,1fr) 64px repeat(4,74px)}
+.sq-ye{margin:0 0 12px}.sq-ye[hidden]{display:none}
 .sq-row .pt{text-align:right;font-family:var(--display);font-size:16px;color:var(--text);font-variant-numeric:tabular-nums}
 .sq-row .ct .ptm{display:none}
 .sq-eye{display:inline-flex;align-items:center;justify-content:center;color:var(--gold);border:1px solid var(--gold);border-radius:4px;padding:1px 4px;margin-left:6px;vertical-align:1px;line-height:0}
@@ -3136,7 +3137,7 @@ const SQ_NAME = { atp: "ATP", wta: "WTA", itfb: "ITF junior boys", itfg: "ITF ju
 const SQ_SHORT = { itfb: "ITF Boys", itfg: "ITF Girls", teb14: "TE U14 Boys", teg14: "TE U14 Girls" };
 // by: "age" (age groups) or "year" (one birth year); ag: "all", "21"…"16" or "custom"; age: under-age limit, 0 = all ages;
 // yr: birth year, 0 = all; rk: "all", "100"…"1000" or "custom"; top: ranking limit, 0 = no limit
-const SQ = { t: "atp", by: "age", ag: "all", age: 0, yr: 0, rk: "all", top: 0, q: "", c: "", sort: "rank", asc: true, all: false, o72: false, add: "" };
+const SQ = { yi: 0, t: "atp", by: "age", ag: "all", age: 0, yr: 0, rk: "all", top: 0, q: "", c: "", sort: "rank", asc: true, all: false, o72: false, add: "" };
 const SQ_AGES = [["all", "All"], ["22", "U22"], ["21", "U21"], ["20", "U20"], ["19", "U19"], ["18", "U18"], ["17", "U17"], ["16", "U16"], ["custom", "Custom"]];
 const SQ_RANKS = [["all", "All"], ["100", "Top 100"], ["300", "Top 300"], ["500", "Top 500"], ["1000", "Top 1000"], ["custom", "Custom"]];
 const sqNum = el => Math.max(0, parseInt(el.value, 10) || 0);
@@ -3158,7 +3159,7 @@ function sqRows(){
   if (!T) return [];
   const year = (SCOUT.minYear || new Date().getFullYear() - 21) + 21;
   const q = sqKey(SQ.q);
-  return T.players.map(p => ({ rank:p[0], name:p[1], raw:p[1], cty:p[2], born:p[3], w:p[4], m3:p[5], m12:p[6], url:p[7], pts:p[9] ?? null, ye: p[10] === undefined ? -1 : p[10],
+  return T.players.map(p => ({ rank:p[0], name:p[1], raw:p[1], cty:p[2], born:p[3], w:p[4], m3:p[5], m12:p[6], url:p[7], pts:p[9] ?? null, ye: p[10 + SQ.yi] === undefined ? -1 : p[10 + SQ.yi],
       is72: sqJr() ? !!p[8] : SQ72.has(SQ.t + ":" + sqKey(p[1])), rid: p[8] }))
     .map(p => { if (p.rid && byId[p.rid]) p.name = `${byId[p.rid].first} ${byId[p.rid].last}`;  // ITF juniors: 72 players matched by ITF id
       else if (p.is72 && !sqJr()) { const r = ROSTER.find(x => x.tour.toLowerCase() === SQ.t && sqKey(x.first + x.last) === sqKey(p.name)); if (r) p.name = `${r.first} ${r.last}`; } return p; })
@@ -3253,7 +3254,13 @@ function renderScouting(){
   $("#sqTbl").classList.toggle("wp", wp);
   if (!wp && SQ.sort === "pts") SQ.sort = "rank";
   // ITF juniors: "End 2025" = move since the ITF's official year-end list for last season (itf_jr_list.py)
-  const yeOn = jr && !sqTe() && !!T.ye, yeLb = yeOn ? `End ${T.ye.year}` : "";
+  const YE = Array.isArray(T.ye) ? T.ye : T.ye ? [T.ye] : [];  // official year-end lists, newest first
+  if (SQ.yi >= YE.length) SQ.yi = 0;
+  const yeOn = jr && !sqTe() && YE.length > 0, yeY = yeOn ? YE[SQ.yi] : null, yeLb = yeOn ? `End ${yeY.year}` : "";
+  // "Compare with" switch above the table (only when more than one year-end list is in)
+  let yb = $("#sqYe"); if (!yb) { yb = document.createElement("div"); yb.id = "sqYe"; yb.className = "sq-line sq-ye"; $("#sqTbl").before(yb); }
+  yb.hidden = !yeOn || YE.length < 2;
+  yb.innerHTML = yeOn ? `<span class="sq-lbl">Compare with</span><div class="chips" role="group" aria-label="Compare with a year-end ranking">${YE.map((y, i) => `<button class="chip sqye${i === SQ.yi ? " on" : ""}" data-i="${i}" title="The ITF's official year-end ranking for ${y.year}">End ${y.year}</button>`).join("")}</div>` : "";
   $("#sqTbl").classList.toggle("ye", yeOn);
   if (!yeOn && SQ.sort === "ye") SQ.sort = "rank";
   const rows = sqSort(sqRows());
@@ -3265,12 +3272,12 @@ function renderScouting(){
   const best = k => rows.filter(p => p[k] > 0 && p.rank <= cap).sort((a, b) => (b[k] - b.rank) - (a[k] - a.rank) || a.rank - b.rank)[0];
   const top = rows.reduce((m, p) => !m || p.rank < m.rank ? p : m, null), b3 = best("m3"), b12 = best("m12");
   // until 12 months of junior history exist, the last box shows the biggest climb since the year-end list instead
-  const yeBox = yeOn && !rows.some(p => p.m12 > 0), bye = yeBox && best("ye");
+  const yeBox = yeOn && (SQ.yi > 0 || !rows.some(p => p.m12 > 0)), bye = yeBox && best("ye");
   $("#sqStats").innerHTML = `
     <div class="stat"><div class="k">Players in this filter</div><div class="v">${rows.length}<small>${sqAgeTxt()}${SQ.top ? ` · Top ${SQ.top}` : ""} · ${SQ_SHORT[SQ.t] || SQ.t.toUpperCase()}</small></div></div>
     <div class="stat"><div class="k">Highest ranked</div><div class="v nm">${top ? `${esc(top.name)}<small>#${top.rank}</small>` : "—"}</div></div>
     <div class="stat"><div class="k">Biggest climb · 3 months${capTxt}</div><div class="v nm">${b3 && b3.m3 > b3.rank ? `${esc(b3.name)}<small>▲${b3.m3 - b3.rank}</small>` : "—"}</div></div>
-    ${yeBox ? `<div class="stat"><div class="k">Biggest climb · since end of ${T.ye.year}${capTxt}</div><div class="v nm">${bye && bye.ye > bye.rank ? `${esc(bye.name)}<small>▲${bye.ye - bye.rank}</small>` : "—"}</div></div>`
+    ${yeBox ? `<div class="stat"><div class="k">Biggest climb · since end of ${yeY.year}${capTxt}</div><div class="v nm">${bye && bye.ye > bye.rank ? `${esc(bye.name)}<small>▲${bye.ye - bye.rank}</small>` : "—"}</div></div>`
       : `<div class="stat"><div class="k">Biggest climb · 12 months${capTxt}</div><div class="v nm">${b12 && b12.m12 > b12.rank ? `${esc(b12.name)}<small>▲${b12.m12 - b12.rank}</small>` : "—"}</div></div>`}`;
   const cols = [["rank","Rank"],["name","Player"],...(wp ? [["pts","Points"]] : []),["born","Born"],["w","1 wk"],["m3","3 mo"],["m12","12 mo"],...(yeOn ? [["ye", yeLb]] : [])];
   const head = `<div class="sq-row h">${cols.map(([k, l]) => `<button data-s="${k}" class="${k === "pts" ? "pt " : ""}${SQ.sort === k ? "on" + (SQ.asc ? "" : " asc") : ""}">${l}</button>`).join("")}</div>`;
@@ -3290,7 +3297,7 @@ function renderScouting(){
   const c = T.cmp || {};
   const cmpTxt = [["w", "1 wk"], ["m3", "3 mo"], ["m12", "12 mo"]].filter(([k]) => c[k]).map(([k, l]) => `${sqFmt(c[k])} (${l})`).join(", ").replace(/^(.)/, ", compared with the rankings of $1");
   $("#sqSrc").innerHTML = sqTe() ? `Tennis Europe Ranking, ${SQ.t === "teb14" ? "Boys" : "Girls"} 14 &amp; Under, week of ${sqFmt(T.week)}${cmpTxt}. <b>NEW</b> means the player was not ranked then. Filtered by birth year, as junior events are. 72 players are matched by their Tennis Europe profile. Source: Tennis Europe (used with permission, internal use only). Updates itself when Tennis Europe publishes a new week.`
-    : jr ? `ITF World Tennis Junior Ranking (${SQ.t === "itfb" ? "boys" : "girls"}) of ${sqFmt(T.week)}${[["w", "1 wk"], ["m3", "3 mo"], ["m12", "12 mo"]].filter(([k]) => c[k]).map(([k, l]) => `${sqFmt(c[k])} (${l})`).join(", ").replace(/^(.)/, ", compared with the rankings of $1")}. ${yeOn ? ` <b>${yeLb}</b> compares with the ITF's official year-end ranking for ${T.ye.year}${T.ye.date ? ` (${esc(T.ye.date)})` : ""}.` : ""} <b>NEW</b> means the player was not ranked then; <b>—</b> means not tracked then (the ITF doesn't publish past junior weeks, so past weeks come from our own weekly copy since October 2026 and, from June 2026, a public copy of the ITF's own weekly list checked against ours (top 500 to 1,500 only, so anyone below that then shows —); the 1-week move uses the ITF's own if a week was missed). Filtered by birth year, as junior events are. Source: ITF. Updates itself every Monday.`
+    : jr ? `ITF World Tennis Junior Ranking (${SQ.t === "itfb" ? "boys" : "girls"}) of ${sqFmt(T.week)}${[["w", "1 wk"], ["m3", "3 mo"], ["m12", "12 mo"]].filter(([k]) => c[k]).map(([k, l]) => `${sqFmt(c[k])} (${l})`).join(", ").replace(/^(.)/, ", compared with the rankings of $1")}. ${yeOn ? ` <b>${yeLb}</b> compares with the ITF's official year-end ranking for ${yeY.year}${yeY.date ? ` (${esc(yeY.date)})` : ""}${YE.length > 1 ? `; switch years with "Compare with" (${YE.map(y => y.year).join(", ")})` : ""}.` : ""} <b>NEW</b> means the player was not ranked then; <b>—</b> means not tracked then (the ITF doesn't publish past junior weeks, so past weeks come from our own weekly copy since October 2026 and, from June 2026, a public copy of the ITF's own weekly list checked against ours (top 500 to 1,500 only, so anyone below that then shows —); the 1-week move uses the ITF's own if a week was missed). Filtered by birth year, as junior events are. Source: ITF. Updates itself every Monday.`
     : `Official ${SQ.t.toUpperCase()} singles ranking of ${sqFmt(T.week)}, compared with the rankings of ${sqFmt(c.w)} (1 wk), ${sqFmt(c.m3)} (3 mo) and ${sqFmt(c.m12)} (12 mo). <b>NEW</b> means the player was not ranked then${rows.some(p => p.w === -1 || p.m3 === -1 || p.m12 === -1) ? "; <b>—</b> means not tracked then (older ATP weeks are being filled in for every player, a few weeks every half hour)" : ""}. Source: ${SQ.t === "atp" ? `ATP via Tennis Abstract${wp ? " (points via Tennis Explorer)" : ""}` : "WTA"}. Updates itself every week.`;
 }
 // Rankings: "72 Players" shows the roster view (#rankings); the ATP … TE U14 buttons show the full lists (#scouting)
@@ -3301,8 +3308,9 @@ document.addEventListener("click", e => {
   location.hash = "#scouting";
 });
 document.addEventListener("click", e => {
-  const t = e.target.closest(".sqt, .sqm, .sqa, .sqy, .sqr, .sqo, .sq-row.h button, #sqMore");
+  const t = e.target.closest(".sqt, .sqm, .sqa, .sqy, .sqr, .sqo, .sqye, .sq-row.h button, #sqMore");
   if (!t) return;
+  if (t.classList.contains("sqye")) { SQ.yi = +t.dataset.i; renderScouting(); return; }
   if (t.classList.contains("sqt")) { SQ.t = t.dataset.t; SQ.all = false; document.querySelectorAll(".sqt").forEach(b => b.classList.toggle("on", b === t)); }
   else if (t.classList.contains("sqm")) { SQ.by = t.dataset.m; SQ.all = false; }
   else if (t.classList.contains("sqo")) {

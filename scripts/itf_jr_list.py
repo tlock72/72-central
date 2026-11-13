@@ -17,8 +17,10 @@ rankMovement, but only once the run has checked which way round the ITF counts i
 Past weeks before our own history (from 2 Jun 2026, top 500 to 1,500 only) are copied in once from a public
 project that saved the ITF's official list every Monday (OUTSIDE below), but only if every week it shares with
 ours is identical; a player beyond the depth of such a week counts as "not tracked then" (-1), never as NEW.
-On top of that, every player's rank in the ITF's official year-end list for last year (the ITF keeps those,
-juniorRankingType=year) is stored once in itfjr_history.json["ye"] and shown as the "End 2025" column.
+On top of that, every player's rank in the ITF's official year-end lists for the last 3 years (the ITF keeps
+those, juniorRankingType=year) is stored once in itfjr_history.json["ye"] and shown as the "End 2025" column
+(the page can switch it to End 2024 / End 2023). Each list is about 50 pages, so new ones are read within a
+time budget (YE_BUDGET) and the rest on the next run.
 
 If the ITF answers with its bot check the script stops straight away (it never tries to get past
 it) and keeps the previous list; the error is alerted by report_gaps.py.
@@ -36,6 +38,9 @@ BACK = {"w": 7, "m3": 91, "m12": 364}  # 1 week, 13 weeks, 52 weeks
 GENDERS = {"b": "B", "g": "G"}         # itfjr.json key -> ITF playerTypeCode
 NOW = datetime.now(timezone.utc)
 FORCE = os.environ.get("FORCE") == "1"
+YE_BACK = 3          # official year-end lists: last year and the 2 before (End 2025, 2024, 2023)
+YE_BUDGET = 15 * 60  # seconds a run may spend reading new year-end lists (each is read once, kept for good)
+START = time.time()
 
 
 class Blocked(Exception):
@@ -188,9 +193,13 @@ def mv_sign(rows, prev):
 
 
 def year_end(hist, key, code, year):
-    """The ITF's official year-end list for `year` ({id: rank}), read once and kept (it never changes)."""
+    """The ITF's official year-end list for `year` ({id: rank}), read once and kept (it never changes).
+    None if it isn't read yet and this run's time for year-end lists is used up."""
     ye = hist.setdefault("ye", {}).setdefault(key, {})
     if str(year) not in ye:
+        if time.time() - START > YE_BUDGET:
+            print(f"{key}: {year} year-end list left for the next run (time budget)")
+            return None
         rows, when = read_list(code, year=year)
         if len(rows) < 300:
             raise RuntimeError(f"the {year} year-end list has only {len(rows)} players")
@@ -269,7 +278,7 @@ def main():
     hist = load(HIST, {})
     errors = out.setdefault("errors", {})
     roster = {p["itfId"]: rid for rid, p in (itf.get("players") or {}).items() if p.get("itfId")}
-    ye_year = NOW.year - 1  # "End 2025": last season's official year-end list
+    ye_years = [NOW.year - 1 - i for i in range(YE_BACK)]  # End 2025, 2024, 2023: official year-end lists
     changed = False
     try:
         backfill(hist)
@@ -283,16 +292,19 @@ def main():
             wk = week_of(peek(code))
             if not wk:
                 raise RuntimeError("the ITF list came back without a ranking date")
-            try:  # a year-end problem never holds up the weekly list
-                ye = year_end(hist, key, code, ye_year)
-                errors.pop(key + "ye", None)
-            except Blocked:
-                raise
-            except Exception as e:
-                print(key, "year-end list failed:", e)
-                errors[key + "ye"] = {"at": NOW.isoformat(timespec="seconds"), "msg": f"{ye_year} year-end list: {e}"[:200]}
-                ye = None
-            ye_new = bool(ye) and (out.get(key) or {}).get("ye", {}).get("year") != ye_year
+            ye = []  # [(year, {date, ranks})] for every year-end list we have, newest first
+            for y in ye_years:
+                try:  # a year-end problem never holds up the weekly list
+                    got = year_end(hist, key, code, y)
+                    if got:
+                        ye.append((y, got))
+                    errors.pop(f"{key}ye{y}", None)
+                except Blocked:
+                    raise
+                except Exception as e:
+                    print(key, y, "year-end list failed:", e)
+                    errors[f"{key}ye{y}"] = {"at": NOW.isoformat(timespec="seconds"), "msg": f"{y} year-end list: {e}"[:200]}
+            ye_new = [x.get("year") for x in (out.get(key) or {}).get("ye") or [] if isinstance(x, dict)] != [y for y, _ in ye]
             if (out.get(key) or {}).get("week") == wk and not FORCE and not ye_new and not bf_new:
                 print(key, "already on the week of", wk); continue
             rows, when = read_list(code)
@@ -336,11 +348,10 @@ def main():
                 return -1
             was = h[cmp[k]].get(str(r["id"]))
             return -1 if was is None and cmp[k] in depth else was  # a copied-in week only has its top N
-        yr = ye["ranks"] if ye else {}
-        out[key] = {"week": wk, "cmp": cmp, **({"ye": {"year": ye_year, "date": ye["date"]}} if ye else {}), "players": [
-            [r["rank"], r["name"], r["nat"], r["born"], mv(r, "w"), mv(r, "m3"), mv(r, "m12"), r["url"], roster.get(r["id"]),
-             None, yr.get(str(r["id"])) if ye else -1]  # [9] stays empty (points on the ATP/WTA lists); [10] = rank in last year's year-end list
-            for r in sorted(rows, key=lambda r: r["rank"])]}
+        out[key] = {"week": wk, "cmp": cmp, "ye": [{"year": y, "date": d["date"]} for y, d in ye], "players": [
+            [r["rank"], r["name"], r["nat"], r["born"], mv(r, "w"), mv(r, "m3"), mv(r, "m12"), r["url"], roster.get(r["id"]), None]
+            + [d["ranks"].get(str(r["id"])) for _, d in ye]  # [9] stays empty (points on the ATP/WTA lists); [10], [11]...
+            for r in sorted(rows, key=lambda r: r["rank"])]}                    # = rank in each year-end list of "ye", in order
         errors.pop(key, None)
         changed = True
         print(f"{key}: {len(rows)} players, week of {wk}", flush=True)

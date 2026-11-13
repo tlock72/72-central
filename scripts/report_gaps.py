@@ -8,7 +8,7 @@ or Scouting HQ that could not be refreshed, a part of the update that failed, up
 stopped, or the website not publishing - and posts it to an open GitHub issue called
 "72 Central: missing info" (GitHub emails the repository owner). Each problem is only reported once.
 """
-import json, os, subprocess, sys, unicodedata
+import json, os, re, subprocess, sys, unicodedata
 from datetime import datetime, timedelta, timezone
 from zoneinfo import ZoneInfo
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
@@ -172,9 +172,9 @@ def gaps():
         bf = (src.get("errors") or {}).get("backfill") if t == "b" else None  # past ITF junior weeks (Jun-Oct 2026) copied in once
         if bf and ukday(bf.get("at")) == TODAY:
             out.append(f"Filtered Rankings: past ITF junior weeks couldn't be copied in on {TODAY} ({bf.get('msg')}). Moves only use our own weeks until it works.")
-        ye = (src.get("errors") or {}).get(t + "ye")  # ITF juniors: last year's official year-end list (the "End" column)
-        if ye and ukday(ye.get("at")) == TODAY:
-            out.append(f"Filtered Rankings: the {name} year-end list couldn't be read on {TODAY} ({ye.get('msg')}). It tries again next run.")
+        for k, ye in (src.get("errors") or {}).items():  # ITF juniors: official year-end lists ("End 2025/2024/2023"), keys like "bye2024"
+            if re.fullmatch(t + r"ye\d{4}", k) and ukday(ye.get("at")) == TODAY:
+                out.append(f"Filtered Rankings: the {name} year-end list couldn't be read on {TODAY} ({ye.get('msg')}). It tries again next run.")
     # 6b) Tour schedule (schedule.json, once a day): a source that failed today, or no update for 3 days
     sc = load("schedule.json")
     parts = {"atp": "the ATP Tour calendar (Wikipedia)", "challenger": "the Challenger calendar (Wikipedia)", "wta": "the WTA calendar",
