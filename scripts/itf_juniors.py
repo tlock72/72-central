@@ -74,7 +74,15 @@ def main():
         data = {}
     players = data.setdefault("players", {})
     if data.get("checked") == today and not data.get("pending") and os.environ.get("FORCE") != "1":
-        print("Already refreshed today"); return
+        # the ITF sometimes publishes the new week late on a Monday: one small request to see if it has
+        try:
+            latest = get("/PlayerRankApi/GetPlayerRankings", circuitCode="JT", playerTypeCode="B", ageCategoryCode="",
+                         juniorRankingType="itf", take=10, skip=0, isOrderAscending="true").get("rankDate")
+        except Exception as e:  # bot check or a hiccup: keep today's figures, the next run asks again
+            print("couldn't check for a newer ranking week:", e); latest = None
+        if not latest or latest == data.get("rankDate"):
+            print("Already refreshed today"); return
+        print(f"The ITF has a newer ranking week ({latest}), refreshing")
 
     pending = []
     blocked = False

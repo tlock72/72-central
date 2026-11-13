@@ -1,9 +1,10 @@
 name: ITF junior rankings (weekly)
 on:
   schedule:
-    # Mondays at about 08:20, 11:20 and 14:20 UK time. The later runs only do anything
-    # if an earlier run could not refresh every player.
-    - cron: "20 7,10,13 * * 1"
+    # Mondays at about 08:20, 11:20, 14:20, 17:20 and 20:20 UK time, and Tuesdays at 08:20 (the ITF
+    # sometimes publishes the new week late). A run with nothing new costs about three small requests.
+    - cron: "20 7,10,13,16,19 * * 1"
+    - cron: "20 7 * * 2"
   workflow_dispatch:
     inputs:
       source:

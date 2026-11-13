@@ -169,6 +169,12 @@ def gaps():
                        + (f"It still shows the ranking week of {wk}." if wk else "Nothing is shown for it yet."))
         if wk and wk < ago(16):
             out.append(f"Filtered Rankings: the {name} list is still on the ranking week of {wk} - no newer week has been picked up.")
+        bf = (src.get("errors") or {}).get("backfill") if t == "b" else None  # past ITF junior weeks (Jun-Oct 2026) copied in once
+        if bf and ukday(bf.get("at")) == TODAY:
+            out.append(f"Filtered Rankings: past ITF junior weeks couldn't be copied in on {TODAY} ({bf.get('msg')}). Moves only use our own weeks until it works.")
+        ye = (src.get("errors") or {}).get(t + "ye")  # ITF juniors: last year's official year-end list (the "End" column)
+        if ye and ukday(ye.get("at")) == TODAY:
+            out.append(f"Filtered Rankings: the {name} year-end list couldn't be read on {TODAY} ({ye.get('msg')}). It tries again next run.")
     # 6b) Tour schedule (schedule.json, once a day): a source that failed today, or no update for 3 days
     sc = load("schedule.json")
     parts = {"atp": "the ATP Tour calendar (Wikipedia)", "challenger": "the Challenger calendar (Wikipedia)", "wta": "the WTA calendar",
