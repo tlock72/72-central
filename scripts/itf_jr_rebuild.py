@@ -396,6 +396,8 @@ def check(res, born, hist):
     for key, g in (("b", "B"), ("g", "G")):
         # year-end lists: exact points per player; the ranking date is the last Monday of the year
         for y, ye in sorted(((hist.get("ye") or {}).get(key) or {}).items()):
+            if int(y) < START.year:
+                continue  # before the results we rebuild from (2022 still used the old junior grades)
             day = max(mondays(date(int(y), 12, 20), date(int(y), 12, 31)))
             mine = {pid: (rk, tot) for pid, rk, tot in rank_on(day, res, g, born)}
             off = ye["ranks"]
