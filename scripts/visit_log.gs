@@ -28,6 +28,8 @@
 // folder per player), and each is a row on the "Videos" tab. Anyone with the link can watch a clip (the links are
 // only on the passcode-protected site). To take a clip down, set its Status to "Removed" (and delete the file in
 // Drive if you like). The person who added it can also remove it from the same device for a day.
+// Video links (YouTube, Instagram, TikTok, Vimeo or any other page) pasted on the site go on the same tab: their
+// File ID starts with "L", the link is in the Link column and Sharing says "Link". Take one down the same way.
 // The videos need Google Drive access: after pasting this script, run setupReports once by hand and allow it.
 
 const TZ = "Europe/London";
@@ -91,6 +93,7 @@ function doPost(e) {
   if (d.kind === "vidstart") return videoStart(d);
   if (d.kind === "vidchunk") return videoChunk(d);
   if (d.kind === "unvideo") return videoRemove(d);
+  if (d.kind === "vidlink") return videoLink(d);
   const id = String(d.id || "").slice(0, 40), start = new Date(Number(d.start));
   if (!id || isNaN(start)) return out("bad");
   // text starting with = + - @ would be read as a formula, so it's kept as plain text
@@ -685,7 +688,8 @@ function listReports(e) {
   const vs = SpreadsheetApp.getActiveSpreadsheet().getSheetByName("Videos");
   const vrows = vs && vs.getLastRow() > 1 ? vs.getRange(2, 1, vs.getLastRow() - 1, 11).getValues() : [];
   const videos = vrows.filter(r => r[6] && String(r[4]).trim() === "Live" && r[0] instanceof Date).map(r => ({
-    id: String(r[6]), name: unplain_(r[1]).trim(), cap: unplain_(r[2]), by: unplain_(r[3]), rid: String(r[5] || ""), at: r[0].toISOString(), mb: Number(r[10]) || null
+    id: String(r[6]), name: unplain_(r[1]).trim(), cap: unplain_(r[2]), by: unplain_(r[3]), rid: String(r[5] || ""), at: r[0].toISOString(), mb: Number(r[10]) || null,
+    url: /^L[a-f0-9]{16}$/.test(String(r[6])) ? unplain_(r[7]) : ""
   }));
   return json_({ reports, drafts, notes, videos });
 }
@@ -817,6 +821,26 @@ function videoRemove(d) {
   if (i < 0) return out("none");
   if (!(rows[i][0] instanceof Date) || Date.now() - rows[i][0] > 864e5) return out("late");
   sh.getRange(i + 2, 5).setValue("Removed");
-  try { DriveApp.getFileById(id).setTrashed(true); } catch (e) {}
+  if (!/^L/.test(id)) { try { DriveApp.getFileById(id).setTrashed(true); } catch (e) {} }  // a pasted link has no file
+  return out("ok");
+}
+
+// A link to a video somewhere else (YouTube, Instagram, TikTok, Vimeo, any web page), pasted on the site's
+// "Paste a link" box: a row on the "Videos" tab like an uploaded clip, with the link in the Link column.
+function videoLink(d) {
+  const name = clean_(d.name).replace(/\s+/g, " ").slice(0, 60), id = String(d.id || ""), undo = String(d.undo || "");
+  const url = clean_(d.url).slice(0, 500);
+  if (!okName_(name) || !/^L[a-f0-9]{16}$/.test(id) || !/^[a-f0-9]{16,64}$/.test(undo) || !/^https?:\/\/[^\s"<>]+\.[^\s"<>]+$/i.test(url)) return out("bad");
+  const rid = /^[a-f0-9]{12}$/.test(String(d.rid || "")) ? String(d.rid) : "";
+  const by = clean_(d.by).slice(0, 30), cap = clean_(d.cap).slice(0, 120);
+  const lock = LockService.getScriptLock();
+  lock.waitLock(10000);
+  try {
+    const sh = videoSheet_();
+    if (sh.getLastRow() > 1 && sh.getRange("G:G").createTextFinder(id).matchEntireCell(true).findNext()) return out("ok");
+    sh.appendRow([new Date(), plain_(name), plain_(cap), plain_(by), "Live", rid, id, plain_(url), "Link", undo, ""]);
+  } finally {
+    lock.releaseLock();
+  }
   return out("ok");
 }
