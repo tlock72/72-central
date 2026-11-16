@@ -340,14 +340,21 @@ def te_find(p, nat):
 TE_MIN_BORN = 2010  # Tennis Europe is U12-U16: anyone born before this is over 16 and isn't searched there
 
 
-def te_born(pid):
-    """Year of birth from the Tennis Europe profile's Biography tab ("Year of birth 2014"; the profile's front page
-    never shows it), only when the page labels it clearly (else None, never a guess)."""
+TE_NAT = {"ROM": "ROU", "LIB": "LBN", "MGO": "MGL"}  # Tennis Europe's own flag codes -> the ITF's (used on the site)
+
+
+def te_bio(pid):
+    """(year of birth, nationality code) from the Tennis Europe profile's Biography tab ("Year of birth 2014"; the
+    profile's front page never shows it). Each only when the page shows it clearly, else None (never a guess):
+    the nationality code is the page's flag (e.g. POL), used only if it is the one flag on the page and the
+    "Nationality" field is filled in."""
     page = TE.fetch(f"/player-profile/{pid}/biography")
     text = re.sub(r"\s+", " ", html.unescape(re.sub(r"<[^>]+>", " ", page)))
     m = re.search(r"(?i)\b(?:year of birth|birth ?year|date of birth)\s*:?\s*(?:\d{1,2}[./-]\d{1,2}[./-])?((?:19|20)\d{2})\b", text)
     y = int(m[1]) if m else None
-    return y if y and 1990 <= y <= T.year - 5 else None
+    flags = set(re.findall(r"flags?/([A-Z]{3})\.", page))
+    filled = re.search(r"Nationality\s*</dt>\s*<dd[^>]*>.*?nav-link__value\">\s*[^<\s]", page, re.S)
+    return (y if y and 1990 <= y <= T.year - 5 else None), (TE_NAT.get(f, f) if len(flags) == 1 and filled and (f := flags.pop()) else None)
 
 
 te_ranking = TE.ranking  # the profile's Tennis Europe Ranking table (in te_matches.py, also used for 72 players)
@@ -722,12 +729,14 @@ def main():
                     except Exception as e:
                         print("  Tennis Europe past weeks failed:", e)
                     res["te"] = te_results(lt["id"], "|".join(p["names"]))
-                    if not rec.get("born"):  # year of birth from the Tennis Europe profile when it isn't known yet
-                        y = te_born(lt["id"])
-                        if y:
+                    if not rec.get("born") or not rec.get("nat"):  # from the Tennis Europe profile when not known yet
+                        y, nat = te_bio(lt["id"])
+                        if y and not rec.get("born"):
                             rec["born"], rec["bornFrom"] = y, "Tennis Europe"
-                        else:
+                        elif not rec.get("born"):
                             print("  Tennis Europe profile: year of birth not found")
+                        if nat and not rec.get("nat"):
+                            rec["nat"], rec["natFrom"] = nat, "Tennis Europe"
             except TE.Stop as e:
                 print(" ", e, "- Tennis Europe left alone for 3 hours")
                 blocked["te"] = True
