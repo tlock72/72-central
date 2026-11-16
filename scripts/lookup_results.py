@@ -254,7 +254,7 @@ def main():
         except Exception as e:
             print("  failed:", e); continue
         if res is not None:
-            res.sort(key=lambda r: (r["end"], r["start"]), reverse=True)
+            res.sort(key=lambda r: (r["end"], r["start"], r.get("day") or ""), reverse=True)
             rec.update({"results": res, "w": sum(r["res"] == "W" for r in res), "l": sum(r["res"] == "L" for r in res)})
         rec["name"] = rname
         json.dump(rec, open(path_of(tour, name), "w"), ensure_ascii=False, separators=(",", ":"))

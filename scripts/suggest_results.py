@@ -201,7 +201,7 @@ def main():
             continue
         except Exception as e:
             print("  failed:", e); continue
-        res.sort(key=lambda r: (r["end"], r["start"]), reverse=True)
+        res.sort(key=lambda r: (r["end"], r["start"], r.get("day") or ""), reverse=True)
         rec.update({"name": c["name"], "results": res, "w": sum(r["res"] == "W" for r in res), "l": sum(r["res"] == "L" for r in res),
                     "day": T.isoformat(), "updated": P.iso(NOW)})
     # this week's matches the ITF hasn't listed yet, from Tennis Explorer (recent.py), every 3 hours per player

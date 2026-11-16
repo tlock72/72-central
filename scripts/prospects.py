@@ -471,8 +471,27 @@ def te_results(pid, names):
             score = m["score"] if won else re.sub(r"(\d+)-(\d+)", r"\2-\1", m["score"])  # the prospect's games first
             out[m["matchId"]] = {"src": "te", "start": m["date"], "end": m["date"], "t": m["tournament"], "cat": m["category"].replace("Tennis Europe · ", ""),
                                  "where": "", "link": m.get("link") or "", "r": m["round"], "o": m["p2"] if won else m["p1"], "on": "",
-                                 "res": "W" if won else "L", "s": score}
-    return list(out.values())
+                                 "res": "W" if won else "L", "s": score, "day": m["date"]}
+    return te_events(list(out.values()))
+
+
+def te_events(rows):
+    """Tennis Europe lists each match with its own date, so give every match of one tournament the tournament's
+    first and last match day as start/end (the page groups a tournament's matches by those). The match's own date
+    stays in "day". Same tournament = same link (else same name) with no more than 14 days between matches."""
+    by = {}
+    for r in rows:
+        by.setdefault(r.get("link") or r["t"], []).append(r)
+    for ms in by.values():
+        ms.sort(key=lambda r: r["day"])
+        run = [ms[0]]
+        for r in ms[1:] + [None]:
+            if r and (date.fromisoformat(r["day"]) - date.fromisoformat(run[-1]["day"])).days <= 14:
+                run.append(r); continue
+            for x in run:
+                x["start"], x["end"] = run[0]["day"], run[-1]["day"]
+            run = [r]
+    return rows
 
 
 # ---------- ranking history (for 1 week / 3 month / 12 month moves) ----------
@@ -730,7 +749,7 @@ def main():
             rec["itfJr"].update(moves(H.get("itfJr") or {}, itf_week(rec["itfJr"].get("date"))))
         for r in rec.get("te") or []:
             r.update(moves(H.get("te:" + r["cat"]) or {}, r.get("week")))
-        rec["results"] = sorted((r for rs in res.values() for r in rs), key=lambda r: (r["end"], r["start"]), reverse=True)
+        rec["results"] = sorted((r for rs in res.values() for r in rs), key=lambda r: (r["end"], r["start"], r.get("day") or ""), reverse=True)
         if done_all:
             rec["day"] = T.isoformat()
         rec["updated"] = iso(NOW)

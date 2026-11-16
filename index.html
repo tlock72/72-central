@@ -3820,9 +3820,21 @@ const RS_FINAL = /^(F|Final|Finals|Playoff Final)$/;
 const rsRd = r => String(r || "–").replace(/^Q-R(\d)$/, "Q$1").replace(/^Q-Qualification round of (\d+)$/, "Q R$1").replace(/^Q-/, "Q ").replace(/ \(walkover\)$/, " w/o").replace(/^Round Robin /, "RR ");
 // the totals across the top of the results window and the watch list profile: won-lost, win rate, tournaments,
 // titles, W-L by year and the last 10 results
-function rsSum(all){
+// one group per tournament (results come newest first). Tennis Europe gives each match its own date, so its
+// matches are grouped by the tournament link (else name) when no more than 14 days apart, and the dates widened.
+const rsDays = (a, b) => (new Date(a) - new Date(b)) / 864e5;
+function rsGroups(all){
   const groups = [];
-  for (const r of all) if (!groups.some(x => x.src === r.src && x.t === r.t && x.start === r.start)) groups.push({ src: r.src, t: r.t, start: r.start, top: r });
+  for (const r of all) {
+    const te = r.src === "te";
+    const g = groups.find(x => x.src === r.src && (te ? (x.link || x.t) === (r.link || r.t) && rsDays(x.start, r.end) <= 14 : x.t === r.t && x.start === r.start));
+    if (g) { g.m.push(r); if (r.start < g.start) g.start = r.start; }
+    else groups.push({ src: r.src, t: r.t, start: r.start, end: r.end, cat: r.cat, where: r.where, link: r.link, m: [r], top: r });
+  }
+  return groups;
+}
+function rsSum(all){
+  const groups = rsGroups(all);
   const won = all.filter(r => r.res === "W").length, lost = all.filter(r => r.res === "L").length;
   // the first match listed for a tournament is their last one there
   const titles = groups.filter(g => RS_FINAL.test(g.top.r) && g.top.res === "W").length;
@@ -3857,11 +3869,7 @@ function rsOpen(k){
   }
   const all = P.res, srcs = [...new Set(all.map(r => r.src))];
   const won = all.filter(r => r.res === "W").length, lost = all.filter(r => r.res === "L").length;
-  const groups = [];
-  for (const r of all) {
-    const g = groups.find(x => x.src === r.src && x.t === r.t && x.start === r.start);
-    if (g) g.m.push(r); else groups.push({ src: r.src, t: r.t, start: r.start, end: r.end, cat: r.cat, where: r.where, link: r.link, m: [r] });
-  }
+  const groups = rsGroups(all);
   // how far they went: the first match listed is their last one there
   const outcome = g => {
     const top = g.m[0];
