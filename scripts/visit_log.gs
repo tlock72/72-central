@@ -20,8 +20,10 @@
 // "Lights" tab (made automatically), and the newest row for a player is the light shown. "Cleared" = no light.
 // To change one by hand, add a row (or edit the newest one) with Green, Amber, Red or Cleared in the Light column.
 // Scouting reports (Scouting Corner's "Add scouting report" form): every save is a row on the "Reports" tab (made
-// automatically), so the history of each report is kept; the site shows the newest row for each Report ID. To delete
-// a report, set the Status of its newest row to "Deleted".
+// automatically), so the history of each report is kept; the site shows the newest "Live" row for each Report ID.
+// "Draft" rows are unfinished reports, shown only to the person who started them (same first name or same device),
+// who is also the only one who can edit the report. To delete a report, set the Status of its newest row to "Deleted".
+// Comments on reports go on the "Report comments" tab (set Status to "Deleted" to take one down).
 // Scouting videos: the clips go into a Google Drive folder, "72 Central scouting videos" (made automatically, one
 // folder per player), and each is a row on the "Videos" tab. Anyone with the link can watch a clip (the links are
 // only on the passcode-protected site). To take a clip down, set its Status to "Removed" (and delete the file in
@@ -85,6 +87,7 @@ function doPost(e) {
   if (d.kind === "results") return askResults(d);
   if (d.kind === "light") return setLight(d);
   if (d.kind === "report") return saveReport(d);
+  if (d.kind === "rpnote") return addReportNote(d);
   if (d.kind === "vidstart") return videoStart(d);
   if (d.kind === "vidchunk") return videoChunk(d);
   if (d.kind === "unvideo") return videoRemove(d);
@@ -541,7 +544,7 @@ function doGet(e) {
   if (kind === "comments") return listComments();
   if (kind === "lookups") return listLookups();
   if (kind === "lights") return listLights();
-  if (kind === "reports") return listReports();
+  if (kind === "reports") return listReports(e);
   if (kind !== "prospects") return out("72 Central");
   const sh = SpreadsheetApp.getActiveSpreadsheet().getSheetByName("Prospects");
   const rows = sh && sh.getLastRow() > 1 ? sh.getRange(2, 1, sh.getLastRow() - 1, 6).getValues() : [];
@@ -582,25 +585,45 @@ const okName_ = n => n.length >= 3 && /^[\p{L}][\p{L} .'\-|]+$/u.test(n);
 function setupReports() {
   reportSheet_(); videoSheet_(); videoFolder_();
 }
+// Hidden last column: a secret code from the device that started the report. That device can always edit it; any
+// other device can only if it's signed in with the same first name as the person who started it.
+const REPORT_OWN_COL = REPORT_FIXED.length + REPORT_FIELDS.length + 1;
 function reportSheet_() {
   const ss = SpreadsheetApp.getActiveSpreadsheet();
   let sh = ss.getSheetByName("Reports");
-  if (sh) return sh;
-  sh = ss.insertSheet("Reports");
-  const head = REPORT_FIXED.concat(REPORT_FIELDS.map(f => f[1]));
-  sh.getRange(1, 1, 1, head.length).setValues([head]).setFontWeight("bold");
-  sh.setFrozenRows(1); sh.setFrozenColumns(3);
-  sh.getRange("A:A").setNumberFormat("ddd d mmm yyyy HH:mm");
-  sh.getRange(2, REPORT_FIXED.length + 1, sh.getMaxRows() - 1, REPORT_FIELDS.length).setWrap(true).setVerticalAlignment("top");
-  sh.hideColumns(2);
+  if (!sh) {
+    sh = ss.insertSheet("Reports");
+    const head = REPORT_FIXED.concat(REPORT_FIELDS.map(f => f[1]));
+    sh.getRange(1, 1, 1, head.length).setValues([head]).setFontWeight("bold");
+    sh.setFrozenRows(1); sh.setFrozenColumns(3);
+    sh.getRange("A:A").setNumberFormat("ddd d mmm yyyy HH:mm");
+    sh.getRange(2, REPORT_FIXED.length + 1, sh.getMaxRows() - 1, REPORT_FIELDS.length).setWrap(true).setVerticalAlignment("top");
+    sh.hideColumns(2);
+  }
+  if (sh.getMaxColumns() < REPORT_OWN_COL) sh.insertColumnsAfter(sh.getMaxColumns(), REPORT_OWN_COL - sh.getMaxColumns());
+  if (!sh.getRange(1, REPORT_OWN_COL).getValue()) { sh.getRange(1, REPORT_OWN_COL).setValue("Owner code").setFontWeight("bold"); sh.hideColumns(REPORT_OWN_COL); }
   return sh;
 }
+// Every row of every report, oldest first per report: { id: [rows] }
+function reportRows_() {
+  const sh = SpreadsheetApp.getActiveSpreadsheet().getSheetByName("Reports");
+  const rows = sh && sh.getLastRow() > 1 ? sh.getRange(2, 1, sh.getLastRow() - 1, REPORT_OWN_COL).getValues() : [];
+  const by = {};
+  rows.forEach(r => { const id = String(r[1]); if (id && r[0] instanceof Date) (by[id] = by[id] || []).push(r); });
+  Object.values(by).forEach(l => l.sort((a, b) => a[0] - b[0]));
+  return by;
+}
+const sameName_ = (a, b) => !!String(a || "").trim() && String(a).trim().toLowerCase() === String(b || "").trim().toLowerCase();
 
-// A report saved on the site (new or edited). The id comes from the page; every save is a new row.
+// A report saved on the site: "Draft" (unfinished, only its author sees it), "Live" (published), or "Discarded"
+// (the author threw away an unfinished draft; a published version stays). Every save is a new row. Only the person
+// who started a report can save it again: same first name, or the device that started it (owner code).
 function saveReport(d) {
   const name = clean_(d.name).replace(/\s+/g, " ").slice(0, 60);
   const id = String(d.id || "");
   if (!okName_(name) || !/^[a-f0-9]{12}$/.test(id)) return out("bad");
+  const status = { Draft: "Draft", Discarded: "Discarded" }[d.status] || "Live";
+  const own = /^[a-f0-9]{16,64}$/.test(String(d.own || "")) ? String(d.own) : "";
   const by = clean_(d.by).slice(0, 30);
   const g = { M: "Male", F: "Female" }[clean_(d.g).toUpperCase()] || "";
   const nat = /^[A-Za-z]{3}$/.test(clean_(d.nat)) ? clean_(d.nat).toUpperCase() : "";
@@ -615,40 +638,83 @@ function saveReport(d) {
   const lock = LockService.getScriptLock();
   lock.waitLock(10000);
   try {
-    reportSheet_().appendRow([new Date(), id, plain_(name), g, nat, born, plain_(by), "Live"].concat(vals));
+    const sh = reportSheet_(), old = reportRows_()[id] || [];
+    let code = own;
+    if (old.length) {
+      const first = old[0], last = old[old.length - 1];
+      if (String(last[7]).trim() === "Deleted") return out("deleted");
+      if (!(sameName_(by, unplain_(first[6])) || (own && own === String(first[REPORT_OWN_COL - 1])))) return out("notyours");
+      code = String(first[REPORT_OWN_COL - 1] || own);
+    }
+    sh.appendRow([new Date(), id, plain_(name), g, nat, born, plain_(by), status].concat(vals, [code]));
   } finally {
     lock.releaseLock();
   }
   return out("ok");
 }
 
-// Read by the site (?kind=reports): the newest version of every report that isn't deleted, plus every clip still up.
-// Undo codes never leave the Sheet.
-function listReports() {
-  const ss = SpreadsheetApp.getActiveSpreadsheet(), rs = ss.getSheetByName("Reports"), vs = ss.getSheetByName("Videos");
-  const n = REPORT_FIXED.length + REPORT_FIELDS.length;
-  const rows = rs && rs.getLastRow() > 1 ? rs.getRange(2, 1, rs.getLastRow() - 1, n).getValues() : [];
-  const last = {}, first = {};
-  rows.forEach(r => {
-    const id = String(r[1]); if (!id || !(r[0] instanceof Date)) return;
-    if (!first[id] || r[0] < first[id].at) first[id] = { at: r[0], by: unplain_(r[6]) };
-    if (!last[id] || r[0] >= last[id][0]) last[id] = r;
-  });
-  const reports = Object.keys(last).filter(id => String(last[id][7]).trim() !== "Deleted").map(id => {
-    const r = last[id], f = {};
+// Read by the site (?kind=reports&by=<first name>&own=<codes>): the newest published version of every report that
+// isn't deleted, the asker's own unfinished drafts, the comments on reports, and every clip still up.
+// Owner codes and undo codes never leave the Sheet.
+function listReports(e) {
+  const p = (e && e.parameter) || {}, me = clean_(p.by), mine = new Set(String(p.own || "").split(",").filter(x => /^[a-f0-9]{16,64}$/.test(x)));
+  const rep = (r, first, firstLive) => {
+    const f = {};
     REPORT_FIELDS.forEach(([k], i) => {
       let v = r[REPORT_FIXED.length + i];
       if (v instanceof Date) v = Utilities.formatDate(v, TZ, "yyyy-MM-dd");  // a typed date the Sheet turned into a date
       v = unplain_(v).trim(); if (v) f[k] = v;
     });
-    return { id, name: unplain_(r[2]).trim(), g: { Male: "M", Female: "F" }[r[3]] || "", nat: String(r[4] || ""), born: r[5] ? Number(r[5]) : null,
-      by: unplain_(r[6]), at: r[0].toISOString(), firstBy: first[id].by, firstAt: first[id].at.toISOString(), f };
+    return { id: String(r[1]), name: unplain_(r[2]).trim(), g: { Male: "M", Female: "F" }[r[3]] || "", nat: String(r[4] || ""), born: r[5] ? Number(r[5]) : null,
+      by: unplain_(r[6]), at: r[0].toISOString(), firstBy: unplain_(first[6]), firstAt: (firstLive || r)[0].toISOString(), f };
+  };
+  const reports = [], drafts = [];
+  Object.values(reportRows_()).forEach(rows => {
+    const st = r => String(r[7]).trim(), last = rows[rows.length - 1], first = rows[0];
+    if (st(last) === "Deleted") return;
+    const live = rows.filter(r => st(r) !== "Draft" && st(r) !== "Discarded"), pub = live[live.length - 1];
+    if (pub) reports.push(rep(pub, first, live[0]));
+    if (st(last) === "Draft" && (sameName_(me, unplain_(first[6])) || mine.has(String(first[REPORT_OWN_COL - 1]))))
+      drafts.push(Object.assign(rep(last, first, live[0]), { pub: !!pub }));
   });
+  const ns = SpreadsheetApp.getActiveSpreadsheet().getSheetByName("Report comments");
+  const nrows = ns && ns.getLastRow() > 1 ? ns.getRange(2, 1, ns.getLastRow() - 1, 7).getValues() : [];
+  const notes = nrows.filter(r => r[0] instanceof Date && String(r[5]).trim() !== "Deleted").map(r => ({
+    id: String(r[6]), rid: String(r[1]), name: unplain_(r[2]), text: unplain_(r[3]), by: unplain_(r[4]), at: r[0].toISOString()
+  }));
+  const vs = SpreadsheetApp.getActiveSpreadsheet().getSheetByName("Videos");
   const vrows = vs && vs.getLastRow() > 1 ? vs.getRange(2, 1, vs.getLastRow() - 1, 11).getValues() : [];
   const videos = vrows.filter(r => r[6] && String(r[4]).trim() === "Live" && r[0] instanceof Date).map(r => ({
     id: String(r[6]), name: unplain_(r[1]).trim(), cap: unplain_(r[2]), by: unplain_(r[3]), rid: String(r[5] || ""), at: r[0].toISOString(), mb: Number(r[10]) || null
   }));
-  return json_({ reports, videos });
+  return json_({ reports, drafts, notes, videos });
+}
+
+// A comment on someone's report (the "Comments from the team" box under a report). One row each on the
+// "Report comments" tab; set its Status to "Deleted" to take it down.
+function addReportNote(d) {
+  const rid = String(d.rid || ""), id = String(d.id || "");
+  const name = clean_(d.name).replace(/\s+/g, " ").slice(0, 60), text = clean_(d.text).slice(0, 2000), by = clean_(d.by).slice(0, 30);
+  if (!/^[a-f0-9]{12}$/.test(rid) || !/^[a-f0-9]{8}$/.test(id) || !text || !okName_(name)) return out("bad");
+  const lock = LockService.getScriptLock();
+  lock.waitLock(10000);
+  try {
+    const ss = SpreadsheetApp.getActiveSpreadsheet();
+    let sh = ss.getSheetByName("Report comments");
+    if (!sh) {
+      sh = ss.insertSheet("Report comments");
+      sh.getRange(1, 1, 1, 7).setValues([["Added", "Report ID", "Player", "Comment", "By", "Status", "Comment ID"]]).setFontWeight("bold");
+      sh.setFrozenRows(1);
+      sh.getRange("A:A").setNumberFormat("ddd d mmm yyyy HH:mm");
+      sh.getRange("D:D").setWrap(true);
+      sh.hideColumns(2); sh.hideColumns(7);
+    }
+    if (sh.getLastRow() > 1 && sh.getRange("G:G").createTextFinder(id).matchEntireCell(true).findNext()) return out("dup");
+    sh.appendRow([new Date(), rid, plain_(name), plain_(text), plain_(by || "Someone"), "Live", id]);
+  } finally {
+    lock.releaseLock();
+  }
+  return out("ok");
 }
 
 function videoSheet_() {

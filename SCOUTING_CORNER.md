@@ -58,7 +58,7 @@ without Claude, and uses no Live Tennis API calls.
    column) and do the **New version > Deploy** step. Until then Undo does nothing and the request stays waiting.
 4. **For scouting reports and videos (added 16 Nov 2026):** paste the new script, pick `setupReports` in the
    function dropdown and click **Run**. Google asks for permission again, this time for **Google Drive** (the videos
-   are saved there): **Advanced > Go to … > Allow**. It makes the "Reports" and "Videos" tabs and a Drive folder
+   are saved there): **Advanced > Go to … > Allow**. It makes the "Reports" and "Videos" tabs (the "Report comments" tab appears with the first comment) and a Drive folder
    called "72 Central scouting videos". Then do the **New version > Deploy** step. Until then reports can't be saved
    (the form says it couldn't reach the Sheet and keeps the report on the phone) and videos don't upload.
 5. **Optional, for near-instant lookups:** in GitHub go to **Settings > Developer settings > Fine-grained tokens >
@@ -74,9 +74,15 @@ without Claude, and uses no Live Tennis API calls.
   Only the name is needed; everything else can be left blank. Tip: on a phone, open `…/72-central/#report` and
   "Add to Home Screen" for a one-tap shortcut straight to a new report.
 - A draft is kept on the phone while you type, so a call or a closed app doesn't lose it.
-- Saving puts the report on the "Reports" tab of the Sheet (one column per question, so it reads like a spreadsheet).
-  Anyone can edit a report; every save is a new row, so the Sheet keeps each earlier version. To delete a report,
-  set the Status of its newest row to "Deleted".
+- **Save draft** keeps an unfinished report on the Sheet. Only you see it, under "Your drafts" (top of Reports &
+  videos), on the same phone or on any device signed in with the same first name. Finish it and press **Publish**.
+- Only the person who started a report can edit it (same phone, or the same first name). Everyone else can add a
+  comment under it ("Comments from the team", kept on the Sheet's "Report comments" tab). The "name" is the first
+  name typed on the passcode screen, not a password, so it keeps honest people from editing each other's reports
+  rather than locking anything down.
+- Every save is a row on the "Reports" tab (one column per question, so it reads like a spreadsheet; Status "Draft"
+  or "Live"), so the Sheet keeps each earlier version. To delete a report, set the Status of its newest row to
+  "Deleted". To delete a comment, set its Status on "Report comments" to "Deleted".
 - The report's traffic light also sets the light on the watch list. A player who isn't on the watch list yet is
   added to it when the report is saved (untick the box on the form to skip that).
 - **Videos** go into the Drive folder "72 Central scouting videos" (one folder per player), shared as "anyone with

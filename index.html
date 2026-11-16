@@ -764,6 +764,27 @@ a.cn-st.ok:hover{border-color:var(--gold)}
   .vd-foot{padding:10px 14px 14px}
   dialog.vdd[open]{width:100vw;max-width:100vw;margin:auto 0;border-radius:0}
 }
+.rp-save{flex-wrap:wrap}
+.rp-save span:empty{display:none}
+.rp-save span{flex:1 1 100%!important}
+.rp-save span.ok{color:var(--up)}
+.rp-save .rp-go{flex:1 1 0}
+.rp-drs{display:flex;flex-wrap:wrap;gap:6px;align-items:center;margin-top:10px;font-size:12px;color:var(--muted)}
+.rp-drs b{flex:1 1 100%;font-weight:600;color:var(--text)}
+.rp-drs button{display:inline-flex;flex-direction:column;align-items:flex-start;padding:5px 12px;border:1px dashed var(--gold);border-radius:12px;background:transparent;color:var(--gold);font:inherit;font-size:12px;cursor:pointer;text-align:left}
+.rp-drs button small{font-size:10px;color:var(--muted)}
+.rp-dr{border-style:dashed;border-color:rgba(208,165,121,.5)}
+.rp-dr em{display:inline-block;margin-right:8px;font-style:normal;font-size:9.5px;letter-spacing:.08em;text-transform:uppercase;border:1px solid var(--gold);color:var(--gold);border-radius:999px;padding:1px 8px;vertical-align:1px}
+.cn-list .rp-drafts{grid-column:1/-1;margin:0 0 6px}
+.rp-drafts h3{font-family:var(--display);font-weight:500;text-transform:uppercase;letter-spacing:.16em;font-size:12px;color:var(--gold);margin:0 0 8px}
+.rp-drafts h3 small{margin-left:10px;color:var(--muted);letter-spacing:.04em;text-transform:none;font-family:var(--body)}
+.rp-note{margin:0 0 8px;padding:9px 13px;border:1px solid var(--line-2);border-left:3px solid var(--gold);border-radius:10px;background:rgba(255,255,255,.025)}
+.rp-note div{display:flex;gap:10px;align-items:baseline}
+.rp-note b{font-size:13px;color:var(--white)}
+.rp-note small{font-size:11px;color:var(--muted)}
+.rp-note p{margin:4px 0 0;font-size:13.5px;line-height:1.5;white-space:pre-wrap;overflow-wrap:anywhere}
+.rp-nf{display:flex;flex-direction:column;align-items:flex-end;gap:8px;margin:4px 0 6px}
+.rp-nf textarea.sq-in{flex:none;width:100%;box-sizing:border-box;height:auto;min-height:60px;padding:10px 14px;border-radius:14px;font-size:16px;line-height:1.45;resize:vertical}
 /* "Last 12 months" window: summary across the top, then one card per tournament, newest first */
 dialog.rsd{width:min(760px,calc(100vw - 32px));max-height:calc(100dvh - 40px);padding:0;overflow-x:hidden;overflow-y:auto;overscroll-behavior:contain;border:1px solid var(--line);border-radius:24px;background:#0B1230;color:var(--text);box-shadow:0 30px 80px rgba(0,0,0,.6)}
 dialog.rsd::backdrop{background:rgba(5,9,25,.72);backdrop-filter:blur(6px);-webkit-backdrop-filter:blur(6px)}
@@ -4859,9 +4880,11 @@ function cmPost(name, text, by){
 /* ---------- Scouting reports and videos (Scouting Corner) ----------
    "Add scouting report" opens a form (#rpd): player, where they were seen, hand and backhand, potential, game,
    team and family, commercial, other comments, and videos. Every save is a row on the "Reports" tab of Tobey's
-   Google Sheet (scripts/visit_log.gs, kind: "report"), read back with ?kind=reports (newest row per report wins), so
-   each report's history stays on the Sheet. Anyone can edit any report. The form keeps a draft on this device while
-   it's being filled in, so a phone call or a closed tab doesn't lose it.
+   Google Sheet (scripts/visit_log.gs, kind: "report", status "Live" = published or "Draft" = unfinished), read back
+   with ?kind=reports (newest published row per report; the asker's own drafts too), so each report's history stays on
+   the Sheet. Only the person who started a report can edit it or see its drafts: the same device (owner code) or
+   anyone signed in with the same first name. Everyone else can add comments under it (kind: "rpnote", "Report
+   comments" tab). Typing is also kept on the device as you go (72c-rpdrafts), so nothing is lost before a save.
    Videos go to a Google Drive folder through the same script, in 2.5 MB pieces (kind: "vidstart", then "vidchunk"),
    so a phone clip of any normal length gets there; each is a row on the "Videos" tab and plays from Drive (Drive also
    turns iPhone clips into something every device can play). Matched to players by name in any word order, like comments.
@@ -4890,34 +4913,76 @@ const RP_SEC = [
   ["Anything else", [["other", "Other comments", "long"]]]
 ];
 const RP_LABEL = Object.fromEntries(RP_SEC.flatMap(s => s[1]).map(f => [f[0], f[1]]));
-let RP_SHEET = [], VD_SHEET = [], RP_OK = false;
-try { const c = JSON.parse(localStorage.getItem("72c-rplist") || "{}"); RP_SHEET = c.reports || []; VD_SHEET = c.videos || []; } catch (e) {}
-async function loadReports(){
-  try {
-    const r = await fetch(CORNER_URL + "?kind=reports");
-    if (r.ok) { const j = await r.json(); if (Array.isArray(j.reports)) { RP_SHEET = j.reports; VD_SHEET = j.videos || []; RP_OK = true; try { localStorage.setItem("72c-rplist", JSON.stringify(j)); } catch (e) {} } }
-  } catch (e) {}
-}
+let RP_SHEET = [], RP_DRAFTS = [], RP_NOTES = [], VD_SHEET = [], RP_OK = false;
+try { const c = JSON.parse(localStorage.getItem("72c-rplist") || "{}"); RP_SHEET = c.reports || []; RP_DRAFTS = c.drafts || []; RP_NOTES = c.notes || []; VD_SHEET = c.videos || []; } catch (e) {}
 const rpHex = n => Array.from(crypto.getRandomValues(new Uint8Array(n)), b => b.toString(16).padStart(2, "0")).join("");
 const rpBy = () => { try { return localStorage.getItem("72c-name") || ""; } catch (e) { return ""; } };
-// reports and clips saved on this device: shown at once, until the Sheet has them (10 minutes once it has been read)
+// Who can edit a report: the person who started it. That's the device it was started on (a secret code kept here,
+// "72c-rpown": { report id: code }) or anyone signed in with the same first name. Everyone else can comment on it.
+function rpOwn(){ try { return JSON.parse(localStorage.getItem("72c-rpown") || "{}"); } catch (e) { return {}; } }
+function rpOwnSet(id, code){ try { const o = rpOwn(); if (code && !o[id]) { o[id] = code; localStorage.setItem("72c-rpown", JSON.stringify(o)); } } catch (e) {} }
+const rpSame = (a, b) => !!String(a || "").trim() && String(a).trim().toLowerCase() === String(b || "").trim().toLowerCase();
+const rpMineOk = r => !!r && (!!rpOwn()[r.id] || rpSame(r.firstBy || r.by, rpBy()));
+// the Sheet also sends back your own unfinished drafts (by first name, or by this device's codes)
+async function loadReports(){
+  const own = Object.values(rpOwn()).join(",");
+  try {
+    const r = await fetch(CORNER_URL + "?kind=reports&by=" + encodeURIComponent(rpBy()) + (own ? "&own=" + own : ""));
+    if (r.ok) { const j = await r.json(); if (Array.isArray(j.reports)) { RP_SHEET = j.reports; RP_DRAFTS = j.drafts || []; RP_NOTES = j.notes || []; VD_SHEET = j.videos || []; RP_OK = true; try { localStorage.setItem("72c-rplist", JSON.stringify(j)); } catch (e) {} } }
+  } catch (e) {}
+}
+// reports, drafts, comments and clips saved on this device: shown at once, until the Sheet has them (10 minutes once it has been read)
 function rpMine(){ try { return JSON.parse(localStorage.getItem("72c-reports") || "[]").filter(x => Date.now() - x.t < (RP_OK ? 6e5 : 3 * 864e5)); } catch (e) { return []; } }
+function rpMineSave(l){ try { localStorage.setItem("72c-reports", JSON.stringify(l.slice(-30))); } catch (e) {} }
 function vdMineAll(){ try { return JSON.parse(localStorage.getItem("72c-videos") || "[]").filter(x => Date.now() - x.t < 7 * 864e5); } catch (e) { return []; } }
 function vdMineSave(l){ try { localStorage.setItem("72c-videos", JSON.stringify(l.slice(-60))); } catch (e) {} }
-// every report: the newest version of each (this device's save wins until the Sheet has caught up)
-function rpAll(){
-  const by = {};
-  for (const r of [...RP_SHEET, ...rpMine()]) if (!by[r.id] || new Date(r.at) >= new Date(by[r.id].at)) by[r.id] = { ...(by[r.id] || {}), ...r, firstBy: by[r.id]?.firstBy || r.firstBy || r.by, firstAt: by[r.id]?.firstAt || r.firstAt || r.at };
-  return Object.values(by).sort((a, b) => new Date(b.at) - new Date(a.at));
+const rpNewest = list => { const by = {}; for (const r of list) if (!by[r.id] || new Date(r.at) >= new Date(by[r.id].at)) by[r.id] = { ...(by[r.id] || {}), ...r, firstBy: by[r.id]?.firstBy || r.firstBy || r.by, firstAt: by[r.id]?.firstAt || r.firstAt || r.at }; return by; };
+// every published report: the newest version of each (this device's save wins until the Sheet has caught up)
+function rpAll(){ return Object.values(rpNewest([...RP_SHEET, ...rpMine().filter(x => x.st === "Live")])).sort((a, b) => new Date(b.at) - new Date(a.at)); }
+// what's being typed but not saved anywhere yet, one per report ("72c-rpdrafts"), kept 30 days on this device
+function rpDev(){ try { const o = JSON.parse(localStorage.getItem("72c-rpdrafts") || "{}"); for (const k in o) if (Date.now() - o[k].t > 30 * 864e5) delete o[k]; return o; } catch (e) { return {}; } }
+function rpDevPut(o){ try { localStorage.setItem("72c-rpdrafts", JSON.stringify(o)); } catch (e) {} }
+// drafts saved to the Sheet (from any device under your name, or this one), newest per report, unless published or thrown away since
+function rpSaved(){
+  const gone = new Map(rpMine().filter(x => x.st === "Discarded").map(x => [x.id, x.at]));
+  const pub = Object.fromEntries(rpAll().map(r => [r.id, r]));
+  return Object.values(rpNewest([...RP_DRAFTS, ...rpMine().filter(x => x.st === "Draft")]))
+    .filter(d => (!pub[d.id] || new Date(d.at) > new Date(pub[d.id].at)) && !(gone.has(d.id) && gone.get(d.id) >= d.at));
+}
+// "Your drafts": Sheet drafts plus anything typed on this device and not saved yet
+function rpDrafts(){
+  const saved = rpSaved(), out = Object.fromEntries(saved.map(d => [d.id, { ...d, pub: d.pub || rpAll().some(r => r.id === d.id) }]));
+  const pubAt = Object.fromEntries(rpAll().map(r => [r.id, r.at]));
+  for (const [id, d] of Object.entries(rpDev())) {
+    if (!(d.name || "").trim() && !Object.keys(d.v || {}).length) continue;
+    const at = new Date(d.t).toISOString();
+    if (out[id] && out[id].at >= at) continue;
+    if (!out[id] && pubAt[id] && pubAt[id] >= at) continue;  // published since
+    out[id] = { id, name: d.name, at, local: true, had: !!out[id], pub: !!pubAt[id] || !!out[id]?.pub, f: d.v };
+  }
+  return Object.values(out).sort((a, b) => new Date(b.at) - new Date(a.at));
+}
+// comments on a report, oldest first (this device's own until the Sheet lists them)
+function rpNoteMine(){ try { return JSON.parse(localStorage.getItem("72c-rpnotes") || "[]").filter(x => Date.now() - x.t < (RP_OK ? 6e5 : 3 * 864e5)); } catch (e) { return []; } }
+function rpNotes(rid){
+  const seen = new Set(RP_NOTES.map(n => n.id));
+  return [...RP_NOTES, ...rpNoteMine().filter(n => !seen.has(n.id))].filter(n => n.rid === rid).sort((a, b) => new Date(a.at) - new Date(b.at));
+}
+function rpNotePost(r, text){
+  const n = { id: rpHex(4), rid: r.id, name: r.name, text, by: rpBy() || "Someone", at: new Date().toISOString(), t: Date.now() };
+  try { fetch(CORNER_URL, { method: "POST", mode: "no-cors", body: JSON.stringify({ kind: "rpnote", ...n }) }).catch(() => {}); } catch (e) {}
+  try { localStorage.setItem("72c-rpnotes", JSON.stringify([...rpNoteMine(), n].slice(-50))); } catch (e) {}
 }
 function vdAll(){
   const mine = vdMineAll(), gone = new Set(mine.filter(x => x.gone).map(x => x.id)), seen = new Set(VD_SHEET.map(v => v.id));
   const local = mine.filter(x => !x.gone && !seen.has(x.id) && (!RP_OK || Date.now() - x.t < 6e5));
   return [...VD_SHEET, ...local].filter(v => !gone.has(v.id)).sort((a, b) => new Date(b.at) - new Date(a.at));
 }
-const rpFor = names => { const k = new Set(names.filter(Boolean).map(cnSorted)); return rpAll().filter(r => k.has(cnSorted(r.name))); };
-const vdFor = names => { const k = new Set(names.filter(Boolean).map(cnSorted)); return vdAll().filter(v => k.has(cnSorted(v.name))); };
+const rpKeys = names => new Set(names.filter(Boolean).map(cnSorted));
+const rpFor = names => { const k = rpKeys(names); return rpAll().filter(r => k.has(cnSorted(r.name))); };
+const vdFor = names => { const k = rpKeys(names); return vdAll().filter(v => k.has(cnSorted(v.name))); };
 const rpDay = at => new Date(at).toLocaleDateString("en-GB", { timeZone: MYTZ, day: "numeric", month: "short", year: "numeric" });
+const rpWhen = at => new Date(at).toLocaleString("en-GB", { timeZone: MYTZ, day: "numeric", month: "short", hour: "2-digit", minute: "2-digit" });
 // the watch list prospect with this name (any word order), if any
 function rpProspect(name){
   const k = cnSorted(name || ""); if (!k) return null;
@@ -4940,35 +5005,45 @@ function vdGrid(list, empty){
     <small>${v.cap ? `<b>${esc(v.cap)}</b>` : ""}${esc([v.by, rpDay(v.at)].filter(Boolean).join(" · "))}</small></button>`).join("")}</div>`;
 }
 document.addEventListener("error", e => { if (e.target.matches?.(".vd-th img")) e.target.remove(); }, true);
-// the block in a watch list / suggestion profile window: the player's reports, their clips, and buttons to add more
+// one line per report (profile window, a player's folder): who, when, where seen, comments; chips = the key facts
+function rpRow(r, chips){
+  const n = rpNotes(r.id).length, edited = r.at !== (r.firstAt || r.at);
+  return `<button type="button" class="rp-row" data-rpo="${esc(r.id)}"><span class="t">${r.f?.light ? `<span class="lt-dot ${RP_LT_K[r.f.light]}"></span>` : ""}Report by ${esc(r.firstBy || r.by || "someone")}<small>${esc(rpDay(r.firstAt || r.at))}${r.f?.seen ? " · " + esc(r.f.seen) : ""}${edited ? " · edited " + esc(rpDay(r.at)) : ""}${n ? ` · ${n} comment${n === 1 ? "" : "s"}` : ""}</small>${chips ? `<span class="rp-chips">${rpChips(r.f || {})}</span>` : ""}</span><span class="ar" aria-hidden="true">›</span></button>`;
+}
+// one of your drafts: tap to carry on with it
+const rpDraftRow = d => `<button type="button" class="rp-row rp-dr" data-rpdo="${esc(d.id)}"><span class="t"><em>${d.pub ? "Unpublished changes" : "Draft"}</em>${esc(d.name || "No name yet")}<small>${d.local ? (d.had ? "Latest changes only on this device" : "Not saved yet, only on this device") : "Saved"} · ${esc(rpWhen(d.at))}</small></span><span class="ar" aria-hidden="true">›</span></button>`;
+// the block in a watch list / suggestion profile window: the player's reports, your drafts on them, their clips, and buttons to add more
 function rpBlock(names, who){
-  const reps = rpFor(names), vids = vdFor(names), d = esc(JSON.stringify(who));
+  const k = rpKeys(names), reps = rpFor(names), vids = vdFor(names), mine = rpDrafts().filter(d => k.has(cnSorted(d.name || ""))), d = esc(JSON.stringify(who));
   return `<h4>Scouting reports and videos</h4><div class="rp-blk">
-    ${reps.map(r => `<button type="button" class="rp-row" data-rpo="${esc(r.id)}"><span class="t">${r.f?.light ? `<span class="lt-dot ${RP_LT_K[r.f.light]}"></span>` : ""}Report by ${esc(r.firstBy || r.by || "someone")}<small>${esc(rpDay(r.firstAt || r.at))}${r.f?.seen ? " · " + esc(r.f.seen) : ""}${(r.firstBy || r.by) !== r.by || r.firstAt !== r.at ? " · edited " + esc(rpDay(r.at)) : ""}</small></span><span class="ar" aria-hidden="true">›</span></button>`).join("")}
+    ${mine.map(rpDraftRow).join("")}${reps.map(r => rpRow(r)).join("")}
     ${vdGrid(vids)}
-    ${!reps.length && !vids.length ? `<div class="vd-none">No scouting report or clips yet.</div>` : ""}
+    ${!reps.length && !vids.length && !mine.length ? `<div class="vd-none">No scouting report or clips yet.</div>` : ""}
     <div class="rp-btns"><button type="button" class="rp-go" data-rpnew="${d}">＋ Write a report</button><button type="button" class="rp-go ln" data-vdadd="${d}">${RP_CAM}Add videos</button></div></div>`;
 }
 
 /* the form */
-const RPF = { id: "", name: "", g: "", nat: "", born: "", v: {}, edit: false, msg: "", add: true };
+// RPF.edit = already saved somewhere (draft or published), RPF.pub = a published version exists, RPF.own = this device's code
+const RPF = { id: "", name: "", g: "", nat: "", born: "", v: {}, edit: false, pub: false, own: "", firstBy: "", msg: "", note: "", add: true };
 let RPD = { mode: "", id: "", name: "" };  // what #rpd shows: "form", "report" (one report) or "player" (a player's folder)
-function rpDraft(){ try { return JSON.parse(localStorage.getItem("72c-rpdraft") || "null"); } catch (e) { return null; } }
-function rpDraftSave(){ try { localStorage.setItem("72c-rpdraft", JSON.stringify({ ...RPF, msg: "", t: Date.now() })); } catch (e) {} }
-function rpDraftDrop(){ try { localStorage.removeItem("72c-rpdraft"); } catch (e) {} }
-// open the form: a new report (optionally for a player), or an existing one to edit
+// typing is kept on this device as you go (rpDev), so nothing is lost before "Save draft"
+function rpDraftSave(){ RPF.dirty = true; const o = rpDev(); o[RPF.id] = { ...RPF, msg: "", note: "", t: Date.now() }; rpDevPut(o); }
+function rpDraftDrop(id = RPF.id){ const o = rpDev(); delete o[id]; rpDevPut(o); }
+// open the form: a new report (optionally for a player), or one of yours to carry on with (draft or published)
 function rpForm(o = {}){
-  const d = rpDraft(), old = o.id ? rpAll().find(r => r.id === o.id) : null;
-  if (old) Object.assign(RPF, { id: old.id, name: old.name, g: old.g || "", nat: old.nat || "", born: old.born || "", v: { ...old.f }, edit: true });
-  else Object.assign(RPF, { id: rpHex(6), name: o.name || "", g: o.g || "", nat: o.nat || "", born: o.born || "", v: {}, edit: false });
-  RPF.add = true; RPF.msg = "";
-  // a draft left on this device (same report, or a new one for the same player / no player) comes back
-  if (d && Date.now() - d.t < 14 * 864e5 && (old ? d.id === old.id : !d.edit && (!o.name || cnSorted(d.name) === cnSorted(o.name)))) {
-    Object.assign(RPF, { ...d, msg: "draft" });
-  }
+  const pub = o.id ? rpAll().find(r => r.id === o.id) : null, sd = o.id ? rpSaved().find(r => r.id === o.id) : null, dev = o.id ? rpDev()[o.id] : null;
+  const src = [sd, pub].filter(Boolean).sort((a, b) => new Date(b.at) - new Date(a.at))[0];
+  if (src && !rpMineOk(pub || sd)) return rpShow("report", o.id);  // not yours: read it instead
+  if (src) Object.assign(RPF, { id: src.id, name: src.name, g: src.g || "", nat: src.nat || "", born: src.born || "", v: { ...src.f }, firstBy: src.firstBy || src.by || "" });
+  else if (dev) Object.assign(RPF, { ...dev });
+  else Object.assign(RPF, { id: rpHex(6), name: o.name || "", g: o.g || "", nat: o.nat || "", born: o.born || "", v: {}, firstBy: "", own: rpHex(16) });
+  RPF.edit = !!src; RPF.pub = !!pub; RPF.add = true; RPF.msg = ""; RPF.note = ""; RPF.dirty = false;
+  if (src) RPF.own = rpOwn()[src.id] || dev?.own || "";
+  // typing on this device that's newer than the last save comes back
+  if (src && dev && dev.t > Date.parse(src.at)) { Object.assign(RPF, { name: RPF.pub ? RPF.name : dev.name, g: dev.g, nat: dev.nat, born: dev.born, v: { ...dev.v } }); RPF.msg = "draft"; }
   const p = rpProspect(RPF.name)?.p;
   if (p) { RPF.g = RPF.g || p.g || ""; RPF.nat = RPF.nat || p.nat || ""; RPF.born = RPF.born || p.born || ""; }
-  if (!old && !RPF.v.light && p) { const L = ltFor(p); if (L) RPF.v.light = LT_NAME[L.light]; }
+  if (!src && !RPF.v.light && p) { const L = ltFor(p); if (L) RPF.v.light = LT_NAME[L.light]; }
   rpShow("form");
 }
 function rpField([k, label, kind, hint]){
@@ -4984,12 +5059,16 @@ function rpFormHtml(){
   const p = rpProspect(RPF.name), names = [...new Set(Object.values(cnShown()).map(x => x.name))].sort();
   const vids = vdAll().filter(v => v.rid === RPF.id), ups = VD.q.filter(j => j.rid === RPF.id && j.st !== "done");
   const natOpts = `<option value="">Nation</option>` + CN_NATS.map(x => `<option value="${x.c}"${RPF.nat === x.c ? " selected" : ""}>${esc(x.n)}</option>`).join("");
+  const others = RPF.edit ? [] : rpDrafts().filter(d => d.id !== RPF.id), me = rpBy();
+  const hasDraft = rpSaved().some(d => d.id === RPF.id) || !!rpDev()[RPF.id];
   return `<div class="rs-hd"><button type="button" class="x" data-rpx="1" aria-label="Close">✕</button>
-    <div class="k">Scouting report</div><h2>${RPF.edit ? "Edit report" : "New report"}</h2>
-    <div class="mt">${RPF.msg === "draft" ? `Your unsaved draft is back. <button type="button" class="rp-lnk" data-rpdrop="1">Start again</button>` : "Fill in what you know; everything apart from the name can be left blank. A draft is kept on this device until you save."}</div></div>
+    <div class="k">Scouting report</div><h2>${RPF.pub ? "Edit your report" : RPF.edit ? "Finish your draft" : "New report"}</h2>
+    <div class="mt">${RPF.msg === "draft" ? "Your latest typing on this device is back (newer than the last save). " : ""}Only the name is needed. <b>Save draft</b> to finish it later${me ? ` on any device signed in as ${esc(me)}` : " on this device"}; only you can edit your report, the rest of the team can comment on it.${RPF.pub ? " A draft of changes keeps the published version showing until you publish again." : ""}</div>
+    ${others.length ? `<div class="rp-drs"><b>Carry on with a draft:</b>${others.slice(0, 6).map(d => `<button type="button" data-rpdo="${esc(d.id)}">${esc(d.name || "No name yet")}<small>${esc(rpWhen(d.at))}</small></button>`).join("")}</div>` : ""}
+    ${hasDraft && RPF.edit ? `<div class="mt"><button type="button" class="rp-lnk" data-rpdisc="1">${RPF.pub ? "Throw away these changes" : "Delete this draft"}</button></div>` : ""}</div>
     <form class="rp-form" id="rpForm" autocomplete="off" novalidate>
     <section><h4>Player</h4>
-      <div class="rp-f"><label for="rpName">Full name</label><input class="sq-in" id="rpName" name="rpName" list="rpNames" maxlength="60" required value="${esc(RPF.name)}" placeholder="Start typing: watch list names come up"${RPF.edit ? " readonly" : ""}><datalist id="rpNames">${names.map(n => `<option value="${esc(n)}">`).join("")}</datalist></div>
+      <div class="rp-f"><label for="rpName">Full name</label><input class="sq-in" id="rpName" name="rpName" list="rpNames" maxlength="60" required value="${esc(RPF.name)}" placeholder="Start typing: watch list names come up"${RPF.pub ? " readonly" : ""}><datalist id="rpNames">${names.map(n => `<option value="${esc(n)}">`).join("")}</datalist></div>
       <div class="rp-row3"><div class="rp-pills" data-k="_g">${[["M", "Male"], ["F", "Female"]].map(([c, t]) => `<button type="button" class="${RPF.g === c ? "on" : ""}" data-val="${c}" aria-pressed="${RPF.g === c}">${t}</button>`).join("")}</div>
         <select class="sq-in" id="rpNat" name="rpNat" aria-label="Nation">${natOpts}</select>
         <input class="sq-in" id="rpBorn" name="rpBorn" inputmode="numeric" maxlength="4" placeholder="Birth year" aria-label="Birth year" value="${esc(RPF.born)}"></div>
@@ -5001,14 +5080,14 @@ function rpFormHtml(){
       ${vdGrid(vids)}${ups.map(vdJob).join("")}
       <button type="button" class="rp-go ln" data-vdform="1">${RP_CAM}Add videos</button>
     </section>
-    <div class="rp-save"><span id="rpErr" role="alert"></span><button type="submit" class="rp-go">${RPF.edit ? "Save changes" : "Save report"}</button></div>
+    <div class="rp-save"><span id="rpErr" role="alert" class="${RPF.note ? "ok" : ""}">${esc(RPF.note)}</span><button type="button" class="rp-go ln" data-rpdraft="1">Save draft</button><button type="submit" class="rp-go">${RPF.pub ? "Publish changes" : "Publish report"}</button></div>
     </form>`;
 }
 function rpWlNote(p){
   if (!RPF.name.trim()) return "";
   if (p) return `<span class="ok">✓ On the watch list</span>`;
-  if (RPF.edit) return "";
-  return `<label><input type="checkbox" id="rpAdd"${RPF.add ? " checked" : ""}> Also add ${esc(cnTidy(RPF.name.trim()))} to the watch list (we look up their rankings and results)</label>`;
+  if (RPF.pub) return "";
+  return `<label><input type="checkbox" id="rpAdd"${RPF.add ? " checked" : ""}> When published, also add ${esc(cnTidy(RPF.name.trim()))} to the watch list (we look up their rankings and results)</label>`;
 }
 // one clip still uploading (or stopped) in the form
 function vdJob(j){
@@ -5017,13 +5096,13 @@ function vdJob(j){
 }
 function rpRead(){
   const f = $("#rpForm"); if (!f) return;
-  if (!RPF.edit) RPF.name = f.elements.rpName.value;
+  if (!RPF.pub) RPF.name = f.elements.rpName.value;
   RPF.nat = f.elements.rpNat.value; RPF.born = f.elements.rpBorn.value.trim();
   const a = $("#rpAdd"); if (a) RPF.add = a.checked;
   for (const el of f.querySelectorAll("textarea[name], input[name]:not([name^=rp])")) { const v = el.value.trim(); if (v) RPF.v[el.name] = el.value; else delete RPF.v[el.name]; }
 }
 
-/* one report, read-only */
+/* one report, read-only, with the team's comments under it */
 function rpViewHtml(r){
   const f = r.f || {}, fact = (k, v) => v ? `<div><span>${esc(RP_LABEL[k])}</span><b>${esc(v)}</b></div>` : "";
   const sc = k => f[k] ? `${f[k]}/5 · ${RP_SCALE[k][f[k]] || ""}` : "";
@@ -5031,28 +5110,33 @@ function rpViewHtml(r){
   const txt = RP_SEC.flatMap(s => s[1]).filter(x => x[2] === "long" && f[x[0]]).map(x => `<h4>${esc(x[1])}</h4><p class="rp-tx">${esc(f[x[0]])}</p>`).join("");
   const P = rpProspect(r.name), vids = vdFor([r.name]), first = r.firstBy || r.by, lt = RP_LT_K[f.light];
   const seen = [f.seen, f.seenOn ? rpDay(f.seenOn + "T12:00:00Z") : ""].filter(Boolean).join(", ");
+  const mine = rpMineOk(r), dr = mine && rpDrafts().find(d => d.id === r.id), notes = rpNotes(r.id), draft = RPD.note?.[r.id] || "";
   return `<div class="rs-hd"><button type="button" class="x" data-rpx="1" aria-label="Close">✕</button>
     <div class="k">Scouting report</div><h2>${esc(r.name)}</h2>${rpMeta(r) ? `<div class="mt">${esc(rpMeta(r))}</div>` : ""}
-    <div class="mt">By ${esc(first || "someone")} · ${esc(rpDay(r.firstAt || r.at))}${r.at !== (r.firstAt || r.at) ? ` · last edited by ${esc(r.by || "someone")}, ${esc(rpDay(r.at))}` : ""}</div>
+    <div class="mt">By ${esc(first || "someone")} · ${esc(rpDay(r.firstAt || r.at))}${r.at !== (r.firstAt || r.at) ? ` · last edited ${esc(rpDay(r.at))}` : ""}</div>
     ${seen ? `<div class="mt">Seen at ${esc(seen)}</div>` : ""}</div>
     <div class="rp-view">
     ${lt ? `<div class="rp-ltv ${lt}"><i></i>${esc(LT_MEAN[lt])}</div>` : ""}
     ${facts ? `<div class="rp-facts">${facts}</div>` : ""}
     ${txt || (facts ? "" : `<p class="rp-tx">Nothing written yet.</p>`)}
+    <h4>Comments from the team</h4>
+    ${notes.map(n => `<div class="rp-note"><div><b>${esc(n.by || "Someone")}</b><small>${esc(rpWhen(n.at))}</small></div><p>${esc(n.text)}</p></div>`).join("") || `<div class="vd-none">No comments yet.${mine ? "" : ` Only ${esc(first || "the writer")} can change the report itself, but anyone can add a comment.`}</div>`}
+    <form class="rp-nf" data-rid="${esc(r.id)}"><textarea class="sq-in" name="t" rows="2" maxlength="2000" placeholder="Add a comment on this report${rpBy() ? ` as ${esc(rpBy())}` : ""}">${esc(draft)}</textarea><button type="submit" class="rp-go">Add comment</button></form>
     <h4>Videos</h4>${vdGrid(vids, "No clips yet.")}
-    <div class="rp-btns"><button type="button" class="rp-go" data-rpedit="${esc(r.id)}">Edit report</button><button type="button" class="rp-go ln" data-vdadd="${esc(JSON.stringify({ name: r.name, rid: r.id }))}">${RP_CAM}Add videos</button>
+    <div class="rp-btns">${mine ? `<button type="button" class="rp-go" data-rpedit="${esc(r.id)}">${dr ? "Carry on with your changes" : "Edit your report"}</button>` : ""}<button type="button" class="rp-go ln" data-vdadd="${esc(JSON.stringify({ name: r.name, rid: r.id }))}">${RP_CAM}Add videos</button>
     ${rpFor([r.name]).length > 1 ? `<button type="button" class="rp-go ln" data-rpp="${esc(r.name)}">All reports on ${esc(r.name.split(" ")[0])}</button>` : ""}
     ${P && !$("#cnd").open ? `<button type="button" class="rp-go ln" data-rpprof="${esc(P.k)}">Watch list profile</button>` : ""}</div></div>`;
 }
-/* a player's folder: every report and clip on them */
+/* a player's folder: every report and clip on them, and your drafts */
 function rpPlayerHtml(name){
-  const reps = rpFor([name]), vids = vdFor([name]), P = rpProspect(name), r0 = reps[0] || {};
+  const reps = rpFor([name]), vids = vdFor([name]), P = rpProspect(name), r0 = reps[0] || {}, mine = rpDrafts().filter(d => cnSorted(d.name || "") === cnSorted(name));
   const who = esc(JSON.stringify({ name, g: r0.g || P?.p.g || "", nat: r0.nat || P?.p.nat || "", born: r0.born || P?.p.born || "" }));
   return `<div class="rs-hd"><button type="button" class="x" data-rpx="1" aria-label="Close">✕</button>
     <div class="k">Scouting folder</div><h2>${esc(name)}</h2>${rpMeta(r0.name ? r0 : P?.p || {}) ? `<div class="mt">${esc(rpMeta(r0.name ? r0 : P.p))}</div>` : ""}
     <div class="mt">${reps.length} report${reps.length === 1 ? "" : "s"} · ${vids.length} clip${vids.length === 1 ? "" : "s"}</div></div>
     <div class="rp-view">
-    <h4>Reports</h4>${reps.length ? `<div class="rp-blk">${reps.map(r => `<button type="button" class="rp-row" data-rpo="${esc(r.id)}"><span class="t">${r.f?.light ? `<span class="lt-dot ${RP_LT_K[r.f.light]}"></span>` : ""}Report by ${esc(r.firstBy || r.by || "someone")}<small>${esc(rpDay(r.firstAt || r.at))}${r.f?.seen ? " · " + esc(r.f.seen) : ""}</small><span class="rp-chips">${rpChips(r.f || {})}</span></span><span class="ar" aria-hidden="true">›</span></button>`).join("")}</div>` : `<div class="vd-none">No report yet.</div>`}
+    ${mine.length ? `<h4>Your drafts</h4><div class="rp-blk">${mine.map(rpDraftRow).join("")}</div>` : ""}
+    <h4>Reports</h4>${reps.length ? `<div class="rp-blk">${reps.map(r => rpRow(r, true)).join("")}</div>` : `<div class="vd-none">No report yet.</div>`}
     <h4>Videos</h4>${vdGrid(vids, "No clips yet.")}
     <div class="rp-btns"><button type="button" class="rp-go" data-rpnew="${who}">＋ Write a report</button><button type="button" class="rp-go ln" data-vdadd="${who}">${RP_CAM}Add videos</button>
     ${P && !$("#cnd").open ? `<button type="button" class="rp-go ln" data-rpprof="${esc(P.k)}">Watch list profile</button>` : ""}</div></div>`;
@@ -5061,6 +5145,7 @@ function rpShow(mode, id){
   const d = $("#rpd");
   if (mode) { RPD.mode = mode; if (mode === "report") RPD.id = id; if (mode === "player") RPD.name = id; }
   if (RPD.mode === "form" && d.open && $("#rpForm")) rpRead();  // keep what's typed through a redraw
+  const nf = d.querySelector(".rp-nf textarea"); if (nf) (RPD.note = RPD.note || {})[nf.closest("form").dataset.rid] = nf.value;  // a half-typed comment too
   const r = RPD.mode === "report" && rpAll().find(x => x.id === RPD.id);
   const y = mode ? 0 : d.scrollTop;
   d.innerHTML = RPD.mode === "form" ? rpFormHtml() : r ? rpViewHtml(r) : RPD.mode === "player" ? rpPlayerHtml(RPD.name) : "";
@@ -5068,35 +5153,61 @@ function rpShow(mode, id){
   if (!d.open) { profLock(true); d.showModal(); }
   d.scrollTop = y;
 }
-// a redraw from outside (Sheet refresh, upload progress): only while it can't lose typing
-function rpRedraw(){ const d = $("#rpd"); if (d.open && !(RPD.mode === "form" && d.contains(document.activeElement) && document.activeElement.matches("input,textarea,select"))) rpShow(); }
-async function rpSave(){
+// a redraw from outside (Sheet refresh, upload progress): never while someone is typing in the window
+function rpRedraw(){ const d = $("#rpd"); if (d.open && !(d.contains(document.activeElement) && document.activeElement.matches("input,textarea,select"))) rpShow(); }
+// st: "Draft" (finish later), "Live" (publish) or "Discarded" (throw the draft away)
+async function rpSave(st){
   rpRead();
   const name = cnTidy(RPF.name.replace(/\s+/g, " ").trim()), err = $("#rpErr");
+  err.className = "";
   if (name.length < 3 || !/^[\p{L}][\p{L} .'\-]+$/u.test(name)) { err.textContent = "Type the player's full name first."; $("#rpName").focus(); return; }
   if (RPF.born && !/^(19|20)\d\d$/.test(RPF.born)) { err.textContent = "Birth year should be four digits, e.g. 2011."; $("#rpBorn").focus(); return; }
-  if (!Object.keys(RPF.v).length) { err.textContent = "Fill in at least one part of the report."; return; }
-  const by = rpBy(), btn = $("#rpForm [type=submit]");
-  const body = { kind: "report", id: RPF.id, name, g: RPF.g, nat: RPF.nat, born: RPF.born, by, f: RPF.v };
-  btn.disabled = true; btn.textContent = "Saving…"; err.textContent = "";
-  let ok = false;
-  try { const r = await fetch(CORNER_URL, { method: "POST", body: JSON.stringify(body) }); ok = r.ok && (await r.text()).trim() === "ok"; } catch (e) {}
-  if (!ok) { btn.disabled = false; btn.textContent = RPF.edit ? "Save changes" : "Save report"; err.textContent = "Couldn't reach the Sheet. Your report is kept on this device: check your signal and press Save again."; rpDraftSave(); return; }
+  if (st === "Live" && !Object.keys(RPF.v).length) { err.textContent = "Fill in at least one part of the report, or save it as a draft."; return; }
+  const by = rpBy(), btn = $(st === "Live" ? "#rpForm [type=submit]" : st === "Draft" ? "#rpForm [data-rpdraft]" : "[data-rpdisc]"), label = btn?.textContent;
+  const body = { kind: "report", id: RPF.id, name, g: RPF.g, nat: RPF.nat, born: RPF.born, by, own: RPF.own, status: st, f: RPF.v };
+  if (btn) { btn.disabled = true; btn.textContent = "Saving…"; }
+  err.textContent = "";
+  let res = "";
+  try { const r = await fetch(CORNER_URL, { method: "POST", body: JSON.stringify(body) }); res = r.ok ? (await r.text()).trim() : ""; } catch (e) {}
+  if (res !== "ok") {
+    if (btn) { btn.disabled = false; btn.textContent = label; }
+    err.textContent = res === "notyours" ? `This report was started by ${RPF.firstBy || "someone else"}, so only they can change it. Open it to add a comment instead.`
+      : res === "deleted" ? "This report has been deleted on the Sheet." : "Couldn't reach the Sheet. Everything you've typed is kept on this device: check your signal and try again.";
+    rpDraftSave(); return;
+  }
+  rpOwnSet(RPF.id, RPF.own);
+  RPF.dirty = false; if ($("#rpName")) $("#rpName").value = name;  // saved: the tidied name from now on
   const at = new Date().toISOString(), old = rpAll().find(r => r.id === RPF.id);
-  try { localStorage.setItem("72c-reports", JSON.stringify([...rpMine().filter(x => x.id !== RPF.id), { id: RPF.id, name, g: RPF.g, nat: RPF.nat, born: Number(RPF.born) || null, by, at, firstBy: old?.firstBy || by, firstAt: old?.firstAt || at, f: { ...RPF.v }, t: Date.now() }].slice(-30))); } catch (e) {}
+  rpMineSave([...rpMine().filter(x => !(x.id === RPF.id && x.st === st)), { id: RPF.id, name, g: RPF.g, nat: RPF.nat, born: Number(RPF.born) || null, by, at, firstBy: old?.firstBy || RPF.firstBy || by, firstAt: old?.firstAt || at, f: { ...RPF.v }, st, pub: !!old, t: Date.now() }]);
   rpDraftDrop();
-  // the traffic light also goes on the watch list; a new name can be added to the watch list at the same time
+  VD.q.filter(j => j.rid === RPF.id).forEach(j => j.name = name);  // clips added here keep the final spelling of the name
+  if (st === "Discarded") { RP_DRAFTS = RP_DRAFTS.filter(d => d.id !== RPF.id); $("#rpd").close(); renderCorner(); return; }
+  if (st === "Draft") {
+    Object.assign(RPF, { name, edit: true, firstBy: RPF.firstBy || by, msg: "", note: `Draft saved ${rpWhen(at)}. Finish it any time from Reports & videos > Your drafts${by ? ", on any device signed in as " + by : ""}.` });
+    rpShow(); renderCorner(); return;
+  }
+  // published: the traffic light also goes on the watch list; a new name can be added to the watch list at the same time
   const P = rpProspect(name), lt = RP_LT_K[RPF.v.light];
   if (P && lt && ltFor(P.p)?.light !== lt) ltPost(P.p.typed || P.p.name, lt, by);
-  if (!P && !RPF.edit && RPF.add) cnSend(name, RPF.g, RPF.nat, RPF.born ? Number(RPF.born) : "", by, lt || "", "");
-  // clips added to this report keep the final spelling of the name
-  VD.q.filter(j => j.rid === RPF.id).forEach(j => j.name = name);
+  if (!P && !old && RPF.add) cnSend(name, RPF.g, RPF.nat, RPF.born ? Number(RPF.born) : "", by, lt || "", "");
   rpShow("report", RPF.id);
   renderCorner();
 }
-$("#rpd").addEventListener("submit", e => { if (e.target.id === "rpForm") { e.preventDefault(); rpSave(); } });
+$("#rpd").addEventListener("submit", e => {
+  if (e.target.id === "rpForm") { e.preventDefault(); return rpSave("Live"); }
+  const nf = e.target.closest(".rp-nf");
+  if (nf) {
+    e.preventDefault();
+    const text = nf.elements.t.value.trim(), r = rpAll().find(x => x.id === nf.dataset.rid);
+    if (!text || !r) return;
+    rpNotePost(r, text);
+    if (RPD.note) delete RPD.note[r.id];
+    nf.elements.t.value = ""; nf.elements.t.blur();
+    rpShow(); renderCorner();
+  }
+});
 $("#rpd").addEventListener("input", e => {
-  if (RPD.mode !== "form") return;
+  if (RPD.mode !== "form" || !e.target.closest("#rpForm")) return;
   rpRead(); rpDraftSave();
   if (e.target.id === "rpName") {
     $("#rpErr").textContent = "";
@@ -5109,7 +5220,7 @@ $("#rpd").addEventListener("input", e => {
     $("#rpWl").innerHTML = rpWlNote(p);
   }
 });
-$("#rpd").addEventListener("change", e => { if (RPD.mode === "form") { rpRead(); rpDraftSave(); } });
+$("#rpd").addEventListener("change", e => { if (RPD.mode === "form" && e.target.closest("#rpForm")) { rpRead(); rpDraftSave(); } });
 $("#rpd").addEventListener("click", e => {
   const d = $("#rpd");
   if (e.target === d || e.target.closest("[data-rpx]")) return rpClose();
@@ -5120,7 +5231,13 @@ $("#rpd").addEventListener("click", e => {
     if (k === "_g") RPF.g = on ? pill.dataset.val : ""; else if (on) RPF.v[k] = pill.dataset.val; else delete RPF.v[k];
     rpDraftSave(); return;
   }
-  if (e.target.closest("[data-rpdrop]")) { rpDraftDrop(); const n = RPF.edit ? "" : RPF.name; RPF.msg = ""; return rpForm(RPF.edit ? { id: RPF.id } : { name: n }); }
+  if (e.target.closest("[data-rpdraft]")) return rpSave("Draft");
+  if (e.target.closest("[data-rpdisc]")) {
+    if (!confirm(RPF.pub ? "Throw away your unpublished changes? The published report stays as it is." : "Delete this draft? This can't be undone.")) return;
+    rpDraftDrop();
+    if (rpSaved().some(x => x.id === RPF.id)) return rpSave("Discarded");  // also off the Sheet
+    return RPF.pub ? rpShow("report", RPF.id) : d.close();
+  }
   const o = e.target.closest("[data-rpo]"); if (o) return rpShow("report", o.dataset.rpo);
   const ed = e.target.closest("[data-rpedit]"); if (ed) return rpForm({ id: ed.dataset.rpedit });
   const pp = e.target.closest("[data-rpp]"); if (pp) return rpShow("player", pp.dataset.rpp);
@@ -5133,18 +5250,20 @@ $("#rpd").addEventListener("click", e => {
   }
   const rt = e.target.closest("[data-vdretry]"); if (rt) return vdRetry(Number(rt.dataset.vdretry));
 });
-// closing the form with unsaved changes: the draft stays on this device, so just say so
+// closing the form: what's typed stays on this device (listed under Your drafts), so nothing is lost
 function rpClose(){
   const d = $("#rpd");
-  if (RPD.mode === "form" && $("#rpForm")) { rpRead(); if (RPF.name.trim() || Object.keys(RPF.v).length) rpDraftSave(); }
+  if (RPD.mode === "form" && $("#rpForm") && RPF.dirty) { rpRead(); if (RPF.name.trim() || Object.keys(RPF.v).length) rpDraftSave(); }
   d.close();
+  renderCorner();
 }
 $("#rpd").addEventListener("cancel", e => { if (RPD.mode === "form") { e.preventDefault(); rpClose(); } });
-$("#rpd").addEventListener("close", () => { RPD.mode = ""; if (!$("#cnd").open && !$("#resd").open) profLock(false); });
+$("#rpd").addEventListener("close", () => { RPD.mode = ""; RPD.note = {}; if (!$("#cnd").open && !$("#resd").open) profLock(false); });
 // buttons anywhere (profile windows, Reports view, the page's "Add scouting report")
 document.addEventListener("click", e => {
   const n = e.target.closest("[data-rpnew]");
   if (n) { let o = {}; try { o = JSON.parse(n.dataset.rpnew || "{}"); } catch (err) {} return rpForm(o); }
+  const dr = e.target.closest("[data-rpdo]"); if (dr) return rpForm({ id: dr.dataset.rpdo });
   const a = e.target.closest("[data-vdadd]");
   if (a) { let o = {}; try { o = JSON.parse(a.dataset.vdadd); } catch (err) {} if (o.name) vdPick(o); return; }
   const v = e.target.closest("[data-vd]"); if (v) return vdOpen(v.dataset.vd);
@@ -5152,21 +5271,23 @@ document.addEventListener("click", e => {
   if (!e.target.closest("#rpd")) { const o = e.target.closest("[data-rpo]"); if (o) return rpShow("report", o.dataset.rpo); }
 });
 
-/* the Reports view: one card per player with a report or a clip (their folder), newest first */
+/* the Reports view: your drafts first, then one card per player with a report or a clip (their folder), newest first */
 function renderReports(){
   const q = cnKey(CN.q), groups = new Map();
   for (const r of rpAll()) { const k = cnSorted(r.name); if (!groups.has(k)) groups.set(k, { name: r.name, g: r.g, reps: [], vids: [], at: r.at }); groups.get(k).reps.push(r); }
   for (const v of vdAll()) { const k = cnSorted(v.name); if (!groups.has(k)) groups.set(k, { name: v.name, g: rpProspect(v.name)?.p.g || "", reps: [], vids: [], at: v.at }); const G = groups.get(k); G.vids.push(v); if (v.at > G.at) G.at = v.at; }
   const list = [...groups.values()].filter(G => (!CN.g || G.g === CN.g) && (!q || cnKey(G.name).includes(q))).sort((a, b) => new Date(b.at) - new Date(a.at));
+  const drafts = rpDrafts().filter(d => !q || cnKey(d.name || "").includes(q));
   const card = G => {
     const r = G.reps[0], f = r?.f || {}, lt = RP_LT_K[f.light];
-    const meta = rpMeta(r || rpProspect(G.name)?.p || {});
+    const meta = rpMeta(r || rpProspect(G.name)?.p || {}), nn = G.reps.reduce((n, x) => n + rpNotes(x.id).length, 0);
     return `<div class="cn cn-tile rp-tile${lt ? " lt-" + lt : ""}" data-rpfold="${esc(G.name)}" role="button" tabindex="0" aria-label="Open ${esc(G.name)}'s scouting folder"><div class="cn-h"><span class="nm">${lt ? `<span class="lt-dot ${lt}"></span>` : ""}${esc(G.name)}</span>${meta ? `<span class="mt">${esc(meta)}</span>` : ""}</div>
       ${r ? `<div class="sg-why rp-chips">${rpChips(f)}</div>` : ""}
-      <div class="sg-wl">${G.reps.length ? `${G.reps.length} report${G.reps.length === 1 ? "" : "s"}, latest by ${esc(r.by || "someone")} · ${esc(rpDay(r.at))}` : "No report yet"}${G.vids.length ? `<span class="vd-n">${RP_CAM}${G.vids.length}</span>` : ""}</div>
+      <div class="sg-wl">${G.reps.length ? `${G.reps.length} report${G.reps.length === 1 ? "" : "s"}, latest by ${esc(r.firstBy || r.by || "someone")} · ${esc(rpDay(r.at))}` : "No report yet"}${nn ? `<span class="vd-n">${CM_ICON}${nn}</span>` : ""}${G.vids.length ? `<span class="vd-n">${RP_CAM}${G.vids.length}</span>` : ""}</div>
       <div class="cn-open"><span class="ar" aria-hidden="true">›</span>Open folder<span class="lg">: reports &amp; videos</span></div></div>`;
   };
-  $("#cnList").innerHTML = list.map(card).join("") || `<div class="sq-empty">${q || CN.g ? "No report matches." : "No scouting reports yet. Press “Add scouting report” above to write the first one."}</div>`;
+  const dh = drafts.length ? `<section class="rp-drafts"><h3>Your drafts <small>only you can see these</small></h3>${drafts.map(rpDraftRow).join("")}</section>` : "";
+  $("#cnList").innerHTML = dh + (list.map(card).join("") || `<div class="sq-empty">${q || CN.g ? "No report matches." : "No published scouting reports yet. Press “Add scouting report” above to write the first one."}</div>`);
   $("#cnSrc").textContent = RP_OK ? "" : "Reading the reports from the Sheet…";
 }
 $("#cnList").addEventListener("keydown", e => { const t = e.target.closest?.("[data-rpfold]"); if (t && (e.key === "Enter" || e.key === " ")) { e.preventDefault(); rpShow("player", t.dataset.rpfold); } });
