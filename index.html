@@ -4830,8 +4830,11 @@ function kbFocus(el){
   if (!el) return;
   el.focus({ preventScroll: true });
   KB.el = el; KB.until = Date.now() + 1500;
-  kbShow(el); setTimeout(() => kbShow(KB.el), 350); setTimeout(() => kbShow(KB.el), 750);
+  kbShow(el); kbLater();
 }
+// a second and third try while the keyboard slides up, unless the user has started scrolling (KB.until = 0)
+function kbLater(){ setTimeout(() => Date.now() < KB.until && kbShow(KB.el), 350); setTimeout(() => Date.now() < KB.until && kbShow(KB.el), 750); }
+document.addEventListener("touchmove", () => { KB.until = 0; }, { passive: true });
 // scroll el (or, with top = true, the comment log's heading) into the visible part of the screen
 function kbShow(el, top){
   if (!el || !el.isConnected) return;
@@ -4839,7 +4842,7 @@ function kbShow(el, top){
   const vTop = v ? v.offsetTop : 0, vBot = vTop + (v ? v.height : innerHeight);
   const lo = Math.max(vTop, dlg ? dlg.getBoundingClientRect().top : $("header").getBoundingClientRect().bottom) + 10;
   const hi = Math.min(vBot, dlg ? dlg.getBoundingClientRect().bottom : vBot) - 10;
-  const r = el.getBoundingClientRect(), f = top ? r : (el.closest("form") || el).getBoundingClientRect();
+  const r = el.getBoundingClientRect(), f = top ? r : (el.closest(".rp-f") || el.closest("form") || el).getBoundingClientRect();  // report form: just the field, not the whole long form
   let dy = 0;
   if (top) dy = r.top - lo;
   else if (f.bottom > hi) dy = f.bottom - hi;
@@ -4857,13 +4860,13 @@ function kbFit(){
   });
 }
 if (window.visualViewport) {
-  visualViewport.addEventListener("resize", () => { kbFit(); if (KB.el && Date.now() < KB.until + 1500) kbShow(KB.el); });
+  visualViewport.addEventListener("resize", () => { kbFit(); if (KB.el && Date.now() < KB.until) kbShow(KB.el); });
   visualViewport.addEventListener("scroll", kbFit);
 }
 document.addEventListener("focusin", e => {
   if (!KB.touch() || !e.target.matches?.(KB_SEL)) return;
   KB.el = e.target; KB.until = Date.now() + 1500;
-  setTimeout(() => kbShow(KB.el), 350); setTimeout(() => kbShow(KB.el), 750);
+  kbLater();
 });
 document.addEventListener("focusout", e => { if (e.target === KB.el) setTimeout(() => { if (!document.activeElement?.matches?.(KB_SEL)) { KB.el = null; kbFit(); } }, 100); });
 // a redraw while typing: note the box's form, its fields and the cursor, then put them back on the new copy
@@ -4946,7 +4949,7 @@ const RP_SEC = [
   ["Anything else", [["other", "Other comments", "long"]]]
 ];
 const RP_LABEL = Object.fromEntries(RP_SEC.flatMap(s => s[1]).map(f => [f[0], f[1]]));
-let RP_SHEET = [], RP_DRAFTS = [], RP_NOTES = [], VD_SHEET = [], RP_OK = false;
+let RP_SHEET = [], RP_DRAFTS = [], RP_NOTES = [], VD_SHEET = [], RP_OK = false, RP_READ = 0;  // RP_READ = when the Sheet list was last read
 try { const c = JSON.parse(localStorage.getItem("72c-rplist") || "{}"); RP_SHEET = c.reports || []; RP_DRAFTS = c.drafts || []; RP_NOTES = c.notes || []; VD_SHEET = c.videos || []; } catch (e) {}
 const rpHex = n => Array.from(crypto.getRandomValues(new Uint8Array(n)), b => b.toString(16).padStart(2, "0")).join("");
 const rpBy = () => { try { return localStorage.getItem("72c-name") || ""; } catch (e) { return ""; } };
@@ -4961,11 +4964,13 @@ async function loadReports(){
   const own = Object.values(rpOwn()).join(",");
   try {
     const r = await fetch(CORNER_URL + "?kind=reports&by=" + encodeURIComponent(rpBy()) + (own ? "&own=" + own : ""));
-    if (r.ok) { const j = await r.json(); if (Array.isArray(j.reports)) { RP_SHEET = j.reports; RP_DRAFTS = j.drafts || []; RP_NOTES = j.notes || []; VD_SHEET = j.videos || []; RP_OK = true; try { localStorage.setItem("72c-rplist", JSON.stringify(j)); } catch (e) {} } }
+    if (r.ok) { const j = await r.json(); if (Array.isArray(j.reports)) { RP_SHEET = j.reports; RP_DRAFTS = j.drafts || []; RP_NOTES = j.notes || []; VD_SHEET = j.videos || []; RP_OK = true; RP_READ = Date.now(); try { localStorage.setItem("72c-rplist", JSON.stringify(j)); } catch (e) {} } }
   } catch (e) {}
 }
-// reports, drafts, comments and clips saved on this device: shown at once, until the Sheet has them (10 minutes once it has been read)
-function rpMine(){ try { return JSON.parse(localStorage.getItem("72c-reports") || "[]").filter(x => Date.now() - x.t < (RP_OK ? 6e5 : 3 * 864e5)); } catch (e) { return []; } }
+// reports, drafts, comments and clips saved on this device: shown at once, and kept until a Sheet read made at least 10 minutes after the save
+// (the Sheet is only read when the page loads, so a draft saved later never vanished from the list before the next read)
+const rpKeep = x => Date.now() - x.t < 3 * 864e5 && (!RP_OK || x.t > RP_READ - 6e5);
+function rpMine(){ try { return JSON.parse(localStorage.getItem("72c-reports") || "[]").filter(rpKeep); } catch (e) { return []; } }
 function rpMineSave(l){ try { localStorage.setItem("72c-reports", JSON.stringify(l.slice(-30))); } catch (e) {} }
 function vdMineAll(){ try { return JSON.parse(localStorage.getItem("72c-videos") || "[]").filter(x => Date.now() - x.t < 7 * 864e5); } catch (e) { return []; } }
 function vdMineSave(l){ try { localStorage.setItem("72c-videos", JSON.stringify(l.slice(-60))); } catch (e) {} }
@@ -4996,7 +5001,7 @@ function rpDrafts(){
   return Object.values(out).sort((a, b) => new Date(b.at) - new Date(a.at));
 }
 // comments on a report, oldest first (this device's own until the Sheet lists them)
-function rpNoteMine(){ try { return JSON.parse(localStorage.getItem("72c-rpnotes") || "[]").filter(x => Date.now() - x.t < (RP_OK ? 6e5 : 3 * 864e5)); } catch (e) { return []; } }
+function rpNoteMine(){ try { return JSON.parse(localStorage.getItem("72c-rpnotes") || "[]").filter(rpKeep); } catch (e) { return []; } }
 function rpNotes(rid){
   const seen = new Set(RP_NOTES.map(n => n.id));
   return [...RP_NOTES, ...rpNoteMine().filter(n => !seen.has(n.id))].filter(n => n.rid === rid).sort((a, b) => new Date(a.at) - new Date(b.at));
@@ -5177,7 +5182,7 @@ function rpPlayerHtml(name){
 function rpShow(mode, id){
   const d = $("#rpd");
   if (mode) { RPD.mode = mode; if (mode === "report") RPD.id = id; if (mode === "player") RPD.name = id; }
-  if (RPD.mode === "form" && d.open && $("#rpForm")) rpRead();  // keep what's typed through a redraw
+  if (!mode && RPD.mode === "form" && d.open && $("#rpForm")) rpRead();  // keep what's typed through a redraw (never when switching to another draft: that would copy this form over it)
   const nf = d.querySelector(".rp-nf textarea"); if (nf) (RPD.note = RPD.note || {})[nf.closest("form").dataset.rid] = nf.value;  // a half-typed comment too
   const r = RPD.mode === "report" && rpAll().find(x => x.id === RPD.id);
   const y = mode ? 0 : d.scrollTop;
