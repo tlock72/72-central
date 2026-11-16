@@ -1329,14 +1329,19 @@ nav .sh,.nm-s{display:none}
 /* Home fits the screen exactly on every device: header + home page = the screen's height, no scrolling, no footer.
    The six tiles share whatever height is left over: 3 across x 2 down on wide (landscape) screens, 2 across x 3 down on
    tall (portrait) ones. Sizes scale with the screen height (vh), so tiles look the same on a laptop, a big monitor or an iPad.
-   If a screen is too short for everything (a phone turned sideways), the page simply scrolls instead of cutting anything off. */
-body.on-home{display:flex;flex-direction:column;min-height:100vh;min-height:100dvh}
+   The page is locked to the screen's height (it never scrolls): on a short screen (a laptop browser window, a phone with its
+   toolbars showing) the tiles get shorter and drop their extra lines instead of pushing the page down (Nov 2026). */
+body.on-home{display:flex;flex-direction:column;height:100vh;height:100dvh;overflow:hidden}
 body.on-home > header{flex:none}
-body.on-home > main{flex:1;display:flex;flex-direction:column;width:100%}
+body.on-home > main{flex:1;min-height:0;display:flex;flex-direction:column;width:100%}
 body.on-home > footer{display:none}
-#page-home:not([hidden]){flex:1;display:flex;flex-direction:column;padding-bottom:clamp(10px,2.2vh,24px)}
+#page-home:not([hidden]){flex:1;min-height:0;display:flex;flex-direction:column;padding-bottom:clamp(10px,2.2vh,24px)}
 #page-home > *{flex:none}
-#page-home > .hp-grid{--hp-min:150px;flex:1;grid-template-columns:repeat(2,minmax(0,1fr));grid-template-rows:repeat(3,minmax(var(--hp-min),1fr))}
+#page-home > .hp-grid{--hp-min:0px;flex:1;min-height:0;grid-template-columns:repeat(2,minmax(0,1fr));grid-template-rows:repeat(3,minmax(var(--hp-min),1fr))}
+#page-home .hp-tile{overflow:hidden}
+/* very short tiles: just the title and the headline number */
+@container hptile (max-height:150px){.hp-stat > div > span{display:none}.hp-stat{padding-top:4px}}
+@container hptile (max-height:120px){.hp-tile h2{font-size:14px;line-height:1.15}.hp-stat b small{white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.hp-stat b{font-size:24px}}
 #page-home > .hp-foot{display:none}
 /* each tile is sized by the grid (not by its text) and shows only what fits: the description and the roster faces need a tall tile */
 #page-home .hp-tile{container:hptile / size}
@@ -1353,7 +1358,7 @@ body.on-home > footer{display:none}
   .hp-hero .mono{font-size:clamp(180px,34vh,420px);bottom:-.22em}
   .hp-greet{margin-top:clamp(6px,1.4vh,18px)}
   .hp-meta{margin-top:clamp(10px,2.2vh,26px)}
-  #page-home > .hp-grid{--hp-min:190px;gap:clamp(12px,1.8vh,18px)}
+  #page-home > .hp-grid{gap:clamp(12px,1.8vh,18px)}
   .hp-tile{min-height:0;padding:clamp(16px,2.8vh,28px) clamp(18px,2vw,28px) clamp(14px,2.4vh,24px)}
   .hp-tile h2{font-size:clamp(22px,3.2vh,30px)}
   .hp-stat{padding-top:clamp(10px,2vh,24px)}
@@ -1393,7 +1398,7 @@ body.on-home > footer{display:none}
   .hp-hero h1{font-size:26px}
   .hp-hero .hp-greet{display:none}
   .hp-hero .hp-meta{margin:0}
-  #page-home > .hp-grid{--hp-min:90px;gap:8px}
+  #page-home > .hp-grid{gap:8px}
   .hp-tile{padding:10px 14px}
   .hp-tile h2{font-size:16px;margin:0}
   .hp-stat{padding-top:4px}
@@ -1408,10 +1413,19 @@ body.on-home > footer{display:none}
 }
 /* small phones (iPhone SE and similar): no greeting line and one line of detail per tile, so it still fits without scrolling */
 @media (max-width:640px) and (max-height:720px){
-  #page-home > .hp-grid{--hp-min:120px;gap:8px}
+  #page-home > .hp-grid{gap:8px}
   .hp-hero .hp-greet{display:none}
   #page-home .hp-hero{padding-block:10px}
   .hp-stat > div > span{display:none}
+}
+/* short computer screens (a laptop browser window under 700px tall): slimmer hero and tile padding so the tiles keep their height */
+@media (min-width:641px) and (max-height:700px) and (min-height:501px){
+  #page-home > #champs{margin-top:8px}
+  #page-home > .hp-hero{margin:8px 0;padding-block:10px}
+  .hp-hero h1{font-size:clamp(30px,5.4vh,40px)}
+  .hp-hero .hp-meta{margin-top:4px}
+  .hp-tile{padding:12px 16px}
+  #page-home .hp-team{margin-top:8px;padding-block:6px}
 }
 @media (min-width:641px) and (orientation:landscape){
   #page-home > .hp-grid{grid-template-columns:repeat(3,minmax(0,1fr));grid-template-rows:repeat(2,minmax(var(--hp-min),1fr))}
