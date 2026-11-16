@@ -1350,11 +1350,13 @@ nav .sh,.nm-s{display:none}
    tall (portrait) ones. Sizes scale with the screen height (vh), so tiles look the same on a laptop, a big monitor or an iPad.
    The page is locked to the screen's height (it never scrolls): on a short screen (a laptop browser window, a phone with its
    toolbars showing) the tiles get shorter and drop their extra lines instead of pushing the page down (Nov 2026). */
-body.on-home{display:flex;flex-direction:column;height:100vh;height:100dvh;overflow:hidden}
+/* iPhone: the page is drawn right to the bottom edge, under Safari's bottom bar and the home-bar strip, so the bottom row (Scouting report /
+   Team Cards) keeps clear of them (safe-area-inset-bottom); and if it still doesn't fit, the page scrolls rather than cutting anything off */
+body.on-home{display:flex;flex-direction:column;height:100vh;height:100dvh;overflow-x:hidden;overflow-y:auto}
 body.on-home > header{flex:none}
 body.on-home > main{flex:1;min-height:0;display:flex;flex-direction:column;width:100%}
 body.on-home > footer{display:none}
-#page-home:not([hidden]){flex:1;min-height:0;display:flex;flex-direction:column;padding-bottom:clamp(10px,2.2vh,24px)}
+#page-home:not([hidden]){flex:1;min-height:0;display:flex;flex-direction:column;padding-bottom:calc(clamp(10px,2.2vh,24px) + env(safe-area-inset-bottom,0px))}
 #page-home > *{flex:none}
 #page-home > .hp-grid{--hp-min:0px;flex:1;min-height:0;grid-template-columns:repeat(2,minmax(0,1fr));grid-template-rows:repeat(3,minmax(var(--hp-min),1fr))}
 #page-home .hp-tile{overflow:hidden}
@@ -1411,7 +1413,7 @@ body.on-home > footer{display:none}
 @media (orientation:landscape) and (max-height:500px){
   header .bar{padding-block:8px}
   .brand img{height:26px}
-  #page-home:not([hidden]){padding-bottom:6px}
+  #page-home:not([hidden]){padding-bottom:calc(6px + env(safe-area-inset-bottom,0px))}
   #page-home > #champs{margin-top:6px}
   #page-home > .hp-hero{margin:6px 0;padding-block:6px}
   .hp-hero h1{font-size:26px}
