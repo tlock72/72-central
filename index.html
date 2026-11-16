@@ -4826,24 +4826,26 @@ document.addEventListener("click", e => {
    - the box being typed in is then scrolled so the whole form (box + button) sits just above the keyboard, or,
      if it doesn't fit, the box itself at the top (kbShow), both inside the window or on the page under the menu
    - a background refresh (comments, watch list) redraws the cards: the box keeps its focus, text and cursor (cmKeep) */
-const KB = { el: null, until: 0, touch: () => matchMedia("(pointer:coarse)").matches };
+const KB = { el: null, until: 0, y: null, touch: () => matchMedia("(pointer:coarse)").matches };
 const KB_SEL = ".cm-log input, .cm-log textarea, dialog.rsd input, dialog.rsd textarea";
 function kbFocus(el){
   if (!el) return;
   el.focus({ preventScroll: true });
-  KB.el = el; KB.until = Date.now() + 1500;
+  KB.el = el; KB.until = Date.now() + 2500;
   kbShow(el); kbLater();
 }
-// a second and third try while the keyboard slides up, unless the user has started scrolling (KB.until = 0)
-function kbLater(){ setTimeout(() => Date.now() < KB.until && kbShow(KB.el), 350); setTimeout(() => Date.now() < KB.until && kbShow(KB.el), 750); }
-document.addEventListener("touchmove", () => { KB.until = 0; }, { passive: true });
+// more tries while the keyboard slides up (iPhone moves things around as it does), unless the user has started scrolling (KB.until = 0)
+function kbLater(){ [120, 350, 700, 1100, 1600].forEach(t => setTimeout(() => Date.now() < KB.until && kbShow(KB.el), t)); }
+document.addEventListener("touchstart", e => { KB.y = e.touches[0].clientY; }, { passive: true });
+document.addEventListener("touchmove", e => { if (KB.y !== null && Math.abs(e.touches[0].clientY - KB.y) > 12) KB.until = 0; }, { passive: true });  // a real drag, not a tap's wobble
 // scroll el (or, with top = true, the comment log's heading) into the visible part of the screen
 function kbShow(el, top){
   if (!el || !el.isConnected) return;
   const v = window.visualViewport, dlg = el.closest("dialog[open]");
   const vTop = v ? v.offsetTop : 0, vBot = vTop + (v ? v.height : innerHeight);
   const lo = Math.max(vTop, dlg ? dlg.getBoundingClientRect().top : $("header").getBoundingClientRect().bottom) + 10;
-  const hi = Math.min(vBot, dlg ? dlg.getBoundingClientRect().bottom : vBot) - 10;
+  const bar = dlg?.querySelector(".rp-save");  // the report form's Save bar sits just above the keyboard: keep the box clear of it too
+  const hi = Math.min(vBot, dlg ? dlg.getBoundingClientRect().bottom : vBot, bar ? bar.getBoundingClientRect().top : Infinity) - 20;
   const r = el.getBoundingClientRect(), f = top ? r : (el.closest(".rp-f") || el.closest("form") || el).getBoundingClientRect();  // report form: just the field, not the whole long form
   let dy = 0;
   if (top) dy = r.top - lo;
@@ -4875,12 +4877,12 @@ document.addEventListener("touchmove", e => {
   KB_DRAG.y = null;
 }, { passive: true });
 if (window.visualViewport) {
-  visualViewport.addEventListener("resize", () => { kbFit(); if (KB.el && Date.now() < KB.until) kbShow(KB.el); });
+  visualViewport.addEventListener("resize", () => { kbFit(); if (KB.el && Date.now() < KB.until) kbShow(KB.el); });  // each step of the keyboard sliding up
   visualViewport.addEventListener("scroll", kbFit);
 }
 document.addEventListener("focusin", e => {
   if (!KB.touch() || !e.target.matches?.(KB_SEL)) return;
-  KB.el = e.target; KB.until = Date.now() + 1500;
+  KB.el = e.target; KB.until = Date.now() + 2500;
   kbLater();
 });
 document.addEventListener("focusout", e => { if (e.target === KB.el) setTimeout(() => { if (!document.activeElement?.matches?.(KB_SEL)) { KB.el = null; kbFit(); } }, 100); });
@@ -4955,7 +4957,7 @@ const RP_LT = { g: "Green", a: "Amber", r: "Red" }, RP_LT_K = { Green: "g", Ambe
 const RP_SEC = [
   ["Where you saw them", [["seen", "Event or place", "text", "e.g. J300 Roehampton, or academy training"], ["seenOn", "Date seen", "date"]]],
   ["Profile", [["hand", "Plays", "pick"], ["bh", "Backhand", "pick"]]],
-  ["Potential", [["light", "Traffic light", "light"], ["win", "Potential to win", "scale"], ["rank", "Peak ATP/WTA ranking we believe in", "pick"], ["major", "Can win a Major", "pick"]]],
+  ["Potential", [["light", "Traffic light", "light"], ["rank", "Peak ATP/WTA ranking we believe in", "pick"], ["major", "Can win a Major", "pick"]]],
   ["Game", [["style", "Style", "pick"], ["game", "Game style", "long", "How they play: patterns, tempo, court position"], ["plan", "Standard game plan", "long", "What they go to on big points and when it isn't working"],
     ["str", "Strengths", "long"], ["weak", "Weaknesses", "long"], ["tech", "Technical observations", "long", "Serve, return, forehand, backhand, net, footwork"],
     ["phys", "Physicality", "long", "Height, build, speed, endurance, injuries"], ["pers", "Personality", "long", "Competitiveness, body language, maturity, coachability"]]],
@@ -5046,7 +5048,7 @@ const rpNat = c => CN_NATS.find(x => x.c === c)?.n || c || "";
 const rpMeta = r => [r.nat ? rpNat(r.nat) : "", r.born ? "born " + r.born : "", { M: "Male", F: "Female" }[r.g] || ""].filter(Boolean).join(" · ");
 // the short facts on a report card: plays, backhand, peak ranking, Majors, marketability
 function rpChips(f){
-  const c = [f.hand, f.bh ? f.bh + " backhand" : "", f.rank ? "Peak " + f.rank : "", f.major ? "Major: " + f.major : "", f.win ? "Potential " + f.win + "/5" : "", f.mkt ? "Marketability " + f.mkt + "/5" : ""];
+  const c = [f.hand, f.bh ? f.bh + " backhand" : "", f.rank ? "Peak " + f.rank : "", f.major ? "Major: " + f.major : "", f.mkt ? "Marketability " + f.mkt + "/5" : ""];
   return c.filter(Boolean).map(t => `<span>${esc(t)}</span>`).join("");
 }
 const RP_PLAY = `<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M8 5v14l11-7z"/></svg>`;
@@ -5152,6 +5154,7 @@ function rpRead(){
   if (!RPF.pub) RPF.name = f.elements.rpName.value;
   RPF.nat = f.elements.rpNat.value; RPF.born = f.elements.rpBorn.value.trim();
   const a = $("#rpAdd"); if (a) RPF.add = a.checked;
+  delete RPF.v.win;  // "Potential to win" was taken off the form (Nov 2026): an old draft doesn't send it again
   for (const el of f.querySelectorAll("textarea[name], input[name]:not([name^=rp])")) { const v = el.value.trim(); if (v) RPF.v[el.name] = el.value; else delete RPF.v[el.name]; }
 }
 
@@ -5159,7 +5162,7 @@ function rpRead(){
 function rpViewHtml(r){
   const f = r.f || {}, fact = (k, v) => v ? `<div><span>${esc(RP_LABEL[k])}</span><b>${esc(v)}</b></div>` : "";
   const sc = k => f[k] ? `${f[k]}/5 · ${RP_SCALE[k][f[k]] || ""}` : "";
-  const facts = [fact("hand", f.hand), fact("bh", f.bh), fact("style", f.style), fact("win", sc("win")), fact("rank", f.rank), fact("major", f.major), fact("mkt", sc("mkt")), fact("agency", [f.agency, f.agName].filter(Boolean).join(": "))].join("");
+  const facts = [fact("hand", f.hand), fact("bh", f.bh), fact("style", f.style), fact("rank", f.rank), fact("major", f.major), fact("mkt", sc("mkt")), fact("agency", [f.agency, f.agName].filter(Boolean).join(": "))].join("");
   const txt = RP_SEC.flatMap(s => s[1]).filter(x => x[2] === "long" && f[x[0]]).map(x => `<h4>${esc(x[1])}</h4><p class="rp-tx">${esc(f[x[0]])}</p>`).join("");
   const P = rpProspect(r.name), vids = vdFor([r.name]), first = r.firstBy || r.by, lt = RP_LT_K[f.light];
   const seen = [f.seen, f.seenOn ? rpDay(f.seenOn + "T12:00:00Z") : ""].filter(Boolean).join(", ");
