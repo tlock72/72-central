@@ -341,10 +341,11 @@ TE_MIN_BORN = 2010  # Tennis Europe is U12-U16: anyone born before this is over 
 
 
 def te_born(pid):
-    """Year of birth from the Tennis Europe profile, only when the page labels it clearly (else None, never a guess)."""
-    page = TE.fetch(f"/player-profile/{pid}")
+    """Year of birth from the Tennis Europe profile's Biography tab ("Year of birth 2014"; the profile's front page
+    never shows it), only when the page labels it clearly (else None, never a guess)."""
+    page = TE.fetch(f"/player-profile/{pid}/biography")
     text = re.sub(r"\s+", " ", html.unescape(re.sub(r"<[^>]+>", " ", page)))
-    m = re.search(r"(?i)\b(?:year of birth|birth ?year|date of birth|born)\s*:?\s*(?:\d{1,2}[./-]\d{1,2}[./-])?((?:19|20)\d{2})\b", text)
+    m = re.search(r"(?i)\b(?:year of birth|birth ?year|date of birth)\s*:?\s*(?:\d{1,2}[./-]\d{1,2}[./-])?((?:19|20)\d{2})\b", text)
     y = int(m[1]) if m else None
     return y if y and 1990 <= y <= T.year - 5 else None
 
