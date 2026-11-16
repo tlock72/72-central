@@ -785,6 +785,25 @@ a.cn-st.ok:hover{border-color:var(--gold)}
 .rp-note p{margin:4px 0 0;font-size:13.5px;line-height:1.5;white-space:pre-wrap;overflow-wrap:anywhere}
 .rp-nf{display:flex;flex-direction:column;align-items:flex-end;gap:8px;margin:4px 0 6px}
 .rp-nf textarea.sq-in{flex:none;width:100%;box-sizing:border-box;height:auto;min-height:60px;padding:10px 14px;border-radius:14px;font-size:16px;line-height:1.45;resize:vertical}
+/* Report form tidy-up (Nov 2026): one height and text size for every box and button, quieter placeholders, a date box that fits phones, solid Save bar */
+.rp-form .rp-f>label{font-size:13px;color:var(--muted);font-weight:500;letter-spacing:.01em}
+.rp-form input.sq-in,.rp-form select.sq-in{height:44px;padding:0 16px;font-size:16px;line-height:44px}
+.rp-form select.sq-in{padding-right:34px;background-position:calc(100% - 18px) 19px,calc(100% - 13px) 19px}
+.rp-form .sq-in::placeholder{color:var(--muted-2);font-size:15px;opacity:1}
+.rp-form input[type=date].sq-in{display:block;min-width:0;max-width:100%;-webkit-appearance:none;appearance:none;text-align:left;color-scheme:dark}
+.rp-form input[type=date]::-webkit-date-and-time-value{text-align:left;margin:0}
+.rp-form .rp-pills button{min-height:40px;padding:6px 16px;font-size:14px}
+.rp-form .rp-sc button{padding:6px 2px}
+.rp-row3 .rp-pills button{min-height:44px}
+.rp-save{background:#0B1230;box-shadow:0 -10px 18px rgba(11,18,48,.9)}
+.rp-save .rp-go{min-height:46px;font-size:13px;padding:0 12px}
+@media (max-width:640px){
+  .rs-hd .mt{font-size:12.5px;line-height:1.45;padding-right:6px}
+  .rp-form h4{padding-top:14px}
+  .rp-lt{flex-direction:column;align-items:stretch}
+  .rp-lt button{justify-content:flex-start}
+  .rp-form .rp-pills:not(.rp-sc):not(.rp-lt) button{flex:1 1 auto}
+}
 /* "Last 12 months" window: summary across the top, then one card per tournament, newest first */
 dialog.rsd{width:min(760px,calc(100vw - 32px));max-height:calc(100dvh - 40px);padding:0;overflow-x:hidden;overflow-y:auto;overscroll-behavior:contain;border:1px solid var(--line);border-radius:24px;background:#0B1230;color:var(--text);box-shadow:0 30px 80px rgba(0,0,0,.6)}
 dialog.rsd::backdrop{background:rgba(5,9,25,.72);backdrop-filter:blur(6px);-webkit-backdrop-filter:blur(6px)}
@@ -4916,7 +4935,7 @@ const RP_SCALE = {
 const RP_LT = { g: "Green", a: "Amber", r: "Red" }, RP_LT_K = { Green: "g", Amber: "a", Red: "r" };
 // the form, section by section: [key, label, kind, hint]. kind: text, date, long (writing box), pick, scale, light
 const RP_SEC = [
-  ["Where you saw them", [["seen", "Event or place", "text", "e.g. J300 Roehampton, or training at the academy"], ["seenOn", "Date seen", "date"]]],
+  ["Where you saw them", [["seen", "Event or place", "text", "e.g. J300 Roehampton, or academy training"], ["seenOn", "Date seen", "date"]]],
   ["Profile", [["hand", "Plays", "pick"], ["bh", "Backhand", "pick"]]],
   ["Potential", [["light", "Traffic light", "light"], ["win", "Potential to win", "scale"], ["rank", "Peak ATP/WTA ranking we believe in", "pick"], ["major", "Can win a Major", "pick"]]],
   ["Game", [["style", "Style", "pick"], ["game", "Game style", "long", "How they play: patterns, tempo, court position"], ["plan", "Standard game plan", "long", "What they go to on big points and when it isn't working"],
