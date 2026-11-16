@@ -1,4 +1,3 @@
-/** @OnlyCurrentDoc */
 // 72 Central visit log. Not run by GitHub: paste this into your Google Sheet
 // (Extensions > Apps Script) and follow VISIT_LOG.md.
 // The site sends each visit here; each visit is one row on the "Visits" tab,
@@ -20,6 +19,14 @@
 // Scouting Corner traffic lights (green / amber / red on each watch list prospect): every change is a row on the
 // "Lights" tab (made automatically), and the newest row for a player is the light shown. "Cleared" = no light.
 // To change one by hand, add a row (or edit the newest one) with Green, Amber, Red or Cleared in the Light column.
+// Scouting reports (Scouting Corner's "Add scouting report" form): every save is a row on the "Reports" tab (made
+// automatically), so the history of each report is kept; the site shows the newest row for each Report ID. To delete
+// a report, set the Status of its newest row to "Deleted".
+// Scouting videos: the clips go into a Google Drive folder, "72 Central scouting videos" (made automatically, one
+// folder per player), and each is a row on the "Videos" tab. Anyone with the link can watch a clip (the links are
+// only on the passcode-protected site). To take a clip down, set its Status to "Removed" (and delete the file in
+// Drive if you like). The person who added it can also remove it from the same device for a day.
+// The videos need Google Drive access: after pasting this script, run setupReports once by hand and allow it.
 
 const TZ = "Europe/London";
 
@@ -77,6 +84,10 @@ function doPost(e) {
   if (d.kind === "delcomment") return askDeleteComment(d);
   if (d.kind === "results") return askResults(d);
   if (d.kind === "light") return setLight(d);
+  if (d.kind === "report") return saveReport(d);
+  if (d.kind === "vidstart") return videoStart(d);
+  if (d.kind === "vidchunk") return videoChunk(d);
+  if (d.kind === "unvideo") return videoRemove(d);
   const id = String(d.id || "").slice(0, 40), start = new Date(Number(d.start));
   if (!id || isNaN(start)) return out("bad");
   // text starting with = + - @ would be read as a formula, so it's kept as plain text
@@ -530,6 +541,7 @@ function doGet(e) {
   if (kind === "comments") return listComments();
   if (kind === "lookups") return listLookups();
   if (kind === "lights") return listLights();
+  if (kind === "reports") return listReports();
   if (kind !== "prospects") return out("72 Central");
   const sh = SpreadsheetApp.getActiveSpreadsheet().getSheetByName("Prospects");
   const rows = sh && sh.getLastRow() > 1 ? sh.getRange(2, 1, sh.getLastRow() - 1, 6).getValues() : [];
@@ -542,4 +554,203 @@ function doGet(e) {
   const removed = rm.filter(x => x.status === "Approved").map(x => x.name);
   const asked = rm.filter(x => x.status === "Waiting").map(x => x.name);
   return ContentService.createTextOutput(JSON.stringify({ prospects: list, removed, asked })).setMimeType(ContentService.MimeType.JSON);
+}
+
+// ---------- Scouting reports and videos (Scouting Corner) ----------
+// Choice answers the form can send (the same lists as RP_FIELDS in index.html); anything else is left blank.
+const REPORT_FIELDS = [
+  ["seen", "Seen at"], ["seenOn", "Date seen"], ["light", "Traffic light", ["Green", "Amber", "Red"]],
+  ["hand", "Plays", ["Right-handed", "Left-handed"]], ["bh", "Backhand", ["One-handed", "Two-handed"]],
+  ["style", "Style", ["Aggressive baseliner", "Counter-puncher", "All-court", "Big server", "Serve and volley"]],
+  ["win", "Winning potential", ["1", "2", "3", "4", "5"]],
+  ["rank", "Peak ranking", ["Top 5", "Top 10", "Top 20", "Top 50", "Top 100", "Top 200", "Top 500", "Outside 500"]],
+  ["major", "Can win a Major", ["Yes", "Possibly", "Unlikely", "No"]],
+  ["game", "Game style"], ["plan", "Game plan"], ["str", "Strengths"], ["weak", "Weaknesses"],
+  ["tech", "Technical"], ["phys", "Physical"], ["pers", "Personality"], ["team", "Team structure"],
+  ["fam", "Family involvement"], ["comm", "Commercial in place"], ["mkt", "Marketability", ["1", "2", "3", "4", "5"]],
+  ["agency", "Agency", ["No agency", "Has an agency", "Not sure"]], ["agName", "Agency name"], ["other", "Other comments"]
+];
+const REPORT_FIXED = ["Saved", "Report ID", "Player", "Male/Female", "Nation", "Born", "Saved by", "Status"];
+const clean_ = x => String(x == null ? "" : x).replace(/[\u0000-\u0009\u000b-\u001f]/g, "").trim();
+const plain_ = t => /^[=+\-@]/.test(t) ? "'" + t : t;  // never read as a formula
+const unplain_ = t => String(t == null ? "" : t).replace(/^'/, "");
+const json_ = o => ContentService.createTextOutput(JSON.stringify(o)).setMimeType(ContentService.MimeType.JSON);
+const okName_ = n => n.length >= 3 && /^[\p{L}][\p{L} .'\-|]+$/u.test(n);
+
+// Run once by hand after pasting this script: makes the "Reports" and "Videos" tabs and the Drive folder, and asks
+// for Google Drive access (needed for the videos).
+function setupReports() {
+  reportSheet_(); videoSheet_(); videoFolder_();
+}
+function reportSheet_() {
+  const ss = SpreadsheetApp.getActiveSpreadsheet();
+  let sh = ss.getSheetByName("Reports");
+  if (sh) return sh;
+  sh = ss.insertSheet("Reports");
+  const head = REPORT_FIXED.concat(REPORT_FIELDS.map(f => f[1]));
+  sh.getRange(1, 1, 1, head.length).setValues([head]).setFontWeight("bold");
+  sh.setFrozenRows(1); sh.setFrozenColumns(3);
+  sh.getRange("A:A").setNumberFormat("ddd d mmm yyyy HH:mm");
+  sh.getRange(2, REPORT_FIXED.length + 1, sh.getMaxRows() - 1, REPORT_FIELDS.length).setWrap(true).setVerticalAlignment("top");
+  sh.hideColumns(2);
+  return sh;
+}
+
+// A report saved on the site (new or edited). The id comes from the page; every save is a new row.
+function saveReport(d) {
+  const name = clean_(d.name).replace(/\s+/g, " ").slice(0, 60);
+  const id = String(d.id || "");
+  if (!okName_(name) || !/^[a-f0-9]{12}$/.test(id)) return out("bad");
+  const by = clean_(d.by).slice(0, 30);
+  const g = { M: "Male", F: "Female" }[clean_(d.g).toUpperCase()] || "";
+  const nat = /^[A-Za-z]{3}$/.test(clean_(d.nat)) ? clean_(d.nat).toUpperCase() : "";
+  const born = /^(19|20)\d\d$/.test(clean_(d.born)) ? Number(clean_(d.born)) : "";
+  const f = d.f || {};
+  const vals = REPORT_FIELDS.map(([k, , opts]) => {
+    const v = clean_(f[k]);
+    if (opts) return opts.includes(v) ? v : "";
+    if (k === "seenOn") return /^20\d\d-\d\d-\d\d$/.test(v) ? v : "";
+    return plain_(v.slice(0, 4000));
+  });
+  const lock = LockService.getScriptLock();
+  lock.waitLock(10000);
+  try {
+    reportSheet_().appendRow([new Date(), id, plain_(name), g, nat, born, plain_(by), "Live"].concat(vals));
+  } finally {
+    lock.releaseLock();
+  }
+  return out("ok");
+}
+
+// Read by the site (?kind=reports): the newest version of every report that isn't deleted, plus every clip still up.
+// Undo codes never leave the Sheet.
+function listReports() {
+  const ss = SpreadsheetApp.getActiveSpreadsheet(), rs = ss.getSheetByName("Reports"), vs = ss.getSheetByName("Videos");
+  const n = REPORT_FIXED.length + REPORT_FIELDS.length;
+  const rows = rs && rs.getLastRow() > 1 ? rs.getRange(2, 1, rs.getLastRow() - 1, n).getValues() : [];
+  const last = {}, first = {};
+  rows.forEach(r => {
+    const id = String(r[1]); if (!id || !(r[0] instanceof Date)) return;
+    if (!first[id] || r[0] < first[id].at) first[id] = { at: r[0], by: unplain_(r[6]) };
+    if (!last[id] || r[0] >= last[id][0]) last[id] = r;
+  });
+  const reports = Object.keys(last).filter(id => String(last[id][7]).trim() !== "Deleted").map(id => {
+    const r = last[id], f = {};
+    REPORT_FIELDS.forEach(([k], i) => {
+      let v = r[REPORT_FIXED.length + i];
+      if (v instanceof Date) v = Utilities.formatDate(v, TZ, "yyyy-MM-dd");  // a typed date the Sheet turned into a date
+      v = unplain_(v).trim(); if (v) f[k] = v;
+    });
+    return { id, name: unplain_(r[2]).trim(), g: { Male: "M", Female: "F" }[r[3]] || "", nat: String(r[4] || ""), born: r[5] ? Number(r[5]) : null,
+      by: unplain_(r[6]), at: r[0].toISOString(), firstBy: first[id].by, firstAt: first[id].at.toISOString(), f };
+  });
+  const vrows = vs && vs.getLastRow() > 1 ? vs.getRange(2, 1, vs.getLastRow() - 1, 11).getValues() : [];
+  const videos = vrows.filter(r => r[6] && String(r[4]).trim() === "Live" && r[0] instanceof Date).map(r => ({
+    id: String(r[6]), name: unplain_(r[1]).trim(), cap: unplain_(r[2]), by: unplain_(r[3]), rid: String(r[5] || ""), at: r[0].toISOString(), mb: Number(r[10]) || null
+  }));
+  return json_({ reports, videos });
+}
+
+function videoSheet_() {
+  const ss = SpreadsheetApp.getActiveSpreadsheet();
+  let sh = ss.getSheetByName("Videos");
+  if (sh) return sh;
+  sh = ss.insertSheet("Videos");
+  sh.getRange(1, 1, 1, 11).setValues([["Added", "Player", "Caption", "Added by", "Status", "Report ID", "File ID", "Link", "Sharing", "Undo code", "Size (MB)"]]).setFontWeight("bold");
+  sh.setFrozenRows(1);
+  sh.getRange("A:A").setNumberFormat("ddd d mmm yyyy HH:mm");
+  sh.hideColumns(6, 2); sh.hideColumns(10);
+  return sh;
+}
+// The "72 Central scouting videos" folder in Drive (its id is remembered, so renaming or moving it is fine)
+function videoFolder_() {
+  const props = PropertiesService.getScriptProperties(), id = props.getProperty("VIDEO_FOLDER");
+  if (id) { try { const f = DriveApp.getFolderById(id); if (!f.isTrashed()) return f; } catch (e) {} }
+  const f = DriveApp.createFolder("72 Central scouting videos");
+  props.setProperty("VIDEO_FOLDER", f.getId());
+  return f;
+}
+function playerFolder_(name) {
+  const root = videoFolder_(), it = root.getFoldersByName(name);
+  return it.hasNext() ? it.next() : root.createFolder(name);
+}
+
+// Upload step 1: the site sends the clip's details; this opens a Google Drive upload for it and returns an upload id.
+// The clip then comes in pieces (videoChunk), so a big phone video never has to fit in one message.
+const VIDEO_MAX_MB = 300;
+function videoStart(d) {
+  const name = clean_(d.name).replace(/\s+/g, " ").slice(0, 60);
+  const type = clean_(d.type).toLowerCase(), size = Number(d.size), undo = String(d.undo || "");
+  if (!okName_(name) || !/^video\/[a-z0-9.+\-]+$/.test(type) || !(size > 0) || size > VIDEO_MAX_MB * 1048576 || !/^[a-f0-9]{16,64}$/.test(undo)) return json_({ ok: false, why: "bad" });
+  const rid = /^[a-f0-9]{12}$/.test(String(d.rid || "")) ? String(d.rid) : "";
+  const by = clean_(d.by).slice(0, 30), cap = clean_(d.cap).slice(0, 120);
+  const ext = (clean_(d.file).match(/\.([A-Za-z0-9]{2,5})$/) || [, type.split("/")[1].replace("quicktime", "mov")])[1].toLowerCase();
+  const stamp = Utilities.formatDate(new Date(), TZ, "yyyy-MM-dd HHmm");
+  const folder = playerFolder_(name);
+  const res = UrlFetchApp.fetch("https://www.googleapis.com/upload/drive/v3/files?uploadType=resumable&supportsAllDrives=true", {
+    method: "post", contentType: "application/json; charset=UTF-8", muteHttpExceptions: true,
+    headers: { Authorization: "Bearer " + ScriptApp.getOAuthToken(), "X-Upload-Content-Type": type, "X-Upload-Content-Length": String(size) },
+    payload: JSON.stringify({ name: `${name} ${stamp}${by ? " (" + by + ")" : ""}.${ext}`, parents: [folder.getId()], description: cap })
+  });
+  const h = res.getAllHeaders(), loc = h.Location || h.location;
+  if (res.getResponseCode() !== 200 || !loc) return json_({ ok: false, why: "drive " + res.getResponseCode() });
+  const up = Utilities.getUuid().replace(/-/g, "");
+  CacheService.getScriptCache().put("vid:" + up, JSON.stringify({ loc, name, by, cap, rid, size, type, undo }), 21600);
+  return json_({ ok: true, up });
+}
+
+// Upload step 2, once per piece (in order): passes it on to Drive. The last piece finishes the file: it is shared
+// as "anyone with the link can view" and gets its row on the "Videos" tab.
+function videoChunk(d) {
+  const cache = CacheService.getScriptCache(), raw = cache.get("vid:" + String(d.up || ""));
+  if (!raw) return json_({ ok: false, why: "expired" });
+  const u = JSON.parse(raw), start = Number(d.start);
+  let bytes;
+  try { bytes = Utilities.base64Decode(String(d.data || "")); } catch (e) { return json_({ ok: false, why: "bad" }); }
+  if (!(start >= 0) || !bytes.length || start + bytes.length > u.size) return json_({ ok: false, why: "bad" });
+  const res = UrlFetchApp.fetch(u.loc, {
+    method: "put", contentType: u.type, payload: bytes, muteHttpExceptions: true, followRedirects: false,
+    headers: { "Content-Range": `bytes ${start}-${start + bytes.length - 1}/${u.size}` }
+  });
+  const code = res.getResponseCode();
+  if (code === 308) {
+    const r = res.getAllHeaders().Range || res.getAllHeaders().range || "";
+    const m = String(r).match(/-(\d+)$/);
+    return json_({ ok: true, next: m ? Number(m[1]) + 1 : 0 });
+  }
+  if (code !== 200 && code !== 201) return json_({ ok: false, why: "drive " + code });
+  const fid = JSON.parse(res.getContentText()).id;
+  let sharing = "Anyone with the link";
+  const file = DriveApp.getFileById(fid);
+  try { file.setSharing(DriveApp.Access.ANYONE_WITH_LINK, DriveApp.Permission.VIEW); }
+  catch (e) {
+    // some Google Workspace accounts don't allow sharing outside the organisation
+    try { file.setSharing(DriveApp.Access.DOMAIN_WITH_LINK, DriveApp.Permission.VIEW); sharing = "Organisation with the link"; }
+    catch (e2) { sharing = "Not shared: " + String(e2).slice(0, 80); }
+  }
+  const lock = LockService.getScriptLock();
+  lock.waitLock(10000);
+  try {
+    videoSheet_().appendRow([new Date(), plain_(u.name), plain_(u.cap), plain_(u.by), "Live", u.rid, fid,
+      "https://drive.google.com/file/d/" + fid + "/view", sharing, u.undo, Math.round(u.size / 104857.6) / 10]);
+  } finally {
+    lock.releaseLock();
+  }
+  cache.remove("vid:" + d.up);
+  return json_({ ok: true, done: true, id: fid, sharing });
+}
+
+// "Remove" on a clip: only the device that added it has the undo code, and only for a day. The file goes to Drive's bin.
+function videoRemove(d) {
+  const undo = String(d.undo || ""), id = String(d.id || "");
+  if (!/^[a-f0-9]{16,64}$/.test(undo) || !id) return out("bad");
+  const sh = SpreadsheetApp.getActiveSpreadsheet().getSheetByName("Videos");
+  if (!sh || sh.getLastRow() < 2) return out("none");
+  const rows = sh.getRange(2, 1, sh.getLastRow() - 1, 10).getValues();
+  const i = rows.findIndex(r => String(r[6]) === id && String(r[9]) === undo);
+  if (i < 0) return out("none");
+  if (!(rows[i][0] instanceof Date) || Date.now() - rows[i][0] > 864e5) return out("late");
+  sh.getRange(i + 2, 5).setValue("Removed");
+  try { DriveApp.getFileById(id).setTrashed(true); } catch (e) {}
+  return out("ok");
 }

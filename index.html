@@ -660,6 +660,110 @@ a.cn-st.ok:hover{border-color:var(--gold)}
 .cn-more.rs-go .ar{border-color:var(--navy)}
 .cn-more.rs-go .n{margin-left:4px;opacity:.75}
 .cn-more.rs-go:hover{background:var(--white)}
+/* Scouting reports and videos (rpForm / rpShow, #rpd; clips: vdGrid, #vdd, the upload bar .vd-bar) */
+.rp-new{display:flex;align-items:center;justify-content:center;gap:10px;width:100%;margin:0 0 14px;padding:14px 20px;border-radius:16px;border:1px solid var(--gold);background:var(--gold);color:var(--navy);font-family:var(--display);text-transform:uppercase;letter-spacing:.14em;font-size:14px;font-weight:600;cursor:pointer}
+.rp-new span{font-size:20px;line-height:1}
+.rp-new:hover{background:var(--gold-2)}
+.rp-form section,.rp-view{padding:4px 22px 6px}
+.rp-form section+section{border-top:1px solid var(--line-2)}
+.rp-form h4,.rp-view h4{font-family:var(--display);font-weight:500;text-transform:uppercase;letter-spacing:.16em;font-size:11px;color:var(--gold);margin:0;padding:16px 0 8px}
+.rp-f{margin:0 0 12px}
+.rp-f>label{display:block;margin:0 0 6px;font-size:12px;font-weight:600;color:var(--text)}
+.rp-f .sq-in,.rp-row3 .sq-in{width:100%;box-sizing:border-box;font-size:16px}
+.rp-f textarea.sq-in{height:auto;min-height:76px;resize:vertical;line-height:1.45;padding:10px 14px;border-radius:14px;font-family:var(--body)}
+.rp-row3{display:grid;grid-template-columns:auto minmax(0,1fr) 110px;gap:8px;align-items:center;margin:0 0 8px}
+.rp-pills{display:flex;flex-wrap:wrap;gap:6px}
+.rp-pills button{min-height:38px;padding:6px 14px;border:1px solid var(--line);border-radius:999px;background:transparent;color:var(--text);font:inherit;font-size:13px;cursor:pointer}
+.rp-pills button.on{background:var(--gold);border-color:var(--gold);color:var(--navy);font-weight:600}
+.rp-sc{display:grid;grid-template-columns:repeat(5,minmax(0,1fr))}
+.rp-sc button{border-radius:12px;padding:6px 4px;display:flex;flex-direction:column;align-items:center;gap:1px}
+.rp-sc button b{font-family:var(--display);font-size:17px;font-weight:600}
+.rp-sc button small{font-size:10px;line-height:1.15;text-align:center;opacity:.85}
+.rp-lt button{display:inline-flex;align-items:center;gap:7px}
+.rp-lt button i{width:11px;height:11px;border-radius:50%;opacity:.5}
+.rp-lt .g i{background:var(--lt-g)}.rp-lt .a i{background:var(--lt-a)}.rp-lt .r i{background:var(--lt-r)}
+.rp-lt button.on{background:transparent;color:var(--text)}.rp-lt button.on i{opacity:1}
+.rp-lt button.g.on{border-color:var(--lt-g)}.rp-lt button.a.on{border-color:var(--lt-a)}.rp-lt button.r.on{border-color:var(--lt-r)}
+.rp-wl{font-size:12px;color:var(--muted);margin:0 0 8px}
+.rp-wl label{display:flex;gap:8px;align-items:flex-start;line-height:1.4}
+.rp-wl input{margin-top:2px;accent-color:var(--gold)}
+.rp-wl .ok{color:var(--up)}
+.rp-hint{margin:0 0 10px;font-size:12px;color:var(--muted);line-height:1.45}
+.rp-lnk{background:none;border:0;padding:0;color:var(--gold);font:inherit;text-decoration:underline;cursor:pointer}
+.rp-save{position:sticky;bottom:0;display:flex;align-items:center;gap:12px;padding:12px 22px calc(12px + env(safe-area-inset-bottom));background:linear-gradient(180deg,rgba(11,18,48,.85),#0B1230 40%);border-top:1px solid var(--line);z-index:2}
+.rp-save span{flex:1 1 auto;font-size:12px;color:var(--down);line-height:1.35}
+.rp-go{display:inline-flex;align-items:center;justify-content:center;gap:8px;min-height:42px;padding:0 20px;border-radius:999px;border:1px solid var(--gold);background:var(--gold);color:var(--navy);font-family:var(--display);text-transform:uppercase;letter-spacing:.12em;font-size:12px;font-weight:600;cursor:pointer}
+.rp-go:disabled{opacity:.6}
+.rp-go.ln{background:transparent;color:var(--gold)}
+.rp-go svg{width:17px;height:17px}
+.rp-btns{display:flex;flex-wrap:wrap;gap:8px;padding:12px 0 8px}
+.cn-pf .rp-blk{padding:0 20px}
+.rp-row{display:flex;align-items:center;gap:10px;width:100%;margin:0 0 6px;padding:10px 14px;border:1px solid var(--line-2);border-radius:12px;background:rgba(255,255,255,.025);color:var(--text);font:inherit;text-align:left;cursor:pointer}
+.rp-row:hover{border-color:var(--gold)}
+.rp-row .t{flex:1 1 auto;min-width:0;font-size:13px;font-weight:600}
+.rp-row .t small{display:block;font-weight:400;font-size:11px;color:var(--muted);margin-top:2px}
+.rp-row .ar{color:var(--gold);font-size:18px}
+.rp-row .lt-dot{margin-right:6px}
+.rp-chips{display:flex;flex-wrap:wrap;gap:5px;margin-top:6px}
+.rp-row .rp-chips span,.rp-tile .rp-chips span{font-size:11px;font-weight:400;border:1px solid var(--line-2);border-radius:999px;padding:2px 9px;color:var(--text)}
+.rp-tile .sg-wl{display:flex;align-items:center;gap:10px}
+.vd-n{display:inline-flex;align-items:center;gap:4px;margin-left:auto!important;color:var(--gold)!important}
+.vd-n svg,.sg-why .cm svg{width:14px;height:14px}
+.sg-why span.rp-has{color:var(--gold);border-color:var(--gold)}
+.rp-view{padding-bottom:16px}
+.rp-ltv{display:inline-flex;align-items:center;gap:8px;margin:14px 0 0;padding:6px 14px;border:1px solid;border-radius:999px;font-size:12px}
+.rp-ltv i{width:10px;height:10px;border-radius:50%}
+.rp-ltv.g{border-color:var(--lt-g)}.rp-ltv.g i{background:var(--lt-g)}.rp-ltv.a{border-color:var(--lt-a)}.rp-ltv.a i{background:var(--lt-a)}.rp-ltv.r{border-color:var(--lt-r)}.rp-ltv.r i{background:var(--lt-r)}
+.rp-facts{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:6px;margin:14px 0 0}
+.rp-facts div{border:1px solid var(--line-2);border-radius:10px;padding:7px 11px;background:rgba(255,255,255,.03)}
+.rp-facts span{display:block;font-size:9.5px;letter-spacing:.1em;text-transform:uppercase;color:var(--muted)}
+.rp-facts b{display:block;margin-top:2px;font-size:13px;font-weight:600;color:var(--white)}
+.rp-tx{margin:0;font-size:14px;line-height:1.55;color:var(--text);white-space:pre-wrap;overflow-wrap:anywhere}
+.vd-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(130px,1fr));gap:8px;margin:0 0 10px}
+.vd-th{display:flex;flex-direction:column;gap:5px;padding:0;border:0;background:none;color:var(--muted);font:inherit;text-align:left;cursor:pointer}
+.vd-th .im{position:relative;display:block;aspect-ratio:16/10;border-radius:10px;overflow:hidden;background:var(--navy-3);border:1px solid var(--line-2)}
+.vd-th img{width:100%;height:100%;object-fit:cover;display:block}
+.vd-th .im i{position:absolute;inset:0;display:grid;place-items:center}
+.vd-th .im i svg{width:34px;height:34px;padding:8px;border-radius:50%;background:rgba(12,20,49,.7);fill:var(--gold)}
+.vd-th:hover .im{border-color:var(--gold)}
+.vd-th small{font-size:11px;line-height:1.3}
+.vd-th small b{display:block;color:var(--text);font-weight:600}
+.vd-none{font-size:12px;color:var(--muted);padding:2px 0 10px}
+.vd-job{position:relative;display:flex;justify-content:space-between;gap:10px;margin:0 0 6px;padding:8px 12px;border:1px solid var(--line-2);border-radius:10px;font-size:12px;overflow:hidden}
+.vd-job span{min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.vd-job em{font-style:normal;color:var(--gold);white-space:nowrap}
+.vd-job.err em{color:var(--down)}
+.vd-job i{position:absolute;left:0;bottom:0;height:3px;background:var(--gold);transition:width .3s}
+.vd-bar{position:fixed;inset:auto auto calc(84px + env(safe-area-inset-bottom)) 50%;margin:0;transform:translateX(-50%);z-index:2147483000;display:flex;align-items:center;gap:10px;width:min(520px,calc(100vw - 24px));box-sizing:border-box;padding:10px 14px;border:1px solid var(--gold);border-radius:14px;background:#0B1230;color:var(--text);font-size:13px;box-shadow:0 12px 40px rgba(0,0,0,.5);overflow:hidden}
+.vd-bar[hidden]{display:none}
+.vd-bar>span{flex:1 1 auto;min-width:0;display:flex;flex-direction:column;gap:2px}
+.vd-bar>span b{font-weight:500}
+.vd-bar>span svg{width:15px;height:15px;vertical-align:-3px;margin-right:6px;color:var(--gold)}
+.vd-bar small{font-size:11px;color:var(--muted)}
+.vd-bar>i{position:absolute;left:0;bottom:0;height:3px;background:var(--gold);transition:width .3s}
+.vd-bar button{flex:none;border:1px solid var(--gold);border-radius:999px;padding:5px 12px;background:var(--gold);color:var(--navy);font:inherit;font-size:12px;font-weight:600;cursor:pointer}
+.vd-bar button.no{background:transparent;color:var(--muted);border-color:var(--line-2)}
+.vd-bar.err{border-color:var(--down)}
+.vd-play{background:#000}
+.vd-play iframe{display:block;width:100%;height:min(70dvh,560px);border:0}
+.vd-foot{display:flex;flex-wrap:wrap;gap:8px 16px;align-items:center;padding:12px 22px 16px;font-size:12px;color:var(--muted)}
+.vd-foot span{flex:1 1 100%}
+.vd-foot a{color:var(--gold)}
+@media (max-width:640px){
+  dialog.rpd[open]{width:100vw;max-width:100vw;height:100dvh;max-height:100dvh;margin:0;border-radius:0;border:0}
+  .rp-form section,.rp-view{padding-left:14px;padding-right:14px}
+  .rp-save{padding-left:14px;padding-right:14px}
+  .rp-save .rp-go{flex:none}
+  .rp-row3{grid-template-columns:1fr 1fr}
+  .rp-row3 .rp-pills{grid-column:1/-1}
+  .rp-row3 .rp-pills button{flex:1 1 0}
+  .rp-sc button small{font-size:9px}
+  .rp-new{padding:12px 16px;font-size:13px;margin-bottom:10px}
+  .cn-pf .rp-blk{padding:0 12px}
+  .vd-grid{grid-template-columns:repeat(2,minmax(0,1fr))}
+  .vd-foot{padding:10px 14px 14px}
+  dialog.vdd[open]{width:100vw;max-width:100vw;margin:auto 0;border-radius:0}
+}
 /* "Last 12 months" window: summary across the top, then one card per tournament, newest first */
 dialog.rsd{width:min(760px,calc(100vw - 32px));max-height:calc(100dvh - 40px);padding:0;overflow-x:hidden;overflow-y:auto;overscroll-behavior:contain;border:1px solid var(--line);border-radius:24px;background:#0B1230;color:var(--text);box-shadow:0 30px 80px rgba(0,0,0,.6)}
 dialog.rsd::backdrop{background:rgba(5,9,25,.72);backdrop-filter:blur(6px);-webkit-backdrop-filter:blur(6px)}
@@ -1234,7 +1338,7 @@ body.on-home > footer{display:none}
   .hp-stat{padding-top:clamp(10px,2vh,24px)}
   .hp-stat b{font-size:clamp(32px,4.6vh,44px)}
   #hpT2{font-size:clamp(32px,4.6vh,44px)}
-  #page-home > .hp-team{margin-top:clamp(10px,1.8vh,18px);padding:clamp(8px,1.4vh,14px) 20px}
+  #page-home .hp-team{margin-top:clamp(10px,1.8vh,18px);padding:clamp(8px,1.4vh,14px) 20px}
   /* big screens: the home page (and the header above it) can use up to 1500px of width instead of 1180px */
   body.on-home .wrap{max-width:1500px}
   .hp-stat{gap:20px}
@@ -1279,7 +1383,7 @@ body.on-home > footer{display:none}
   .hp-sep{height:52px}
   .hp-stat > div > span,.hp-tile p{display:none}
   .hp-go{width:30px;height:30px;font-size:15px}
-  #page-home > .hp-team{margin-top:6px;padding:6px 14px;font-size:12px}
+  #page-home .hp-team{margin-top:6px;padding:6px 14px;font-size:12px}
 }
 /* small phones (iPhone SE and similar): no greeting line and one line of detail per tile, so it still fits without scrolling */
 @media (max-width:640px) and (max-height:720px){
@@ -1563,6 +1667,9 @@ main.ptr-go,footer.ptr-go{transition:transform .35s cubic-bezier(.2,.8,.3,1)}
 .hp-team{display:flex;align-items:center;justify-content:center;gap:10px;margin:18px 0 0;padding:14px 20px;border-radius:16px;border:1px solid var(--line);background:rgba(255,255,255,.03);text-decoration:none;color:var(--white);font-family:var(--display);text-transform:uppercase;letter-spacing:.14em;font-size:14px}
 .hp-team:hover{border-color:var(--gold);color:var(--gold)}
 .hp-team svg{width:20px;height:20px;color:var(--gold)}
+.hp-btns{display:flex;gap:10px}
+.hp-btns>.hp-team{flex:1 1 0;min-width:0}
+.hp-team.hp-rep{border-color:rgba(208,165,121,.55);background:var(--gold-dim)}
 /* Team in the top menu on computers and tablets; phones reach it from the Team Cards button on the home page (their menu is a full 3x2 grid) */
 /* small tablets: tighter menu so the seventh link still fits beside the logo */
 @media (max-width:640px){nav a.nav-team{display:none}}
@@ -1710,7 +1817,7 @@ dialog.tmd[open]{animation:pop .28s ease}
         <div class="hp-stat"><div><b id="hpT7">—</b><span id="hpS7">Loading the headlines…</span></div><span class="hp-go" aria-hidden="true">→</span></div>
       </a>
     </div>
-    <a class="hp-team" href="#team"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="2" y="5" width="20" height="14" rx="2"/><circle cx="8" cy="11" r="2.2"/><path d="M4.8 16c.6-1.6 1.8-2.4 3.2-2.4s2.6.8 3.2 2.4M14 10h5M14 13.5h4"/></svg>Team Cards</a>
+    <div class="hp-btns"><a class="hp-team hp-rep" href="#report"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M14 3H6a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V9z"/><path d="M14 3v6h6M12 12v6M9 15h6"/></svg>Scouting report</a><a class="hp-team" href="#team"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="2" y="5" width="20" height="14" rx="2"/><circle cx="8" cy="11" r="2.2"/><path d="M4.8 16c.6-1.6 1.8-2.4 3.2-2.4s2.6.8 3.2 2.4M14 10h5M14 13.5h4"/></svg>Team Cards</a></div>
     <p class="hp-foot">For SeventyTwo Sports Group staff only.</p>
   </div>
   <div id="page-scores" hidden>
@@ -1873,7 +1980,8 @@ dialog.tmd[open]{animation:pop .28s ease}
         <p class="sub">Prospects we're watching, ATP/WTA first, then ITF juniors and Tennis Europe. <b>Check</b> means more than one player fits.</p>
       </div>
     </div>
-    <div class="chips cn-view" role="group" aria-label="Show"><button class="chip cnv on" data-v="">Watch list</button><button class="chip cnv" data-v="sug">Computerised suggestions</button></div>
+    <button type="button" class="rp-new" data-rpnew="{}"><span aria-hidden="true">＋</span>Add scouting report</button>
+    <div class="chips cn-view" role="group" aria-label="Show"><button class="chip cnv on" data-v="">Watch list</button><button class="chip cnv" data-v="rep">Reports &amp; videos</button><button class="chip cnv" data-v="sug">Computerised suggestions</button></div>
     <div class="cn-add">
       <h3><button type="button" id="cnAddT" aria-expanded="false">Add a prospect</button></h3>
       <form id="cnForm" autocomplete="off">
@@ -1934,6 +2042,8 @@ dialog.tmd[open]{animation:pop .28s ease}
   <dialog class="prof" id="prof" aria-label="Player profile"></dialog>
   <dialog class="rsd cnd" id="cnd" aria-label="Prospect profile"></dialog>
   <dialog class="rsd" id="resd" aria-label="Last 12 months of results"></dialog>
+  <dialog class="rsd rpd" id="rpd" aria-label="Scouting report"></dialog>
+  <dialog class="rsd vdd" id="vdd" aria-label="Scouting video"></dialog>
   <dialog class="stg" id="sets" aria-label="Settings">
     <h2>Settings</h2>
     <label for="setName">Your first name</label>
@@ -2050,7 +2160,7 @@ let logoSpins = 0;
 window.spinLogo = () => { LOGO.src = "data:image/svg+xml;base64," + btoa(LOGO_SVG.replace("</svg>", "<!--" + (++logoSpins) + "--></svg>")); };
 function route(){
   const hash = location.hash;
-  const tab = hash === "#rankings" ? "rankings" : hash === "#scouting" ? "scouting" : hash === "#schedule" ? "schedule" : hash === "#corner" ? "corner" : hash === "#news" ? "news" : hash === "#scores" ? "scores" : hash.startsWith("#players") ? "players" : hash.startsWith("#team") ? "team" : "home";
+  const tab = hash === "#rankings" ? "rankings" : hash === "#scouting" ? "scouting" : hash === "#schedule" ? "schedule" : hash === "#corner" || hash === "#report" ? "corner" : hash === "#news" ? "news" : hash === "#scores" ? "scores" : hash.startsWith("#players") ? "players" : hash.startsWith("#team") ? "team" : "home";
   $("#page-home").hidden = tab !== "home";
   document.body.classList.toggle("on-home", tab === "home");
   $("#page-scores").hidden = tab !== "scores";
@@ -2088,6 +2198,8 @@ function route(){
   }
   // coming to Scouting Corner from another tab always starts on the watch list
   if (tab === "corner" && window._tab && window._tab !== "corner" && CN.view) { CN.view = ""; CN.add = ""; renderCorner(); }
+  // #report (the home page's "Scouting report" button, or a bookmark on a phone's home screen): straight to a new report
+  if (hash === "#report") { history.replaceState(null, "", "#corner"); setTimeout(() => rpForm(), 0); }
   if (window._tab && window._tab !== tab) window.scrollTo(0, 0);
   window._tab = tab;
 }
@@ -3732,6 +3844,7 @@ function cnProf(k, p){
     ${unsure.length ? `<div class="cn-note">${unsure.map(esc).join("<br>")}. Add the right id in prospects.json.</div>` : ""}
     ${rows.length ? `<h4>Rankings</h4><div class="sq-row h"><span>Ranking</span><span>Rank</span><span>Best</span><span>1 wk</span><span>3 mo</span><span>12 mo</span></div>${rows.join("")}` : ""}
     ${cnSched("esc", k, cnTours(p), cnTours(p).length ? "" : "Not linked to any ITF, Tennis Europe or ATP/WTA profile yet, so no entry lists can be checked.")}
+    ${rpBlock([p.name, p.typed], { name: p.name, g: p.g || "", nat: p.nat || "", born: p.born || "" })}
     <div class="cn-acts">${cmBtn("cn:" + k, [p.name, p.typed], "lg")}${cnRemoval(k, p.typed || p.name)}</div>
     ${cmLog("cn:" + k, p.name, [p.name, p.typed])}</div>`;
 }
@@ -3788,8 +3901,10 @@ function cnTile(k, p){
   if (p.itfJr?.rank && M?.lb !== "ITF Jr") why.push(`<span>ITF Jr No. ${p.itfJr.rank}</span>`);
   else if (!p.itfJr?.rank && p.itfJr?.high && M?.lb !== "ITF Jr") why.push(`<span>ITF Jr best ${p.itfJr.high}</span>`);
   if (te && M && !M.lb.startsWith("TE")) why.push(`<span>TE ${esc(String(te.cat || "").replace(/^\w+ (\d+) & Under$/, "U$1"))} No. ${te.rank}</span>`);
-  const n = cmFor([p.name, p.typed]).length;
+  const n = cmFor([p.name, p.typed]).length, nr = rpFor([p.name, p.typed]).length, nv = vdFor([p.name, p.typed]).length;
   if (n) why.push(`<span class="cm">${CM_ICON}${n}</span>`);
+  if (nr) why.push(`<span class="rp-has">${nr === 1 ? "Report" : nr + " reports"}</span>`);  // scouting reports and clips
+  if (nv) why.push(`<span class="cm">${RP_CAM}${nv}</span>`);
   const meta = [p.nat, p.born ? "born " + p.born : "", M ? `${M.lb} No. ${M.rank}`.replace(/ /g, " ") : "Not ranked yet"].filter(Boolean).join(" · ");
   const res = p.results || [], won = res.filter(r => r.res === "W").length, lost = res.filter(r => r.res === "L").length;
   const L = ltFor(p);
@@ -4142,6 +4257,7 @@ function sgProf(x){
     <h4>Pathway</h4><div class="cn-path">${lead}</div>
     <h4>Rankings</h4><div class="sq-row h"><span>Ranking</span><span>Rank</span><span>Best</span><span>1 wk</span><span>3 mo</span><span>12 mo</span></div>${cnRow(x.L.tour, x.week ? "week of " + sqFmt(x.week) : "", x.rank, undefined, x.w, x.m3, x.m12)}
     ${cnSched("esg", id, tours, gap)}
+    ${rpBlock([x.name], { name: x.name, g: x.L.g || "", nat: x.nat || "", born: x.born || "" })}
     <div class="cn-acts">${cmBtn(k, [x.name], "lg")}</div>
     ${cmLog(k, x.name, [x.name])}</div>`;
 }
@@ -4174,11 +4290,18 @@ function sgSize(){
 window.addEventListener("resize", () => { if ($("#cnList")?.querySelector(".sg-sec")) sgSize(); });
 function renderCorner(){
   if (!$("#page-corner")) return;
-  const sug = CN.view === "sug";
+  const sug = CN.view === "sug", rep = CN.view === "rep";
   document.querySelectorAll(".cnv").forEach(b => b.classList.toggle("on", b.dataset.v === CN.view));
-  $(".cn-add").hidden = sug; $("#cnSortLine").hidden = sug;
-  $("#cnQ").placeholder = sug ? "Search players" : "Search prospect";
-  $("#cnList").classList.toggle("cn-two", !sug);  // watch list: two tiles side by side
+  $(".cn-add").hidden = sug || rep; $("#cnSortLine").hidden = sug || rep;
+  $("#cnQ").placeholder = sug ? "Search players" : rep ? "Search reports" : "Search prospect";
+  $("#cnList").classList.toggle("cn-two", !sug);  // watch list and reports: two tiles side by side
+  if (rep) {  // Reports & videos: one folder per player (renderReports)
+    document.querySelectorAll(".cng").forEach(b => b.classList.toggle("on", b.dataset.g === CN.g));
+    $("#cnFeed").hidden = true;
+    renderReports();
+    if ($("#cnd").open) cnOpen(CN.open);
+    return;
+  }
   if (sug) {
     document.querySelectorAll(".cng").forEach(b => b.classList.toggle("on", b.dataset.g === CN.g));
     renderSuggest();
@@ -4496,7 +4619,7 @@ function cnSend(name, g, nat, born, by, light, cm){
   renderCorner();
 }
 async function loadCorner(){
-  const cmP = Promise.all([loadComments(), loadLights()]);  // read alongside the rest
+  const cmP = Promise.all([loadComments(), loadLights(), loadReports()]);  // read alongside the rest
   try { const r = await fetch("corner.json?t=" + Date.now(), { cache: "no-store" }); if (r.ok) CORNER = await r.json(); else if (!CORNER) CORNER = { players: {} }; } catch (e) { if (!CORNER) CORNER = { players: {} }; }
   try { const r = await fetch("suggest.json?t=" + Date.now(), { cache: "no-store" }); if (r.ok) SUGG = await r.json(); } catch (e) {}
   // watch list juniors' ITF and Tennis Europe matches (itf_matches.py / te_matches.py, about hourly)
@@ -4509,7 +4632,7 @@ async function loadCorner(){
     if (r.ok) { const j = await r.json(); CN_SHEET = j.prospects || []; CN_REMOVED = j.removed || []; CN_ASKED = j.asked || []; CN_SHEET_OK = Array.isArray(j.prospects); }
   } catch (e) {}
   await cmP;
-  renderCorner(); renderHome(); renderScouting(); renderSchedule();
+  renderCorner(); renderHome(); renderScouting(); renderSchedule(); rpRedraw();
 }
 /* ---------- Traffic lights on watch list prospects (green / amber / red) ----------
    Set in the profile window (ltPick); each change is a row on the "Lights" tab of Tobey's Google Sheet
@@ -4733,6 +4856,431 @@ function cmPost(name, text, by){
   try { fetch(CORNER_URL, { method: "POST", mode: "no-cors", body: JSON.stringify({ kind: "comment", id: c.id, name, text, by, undo: c.undo }) }).catch(() => {}); } catch (err) {}
   cmMineSave([...cmMineAll(), c]);
 }
+/* ---------- Scouting reports and videos (Scouting Corner) ----------
+   "Add scouting report" opens a form (#rpd): player, where they were seen, hand and backhand, potential, game,
+   team and family, commercial, other comments, and videos. Every save is a row on the "Reports" tab of Tobey's
+   Google Sheet (scripts/visit_log.gs, kind: "report"), read back with ?kind=reports (newest row per report wins), so
+   each report's history stays on the Sheet. Anyone can edit any report. The form keeps a draft on this device while
+   it's being filled in, so a phone call or a closed tab doesn't lose it.
+   Videos go to a Google Drive folder through the same script, in 2.5 MB pieces (kind: "vidstart", then "vidchunk"),
+   so a phone clip of any normal length gets there; each is a row on the "Videos" tab and plays from Drive (Drive also
+   turns iPhone clips into something every device can play). Matched to players by name in any word order, like comments.
+   The Reports view lists one card per player (their reports and clips together, the player's "folder"). */
+const RP_PICK = {
+  hand: ["Right-handed", "Left-handed"], bh: ["One-handed", "Two-handed"],
+  style: ["Aggressive baseliner", "Counter-puncher", "All-court", "Big server", "Serve and volley"],
+  rank: ["Top 5", "Top 10", "Top 20", "Top 50", "Top 100", "Top 200", "Top 500", "Outside 500"],
+  major: ["Yes", "Possibly", "Unlikely", "No"], agency: ["No agency", "Has an agency", "Not sure"]
+};
+const RP_SCALE = {
+  win: { 1: "Limited", 2: "Solid pro", 3: "Tour level", 4: "Top player", 5: "Elite" },
+  mkt: { 1: "Low", 2: "Modest", 3: "Good", 4: "Strong", 5: "Star appeal" }
+};
+const RP_LT = { g: "Green", a: "Amber", r: "Red" }, RP_LT_K = { Green: "g", Amber: "a", Red: "r" };
+// the form, section by section: [key, label, kind, hint]. kind: text, date, long (writing box), pick, scale, light
+const RP_SEC = [
+  ["Where you saw them", [["seen", "Event or place", "text", "e.g. J300 Roehampton, or training at the academy"], ["seenOn", "Date seen", "date"]]],
+  ["Profile", [["hand", "Plays", "pick"], ["bh", "Backhand", "pick"]]],
+  ["Potential", [["light", "Traffic light", "light"], ["win", "Potential to win", "scale"], ["rank", "Peak ATP/WTA ranking we believe in", "pick"], ["major", "Can win a Major", "pick"]]],
+  ["Game", [["style", "Style", "pick"], ["game", "Game style", "long", "How they play: patterns, tempo, court position"], ["plan", "Standard game plan", "long", "What they go to on big points and when it isn't working"],
+    ["str", "Strengths", "long"], ["weak", "Weaknesses", "long"], ["tech", "Technical observations", "long", "Serve, return, forehand, backhand, net, footwork"],
+    ["phys", "Physicality", "long", "Height, build, speed, endurance, injuries"], ["pers", "Personality", "long", "Competitiveness, body language, maturity, coachability"]]],
+  ["Team and family", [["team", "Team structure", "long", "Coach, fitness, physio, academy, federation support"], ["fam", "Family involvement", "long", "Who travels, who decides, how involved they are"]]],
+  ["Commercial", [["comm", "Commercial already in place", "long", "Kit, racquet, sponsors, other deals"], ["mkt", "How marketable", "scale"], ["agency", "Agency", "pick"], ["agName", "Agency name", "text", "If they have one"]]],
+  ["Anything else", [["other", "Other comments", "long"]]]
+];
+const RP_LABEL = Object.fromEntries(RP_SEC.flatMap(s => s[1]).map(f => [f[0], f[1]]));
+let RP_SHEET = [], VD_SHEET = [], RP_OK = false;
+try { const c = JSON.parse(localStorage.getItem("72c-rplist") || "{}"); RP_SHEET = c.reports || []; VD_SHEET = c.videos || []; } catch (e) {}
+async function loadReports(){
+  try {
+    const r = await fetch(CORNER_URL + "?kind=reports");
+    if (r.ok) { const j = await r.json(); if (Array.isArray(j.reports)) { RP_SHEET = j.reports; VD_SHEET = j.videos || []; RP_OK = true; try { localStorage.setItem("72c-rplist", JSON.stringify(j)); } catch (e) {} } }
+  } catch (e) {}
+}
+const rpHex = n => Array.from(crypto.getRandomValues(new Uint8Array(n)), b => b.toString(16).padStart(2, "0")).join("");
+const rpBy = () => { try { return localStorage.getItem("72c-name") || ""; } catch (e) { return ""; } };
+// reports and clips saved on this device: shown at once, until the Sheet has them (10 minutes once it has been read)
+function rpMine(){ try { return JSON.parse(localStorage.getItem("72c-reports") || "[]").filter(x => Date.now() - x.t < (RP_OK ? 6e5 : 3 * 864e5)); } catch (e) { return []; } }
+function vdMineAll(){ try { return JSON.parse(localStorage.getItem("72c-videos") || "[]").filter(x => Date.now() - x.t < 7 * 864e5); } catch (e) { return []; } }
+function vdMineSave(l){ try { localStorage.setItem("72c-videos", JSON.stringify(l.slice(-60))); } catch (e) {} }
+// every report: the newest version of each (this device's save wins until the Sheet has caught up)
+function rpAll(){
+  const by = {};
+  for (const r of [...RP_SHEET, ...rpMine()]) if (!by[r.id] || new Date(r.at) >= new Date(by[r.id].at)) by[r.id] = { ...(by[r.id] || {}), ...r, firstBy: by[r.id]?.firstBy || r.firstBy || r.by, firstAt: by[r.id]?.firstAt || r.firstAt || r.at };
+  return Object.values(by).sort((a, b) => new Date(b.at) - new Date(a.at));
+}
+function vdAll(){
+  const mine = vdMineAll(), gone = new Set(mine.filter(x => x.gone).map(x => x.id)), seen = new Set(VD_SHEET.map(v => v.id));
+  const local = mine.filter(x => !x.gone && !seen.has(x.id) && (!RP_OK || Date.now() - x.t < 6e5));
+  return [...VD_SHEET, ...local].filter(v => !gone.has(v.id)).sort((a, b) => new Date(b.at) - new Date(a.at));
+}
+const rpFor = names => { const k = new Set(names.filter(Boolean).map(cnSorted)); return rpAll().filter(r => k.has(cnSorted(r.name))); };
+const vdFor = names => { const k = new Set(names.filter(Boolean).map(cnSorted)); return vdAll().filter(v => k.has(cnSorted(v.name))); };
+const rpDay = at => new Date(at).toLocaleDateString("en-GB", { timeZone: MYTZ, day: "numeric", month: "short", year: "numeric" });
+// the watch list prospect with this name (any word order), if any
+function rpProspect(name){
+  const k = cnSorted(name || ""); if (!k) return null;
+  const hit = Object.entries(cnShown()).find(([, p]) => [p.name, p.typed].filter(Boolean).some(n => cnSorted(n) === k));
+  return hit ? { k: hit[0], p: hit[1] } : null;
+}
+const rpNat = c => CN_NATS.find(x => x.c === c)?.n || c || "";
+const rpMeta = r => [r.nat ? rpNat(r.nat) : "", r.born ? "born " + r.born : "", { M: "Male", F: "Female" }[r.g] || ""].filter(Boolean).join(" · ");
+// the short facts on a report card: plays, backhand, peak ranking, Majors, marketability
+function rpChips(f){
+  const c = [f.hand, f.bh ? f.bh + " backhand" : "", f.rank ? "Peak " + f.rank : "", f.major ? "Major: " + f.major : "", f.win ? "Potential " + f.win + "/5" : "", f.mkt ? "Marketability " + f.mkt + "/5" : ""];
+  return c.filter(Boolean).map(t => `<span>${esc(t)}</span>`).join("");
+}
+const RP_PLAY = `<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M8 5v14l11-7z"/></svg>`;
+const RP_CAM = `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="2" y="6" width="14" height="12" rx="2"/><path d="M16 10l6-3v10l-6-3z"/></svg>`;
+// clip tiles: Drive's thumbnail (dropped if it isn't ready yet), who added it and when
+function vdGrid(list, empty){
+  if (!list.length) return empty ? `<div class="vd-none">${esc(empty)}</div>` : "";
+  return `<div class="vd-grid">${list.map(v => `<button type="button" class="vd-th" data-vd="${esc(v.id)}" aria-label="Play clip${v.cap ? ": " + esc(v.cap) : ""}"><span class="im"><img src="https://drive.google.com/thumbnail?id=${encodeURIComponent(v.id)}&sz=w480" alt="" loading="lazy"><i>${RP_PLAY}</i></span>
+    <small>${v.cap ? `<b>${esc(v.cap)}</b>` : ""}${esc([v.by, rpDay(v.at)].filter(Boolean).join(" · "))}</small></button>`).join("")}</div>`;
+}
+document.addEventListener("error", e => { if (e.target.matches?.(".vd-th img")) e.target.remove(); }, true);
+// the block in a watch list / suggestion profile window: the player's reports, their clips, and buttons to add more
+function rpBlock(names, who){
+  const reps = rpFor(names), vids = vdFor(names), d = esc(JSON.stringify(who));
+  return `<h4>Scouting reports and videos</h4><div class="rp-blk">
+    ${reps.map(r => `<button type="button" class="rp-row" data-rpo="${esc(r.id)}"><span class="t">${r.f?.light ? `<span class="lt-dot ${RP_LT_K[r.f.light]}"></span>` : ""}Report by ${esc(r.firstBy || r.by || "someone")}<small>${esc(rpDay(r.firstAt || r.at))}${r.f?.seen ? " · " + esc(r.f.seen) : ""}${(r.firstBy || r.by) !== r.by || r.firstAt !== r.at ? " · edited " + esc(rpDay(r.at)) : ""}</small></span><span class="ar" aria-hidden="true">›</span></button>`).join("")}
+    ${vdGrid(vids)}
+    ${!reps.length && !vids.length ? `<div class="vd-none">No scouting report or clips yet.</div>` : ""}
+    <div class="rp-btns"><button type="button" class="rp-go" data-rpnew="${d}">＋ Write a report</button><button type="button" class="rp-go ln" data-vdadd="${d}">${RP_CAM}Add videos</button></div></div>`;
+}
+
+/* the form */
+const RPF = { id: "", name: "", g: "", nat: "", born: "", v: {}, edit: false, msg: "", add: true };
+let RPD = { mode: "", id: "", name: "" };  // what #rpd shows: "form", "report" (one report) or "player" (a player's folder)
+function rpDraft(){ try { return JSON.parse(localStorage.getItem("72c-rpdraft") || "null"); } catch (e) { return null; } }
+function rpDraftSave(){ try { localStorage.setItem("72c-rpdraft", JSON.stringify({ ...RPF, msg: "", t: Date.now() })); } catch (e) {} }
+function rpDraftDrop(){ try { localStorage.removeItem("72c-rpdraft"); } catch (e) {} }
+// open the form: a new report (optionally for a player), or an existing one to edit
+function rpForm(o = {}){
+  const d = rpDraft(), old = o.id ? rpAll().find(r => r.id === o.id) : null;
+  if (old) Object.assign(RPF, { id: old.id, name: old.name, g: old.g || "", nat: old.nat || "", born: old.born || "", v: { ...old.f }, edit: true });
+  else Object.assign(RPF, { id: rpHex(6), name: o.name || "", g: o.g || "", nat: o.nat || "", born: o.born || "", v: {}, edit: false });
+  RPF.add = true; RPF.msg = "";
+  // a draft left on this device (same report, or a new one for the same player / no player) comes back
+  if (d && Date.now() - d.t < 14 * 864e5 && (old ? d.id === old.id : !d.edit && (!o.name || cnSorted(d.name) === cnSorted(o.name)))) {
+    Object.assign(RPF, { ...d, msg: "draft" });
+  }
+  const p = rpProspect(RPF.name)?.p;
+  if (p) { RPF.g = RPF.g || p.g || ""; RPF.nat = RPF.nat || p.nat || ""; RPF.born = RPF.born || p.born || ""; }
+  if (!old && !RPF.v.light && p) { const L = ltFor(p); if (L) RPF.v.light = LT_NAME[L.light]; }
+  rpShow("form");
+}
+function rpField([k, label, kind, hint]){
+  const v = RPF.v[k] || "";
+  if (kind === "pick") return `<div class="rp-f"><label>${esc(label)}</label><div class="rp-pills" data-k="${k}">${RP_PICK[k].map(o => `<button type="button" class="${v === o ? "on" : ""}" data-val="${esc(o)}" aria-pressed="${v === o}">${esc(o)}</button>`).join("")}</div></div>`;
+  if (kind === "scale") return `<div class="rp-f"><label>${esc(label)}</label><div class="rp-pills rp-sc" data-k="${k}">${[1, 2, 3, 4, 5].map(n => `<button type="button" class="${v === String(n) ? "on" : ""}" data-val="${n}" aria-pressed="${v === String(n)}"><b>${n}</b><small>${RP_SCALE[k][n]}</small></button>`).join("")}</div></div>`;
+  if (kind === "light") return `<div class="rp-f"><label>${esc(label)}</label><div class="rp-pills rp-lt" data-k="${k}">${["g", "a", "r"].map(c => `<button type="button" class="${c}${v === RP_LT[c] ? " on" : ""}" data-val="${RP_LT[c]}" aria-pressed="${v === RP_LT[c]}"><i></i>${LT_MEAN[c]}</button>`).join("")}</div></div>`;
+  if (kind === "long") return `<div class="rp-f"><label for="rp-${k}">${esc(label)}</label><textarea class="sq-in" id="rp-${k}" name="${k}" rows="3" maxlength="4000" placeholder="${esc(hint || "")}">${esc(v)}</textarea></div>`;
+  if (kind === "date") return `<div class="rp-f"><label for="rp-${k}">${esc(label)}</label><input class="sq-in" type="date" id="rp-${k}" name="${k}" value="${esc(v)}" max="${myDate()}"></div>`;
+  return `<div class="rp-f"><label for="rp-${k}">${esc(label)}</label><input class="sq-in" id="rp-${k}" name="${k}" maxlength="200" value="${esc(v)}" placeholder="${esc(hint || "")}"></div>`;
+}
+function rpFormHtml(){
+  const p = rpProspect(RPF.name), names = [...new Set(Object.values(cnShown()).map(x => x.name))].sort();
+  const vids = vdAll().filter(v => v.rid === RPF.id), ups = VD.q.filter(j => j.rid === RPF.id && j.st !== "done");
+  const natOpts = `<option value="">Nation</option>` + CN_NATS.map(x => `<option value="${x.c}"${RPF.nat === x.c ? " selected" : ""}>${esc(x.n)}</option>`).join("");
+  return `<div class="rs-hd"><button type="button" class="x" data-rpx="1" aria-label="Close">✕</button>
+    <div class="k">Scouting report</div><h2>${RPF.edit ? "Edit report" : "New report"}</h2>
+    <div class="mt">${RPF.msg === "draft" ? `Your unsaved draft is back. <button type="button" class="rp-lnk" data-rpdrop="1">Start again</button>` : "Fill in what you know; everything apart from the name can be left blank. A draft is kept on this device until you save."}</div></div>
+    <form class="rp-form" id="rpForm" autocomplete="off" novalidate>
+    <section><h4>Player</h4>
+      <div class="rp-f"><label for="rpName">Full name</label><input class="sq-in" id="rpName" name="rpName" list="rpNames" maxlength="60" required value="${esc(RPF.name)}" placeholder="Start typing: watch list names come up"${RPF.edit ? " readonly" : ""}><datalist id="rpNames">${names.map(n => `<option value="${esc(n)}">`).join("")}</datalist></div>
+      <div class="rp-row3"><div class="rp-pills" data-k="_g">${[["M", "Male"], ["F", "Female"]].map(([c, t]) => `<button type="button" class="${RPF.g === c ? "on" : ""}" data-val="${c}" aria-pressed="${RPF.g === c}">${t}</button>`).join("")}</div>
+        <select class="sq-in" id="rpNat" name="rpNat" aria-label="Nation">${natOpts}</select>
+        <input class="sq-in" id="rpBorn" name="rpBorn" inputmode="numeric" maxlength="4" placeholder="Birth year" aria-label="Birth year" value="${esc(RPF.born)}"></div>
+      <div class="rp-wl" id="rpWl">${rpWlNote(p)}</div>
+    </section>
+    ${RP_SEC.map(([h, fs]) => `<section><h4>${esc(h)}</h4>${fs.map(rpField).join("")}</section>`).join("")}
+    <section><h4>Videos</h4>
+      <p class="rp-hint">Short clips from your phone or computer. Everyone with the app can watch them on this player's reports and profile.</p>
+      ${vdGrid(vids)}${ups.map(vdJob).join("")}
+      <button type="button" class="rp-go ln" data-vdform="1">${RP_CAM}Add videos</button>
+    </section>
+    <div class="rp-save"><span id="rpErr" role="alert"></span><button type="submit" class="rp-go">${RPF.edit ? "Save changes" : "Save report"}</button></div>
+    </form>`;
+}
+function rpWlNote(p){
+  if (!RPF.name.trim()) return "";
+  if (p) return `<span class="ok">✓ On the watch list</span>`;
+  if (RPF.edit) return "";
+  return `<label><input type="checkbox" id="rpAdd"${RPF.add ? " checked" : ""}> Also add ${esc(cnTidy(RPF.name.trim()))} to the watch list (we look up their rankings and results)</label>`;
+}
+// one clip still uploading (or stopped) in the form
+function vdJob(j){
+  const pc = Math.floor(100 * (j.sent || 0) / j.size);
+  return `<div class="vd-job${j.st === "err" ? " err" : ""}"><span>${esc(j.file.name)}</span>${j.st === "err" ? `<em>Stopped. <button type="button" class="rp-lnk" data-vdretry="${j.n}">Try again</button></em>` : `<em>${j.st === "wait" ? "Waiting…" : pc + "%"}</em>`}<i style="width:${pc}%"></i></div>`;
+}
+function rpRead(){
+  const f = $("#rpForm"); if (!f) return;
+  if (!RPF.edit) RPF.name = f.elements.rpName.value;
+  RPF.nat = f.elements.rpNat.value; RPF.born = f.elements.rpBorn.value.trim();
+  const a = $("#rpAdd"); if (a) RPF.add = a.checked;
+  for (const el of f.querySelectorAll("textarea[name], input[name]:not([name^=rp])")) { const v = el.value.trim(); if (v) RPF.v[el.name] = el.value; else delete RPF.v[el.name]; }
+}
+
+/* one report, read-only */
+function rpViewHtml(r){
+  const f = r.f || {}, fact = (k, v) => v ? `<div><span>${esc(RP_LABEL[k])}</span><b>${esc(v)}</b></div>` : "";
+  const sc = k => f[k] ? `${f[k]}/5 · ${RP_SCALE[k][f[k]] || ""}` : "";
+  const facts = [fact("hand", f.hand), fact("bh", f.bh), fact("style", f.style), fact("win", sc("win")), fact("rank", f.rank), fact("major", f.major), fact("mkt", sc("mkt")), fact("agency", [f.agency, f.agName].filter(Boolean).join(": "))].join("");
+  const txt = RP_SEC.flatMap(s => s[1]).filter(x => x[2] === "long" && f[x[0]]).map(x => `<h4>${esc(x[1])}</h4><p class="rp-tx">${esc(f[x[0]])}</p>`).join("");
+  const P = rpProspect(r.name), vids = vdFor([r.name]), first = r.firstBy || r.by, lt = RP_LT_K[f.light];
+  const seen = [f.seen, f.seenOn ? rpDay(f.seenOn + "T12:00:00Z") : ""].filter(Boolean).join(", ");
+  return `<div class="rs-hd"><button type="button" class="x" data-rpx="1" aria-label="Close">✕</button>
+    <div class="k">Scouting report</div><h2>${esc(r.name)}</h2>${rpMeta(r) ? `<div class="mt">${esc(rpMeta(r))}</div>` : ""}
+    <div class="mt">By ${esc(first || "someone")} · ${esc(rpDay(r.firstAt || r.at))}${r.at !== (r.firstAt || r.at) ? ` · last edited by ${esc(r.by || "someone")}, ${esc(rpDay(r.at))}` : ""}</div>
+    ${seen ? `<div class="mt">Seen at ${esc(seen)}</div>` : ""}</div>
+    <div class="rp-view">
+    ${lt ? `<div class="rp-ltv ${lt}"><i></i>${esc(LT_MEAN[lt])}</div>` : ""}
+    ${facts ? `<div class="rp-facts">${facts}</div>` : ""}
+    ${txt || (facts ? "" : `<p class="rp-tx">Nothing written yet.</p>`)}
+    <h4>Videos</h4>${vdGrid(vids, "No clips yet.")}
+    <div class="rp-btns"><button type="button" class="rp-go" data-rpedit="${esc(r.id)}">Edit report</button><button type="button" class="rp-go ln" data-vdadd="${esc(JSON.stringify({ name: r.name, rid: r.id }))}">${RP_CAM}Add videos</button>
+    ${rpFor([r.name]).length > 1 ? `<button type="button" class="rp-go ln" data-rpp="${esc(r.name)}">All reports on ${esc(r.name.split(" ")[0])}</button>` : ""}
+    ${P && !$("#cnd").open ? `<button type="button" class="rp-go ln" data-rpprof="${esc(P.k)}">Watch list profile</button>` : ""}</div></div>`;
+}
+/* a player's folder: every report and clip on them */
+function rpPlayerHtml(name){
+  const reps = rpFor([name]), vids = vdFor([name]), P = rpProspect(name), r0 = reps[0] || {};
+  const who = esc(JSON.stringify({ name, g: r0.g || P?.p.g || "", nat: r0.nat || P?.p.nat || "", born: r0.born || P?.p.born || "" }));
+  return `<div class="rs-hd"><button type="button" class="x" data-rpx="1" aria-label="Close">✕</button>
+    <div class="k">Scouting folder</div><h2>${esc(name)}</h2>${rpMeta(r0.name ? r0 : P?.p || {}) ? `<div class="mt">${esc(rpMeta(r0.name ? r0 : P.p))}</div>` : ""}
+    <div class="mt">${reps.length} report${reps.length === 1 ? "" : "s"} · ${vids.length} clip${vids.length === 1 ? "" : "s"}</div></div>
+    <div class="rp-view">
+    <h4>Reports</h4>${reps.length ? `<div class="rp-blk">${reps.map(r => `<button type="button" class="rp-row" data-rpo="${esc(r.id)}"><span class="t">${r.f?.light ? `<span class="lt-dot ${RP_LT_K[r.f.light]}"></span>` : ""}Report by ${esc(r.firstBy || r.by || "someone")}<small>${esc(rpDay(r.firstAt || r.at))}${r.f?.seen ? " · " + esc(r.f.seen) : ""}</small><span class="rp-chips">${rpChips(r.f || {})}</span></span><span class="ar" aria-hidden="true">›</span></button>`).join("")}</div>` : `<div class="vd-none">No report yet.</div>`}
+    <h4>Videos</h4>${vdGrid(vids, "No clips yet.")}
+    <div class="rp-btns"><button type="button" class="rp-go" data-rpnew="${who}">＋ Write a report</button><button type="button" class="rp-go ln" data-vdadd="${who}">${RP_CAM}Add videos</button>
+    ${P && !$("#cnd").open ? `<button type="button" class="rp-go ln" data-rpprof="${esc(P.k)}">Watch list profile</button>` : ""}</div></div>`;
+}
+function rpShow(mode, id){
+  const d = $("#rpd");
+  if (mode) { RPD.mode = mode; if (mode === "report") RPD.id = id; if (mode === "player") RPD.name = id; }
+  if (RPD.mode === "form" && d.open && $("#rpForm")) rpRead();  // keep what's typed through a redraw
+  const r = RPD.mode === "report" && rpAll().find(x => x.id === RPD.id);
+  const y = mode ? 0 : d.scrollTop;
+  d.innerHTML = RPD.mode === "form" ? rpFormHtml() : r ? rpViewHtml(r) : RPD.mode === "player" ? rpPlayerHtml(RPD.name) : "";
+  if (!d.innerHTML) { if (d.open) d.close(); return; }
+  if (!d.open) { profLock(true); d.showModal(); }
+  d.scrollTop = y;
+}
+// a redraw from outside (Sheet refresh, upload progress): only while it can't lose typing
+function rpRedraw(){ const d = $("#rpd"); if (d.open && !(RPD.mode === "form" && d.contains(document.activeElement) && document.activeElement.matches("input,textarea,select"))) rpShow(); }
+async function rpSave(){
+  rpRead();
+  const name = cnTidy(RPF.name.replace(/\s+/g, " ").trim()), err = $("#rpErr");
+  if (name.length < 3 || !/^[\p{L}][\p{L} .'\-]+$/u.test(name)) { err.textContent = "Type the player's full name first."; $("#rpName").focus(); return; }
+  if (RPF.born && !/^(19|20)\d\d$/.test(RPF.born)) { err.textContent = "Birth year should be four digits, e.g. 2011."; $("#rpBorn").focus(); return; }
+  if (!Object.keys(RPF.v).length) { err.textContent = "Fill in at least one part of the report."; return; }
+  const by = rpBy(), btn = $("#rpForm [type=submit]");
+  const body = { kind: "report", id: RPF.id, name, g: RPF.g, nat: RPF.nat, born: RPF.born, by, f: RPF.v };
+  btn.disabled = true; btn.textContent = "Saving…"; err.textContent = "";
+  let ok = false;
+  try { const r = await fetch(CORNER_URL, { method: "POST", body: JSON.stringify(body) }); ok = r.ok && (await r.text()).trim() === "ok"; } catch (e) {}
+  if (!ok) { btn.disabled = false; btn.textContent = RPF.edit ? "Save changes" : "Save report"; err.textContent = "Couldn't reach the Sheet. Your report is kept on this device: check your signal and press Save again."; rpDraftSave(); return; }
+  const at = new Date().toISOString(), old = rpAll().find(r => r.id === RPF.id);
+  try { localStorage.setItem("72c-reports", JSON.stringify([...rpMine().filter(x => x.id !== RPF.id), { id: RPF.id, name, g: RPF.g, nat: RPF.nat, born: Number(RPF.born) || null, by, at, firstBy: old?.firstBy || by, firstAt: old?.firstAt || at, f: { ...RPF.v }, t: Date.now() }].slice(-30))); } catch (e) {}
+  rpDraftDrop();
+  // the traffic light also goes on the watch list; a new name can be added to the watch list at the same time
+  const P = rpProspect(name), lt = RP_LT_K[RPF.v.light];
+  if (P && lt && ltFor(P.p)?.light !== lt) ltPost(P.p.typed || P.p.name, lt, by);
+  if (!P && !RPF.edit && RPF.add) cnSend(name, RPF.g, RPF.nat, RPF.born ? Number(RPF.born) : "", by, lt || "", "");
+  // clips added to this report keep the final spelling of the name
+  VD.q.filter(j => j.rid === RPF.id).forEach(j => j.name = name);
+  rpShow("report", RPF.id);
+  renderCorner();
+}
+$("#rpd").addEventListener("submit", e => { if (e.target.id === "rpForm") { e.preventDefault(); rpSave(); } });
+$("#rpd").addEventListener("input", e => {
+  if (RPD.mode !== "form") return;
+  rpRead(); rpDraftSave();
+  if (e.target.id === "rpName") {
+    $("#rpErr").textContent = "";
+    const p = rpProspect(RPF.name)?.p;
+    if (p) {  // picked from the watch list: fill in what we know
+      if (!RPF.g && p.g) { RPF.g = p.g; $("#rpd").querySelectorAll('[data-k="_g"] button').forEach(b => { b.classList.toggle("on", b.dataset.val === p.g); b.setAttribute("aria-pressed", b.dataset.val === p.g); }); }
+      if (!RPF.nat && p.nat && CN_NATS.some(x => x.c === p.nat)) { RPF.nat = p.nat; $("#rpNat").value = p.nat; }
+      if (!RPF.born && p.born) { RPF.born = String(p.born); $("#rpBorn").value = p.born; }
+    }
+    $("#rpWl").innerHTML = rpWlNote(p);
+  }
+});
+$("#rpd").addEventListener("change", e => { if (RPD.mode === "form") { rpRead(); rpDraftSave(); } });
+$("#rpd").addEventListener("click", e => {
+  const d = $("#rpd");
+  if (e.target === d || e.target.closest("[data-rpx]")) return rpClose();
+  const pill = e.target.closest(".rp-pills button");
+  if (pill) {  // tap to pick, tap again to clear
+    const box = pill.parentElement, k = box.dataset.k, on = !pill.classList.contains("on");
+    box.querySelectorAll("button").forEach(b => { b.classList.toggle("on", on && b === pill); b.setAttribute("aria-pressed", on && b === pill); });
+    if (k === "_g") RPF.g = on ? pill.dataset.val : ""; else if (on) RPF.v[k] = pill.dataset.val; else delete RPF.v[k];
+    rpDraftSave(); return;
+  }
+  if (e.target.closest("[data-rpdrop]")) { rpDraftDrop(); const n = RPF.edit ? "" : RPF.name; RPF.msg = ""; return rpForm(RPF.edit ? { id: RPF.id } : { name: n }); }
+  const o = e.target.closest("[data-rpo]"); if (o) return rpShow("report", o.dataset.rpo);
+  const ed = e.target.closest("[data-rpedit]"); if (ed) return rpForm({ id: ed.dataset.rpedit });
+  const pp = e.target.closest("[data-rpp]"); if (pp) return rpShow("player", pp.dataset.rpp);
+  const pr = e.target.closest("[data-rpprof]"); if (pr) { d.close(); return cnOpen(pr.dataset.rpprof); }
+  if (e.target.closest("[data-vdform]")) {
+    rpRead();
+    const name = cnTidy(RPF.name.replace(/\s+/g, " ").trim());
+    if (name.length < 3) { $("#rpErr").textContent = "Type the player's name first, so the clips go in their folder."; $("#rpName").focus(); return; }
+    return vdPick({ name, rid: RPF.id });
+  }
+  const rt = e.target.closest("[data-vdretry]"); if (rt) return vdRetry(Number(rt.dataset.vdretry));
+});
+// closing the form with unsaved changes: the draft stays on this device, so just say so
+function rpClose(){
+  const d = $("#rpd");
+  if (RPD.mode === "form" && $("#rpForm")) { rpRead(); if (RPF.name.trim() || Object.keys(RPF.v).length) rpDraftSave(); }
+  d.close();
+}
+$("#rpd").addEventListener("cancel", e => { if (RPD.mode === "form") { e.preventDefault(); rpClose(); } });
+$("#rpd").addEventListener("close", () => { RPD.mode = ""; if (!$("#cnd").open && !$("#resd").open) profLock(false); });
+// buttons anywhere (profile windows, Reports view, the page's "Add scouting report")
+document.addEventListener("click", e => {
+  const n = e.target.closest("[data-rpnew]");
+  if (n) { let o = {}; try { o = JSON.parse(n.dataset.rpnew || "{}"); } catch (err) {} return rpForm(o); }
+  const a = e.target.closest("[data-vdadd]");
+  if (a) { let o = {}; try { o = JSON.parse(a.dataset.vdadd); } catch (err) {} if (o.name) vdPick(o); return; }
+  const v = e.target.closest("[data-vd]"); if (v) return vdOpen(v.dataset.vd);
+  const pf = e.target.closest("[data-rpfold]"); if (pf) return rpShow("player", pf.dataset.rpfold);
+  if (!e.target.closest("#rpd")) { const o = e.target.closest("[data-rpo]"); if (o) return rpShow("report", o.dataset.rpo); }
+});
+
+/* the Reports view: one card per player with a report or a clip (their folder), newest first */
+function renderReports(){
+  const q = cnKey(CN.q), groups = new Map();
+  for (const r of rpAll()) { const k = cnSorted(r.name); if (!groups.has(k)) groups.set(k, { name: r.name, g: r.g, reps: [], vids: [], at: r.at }); groups.get(k).reps.push(r); }
+  for (const v of vdAll()) { const k = cnSorted(v.name); if (!groups.has(k)) groups.set(k, { name: v.name, g: rpProspect(v.name)?.p.g || "", reps: [], vids: [], at: v.at }); const G = groups.get(k); G.vids.push(v); if (v.at > G.at) G.at = v.at; }
+  const list = [...groups.values()].filter(G => (!CN.g || G.g === CN.g) && (!q || cnKey(G.name).includes(q))).sort((a, b) => new Date(b.at) - new Date(a.at));
+  const card = G => {
+    const r = G.reps[0], f = r?.f || {}, lt = RP_LT_K[f.light];
+    const meta = rpMeta(r || rpProspect(G.name)?.p || {});
+    return `<div class="cn cn-tile rp-tile${lt ? " lt-" + lt : ""}" data-rpfold="${esc(G.name)}" role="button" tabindex="0" aria-label="Open ${esc(G.name)}'s scouting folder"><div class="cn-h"><span class="nm">${lt ? `<span class="lt-dot ${lt}"></span>` : ""}${esc(G.name)}</span>${meta ? `<span class="mt">${esc(meta)}</span>` : ""}</div>
+      ${r ? `<div class="sg-why rp-chips">${rpChips(f)}</div>` : ""}
+      <div class="sg-wl">${G.reps.length ? `${G.reps.length} report${G.reps.length === 1 ? "" : "s"}, latest by ${esc(r.by || "someone")} · ${esc(rpDay(r.at))}` : "No report yet"}${G.vids.length ? `<span class="vd-n">${RP_CAM}${G.vids.length}</span>` : ""}</div>
+      <div class="cn-open"><span class="ar" aria-hidden="true">›</span>Open folder<span class="lg">: reports &amp; videos</span></div></div>`;
+  };
+  $("#cnList").innerHTML = list.map(card).join("") || `<div class="sq-empty">${q || CN.g ? "No report matches." : "No scouting reports yet. Press “Add scouting report” above to write the first one."}</div>`;
+  $("#cnSrc").textContent = RP_OK ? "" : "Reading the reports from the Sheet…";
+}
+$("#cnList").addEventListener("keydown", e => { const t = e.target.closest?.("[data-rpfold]"); if (t && (e.key === "Enter" || e.key === " ")) { e.preventDefault(); rpShow("player", t.dataset.rpfold); } });
+
+/* videos: picking, uploading in pieces, playing */
+const VD = { q: [], busy: false, n: 0, ctx: null, done: 0 };
+const VD_CHUNK = 10 * 262144;  // 2.5 MB: Drive takes pieces in multiples of 256 KB
+const VD_MAX = 300 * 1048576;
+const vdIn = document.createElement("input");
+Object.assign(vdIn, { type: "file", accept: "video/*", multiple: true, hidden: true });
+document.body.append(vdIn);
+function vdPick(ctx){ VD.ctx = ctx; vdIn.value = ""; vdIn.click(); }
+vdIn.addEventListener("change", () => {
+  const ctx = VD.ctx; if (!ctx) return;
+  const by = rpBy(), big = [];
+  for (const file of vdIn.files) {
+    if (file.size > VD_MAX) { big.push(file.name); continue; }
+    VD.q.push({ n: ++VD.n, file, name: ctx.name, rid: ctx.rid || "", by, st: "wait", sent: 0, size: file.size });
+  }
+  if (big.length) alert(`${big.join(", ")} ${big.length === 1 ? "is" : "are"} over 300 MB. Trim the clip on your phone (or record at 1080p instead of 4K) and add it again.`);
+  vdRun();
+});
+const vdType = f => f.type || ({ mov: "video/quicktime", mp4: "video/mp4", m4v: "video/x-m4v", webm: "video/webm", avi: "video/x-msvideo", "3gp": "video/3gpp" }[(f.name.split(".").pop() || "").toLowerCase()] || "video/mp4");
+const vdB64 = blob => new Promise((ok, no) => { const r = new FileReader(); r.onload = () => ok(String(r.result).split(",")[1] || ""); r.onerror = () => no(r.error); r.readAsDataURL(blob); });
+async function vdPost(o){ const r = await fetch(CORNER_URL, { method: "POST", body: JSON.stringify(o) }); if (!r.ok) throw "http " + r.status; return r.json(); }
+async function vdRun(){
+  if (VD.busy) return;
+  VD.busy = true; vdDraw();
+  let j;
+  while ((j = VD.q.find(x => x.st === "wait"))) await vdOne(j);
+  VD.busy = false; vdDraw();
+}
+async function vdOne(j){
+  j.st = "up"; j.sent = 0; vdDraw();
+  try {
+    j.undo = rpHex(16);
+    const s = await vdPost({ kind: "vidstart", name: j.name, type: vdType(j.file), size: j.size, file: j.file.name, rid: j.rid, by: j.by, undo: j.undo });
+    if (!s.ok) throw s.why || "start";
+    let stall = 0;
+    while (j.sent < j.size) {
+      const data = await vdB64(j.file.slice(j.sent, Math.min(j.sent + VD_CHUNK, j.size)));
+      let r = null;
+      for (let t = 0; t < 4 && !r?.ok; t++) {
+        if (t) await new Promise(ok => setTimeout(ok, 2500 * t));
+        try { r = await vdPost({ kind: "vidchunk", up: s.up, start: j.sent, data }); } catch (e) { r = null; }
+        if (r?.why === "expired") break;
+      }
+      if (!r?.ok) throw r?.why || "network";
+      if (r.done) {
+        j.st = "done"; j.id = r.id; VD.done++;
+        vdMineSave([...vdMineAll(), { id: r.id, name: j.name, by: j.by, rid: j.rid, at: new Date().toISOString(), undo: j.undo, t: Date.now(), mb: Math.round(j.size / 104857.6) / 10 }]);
+        break;
+      }
+      if (r.next > j.sent) { j.sent = r.next; stall = 0; } else if (++stall > 3) throw "stalled";
+      vdDraw();
+    }
+    if (j.st !== "done") throw "incomplete";
+  } catch (e) { j.st = "err"; j.err = String(e); }
+  vdDraw(); renderCorner();
+}
+function vdRetry(n){ const j = VD.q.find(x => x.n === n); if (j) { j.st = "wait"; j.sent = 0; vdRun(); } }
+// the bar along the bottom while clips go up, so the windows can be closed meanwhile
+const vdBar = document.createElement("div");
+vdBar.className = "vd-bar"; vdBar.hidden = true; vdBar.setAttribute("role", "status");
+// a popover sits in front of any open window (the report form, a profile); older browsers just show it on the page
+const VD_POP = typeof vdBar.showPopover === "function";
+if (VD_POP) vdBar.setAttribute("popover", "manual");
+document.body.append(vdBar);
+let vdBarT = 0;
+function vdDraw(){
+  const live = VD.q.filter(j => j.st === "up" || j.st === "wait"), err = VD.q.filter(j => j.st === "err"), cur = VD.q.find(j => j.st === "up");
+  clearTimeout(vdBarT);
+  if (cur || live.length) {
+    const pc = cur ? Math.floor(100 * cur.sent / cur.size) : 0;
+    vdBar.innerHTML = `<span><b>${RP_CAM}Uploading ${live.length > 1 ? `${live.length} clips` : "clip"} for ${esc((cur || live[0]).name)} · ${pc}%</b><small>Keep the app open until it's done</small></span><i style="width:${pc}%"></i>`;
+  } else if (err.length) {
+    vdBar.innerHTML = `<span>${err.length === 1 ? `A clip for ${esc(err[0].name)} didn't upload` : `${err.length} clips didn't upload`}<small>Check your signal</small></span><button type="button" data-vdall="1">Try again</button><button type="button" class="no" data-vdclr="1">✕</button>`;
+  } else if (VD.done) {
+    vdBar.innerHTML = `<span>✓ ${VD.done === 1 ? "Clip" : VD.done + " clips"} added<small>Google Drive can take a few minutes to get a new clip ready to play</small></span>`;
+    vdBarT = setTimeout(() => { vdBar.hidden = true; if (VD_POP) try { vdBar.hidePopover(); } catch (e) {} VD.done = 0; VD.q = VD.q.filter(j => j.st !== "done"); }, 7000);
+  }
+  vdBar.hidden = !(cur || live.length || err.length || VD.done);
+  if (VD_POP) { try { vdBar.hidePopover(); } catch (e) {} if (!vdBar.hidden) try { vdBar.showPopover(); } catch (e) {} }  // re-shown = back on top
+  vdBar.classList.toggle("err", !live.length && !!err.length);
+  if (RPD.mode === "form") rpRedraw();  // the form's own list of clips (skipped while typing)
+}
+vdBar.addEventListener("click", e => {
+  if (e.target.closest("[data-vdall]")) { VD.q.filter(j => j.st === "err").forEach(j => { j.st = "wait"; j.sent = 0; }); vdRun(); }
+  if (e.target.closest("[data-vdclr]")) { VD.q = VD.q.filter(j => j.st !== "err"); vdDraw(); }
+});
+window.addEventListener("beforeunload", e => { if (VD.busy) { e.preventDefault(); e.returnValue = ""; } });
+// playing a clip: Drive's own player (it handles iPhone and Android formats alike)
+function vdOpen(id){
+  const v = vdAll().find(x => x.id === id); if (!v) return;
+  const mine = vdMineAll().find(x => x.id === id && x.undo && Date.now() - x.t < 864e5);
+  const d = $("#vdd");
+  d.innerHTML = `<div class="rs-hd"><button type="button" class="x" data-vdx="1" aria-label="Close">✕</button><div class="k">Scouting video</div><h2>${esc(v.name)}</h2>
+    <div class="mt">${esc([v.cap, v.by ? "added by " + v.by : "", rpDay(v.at)].filter(Boolean).join(" · "))}</div></div>
+    <div class="vd-play"><iframe src="https://drive.google.com/file/d/${encodeURIComponent(id)}/preview" allow="autoplay; fullscreen" allowfullscreen title="Video of ${esc(v.name)}"></iframe></div>
+    <div class="vd-foot"><span>Just added? Google Drive can take a few minutes to get a clip ready to play.</span><a href="https://drive.google.com/file/d/${encodeURIComponent(id)}/view" target="_blank" rel="noopener">Open in Google Drive</a>${mine ? `<button type="button" class="rp-lnk" data-vdrm="${esc(id)}">Remove this clip</button>` : ""}</div>`;
+  if (!d.open) { profLock(true); d.showModal(); }
+}
+$("#vdd").addEventListener("click", e => {
+  const d = $("#vdd");
+  if (e.target === d || e.target.closest("[data-vdx]")) return d.close();
+  const rm = e.target.closest("[data-vdrm]");
+  if (rm && confirm("Remove this clip for everyone?")) {
+    const list = vdMineAll(), x = list.find(v => v.id === rm.dataset.vdrm);
+    if (x) { try { fetch(CORNER_URL, { method: "POST", mode: "no-cors", body: JSON.stringify({ kind: "unvideo", id: x.id, undo: x.undo }) }).catch(() => {}); } catch (err) {} x.gone = true; vdMineSave(list); }
+    VD_SHEET = VD_SHEET.filter(v => v.id !== rm.dataset.vdrm);
+    d.close(); renderCorner(); rpRedraw();
+  }
+});
+$("#vdd").addEventListener("close", () => { $("#vdd").innerHTML = ""; if (!$("#cnd").open && !$("#rpd").open && !$("#resd").open) profLock(false); });
 /* ---------- Settings (the cog in the top corner): first name and time zone, kept on this device ---------- */
 // "Europe/London" -> "Europe / London · 14:05" so the right zone is easy to spot by its time now
 function tzLabel(tz){
