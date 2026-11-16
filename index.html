@@ -4855,10 +4855,23 @@ function kbFit(){
   const v = window.visualViewport; if (!v) return;
   const up = innerHeight - v.height > 120;
   document.querySelectorAll("dialog.rsd[open], dialog.prof[open]").forEach(d => {
-    if (up) Object.assign(d.style, { top: v.offsetTop + 8 + "px", bottom: "auto", marginTop: "0", maxHeight: v.height - 16 + "px" });
-    else ["top", "bottom", "marginTop", "maxHeight"].forEach(k => d.style[k] = "");
+    const full = d.offsetWidth >= innerWidth - 1;  // a full-screen window on a phone (the report form): fill the space exactly
+    if (up) Object.assign(d.style, full ? { top: v.offsetTop + "px", bottom: "auto", marginTop: "0", maxHeight: v.height + "px", height: v.height + "px" }
+      : { top: v.offsetTop + 8 + "px", bottom: "auto", marginTop: "0", maxHeight: v.height - 16 + "px" });
+    else ["top", "bottom", "marginTop", "maxHeight", "height"].forEach(k => d.style[k] = "");
   });
+  // keyboard down: iPhone can leave the screen shifted up, so the window's top (e.g. "New report") stays cut off; put it back
+  if (!up && document.documentElement.classList.contains("prof-lock") && (window.scrollY || v.offsetTop)) window.scrollTo(0, 0);
 }
+// report form on a phone: dragging the form puts the keyboard away (like iPhone apps do), so scrolling back up works normally
+const KB_DRAG = { y: null };
+document.addEventListener("touchstart", e => { KB_DRAG.y = e.target.closest?.("#rpd") && !e.target.matches?.("input,textarea,select") ? e.touches[0].clientY : null; }, { passive: true });
+document.addEventListener("touchmove", e => {
+  if (KB_DRAG.y === null || Math.abs(e.touches[0].clientY - KB_DRAG.y) < 12) return;
+  const a = document.activeElement;
+  if (a && $("#rpd").contains(a) && a.matches("input,textarea")) a.blur();
+  KB_DRAG.y = null;
+}, { passive: true });
 if (window.visualViewport) {
   visualViewport.addEventListener("resize", () => { kbFit(); if (KB.el && Date.now() < KB.until) kbShow(KB.el); });
   visualViewport.addEventListener("scroll", kbFit);
