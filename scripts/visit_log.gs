@@ -572,7 +572,7 @@ function doGet(e) {
 const REPORT_FIELDS = [
   ["seen", "Seen at"], ["seenOn", "Date seen"], ["light", "Traffic light", ["Green", "Amber", "Red"]],
   ["hand", "Plays", ["Right-handed", "Left-handed"]], ["bh", "Backhand", ["One-handed", "Two-handed"]],
-  ["style", "Style", ["Aggressive baseliner", "Counter-puncher", "All-court", "Big server", "Serve and volley"]],
+  ["style", "Style", ["Aggressive baseliner", "Counter-puncher", "All-court", "Big server", "Serve and volley", "Other"]],
   ["win", "Winning potential", ["1", "2", "3", "4", "5"]],
   ["rank", "Peak ranking", ["Top 5", "Top 10", "Top 20", "Top 50", "Top 100", "Top 200", "Top 500", "Outside 500"]],
   ["major", "Can win a Major", ["Yes", "Possibly", "Unlikely", "No"]],
@@ -639,6 +639,7 @@ function saveReport(d) {
   const f = d.f || {};
   const vals = REPORT_FIELDS.map(([k, , opts]) => {
     const v = clean_(f[k]);
+    if (k === "style" && /^Other(: .+)?$/s.test(v)) return plain_(v.slice(0, 210));  // "Other: <their own words>"
     if (opts) return opts.includes(v) ? v : "";
     if (k === "seenOn") return /^20\d\d-\d\d-\d\d$/.test(v) ? v : "";
     return plain_(v.slice(0, 4000));

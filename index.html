@@ -719,6 +719,8 @@ a.cn-st.ok:hover{border-color:var(--gold)}
 .rp-row3{display:grid;grid-template-columns:auto minmax(0,1fr) 110px;gap:8px;align-items:center;margin:0 0 8px}
 .rp-pills{display:flex;flex-wrap:wrap;gap:6px}
 .rp-pills button{min-height:38px;padding:6px 14px;border:1px solid var(--line);border-radius:999px;background:transparent;color:var(--text);font:inherit;font-size:13px;cursor:pointer}
+.rp-oth{margin-top:8px}
+.rp-oth[hidden]{display:none}
 .rp-pills button.on{background:var(--gold);border-color:var(--gold);color:var(--navy);font-weight:600}
 .rp-sc{display:grid;grid-template-columns:repeat(5,minmax(0,1fr))}
 .rp-sc button{border-radius:12px;padding:6px 4px;display:flex;flex-direction:column;align-items:center;gap:1px}
@@ -5064,7 +5066,7 @@ function cmPost(name, text, by){
    The Reports view lists one card per player (their reports and clips together, the player's "folder"). */
 const RP_PICK = {
   hand: ["Right-handed", "Left-handed"], bh: ["One-handed", "Two-handed"],
-  style: ["Aggressive baseliner", "Counter-puncher", "All-court", "Big server", "Serve and volley"],
+  style: ["Aggressive baseliner", "Counter-puncher", "All-court", "Big server", "Serve and volley", "Other"],
   rank: ["Top 5", "Top 10", "Top 20", "Top 50", "Top 100", "Top 200", "Top 500", "Outside 500"],
   major: ["Yes", "Possibly", "Unlikely", "No"], agency: ["No agency", "Has an agency", "Not sure"]
 };
@@ -5086,6 +5088,10 @@ const RP_SEC = [
   ["Anything else", [["other", "Other comments", "long"]]]
 ];
 const RP_LABEL = Object.fromEntries(RP_SEC.flatMap(s => s[1]).map(f => [f[0], f[1]]));
+// Style "Other": the form keeps the pill ("Other") and the typed words (styleOther) apart; the Sheet gets one
+// answer, "Other: <typed words>" (or just "Other"), so no new column is needed
+const rpStyleOut = v => { const o = { ...v }; if (o.style === "Other" && (o.styleOther || "").trim()) o.style = "Other: " + o.styleOther.trim().slice(0, 200); delete o.styleOther; return o; };
+const rpStyleIn = f => { const o = { ...f }, m = /^Other:\s*(.*)$/s.exec(o.style || ""); if (m) { o.style = "Other"; if (m[1].trim()) o.styleOther = m[1].trim(); } return o; };
 let RP_RECAPS = [], RP_SHEET = [], RP_DRAFTS = [], RP_NOTES = [], VD_SHEET = [], RP_OK = false, RP_READ = 0;  // RP_READ = when the Sheet list was last read
 try { const c = JSON.parse(localStorage.getItem("72c-rplist") || "{}"); RP_SHEET = c.reports || []; RP_DRAFTS = c.drafts || []; RP_NOTES = c.notes || []; VD_SHEET = c.videos || []; RP_RECAPS = c.recaps || []; } catch (e) {}
 const rpHex = n => Array.from(crypto.getRandomValues(new Uint8Array(n)), b => b.toString(16).padStart(2, "0")).join("");
@@ -5237,7 +5243,7 @@ function rpForm(o = {}){
   const pub = o.id ? rpAll().find(r => r.id === o.id) : null, sd = o.id ? rpSaved().find(r => r.id === o.id) : null, dev = o.id ? rpDev()[o.id] : null;
   const src = [sd, pub].filter(Boolean).sort((a, b) => new Date(b.at) - new Date(a.at))[0];
   if (src && !rpMineOk(pub || sd)) return rpShow("report", o.id);  // not yours: read it instead
-  if (src) Object.assign(RPF, { id: src.id, name: src.name, g: src.g || "", nat: src.nat || "", born: src.born || "", v: { ...src.f }, firstBy: src.firstBy || src.by || "" });
+  if (src) Object.assign(RPF, { id: src.id, name: src.name, g: src.g || "", nat: src.nat || "", born: src.born || "", v: rpStyleIn(src.f || {}), firstBy: src.firstBy || src.by || "" });
   else if (dev) Object.assign(RPF, { ...dev });
   else Object.assign(RPF, { id: rpHex(6), name: o.name || "", g: o.g || "", nat: o.nat || "", born: o.born || "", v: {}, firstBy: "", own: rpHex(16) });
   RPF.edit = !!src; RPF.pub = !!pub; RPF.add = true; RPF.msg = ""; RPF.note = ""; RPF.dirty = false;
@@ -5251,7 +5257,7 @@ function rpForm(o = {}){
 }
 function rpField([k, label, kind, hint]){
   const v = RPF.v[k] || "";
-  if (kind === "pick") return `<div class="rp-f"><label>${esc(label)}</label><div class="rp-pills" data-k="${k}">${RP_PICK[k].map(o => `<button type="button" class="${v === o ? "on" : ""}" data-val="${esc(o)}" aria-pressed="${v === o}">${esc(o)}</button>`).join("")}</div></div>`;
+  if (kind === "pick") return `<div class="rp-f"><label>${esc(label)}</label><div class="rp-pills" data-k="${k}">${RP_PICK[k].map(o => `<button type="button" class="${v === o ? "on" : ""}" data-val="${esc(o)}" aria-pressed="${v === o}">${esc(o)}</button>`).join("")}</div>${k === "style" ? `<input class="sq-in rp-oth" id="rp-styleOther" name="styleOther" maxlength="200" aria-label="Other style" placeholder="Type their style" value="${esc(RPF.v.styleOther || "")}"${v === "Other" ? "" : " hidden"}>` : ""}</div>`;
   if (kind === "scale") return `<div class="rp-f"><label>${esc(label)}</label><div class="rp-pills rp-sc" data-k="${k}">${[1, 2, 3, 4, 5].map(n => `<button type="button" class="${v === String(n) ? "on" : ""}" data-val="${n}" aria-pressed="${v === String(n)}"><b>${n}</b><small>${RP_SCALE[k][n]}</small></button>`).join("")}</div></div>`;
   if (kind === "light") return `<div class="rp-f"><label>${esc(label)}</label><div class="rp-pills rp-lt" data-k="${k}">${["g", "a", "r"].map(c => `<button type="button" class="${c}${v === RP_LT[c] ? " on" : ""}" data-val="${RP_LT[c]}" aria-pressed="${v === RP_LT[c]}"><i></i>${LT_MEAN[c]}</button>`).join("")}</div></div>`;
   if (kind === "long") return `<div class="rp-f"><label for="rp-${k}">${esc(label)}</label><textarea class="sq-in" id="rp-${k}" name="${k}" rows="3" maxlength="4000" placeholder="${esc(hint || "")}">${esc(v)}</textarea></div>`;
@@ -5368,7 +5374,7 @@ async function rpSave(st){
   if (RPF.born && !/^(19|20)\d\d$/.test(RPF.born)) { err.textContent = "Birth year should be four digits, e.g. 2011."; $("#rpBorn").focus(); return; }
   if (st === "Live" && !Object.keys(RPF.v).length) { err.textContent = "Fill in at least one part of the report, or save it as a draft."; return; }
   const by = rpBy(), btn = $(st === "Live" ? "#rpForm [type=submit]" : st === "Draft" ? "#rpForm [data-rpdraft]" : "[data-rpdisc]"), label = btn?.textContent;
-  const body = { kind: "report", id: RPF.id, name, g: RPF.g, nat: RPF.nat, born: RPF.born, by, own: RPF.own, status: st, f: RPF.v };
+  const body = { kind: "report", id: RPF.id, name, g: RPF.g, nat: RPF.nat, born: RPF.born, by, own: RPF.own, status: st, f: rpStyleOut(RPF.v) };
   if (btn) { btn.disabled = true; btn.textContent = "Saving…"; }
   err.textContent = "";
   let res = "";
@@ -5382,13 +5388,13 @@ async function rpSave(st){
   rpOwnSet(RPF.id, RPF.own);
   RPF.dirty = false; if ($("#rpName")) $("#rpName").value = name;  // saved: the tidied name from now on
   const at = new Date().toISOString(), old = rpAll().find(r => r.id === RPF.id);
-  rpMineSave([...rpMine().filter(x => !(x.id === RPF.id && x.st === st)), { id: RPF.id, name, g: RPF.g, nat: RPF.nat, born: Number(RPF.born) || null, by, at, firstBy: old?.firstBy || RPF.firstBy || by, firstAt: old?.firstAt || at, f: { ...RPF.v }, st, pub: !!old, t: Date.now() }]);
+  rpMineSave([...rpMine().filter(x => !(x.id === RPF.id && x.st === st)), { id: RPF.id, name, g: RPF.g, nat: RPF.nat, born: Number(RPF.born) || null, by, at, firstBy: old?.firstBy || RPF.firstBy || by, firstAt: old?.firstAt || at, f: rpStyleOut(RPF.v), st, pub: !!old, t: Date.now() }]);
   rpDraftDrop();
   VD.q.filter(j => j.rid === RPF.id).forEach(j => j.name = name);  // clips added here keep the final spelling of the name
   if (st === "Discarded") { RP_DRAFTS = RP_DRAFTS.filter(d => d.id !== RPF.id); $("#rpd").close(); renderCorner(); return; }
   if (st === "Draft") {
-    Object.assign(RPF, { name, edit: true, firstBy: RPF.firstBy || by, msg: "", note: `Draft saved ${rpWhen(at)}. Finish it any time from Scouting reports > Your drafts${by ? ", on any device signed in as " + by : ""}.` });
-    rpShow(); renderCorner(); return;
+    // saved: the report closes; it's under Scouting reports > Your drafts to carry on with
+    $("#rpd").close(); renderCorner(); return;
   }
   // published: the traffic light also goes on the watch list; a new name can be added to the watch list at the same time
   const P = rpProspect(name), lt = RP_LT_K[RPF.v.light];
@@ -5433,6 +5439,7 @@ $("#rpd").addEventListener("click", e => {
     const box = pill.parentElement, k = box.dataset.k, on = !pill.classList.contains("on");
     box.querySelectorAll("button").forEach(b => { b.classList.toggle("on", on && b === pill); b.setAttribute("aria-pressed", on && b === pill); });
     if (k === "_g") RPF.g = on ? pill.dataset.val : ""; else if (on) RPF.v[k] = pill.dataset.val; else delete RPF.v[k];
+    if (k === "style") { const ob = $("#rp-styleOther"), oth = RPF.v.style === "Other"; ob.hidden = !oth; if (oth) ob.focus(); else { ob.value = ""; delete RPF.v.styleOther; } }
     rpDraftSave(); return;
   }
   if (e.target.closest("[data-rpdraft]")) return rpSave("Draft");
