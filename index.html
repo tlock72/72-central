@@ -1408,7 +1408,10 @@ nav .sh,.nm-s{display:none}
    toolbars showing) the tiles get shorter and drop their extra lines instead of pushing the page down (Nov 2026). */
 /* iPhone: the page is drawn right to the bottom edge, under Safari's bottom bar and the home-bar strip, so the bottom row (Scouting report /
    Team Cards) keeps clear of them (safe-area-inset-bottom); and if it still doesn't fit, the page scrolls rather than cutting anything off */
-body.on-home{display:flex;flex-direction:column;height:100vh;height:100dvh;height:var(--app-h,100dvh);overflow-x:hidden;overflow-y:auto}
+/* the home page is pinned to the screen's four edges (position:fixed; inset:0) rather than sized with 100vh / 100dvh: in the iPhone
+   home-screen app those units can be taller than the visible screen (by the status bar), which let the page scroll under the header */
+html:has(body.on-home){overflow:hidden;height:100%}
+body.on-home{position:fixed;inset:0;display:flex;flex-direction:column;height:auto;min-height:0;overflow-x:hidden;overflow-y:auto;overscroll-behavior:none}
 /* hpFit() in the script checks the home page after every change of screen size or data and, only if something would be cut off
    or need scrolling, slims the banner at the top step by step: 1 = no greeting line and tighter gaps, 2 = no "72 Central" title,
    3 = no banner at all, 4 = tiles show just title and number. The tiles themselves already drop their extra lines when short (the hptile rules below). */
@@ -5760,11 +5763,10 @@ function greeting(){
   return greetMsg = opts[Math.floor(Math.random() * opts.length)];
 }
 window.renderHome = renderHome;
-/* Home fits the screen: --app-h is the screen's real visible height (iPhone toolbars, status bar), then if anything on the home
+/* Home fits the screen (the page is pinned to the screen's edges in the CSS): if anything on the home
    page would be cut off or need scrolling, the banner at the top is slimmed one step at a time (hp-fit1..4, see the CSS) */
 function hpFitNow(){
   const b = document.body;
-  document.documentElement.style.setProperty("--app-h", innerHeight + "px");
   b.classList.remove("hp-fit1", "hp-fit2", "hp-fit3", "hp-fit4");
   if (!b.classList.contains("on-home")) return;
   const bad = () => b.scrollHeight > b.clientHeight + 1 || [...document.querySelectorAll("#page-home .hp-tile")].some(t => {
