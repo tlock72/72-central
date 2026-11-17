@@ -733,6 +733,12 @@ a.cn-st.ok:hover{border-color:var(--gold)}
 .vd-th .im .vd-src{position:absolute;left:6px;top:6px;z-index:1;font-style:normal;font-size:10px;font-weight:600;letter-spacing:.04em;padding:2px 8px;border-radius:999px;background:rgba(12,20,49,.85);color:var(--text);border:1px solid var(--line-2);max-width:calc(100% - 12px);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
 .vd-th .im .vd-src.yt{color:#ff6b6b}.vd-th .im .vd-src.ig{color:#f58fd0}.vd-th .im .vd-src.tt{color:#7fe3ee}.vd-th .im .vd-src.vm{color:#7cc7ff}
 .vd-lf{padding:14px 22px 18px}
+.vd-cap{display:flex;flex-wrap:wrap;align-items:baseline;gap:4px 12px;padding:12px 22px 4px}
+.vd-cap p{margin:0;flex:1 1 auto;font-size:14px;line-height:1.45;color:var(--text);overflow-wrap:anywhere}
+.vd-cap p span{color:var(--muted)}
+.vd-capf{display:block}
+.vd-capf .sq-in{width:100%;box-sizing:border-box;height:44px;font-size:16px}
+.vd-capf .rp-btns{padding-bottom:0}
 .vd-lmsg{margin:0 0 4px;min-height:1em;font-size:12px;color:var(--up);line-height:1.4}
 .vd-lmsg.err{color:var(--down)}
 .vd-lf .rp-go svg,.vd-out .rp-go svg,.rp-btns .rp-go svg{width:17px;height:17px}
@@ -5452,6 +5458,20 @@ vdBar.addEventListener("click", e => {
 });
 window.addEventListener("beforeunload", e => { if (VD.busy) { e.preventDefault(); e.returnValue = ""; } });
 // playing a clip: Drive's own player (it handles iPhone and Android formats alike)
+// the clip's description ("What's in it?"), under the video window's heading: whoever added the clip can edit it
+// (same first name, or the device that added it), kind: "vidcap" on the Sheet, which changes the Caption column
+const vdMineOk = v => !!vdMineAll().find(x => x.id === v.id && x.undo) || rpSame(v.by, rpBy());
+function vdCapHtml(v){
+  const ok = vdMineOk(v);
+  if (!v.cap && !ok) return "";
+  return `<div class="vd-cap" id="vdCap0"><p>${v.cap ? esc(v.cap) : `<span>No description yet</span>`}</p>${ok ? `<button type="button" class="rp-lnk" data-vdcapedit="${esc(v.id)}">${v.cap ? "Edit" : "Add a description"}</button>` : ""}</div>`;
+}
+function vdCapForm(v){
+  const b = $("#vdCap0"); if (!b) return;
+  b.outerHTML = `<form class="vd-cap vd-capf" id="vdCap0" data-id="${esc(v.id)}" autocomplete="off"><input class="sq-in" name="cap" maxlength="120" value="${esc(v.cap || "")}" placeholder="What's in it? e.g. Final, second set" aria-label="Description">
+    <div class="rp-btns"><button type="submit" class="rp-go">Save</button><button type="button" class="rp-go ln" data-vdcapx="1">Cancel</button></div><p class="vd-lmsg err" id="vdCapMsg" role="alert"></p></form>`;
+  const i = $("#vdCap0 input"); kbFocus(i); i.setSelectionRange(i.value.length, i.value.length);
+}
 function vdOpen(id){
   const v = vdAll().find(x => x.id === id); if (!v) return;
   const mine = vdMineAll().find(x => x.id === id && x.undo && Date.now() - x.t < 864e5);
@@ -5459,7 +5479,7 @@ function vdOpen(id){
   if (v.url) {
     const L = vdParse(v.url) || { k: "web" }, src = vdEmbed(L), app = vdSrc(v.url);
     d.innerHTML = `<div class="rs-hd"><button type="button" class="x" data-vdx="1" aria-label="Close">✕</button><div class="k">Scouting video · ${esc(app)}</div><h2>${esc(v.name)}</h2>
-      <div class="mt">${esc([v.cap, v.by ? "added by " + v.by : "", rpDay(v.at)].filter(Boolean).join(" · "))}</div></div>
+      <div class="mt">${esc([v.by ? "added by " + v.by : "", rpDay(v.at)].filter(Boolean).join(" · "))}</div></div>${vdCapHtml(v)}
       ${src ? `<div class="vd-play${L.k === "ig" || L.k === "tt" || L.short ? " tall" : ""}"><iframe src="${esc(src)}" allow="autoplay; fullscreen; encrypted-media; picture-in-picture" allowfullscreen referrerpolicy="strict-origin-when-cross-origin" title="Video of ${esc(v.name)}"></iframe></div>`
         : `<div class="vd-out"><a class="rp-go" href="${esc(v.url)}" target="_blank" rel="noopener">${RP_PLAY}Watch on ${esc(app)}</a></div>`}
       <div class="vd-foot"><span>${src ? `Won't play here (e.g. a private account)? Open it in ${esc(app)} instead.` : "This site can't be played inside 72 Central, so it opens in a new tab."}</span><a href="${esc(v.url)}" target="_blank" rel="noopener">Open in ${esc(app)}</a>${mine ? `<button type="button" class="rp-lnk" data-vdrm="${esc(id)}">Remove this link</button>` : ""}</div>`;
@@ -5467,7 +5487,7 @@ function vdOpen(id){
     return;
   }
   d.innerHTML = `<div class="rs-hd"><button type="button" class="x" data-vdx="1" aria-label="Close">✕</button><div class="k">Scouting video</div><h2>${esc(v.name)}</h2>
-    <div class="mt">${esc([v.cap, v.by ? "added by " + v.by : "", rpDay(v.at)].filter(Boolean).join(" · "))}</div></div>
+    <div class="mt">${esc([v.by ? "added by " + v.by : "", rpDay(v.at)].filter(Boolean).join(" · "))}</div></div>${vdCapHtml(v)}
     <div class="vd-play"><iframe src="https://drive.google.com/file/d/${encodeURIComponent(id)}/preview" allow="autoplay; fullscreen" allowfullscreen title="Video of ${esc(v.name)}"></iframe></div>
     <div class="vd-foot"><span>Just added? Google Drive can take a few minutes to get a clip ready to play.</span><a href="https://drive.google.com/file/d/${encodeURIComponent(id)}/view" target="_blank" rel="noopener">Open in Google Drive</a>${mine ? `<button type="button" class="rp-lnk" data-vdrm="${esc(id)}">Remove this clip</button>` : ""}</div>`;
   if (!d.open) { profLock(true); d.showModal(); }
@@ -5475,6 +5495,8 @@ function vdOpen(id){
 $("#vdd").addEventListener("click", e => {
   const d = $("#vdd");
   if (e.target === d || e.target.closest("[data-vdx]")) return d.close();
+  const ce = e.target.closest("[data-vdcapedit]"); if (ce) { const v = vdAll().find(x => x.id === ce.dataset.vdcapedit); if (v) vdCapForm(v); return; }
+  const cx = e.target.closest("[data-vdcapx]"); if (cx) { const f = cx.closest("form"); if (f) vdOpen(f.dataset.id); return; }
   const rm = e.target.closest("[data-vdrm]");
   if (rm && confirm("Remove this video for everyone?")) {
     const list = vdMineAll(), x = list.find(v => v.id === rm.dataset.vdrm);
@@ -5521,6 +5543,27 @@ $("#vdd").addEventListener("input", e => {
   m.textContent = !e.target.value.trim() ? "" : !L ? "" : L.k === "web" ? `A link to ${vdSrc(e.target.value)}: it will open in a new tab.` : `✓ ${vdSrc(e.target.value)} video: it will play here.`;
 });
 $("#vdd").addEventListener("submit", async e => {
+  if (e.target.matches(".vd-capf")) {
+    e.preventDefault();
+    const f = e.target, id = f.dataset.id, v = vdAll().find(x => x.id === id), btn = f.querySelector("[type=submit]"), m = $("#vdCapMsg");
+    if (!v) return;
+    const cap = f.elements.cap.value.replace(/\s+/g, " ").trim(), mine = vdMineAll().find(x => x.id === id);
+    if (cap === (v.cap || "")) return vdOpen(id);
+    btn.disabled = true; btn.textContent = "Saving…";
+    let res = "";
+    try { const r = await fetch(CORNER_URL, { method: "POST", body: JSON.stringify({ kind: "vidcap", id, cap, by: rpBy(), undo: mine?.undo || "" }) }); res = r.ok ? (await r.text()).trim() : ""; } catch (err) {}
+    if (res !== "ok") {
+      btn.disabled = false; btn.textContent = "Save";
+      m.textContent = res === "notyours" ? `Only ${v.by || "the person who added it"} can change this description.` : res === "none" ? "This video has been taken down on the Sheet."
+        : res === "bad" ? "The Sheet didn't take it. If this keeps happening, the Sheet script needs its latest version." : "Couldn't reach the Sheet. Check your signal and try again.";
+      return;
+    }
+    VD_SHEET.forEach(x => { if (x.id === id) x.cap = cap; });
+    const l = vdMineAll(); l.forEach(x => { if (x.id === id) x.cap = cap; }); vdMineSave(l);
+    try { const c = JSON.parse(localStorage.getItem("72c-rplist") || "{}"); (c.videos || []).forEach(x => { if (x.id === id) x.cap = cap; }); localStorage.setItem("72c-rplist", JSON.stringify(c)); } catch (err) {}
+    vdOpen(id); rpRedraw(); renderCorner();
+    return;
+  }
   if (!e.target.matches(".vd-lf")) return;
   e.preventDefault();
   const f = e.target, m = $("#vdLmsg"), ctx = VD.lctx || {}, btn = f.querySelector("[type=submit]");

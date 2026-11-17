@@ -30,6 +30,7 @@
 // Drive if you like). The person who added it can also remove it from the same device for a day.
 // Video links (YouTube, Instagram, TikTok, Vimeo or any other page) pasted on the site go on the same tab: their
 // File ID starts with "L", the link is in the Link column and Sharing says "Link". Take one down the same way.
+// The person who added a video can edit its description (Caption) from the site.
 // The videos need Google Drive access: after pasting this script, run setupReports once by hand and allow it.
 
 const TZ = "Europe/London";
@@ -94,6 +95,7 @@ function doPost(e) {
   if (d.kind === "vidchunk") return videoChunk(d);
   if (d.kind === "unvideo") return videoRemove(d);
   if (d.kind === "vidlink") return videoLink(d);
+  if (d.kind === "vidcap") return videoCaption(d);
   const id = String(d.id || "").slice(0, 40), start = new Date(Number(d.start));
   if (!id || isNaN(start)) return out("bad");
   // text starting with = + - @ would be read as a formula, so it's kept as plain text
@@ -822,6 +824,28 @@ function videoRemove(d) {
   if (!(rows[i][0] instanceof Date) || Date.now() - rows[i][0] > 864e5) return out("late");
   sh.getRange(i + 2, 5).setValue("Removed");
   if (!/^L/.test(id)) { try { DriveApp.getFileById(id).setTrashed(true); } catch (e) {} }  // a pasted link has no file
+  return out("ok");
+}
+
+// "Edit" on a video's description: only the person who added it (same first name, or the device that added it, by
+// its undo code). Changes the Caption column of its row.
+function videoCaption(d) {
+  const id = String(d.id || ""), undo = String(d.undo || ""), by = clean_(d.by).slice(0, 30), cap = clean_(d.cap).replace(/\s+/g, " ").slice(0, 120);
+  if (!id || id.length > 100) return out("bad");
+  const lock = LockService.getScriptLock();
+  lock.waitLock(10000);
+  try {
+    const sh = SpreadsheetApp.getActiveSpreadsheet().getSheetByName("Videos");
+    if (!sh || sh.getLastRow() < 2) return out("none");
+    const rows = sh.getRange(2, 1, sh.getLastRow() - 1, 10).getValues();
+    const i = rows.findIndex(r => String(r[6]) === id && String(r[4]).trim() === "Live");
+    if (i < 0) return out("none");
+    const mine = (/^[a-f0-9]{16,64}$/.test(undo) && String(rows[i][9]) === undo) || sameName_(by, unplain_(rows[i][3]));
+    if (!mine) return out("notyours");
+    sh.getRange(i + 2, 3).setValue(plain_(cap));
+  } finally {
+    lock.releaseLock();
+  }
   return out("ok");
 }
 
