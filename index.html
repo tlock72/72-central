@@ -42,6 +42,9 @@ button{font:inherit;color:inherit;background:none;border:0;cursor:pointer}
 :focus-visible{outline:2px solid var(--gold);outline-offset:2px;border-radius:6px}
 .wrap{max-width:1180px;margin:0 auto;padding-inline:24px}
 
+/* iPhone: the page is drawn under the status bar / Dynamic Island, so the page starts below it (padding) and the header is
+   pinned there; without the padding the pinned header sat on top of the first ~50px of every page (the home "72 Central" banner) */
+body{padding-top:env(safe-area-inset-top,0px)}
 header{position:sticky;top:env(safe-area-inset-top,0px);z-index:10;background:rgba(12,20,49,.9);backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);border-bottom:1px solid var(--line)}
 /* iPad (touch screen wider than a phone): the page starts below Safari's address bar there ("viewport-fit=cover" is taken off
    in the script at the top), so the header stays pinned to the top while scrolling, like on computers and phones. */
@@ -1405,7 +1408,25 @@ nav .sh,.nm-s{display:none}
    toolbars showing) the tiles get shorter and drop their extra lines instead of pushing the page down (Nov 2026). */
 /* iPhone: the page is drawn right to the bottom edge, under Safari's bottom bar and the home-bar strip, so the bottom row (Scouting report /
    Team Cards) keeps clear of them (safe-area-inset-bottom); and if it still doesn't fit, the page scrolls rather than cutting anything off */
-body.on-home{display:flex;flex-direction:column;height:100vh;height:100dvh;overflow-x:hidden;overflow-y:auto}
+body.on-home{display:flex;flex-direction:column;height:100vh;height:100dvh;height:var(--app-h,100dvh);overflow-x:hidden;overflow-y:auto}
+/* hpFit() in the script checks the home page after every change of screen size or data and, only if something would be cut off
+   or need scrolling, slims the banner at the top step by step: 1 = no greeting line and tighter gaps, 2 = no "72 Central" title,
+   3 = no banner at all, 4 = tiles show just title and number. The tiles themselves already drop their extra lines when short (the hptile rules below). */
+body.on-home.hp-fit1 .hp-hero .hp-greet{display:none}
+body.on-home.hp-fit1 #page-home > .hp-hero{margin-block:6px;padding-block:8px}
+body.on-home.hp-fit1 #page-home > .hp-grid{gap:8px}
+body.on-home.hp-fit1 #page-home .hp-team{margin-top:8px;padding-block:6px}
+body.on-home.hp-fit2 .hp-hero h1{display:none}
+body.on-home.hp-fit2 .hp-hero .hp-meta{margin:0}
+body.on-home.hp-fit3 #page-home > .hp-hero{display:none}
+body.on-home.hp-fit3 #page-home > .hp-grid{margin-top:8px}
+/* 4 = last resort (tiny screens, e.g. an iPhone SE sideways): each tile shows just its title and headline number */
+body.on-home.hp-fit4 .hp-tile{padding-block:6px}
+body.on-home.hp-fit4 .hp-tile h2{font-size:13px}
+body.on-home.hp-fit4 .hp-stat{padding-top:0}
+body.on-home.hp-fit4 .hp-stat b small,body.on-home.hp-fit4 .hp-stat > div > span,body.on-home.hp-fit4 .hp-ld .nmx{display:none}
+body.on-home.hp-fit4 .hp-stat b,body.on-home.hp-fit4 #hpT2{font-size:20px}
+body.on-home.hp-fit4 .hp-ld .lb{margin-bottom:0}
 body.on-home > header{flex:none}
 body.on-home > main{flex:1;min-height:0;display:flex;flex-direction:column;width:100%}
 body.on-home > footer{display:none}
@@ -2278,6 +2299,7 @@ function route(){
   const tab = hash === "#rankings" ? "rankings" : hash === "#scouting" ? "scouting" : hash === "#schedule" ? "schedule" : hash === "#corner" || hash === "#report" || hash === "#reports" ? "corner" : hash === "#news" ? "news" : hash === "#scores" ? "scores" : hash.startsWith("#players") ? "players" : hash.startsWith("#team") ? "team" : "home";
   $("#page-home").hidden = tab !== "home";
   document.body.classList.toggle("on-home", tab === "home");
+  window.hpFit?.();
   $("#page-scores").hidden = tab !== "scores";
   $("#page-rankings").hidden = tab !== "rankings";
   $("#page-players").hidden = tab !== "players";
@@ -5738,6 +5760,27 @@ function greeting(){
   return greetMsg = opts[Math.floor(Math.random() * opts.length)];
 }
 window.renderHome = renderHome;
+/* Home fits the screen: --app-h is the screen's real visible height (iPhone toolbars, status bar), then if anything on the home
+   page would be cut off or need scrolling, the banner at the top is slimmed one step at a time (hp-fit1..4, see the CSS) */
+function hpFitNow(){
+  const b = document.body;
+  document.documentElement.style.setProperty("--app-h", innerHeight + "px");
+  b.classList.remove("hp-fit1", "hp-fit2", "hp-fit3", "hp-fit4");
+  if (!b.classList.contains("on-home")) return;
+  const bad = () => b.scrollHeight > b.clientHeight + 1 || [...document.querySelectorAll("#page-home .hp-tile")].some(t => {
+    const st = t.querySelector(".hp-stat"); if (!st) return false;
+    return st.getBoundingClientRect().bottom > t.getBoundingClientRect().bottom - 4;  // the number / arrow runs past the tile's edge
+  });
+  for (let i = 1; i <= 4 && bad(); i++) b.classList.add("hp-fit" + i);
+  b.scrollTop = 0;
+}
+let hpFitT = 0;
+window.hpFit = () => { cancelAnimationFrame(hpFitT); hpFitT = requestAnimationFrame(hpFitNow); };
+addEventListener("resize", window.hpFit);
+addEventListener("orientationchange", () => setTimeout(window.hpFit, 300));
+addEventListener("pageshow", window.hpFit);
+window.visualViewport?.addEventListener("resize", window.hpFit);
+document.fonts?.ready.then(window.hpFit);
 function renderHome(){
   if (!$("#page-home")) return;
   const g = greeting(); $("#hpGreet").hidden = !g; $("#hpGreet").innerHTML = g;
@@ -5794,6 +5837,7 @@ function renderHome(){
     $("#hpT7").innerHTML = `${day.length}<small>stor${day.length === 1 ? "y" : "ies"} today</small>`;
     $("#hpS7").innerHTML = n72 ? `<strong>${n72}</strong> on 72 players this week` : its[0] ? `Top: ${esc(its[0].t)}` : "No headlines yet";
   }
+  window.hpFit?.();  // new numbers can change what fits
 }
 /* ---------- one spelling per 72 player, and no duplicate fixtures ----------
    The feeds spell some names differently (e.g. "Schwaerzler Joel" v "Schwärzler"), so every 72 player is shown
