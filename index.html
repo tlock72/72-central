@@ -731,6 +731,13 @@ a.cn-st.ok:hover{border-color:var(--gold)}
 .rp-lt .g i{background:var(--lt-g)}.rp-lt .a i{background:var(--lt-a)}.rp-lt .r i{background:var(--lt-r)}
 .rp-lt button.on{background:transparent;color:var(--text)}.rp-lt button.on i{opacity:1}
 .rp-lt button.g.on{border-color:var(--lt-g)}.rp-lt button.a.on{border-color:var(--lt-a)}.rp-lt button.r.on{border-color:var(--lt-r)}
+.rp-ac{position:relative}
+.rp-sug{position:absolute;left:0;right:0;top:100%;z-index:5;margin-top:4px;max-height:260px;overflow-y:auto;background:var(--navy-2);border:1px solid var(--line);border-radius:10px;box-shadow:0 8px 24px rgba(0,0,0,.25)}
+.rp-sug[hidden]{display:none}
+.rp-sug button{display:flex;justify-content:space-between;align-items:center;gap:10px;width:100%;min-height:44px;padding:8px 12px;border:0;border-bottom:1px solid var(--line);background:transparent;color:var(--text);font:inherit;font-size:14px;text-align:left;cursor:pointer}
+.rp-sug button:last-child{border-bottom:0}
+.rp-sug button:hover,.rp-sug button:focus{background:rgba(212,175,55,.15)}
+.rp-sug small{color:var(--muted);font-size:11px;white-space:nowrap}
 .rp-wl{font-size:12px;color:var(--muted);margin:0 0 8px}
 .rp-wl label{display:flex;gap:8px;align-items:flex-start;line-height:1.4}
 .rp-wl input{margin-top:2px;accent-color:var(--gold)}
@@ -5266,7 +5273,7 @@ function rpField([k, label, kind, hint]){
   return `<div class="rp-f${k === "agName" ? " rp-agn" : ""}"${hide ? " hidden" : ""}><label for="rp-${k}">${esc(label)}</label><input class="sq-in" id="rp-${k}" name="${k}" maxlength="200" value="${esc(v)}" placeholder="${esc(hint || "")}"></div>`;
 }
 function rpFormHtml(){
-  const p = rpProspect(RPF.name), names = [...new Set(Object.values(cnShown()).map(x => x.name))].sort();
+  const p = rpProspect(RPF.name);
   const vids = vdAll().filter(v => v.rid === RPF.id), ups = VD.q.filter(j => j.rid === RPF.id && j.st !== "done");
   const natOpts = `<option value="">Nation</option>` + CN_NATS.map(x => `<option value="${x.c}"${RPF.nat === x.c ? " selected" : ""}>${esc(x.n)}</option>`).join("");
   const others = RPF.edit ? [] : rpDrafts().filter(d => d.id !== RPF.id), me = rpBy();
@@ -5278,7 +5285,7 @@ function rpFormHtml(){
     ${hasDraft && RPF.edit ? `<div class="mt"><button type="button" class="rp-lnk" data-rpdisc="1">${RPF.pub ? "Throw away these changes" : "Delete this draft"}</button></div>` : ""}</div>
     <form class="rp-form" id="rpForm" autocomplete="off" novalidate>
     <section><h4>Player</h4>
-      <div class="rp-f"><label for="rpName">Full name</label><input class="sq-in" id="rpName" name="rpName" list="rpNames" maxlength="60" required value="${esc(RPF.name)}" placeholder="Start typing: watch list names come up"${RPF.pub ? " readonly" : ""}><datalist id="rpNames">${names.map(n => `<option value="${esc(n)}">`).join("")}</datalist></div>
+      <div class="rp-f rp-ac"><label for="rpName">Player's full name</label><input class="sq-in" id="rpName" name="rpq" maxlength="60" required autocomplete="off" autocorrect="off" autocapitalize="words" spellcheck="false" data-1p-ignore data-lpignore="true" aria-autocomplete="list" aria-controls="rpSug" value="${esc(RPF.name)}" placeholder="Start typing: watch list names come up"${RPF.pub ? " readonly" : ""}><div class="rp-sug" id="rpSug" role="listbox" hidden></div></div>
       <div class="rp-row3"><div class="rp-pills" data-k="_g">${[["M", "Male"], ["F", "Female"]].map(([c, t]) => `<button type="button" class="${RPF.g === c ? "on" : ""}" data-val="${c}" aria-pressed="${RPF.g === c}">${t}</button>`).join("")}</div>
         <select class="sq-in" id="rpNat" name="rpNat" aria-label="Nation">${natOpts}</select>
         <input class="sq-in" id="rpBorn" name="rpBorn" inputmode="numeric" maxlength="4" placeholder="Birth year" aria-label="Birth year" value="${esc(RPF.born)}"></div>
@@ -5292,6 +5299,25 @@ function rpFormHtml(){
     </section>
     <div class="rp-save"><span id="rpErr" role="alert" class="${RPF.note ? "ok" : ""}">${esc(RPF.note)}</span><button type="button" class="rp-go ln" data-rpdraft="1">Save draft</button><button type="submit" class="rp-go">${RPF.pub ? "Publish changes" : "Publish report"}</button></div>
     </form>`;
+}
+/* Name suggestions under the player box (our own list, not the browser's datalist: that didn't show watch list names
+   on phones and fought with the browser's own autofill on computers). Watch list names first, then anyone with a
+   report; every word typed must start a word of the name, in any order, accents ignored. */
+function rpSugNames(){
+  const out = new Map();
+  Object.values(cnShown()).forEach(x => x.name && out.set(cnSorted(x.name), { n: x.name, w: "Watch list" }));
+  rpAll().forEach(r => r.name && !out.has(cnSorted(r.name)) && out.set(cnSorted(r.name), { n: r.name, w: "Has a report" }));
+  return [...out.values()];
+}
+function rpSugShow(){
+  const box = $("#rpSug"), inp = $("#rpName"); if (!box || !inp) return;
+  const q = tzFold(inp.value).split(" ").filter(Boolean);
+  const hits = RPF.pub || !q.length || q.join("").length < 2 ? [] : rpSugNames().filter(x => {
+    const w = tzFold(x.n).split(" ");
+    return tzFold(x.n) !== q.join(" ") && q.every(t => w.some(a => a.startsWith(t)));
+  }).sort((a, b) => (a.w > b.w) - (a.w < b.w) || a.n.localeCompare(b.n)).slice(0, 8);
+  box.innerHTML = hits.map(x => `<button type="button" role="option" data-rpsug="${esc(x.n)}">${esc(x.n)}<small>${x.w}</small></button>`).join("");
+  box.hidden = !hits.length;
 }
 function rpWlNote(p){
   if (!RPF.name.trim()) return "";
@@ -5421,7 +5447,7 @@ $("#rpd").addEventListener("input", e => {
   if (RPD.mode !== "form" || !e.target.closest("#rpForm")) return;
   rpRead(); rpDraftSave();
   if (e.target.id === "rpName") {
-    $("#rpErr").textContent = "";
+    $("#rpErr").textContent = ""; rpSugShow();
     const p = rpProspect(RPF.name)?.p;
     if (p) {  // picked from the watch list: fill in what we know
       if (!RPF.g && p.g) { RPF.g = p.g; $("#rpd").querySelectorAll('[data-k="_g"] button').forEach(b => { b.classList.toggle("on", b.dataset.val === p.g); b.setAttribute("aria-pressed", b.dataset.val === p.g); }); }
@@ -5431,10 +5457,16 @@ $("#rpd").addEventListener("input", e => {
     $("#rpWl").innerHTML = rpWlNote(p);
   }
 });
+// the suggestions close when you leave the box or press Escape (a tap on one counts first: mousedown keeps the focus)
+$("#rpd").addEventListener("mousedown", e => { if (e.target.closest("[data-rpsug]")) e.preventDefault(); });
+$("#rpd").addEventListener("focusout", e => { if (e.target.id === "rpName") setTimeout(() => { const b = $("#rpSug"); if (b && document.activeElement?.id !== "rpName") b.hidden = true; }, 200); });
+$("#rpd").addEventListener("keydown", e => { if (e.target.id === "rpName" && e.key === "Escape" && !$("#rpSug").hidden) { e.preventDefault(); e.stopPropagation(); $("#rpSug").hidden = true; } });
 $("#rpd").addEventListener("change", e => { if (RPD.mode === "form" && e.target.closest("#rpForm")) { rpRead(); rpDraftSave(); } });
 $("#rpd").addEventListener("click", e => {
   const d = $("#rpd");
   if (e.target === d || e.target.closest("[data-rpx]")) return rpClose();
+  const sg = e.target.closest("[data-rpsug]");
+  if (sg) { const inp = $("#rpName"); inp.value = sg.dataset.rpsug; $("#rpSug").hidden = true; inp.dispatchEvent(new Event("input", { bubbles: true })); $("#rpSug").hidden = true; return; }
   const pill = e.target.closest(".rp-pills button");
   if (pill) {  // tap to pick, tap again to clear
     const box = pill.parentElement, k = box.dataset.k, on = !pill.classList.contains("on");
