@@ -612,7 +612,28 @@ dialog.cnd .cn-pf{border:0;border-radius:0;background:none;overflow:visible}
 .cn-area:hover{border-color:var(--gold)}
 .cn-area.on{background:var(--gold);border-color:var(--gold);color:var(--navy)}
 .cn-area.on b,.cn-area.on small{color:var(--navy)}
-#page-corner.rep-area .cn-view,#page-corner.rep-area #cnSortLine{display:none}
+#page-corner.rep-area #cnSub2,#page-corner.rep-area #cnSortLine,#page-corner:not(.rep-area) .rp-grp{display:none}
+/* Scouting reports "By event": one full-width box per event, the reports from it inside */
+.cn-list .rp-ev{grid-column:1/-1;border:1px solid var(--line);border-radius:18px;padding:14px 18px 10px;background:var(--navy-2)}
+.rp-ev h3{font-family:var(--display);font-weight:500;text-transform:uppercase;letter-spacing:.12em;font-size:15px;color:var(--text);margin:0}
+.rp-ev .mt{font-size:12px;color:var(--muted);margin:2px 0 10px}
+.rp-ev.none h3{color:var(--muted)}
+.cn-list .rp-ev.ev-new{border-style:dashed;background:none;padding:10px 14px}
+.ev-add{margin:0 0 10px}
+.ev-new .ev-add{margin:0}
+.ev-rc{margin:0 0 12px;padding:12px 14px;border-radius:12px;background:var(--gold-dim);border:1px solid var(--line)}
+.ev-rc h4,.ev-f h4{font-family:var(--display);font-weight:500;text-transform:uppercase;letter-spacing:.16em;font-size:11px;color:var(--gold);margin:0 0 6px}
+.ev-tx{white-space:pre-wrap;font-size:14px;line-height:1.5;color:var(--text)}
+.ev-by{display:flex;align-items:center;gap:12px;margin-top:8px;font-size:11px;color:var(--muted)}
+.ev-ed{margin-left:auto;font:inherit;font-size:11px;color:var(--gold);background:none;border:0;padding:0;cursor:pointer;text-decoration:underline}
+.ev-f{margin:0 0 12px;display:grid;gap:8px}
+.ev-f textarea{width:100%;box-sizing:border-box;min-height:120px;height:auto;border-radius:14px;padding:10px 14px;font:inherit;font-size:14px;line-height:1.45;resize:vertical}
+.ev-nm{display:grid;grid-template-columns:minmax(0,1fr) 90px;gap:8px}
+.ev-bt{display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+.ev-bt button{padding:9px 18px;border-radius:999px;border:1px solid var(--gold);background:var(--gold);color:var(--navy);font-family:var(--display);text-transform:uppercase;letter-spacing:.12em;font-size:12px;cursor:pointer}
+.ev-bt button.no{background:none;color:var(--gold)}
+.ev-msg{font-size:12px;color:#e8a0a0}
+@media (max-width:640px){.cn-list .rp-ev{padding:12px 12px 8px;border-radius:14px}.rp-ev h3{font-size:13px}}
 @media (max-width:640px){.cn-areas{gap:8px;margin-bottom:14px}.cn-area{padding:10px 12px;column-gap:8px}.cn-area svg{width:22px;height:22px}.cn-area b{font-size:12px;letter-spacing:.08em}.cn-area small{font-size:10.5px}}
 .sg-sec{display:grid;gap:10px;grid-template-columns:repeat(2,minmax(0,1fr));align-items:stretch}
 /* every suggestion tile the same size: the Scout button sits in the top corner, and all tiles get the height of the fullest one */
@@ -2096,7 +2117,8 @@ dialog.tmd[open]{animation:pop .28s ease}
       <button type="button" class="cn-area" role="tab" aria-selected="false" data-a="rep"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M14 3H6a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V9z"/><path d="M14 3v6h6M8 13h8M8 17h5"/></svg><b>Scouting reports</b><small>Written reports &amp; videos</small></button>
     </div>
     <button type="button" class="rp-new" data-rpnew="{}" hidden><span aria-hidden="true">＋</span>Add scouting report</button>
-    <div class="chips cn-view" role="group" aria-label="Show"><button class="chip cnv on" data-v="">Our watch list</button><button class="chip cnv" data-v="sug">Computerised suggestions</button></div>
+    <div class="chips cn-view rp-grp" role="group" aria-label="Group reports"><button class="chip rpg on" data-rg="">By player</button><button class="chip rpg" data-rg="ev">By event</button></div>
+    <div class="chips cn-view" id="cnSub2" role="group" aria-label="Show"><button class="chip cnv on" data-v="">Our watch list</button><button class="chip cnv" data-v="sug">Computerised suggestions</button></div>
     <div class="cn-add">
       <h3><button type="button" id="cnAddT" aria-expanded="false">Add a prospect</button></h3>
       <form id="cnForm" autocomplete="off">
@@ -3900,7 +3922,7 @@ async function loadScouting(){
 const CORNER_URL = "https://script.google.com/macros/s/AKfycbwzEb0YNoDmZaaJ5fQg05ubEe_lowMLiGoYaXuclycqQikOngLQEmENPN5KoL_KJXu1kA/exec";  // same as LOG_URL
 let SUGG = null;  // suggest.json: the suggestions' last 12 months of results
 let CORNER = null, CN_SHEET = [], CN_SHEET_OK = false, CN_REMOVED = [], CN_ASKED = [];
-const CN = { g: "", q: "", s: "light", lt: "", rm: "", view: "", add: "", open: "" };
+const CN = { g: "", q: "", s: "light", lt: "", rm: "", view: "", add: "", open: "", rg: "" };  // rg: Scouting reports grouped by player ("") or event ("ev")
 // Scouting Corner always opens on the watch list (Tobey's call), so the last view picked isn't remembered
 const cnKey = s => String(s || "").split("|")[0].normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLowerCase().replace(/[^a-z]/g, "");
 const CN_SRC = { te: "Tennis Europe", "itf-jr": "ITF Juniors", "itf-pro": "Pro: ATP/WTA, Challenger, ITF" };
@@ -4413,7 +4435,7 @@ function renderCorner(){
   $("#page-corner").classList.toggle("rep-area", rep);
   $("#page-corner .rp-new").hidden = !rep;
   $("#page-corner .hero h1").textContent = rep ? "Scouting Reports" : "Scouting Corner";
-  $("#cnSub").innerHTML = rep ? "Written scouting reports and videos, one folder per player. Your drafts sit at the top until you publish them."
+  $("#cnSub").innerHTML = rep ? (CN.rg === "ev" ? "Scouting reports grouped by the event where the player was seen, with a recap of each event at the top." : "Written scouting reports and videos, one folder per player. Your drafts sit at the top until you publish them.")
     : sug ? "Young players climbing the rankings fastest, picked by the computer. Press <b>Scout</b> to add one to the watch list."
     : "Prospects we're watching, ATP/WTA first, then ITF juniors and Tennis Europe. <b>Check</b> means more than one player fits.";
   $(".cn-add").hidden = sug || rep; $("#cnSortLine").hidden = sug || rep;
@@ -4599,6 +4621,7 @@ document.querySelectorAll(".cng").forEach(b => b.addEventListener("click", () =>
 $("#cnSort").addEventListener("change", e => { CN.s = e.target.value; renderCorner(); });
 $("#cnLight").addEventListener("change", e => { CN.lt = e.target.value; renderCorner(); });
 document.querySelectorAll(".cnv").forEach(b => b.addEventListener("click", () => { CN.view = b.dataset.v; CN.add = ""; renderCorner(); }));
+document.querySelectorAll(".rpg").forEach(b => b.addEventListener("click", () => { CN.rg = b.dataset.rg; renderCorner(); }));
 // the area switch: #corner = Watch list, #reports = Scouting reports (so either can be bookmarked)
 document.querySelectorAll(".cn-area").forEach(b => b.addEventListener("click", () => {
   const rep = b.dataset.a === "rep";
@@ -5042,8 +5065,8 @@ const RP_SEC = [
   ["Anything else", [["other", "Other comments", "long"]]]
 ];
 const RP_LABEL = Object.fromEntries(RP_SEC.flatMap(s => s[1]).map(f => [f[0], f[1]]));
-let RP_SHEET = [], RP_DRAFTS = [], RP_NOTES = [], VD_SHEET = [], RP_OK = false, RP_READ = 0;  // RP_READ = when the Sheet list was last read
-try { const c = JSON.parse(localStorage.getItem("72c-rplist") || "{}"); RP_SHEET = c.reports || []; RP_DRAFTS = c.drafts || []; RP_NOTES = c.notes || []; VD_SHEET = c.videos || []; } catch (e) {}
+let RP_RECAPS = [], RP_SHEET = [], RP_DRAFTS = [], RP_NOTES = [], VD_SHEET = [], RP_OK = false, RP_READ = 0;  // RP_READ = when the Sheet list was last read
+try { const c = JSON.parse(localStorage.getItem("72c-rplist") || "{}"); RP_SHEET = c.reports || []; RP_DRAFTS = c.drafts || []; RP_NOTES = c.notes || []; VD_SHEET = c.videos || []; RP_RECAPS = c.recaps || []; } catch (e) {}
 const rpHex = n => Array.from(crypto.getRandomValues(new Uint8Array(n)), b => b.toString(16).padStart(2, "0")).join("");
 const rpBy = () => { try { return localStorage.getItem("72c-name") || ""; } catch (e) { return ""; } };
 // Who can edit a report: the person who started it. That's the device it was started on (a secret code kept here,
@@ -5057,7 +5080,7 @@ async function loadReports(){
   const own = Object.values(rpOwn()).join(",");
   try {
     const r = await fetch(CORNER_URL + "?kind=reports&by=" + encodeURIComponent(rpBy()) + (own ? "&own=" + own : ""));
-    if (r.ok) { const j = await r.json(); if (Array.isArray(j.reports)) { RP_SHEET = j.reports; RP_DRAFTS = j.drafts || []; RP_NOTES = j.notes || []; VD_SHEET = j.videos || []; RP_OK = true; RP_READ = Date.now(); try { localStorage.setItem("72c-rplist", JSON.stringify(j)); } catch (e) {} } }
+    if (r.ok) { const j = await r.json(); if (Array.isArray(j.reports)) { RP_SHEET = j.reports; RP_DRAFTS = j.drafts || []; RP_NOTES = j.notes || []; VD_SHEET = j.videos || []; RP_RECAPS = j.recaps || []; RP_OK = true; RP_READ = Date.now(); try { localStorage.setItem("72c-rplist", JSON.stringify(j)); } catch (e) {} } }
   } catch (e) {}
 }
 // reports, drafts, comments and clips saved on this device: shown at once, and kept until a Sheet read made at least 10 minutes after the save
@@ -5409,6 +5432,87 @@ document.addEventListener("click", e => {
   if (!e.target.closest("#rpd")) { const o = e.target.closest("[data-rpo]"); if (o) return rpShow("report", o.dataset.rpo); }
 });
 
+/* Scouting reports "By event": grouped by the "Event or place" typed in the report, any word order, capitals,
+   accents and punctuation ignored ("J300 Roehampton" = "Roehampton J300"), plus the year seen (date seen, else the
+   day the report was started), so the same tournament in two years stays apart. No event typed = "Event not given", last. */
+const rpEvKey = t => String(t || "").normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLowerCase().replace(/[^a-z0-9]+/g, " ").trim().split(" ").filter(Boolean).sort().join(" ");
+const rpSeenDay = r => r.f?.seenOn ? r.f.seenOn + "T12:00:00Z" : (r.firstAt || r.at);
+function rpEvents(){
+  const m = new Map();
+  for (const r of rpAll()) {
+    const k = rpEvKey(r.f?.seen), y = new Date(rpSeenDay(r)).getUTCFullYear(), key = k ? k + "|" + y : "";
+    if (!m.has(key)) m.set(key, { key, spell: {}, reps: [], y });
+    const E = m.get(key); E.reps.push(r);
+    if (k) { const t = r.f.seen.trim(); E.spell[t] = (E.spell[t] || 0) + 1; }
+  }
+  for (const c of evRecaps()) { const key = c.key + "|" + c.year; if (!m.has(key)) m.set(key, { key, spell: { [c.event]: 0 }, reps: [], y: +c.year }); }
+  const day = d => new Date(d).toLocaleDateString("en-GB", { timeZone: "UTC", day: "numeric", month: "short" });
+  return [...m.values()].map(E => {
+    E.recap = E.key ? evRecaps().find(c => c.key + "|" + c.year === E.key) : null;
+    E.reps.sort((a, b) => new Date(rpSeenDay(b)) - new Date(rpSeenDay(a)));
+    // the spelling most reports used, then the latest one
+    E.name = E.recap ? E.recap.event : E.key ? Object.entries(E.spell).sort((a, b) => b[1] - a[1])[0][0] : "Event not given";
+    const ds = E.reps.filter(r => r.f?.seenOn).map(r => r.f.seenOn).sort();
+    E.when = !E.key ? "" : ds.length ? (ds[0] === ds.at(-1) ? day(ds[0] + "T12:00:00Z") : day(ds[0] + "T12:00:00Z") + " – " + day(ds.at(-1) + "T12:00:00Z")) + " " + E.y : String(E.y);
+    E.last = Math.max(0, ...E.reps.map(r => new Date(rpSeenDay(r)).getTime()), E.recap ? new Date(E.recap.at).getTime() : 0);
+    return E;
+  }).sort((a, b) => (!a.key) - (!b.key) || b.last - a.last);
+}
+/* Event recaps: one write-up per event (By event view), shown at the top of the event's box above its reports.
+   Anyone on the team can write or update it; every save is a new row on the Sheet's "Event recaps" tab
+   (kind: "evrecap", read back as "recaps" with ?kind=reports) and the newest one for the event is shown, with who
+   wrote it. Status "Deleted" on the newest row takes it down. A save shows at once on this device ("72c-recaps"). */
+const EV = { edit: "" };  // edit: the event whose recap form is open ("new" = another event)
+function evMine(){ try { return JSON.parse(localStorage.getItem("72c-recaps") || "[]").filter(rpKeep); } catch (e) { return []; } }
+function evRecaps(){
+  const all = [...RP_RECAPS, ...evMine()], best = {};
+  for (const c of all) { const k = c.key + "|" + c.year; if (!best[k] || new Date(c.at) > new Date(best[k].at)) best[k] = c; }
+  return Object.values(best).filter(c => (c.text || "").trim());
+}
+function evBlock(E){
+  if (!E.key) return "";
+  const c = E.recap, ed = EV.edit === E.key;
+  if (ed) return evForm(E.key, c?.text || "", E.name, E.y);
+  return c ? `<div class="ev-rc"><h4>Event recap</h4><div class="ev-tx">${esc(c.text)}</div><div class="ev-by">${esc([c.by ? "By " + c.by : "", rpWhen(c.at)].filter(Boolean).join(" · "))}<button type="button" class="ev-ed" data-evw="${esc(E.key)}">Edit recap</button></div></div>`
+    : `<button type="button" class="rp-go ln ev-add" data-evw="${esc(E.key)}">＋ Write event recap</button>`;
+}
+// key "new" = a recap for an event nobody has reported on yet: event name and year typed in
+function evForm(key, text, name, y){
+  const nw = key === "new";
+  return `<form class="ev-f" data-evk="${esc(key)}">${nw ? `<div class="ev-nm"><input class="sq-in" name="ev" placeholder="Event, e.g. J300 Roehampton" maxlength="80" required aria-label="Event"><input class="sq-in sm" name="y" value="${new Date().getFullYear()}" inputmode="numeric" maxlength="4" aria-label="Year"></div>` : `<h4>Event recap · ${esc(name)} ${esc(y)}</h4>`}
+    <textarea class="sq-in" name="tx" rows="6" maxlength="6000" placeholder="How the event went: standout players, level, conditions, who we spoke to, follow-ups" required aria-label="Event recap">${esc(text)}</textarea>
+    <div class="ev-bt"><button type="submit">Save recap</button><button type="button" class="no" data-evx>Cancel</button></div></form>`;
+}
+function evSay(f, t){ const m = f.querySelector(".ev-msg") || f.querySelector(".ev-bt").appendChild(document.createElement("span")); m.className = "ev-msg"; m.textContent = t; }
+async function evSave(f){
+  const key0 = f.dataset.evk, tx = f.tx.value.trim(), by = rpBy() || "Someone";
+  let event, key, year;
+  if (key0 === "new") {
+    event = f.ev.value.replace(/\s+/g, " ").trim(); year = f.y.value.trim(); key = rpEvKey(event);
+    if (!key || !/^20\d\d$/.test(year)) return evSay(f, "Type the event and a four-digit year.");
+  } else {
+    [key, year] = key0.split("|");
+    event = rpEvents().find(E => E.key === key0)?.name || key;
+  }
+  if (!tx) return evSay(f, "Write the recap first.");
+  const c = { kind: "evrecap", id: rpHex(4), key, year, event, text: tx, by, at: new Date().toISOString(), t: Date.now() };
+  const b = f.querySelector("[type=submit]"); b.disabled = true; b.textContent = "Saving…";
+  let res = "";
+  try { const r = await fetch(CORNER_URL, { method: "POST", body: JSON.stringify(c) }); res = r.ok ? (await r.text()).trim() : ""; } catch (e) {}
+  if (res !== "ok") { b.disabled = false; b.textContent = "Save recap"; return evSay(f, "Couldn't reach the Sheet. Your text is still here: check your signal and try again."); }
+  try { localStorage.setItem("72c-recaps", JSON.stringify([...evMine(), c].slice(-30))); } catch (e) {}
+  EV.edit = ""; renderCorner();
+}
+$("#cnList").addEventListener("click", e => {
+  const w = e.target.closest("[data-evw]"); if (w) { EV.edit = w.dataset.evw; renderCorner(); $("#cnList .ev-f textarea")?.focus(); return; }
+  if (e.target.closest("[data-evx]")) { EV.edit = ""; renderCorner(); }
+});
+$("#cnList").addEventListener("submit", e => { const f = e.target.closest(".ev-f"); if (f) { e.preventDefault(); evSave(f); } });
+// one report inside an event box: the player first, then who wrote it, the day seen and the key facts
+function rpEvRow(r){
+  const n = rpNotes(r.id).length, f = r.f || {};
+  return `<button type="button" class="rp-row" data-rpo="${esc(r.id)}"><span class="t">${f.light ? `<span class="lt-dot ${RP_LT_K[f.light]}"></span>` : ""}${esc(r.name)}<small>${[rpMeta(r), "report by " + (r.firstBy || r.by || "someone"), f.seenOn ? "seen " + rpDay(f.seenOn + "T12:00:00Z") : "", n ? `${n} comment${n === 1 ? "" : "s"}` : ""].filter(Boolean).map(esc).join(" · ")}</small><span class="rp-chips">${rpChips(f)}</span></span><span class="ar" aria-hidden="true">›</span></button>`;
+}
 /* the Reports view: your drafts first, then one card per player with a report or a clip (their folder), newest first */
 function renderReports(){
   const q = cnKey(CN.q), groups = new Map();
@@ -5424,6 +5528,21 @@ function renderReports(){
       <div class="sg-wl">${G.reps.length ? `${G.reps.length} report${G.reps.length === 1 ? "" : "s"}, latest by ${esc(r.firstBy || r.by || "someone")} · ${esc(rpDay(r.at))}` : "No report yet"}${nn ? `<span class="vd-n">${CM_ICON}${nn}</span>` : ""}${G.vids.length ? `<span class="vd-n">${RP_CAM}${G.vids.length}</span>` : ""}</div>
       <div class="cn-open"><span class="ar" aria-hidden="true">›</span>Open folder<span class="lg">: reports &amp; videos</span></div></div>`;
   };
+  document.querySelectorAll(".rpg").forEach(b => b.classList.toggle("on", b.dataset.rg === CN.rg));
+  if (CN.rg === "ev") {
+    const evs = rpEvents().filter(E => (!E.reps.length && !CN.g && (!q || cnKey(E.name).includes(q))) || E.reps.some(r => (!CN.g || r.g === CN.g) && (!q || cnKey(r.name).includes(q) || cnKey(E.name).includes(q))));
+    const dhE = drafts.length ? `<section class="rp-drafts"><h3>Your drafts <small>only you can see these</small></h3>${drafts.map(rpDraftRow).join("")}</section>` : "";
+    const nw = `<section class="rp-ev ev-new">${EV.edit === "new" ? evForm("new", "") : `<button type="button" class="rp-go ln ev-add" data-evw="new">＋ Recap for another event</button>`}</section>`;
+    const keep = [...document.querySelectorAll("#cnList .ev-f")].map(f => [f.dataset.evk, Object.fromEntries([...f.elements].filter(x => x.name).map(x => [x.name, x.value]))]);  // a recap being typed survives a redraw
+    $("#cnList").innerHTML = dhE + nw + (evs.map(E => {
+      const reps = E.reps.filter(r => (!CN.g || r.g === CN.g) && (!q || cnKey(r.name).includes(q) || cnKey(E.name).includes(q)));
+      const np = new Set(reps.map(r => cnSorted(r.name))).size;
+      return `<section class="rp-ev${E.key ? "" : " none"}"><h3>${esc(E.name)}</h3><div class="mt">${[E.when, reps.length ? `${reps.length} report${reps.length === 1 ? "" : "s"}` : "No reports yet", reps.length ? `${np} player${np === 1 ? "" : "s"}` : ""].filter(Boolean).join(" · ")}</div>${evBlock(E)}${reps.map(rpEvRow).join("")}</section>`;
+    }).join("") || `<div class="sq-empty">${q || CN.g ? "No report matches." : "No published scouting reports yet."}</div>`);
+    for (const [k, v] of keep) { const f = $(`#cnList .ev-f[data-evk="${CSS.escape(k)}"]`); if (f) for (const [n, x] of Object.entries(v)) if (f.elements[n]) f.elements[n].value = x; }
+    $("#cnSrc").textContent = RP_OK ? "Grouped by the event typed in each report (\u201cEvent or place\u201d) and the year seen. Clips aren't tied to an event, so they're under By player. Anyone can write or update an event's recap." : "Reading the reports from the Sheet…";
+    return;
+  }
   const dh = drafts.length ? `<section class="rp-drafts"><h3>Your drafts <small>only you can see these</small></h3>${drafts.map(rpDraftRow).join("")}</section>` : "";
   $("#cnList").innerHTML = dh + (list.map(card).join("") || `<div class="sq-empty">${q || CN.g ? "No report matches." : "No published scouting reports yet. Press “Add scouting report” above to write the first one."}</div>`);
   $("#cnSrc").textContent = RP_OK ? "" : "Reading the reports from the Sheet…";
