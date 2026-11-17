@@ -448,15 +448,6 @@
     "link": "https://www.itftennis.com/en/tournament/w75-grado/ita/2024/w-itf-ita-2024-009/"
    },
    {
-    "id": "buse",
-    "tournament": "M25 Vic",
-    "tier": "M25",
-    "type": "ITF World Tennis Tour",
-    "week": "13 May to 19 May 2024",
-    "end": "2024-05-19",
-    "link": "https://www.itftennis.com/en/tournament/m25-vic/esp/2024/m-itf-esp-2024-026/"
-   },
-   {
     "id": "kym",
     "tournament": "M15 Antalya",
     "tier": "M15",
@@ -504,15 +495,6 @@
     "link": "https://www.itftennis.com/en/tournament/m15-santo-domingo/dom/2023/m-itf-dom-05a-2023/"
    },
    {
-    "id": "buse",
-    "tournament": "M25 Zapopan",
-    "tier": "M25",
-    "type": "ITF World Tennis Tour",
-    "week": "09 Oct to 15 Oct 2023",
-    "end": "2023-10-15",
-    "link": "https://www.itftennis.com/en/tournament/m25-zapopan/mex/2023/m-itf-mex-03a-2023/"
-   },
-   {
     "id": "bejlek",
     "tournament": "W25 Santa Margherita di Pula",
     "tier": "W25",
@@ -529,15 +511,6 @@
     "week": "09 Oct to 15 Oct 2023",
     "end": "2023-10-15",
     "link": "https://www.itftennis.com/en/tournament/w60-rancho-santa-fe-ca/usa/2023/w-itf-usa-46a-2023/"
-   },
-   {
-    "id": "buse",
-    "tournament": "M25 Mendoza",
-    "tier": "M25",
-    "type": "ITF World Tennis Tour",
-    "week": "02 Oct to 08 Oct 2023",
-    "end": "2023-10-08",
-    "link": "https://www.itftennis.com/en/tournament/m25-mendoza/arg/2023/m-itf-arg-08a-2023/"
    },
    {
     "id": "kuzuhara",
@@ -1072,7 +1045,6 @@
  "full": [
   "deminaur",
   "rublev",
-  "buse",
   "altmaier",
   "monfils",
   "coric",
@@ -1081,7 +1053,6 @@
   "kuzuhara",
   "ivanov",
   "bonding",
-  "mackenzie",
   "choi",
   "qi",
   "chavez",
@@ -1126,13 +1097,6 @@
    "rank": 5,
    "itf": 5,
    "seen": 13,
-   "week": "2026-11-16",
-   "checked": "2026-11-17"
-  },
-  "buse": {
-   "rank": 30,
-   "itf": 30,
-   "seen": 32,
    "week": "2026-11-16",
    "checked": "2026-11-17"
   },
@@ -1188,13 +1152,6 @@
    "rank": 656,
    "itf": 656,
    "seen": 656,
-   "week": "2026-11-16",
-   "checked": "2026-11-17"
-  },
-  "mackenzie": {
-   "rank": 573,
-   "itf": 573,
-   "seen": 573,
    "week": "2026-11-16",
    "checked": "2026-11-17"
   },
@@ -1375,7 +1332,7 @@
    "checked": "2026-11-16"
   }
  },
- "tried": "2026-11-17T14:13:15Z",
+ "tried": "2026-11-17T15:15:08Z",
  "pending": [],
  "todo": [],
  "todoMode": "career",
