@@ -729,6 +729,16 @@ a.cn-st.ok:hover{border-color:var(--gold)}
 .vd-th small{font-size:11px;line-height:1.3}
 .vd-th small b{display:block;color:var(--text);font-weight:600}
 .vd-none{font-size:12px;color:var(--muted);padding:2px 0 10px}
+/* video links: a tile labelled with where the video is (YouTube shows its own picture), the paste-a-link form, the play window */
+.vd-th .im .vd-src{position:absolute;left:6px;top:6px;z-index:1;font-style:normal;font-size:10px;font-weight:600;letter-spacing:.04em;padding:2px 8px;border-radius:999px;background:rgba(12,20,49,.85);color:var(--text);border:1px solid var(--line-2);max-width:calc(100% - 12px);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.vd-th .im .vd-src.yt{color:#ff6b6b}.vd-th .im .vd-src.ig{color:#f58fd0}.vd-th .im .vd-src.tt{color:#7fe3ee}.vd-th .im .vd-src.vm{color:#7cc7ff}
+.vd-lf{padding:14px 22px 18px}
+.vd-lmsg{margin:0 0 4px;min-height:1em;font-size:12px;color:var(--up);line-height:1.4}
+.vd-lmsg.err{color:var(--down)}
+.vd-lf .rp-go svg,.vd-out .rp-go svg,.rp-btns .rp-go svg{width:17px;height:17px}
+.vd-out{display:grid;place-items:center;padding:40px 22px}
+.vd-out .rp-go svg{fill:currentColor}
+.vd-play.tall iframe{height:min(78dvh,740px)}
 .vd-job{position:relative;display:flex;justify-content:space-between;gap:10px;margin:0 0 6px;padding:8px 12px;border:1px solid var(--line-2);border-radius:10px;font-size:12px;overflow:hidden}
 .vd-job span{min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
 .vd-job em{font-style:normal;color:var(--gold);white-space:nowrap}
@@ -786,10 +796,10 @@ a.cn-st.ok:hover{border-color:var(--gold)}
 .rp-nf{display:flex;flex-direction:column;align-items:flex-end;gap:8px;margin:4px 0 6px}
 .rp-nf textarea.sq-in{flex:none;width:100%;box-sizing:border-box;height:auto;min-height:60px;padding:10px 14px;border-radius:14px;font-size:16px;line-height:1.45;resize:vertical}
 /* Report form tidy-up (Nov 2026): one height and text size for every box and button, quieter placeholders, a date box that fits phones, solid Save bar */
-.rp-form .rp-f>label{font-size:13px;color:var(--muted);font-weight:500;letter-spacing:.01em}
-.rp-form input.sq-in,.rp-form select.sq-in{height:44px;padding:0 16px;font-size:16px;line-height:44px}
+.rp-form .rp-f>label,.vd-lf .rp-f>label{font-size:13px;color:var(--muted);font-weight:500;letter-spacing:.01em}
+.rp-form input.sq-in,.rp-form select.sq-in,.vd-lf input.sq-in{height:44px;padding:0 16px;font-size:16px;line-height:44px}
 .rp-form select.sq-in{padding-right:34px;background-position:calc(100% - 18px) 19px,calc(100% - 13px) 19px}
-.rp-form .sq-in::placeholder{color:var(--muted-2);font-size:15px;opacity:1}
+.rp-form .sq-in::placeholder,.vd-lf .sq-in::placeholder{color:var(--muted-2);font-size:15px;opacity:1}
 .rp-form input[type=date].sq-in{display:block;min-width:0;max-width:100%;-webkit-appearance:none;appearance:none;text-align:left;color-scheme:dark}
 .rp-form input[type=date]::-webkit-date-and-time-value{text-align:left;margin:0}
 .rp-form .rp-pills button{min-height:40px;padding:6px 16px;font-size:14px}
@@ -5030,7 +5040,7 @@ function rpNotePost(r, text){
 }
 function vdAll(){
   const mine = vdMineAll(), gone = new Set(mine.filter(x => x.gone).map(x => x.id)), seen = new Set(VD_SHEET.map(v => v.id));
-  const local = mine.filter(x => !x.gone && !seen.has(x.id) && (!RP_OK || Date.now() - x.t < 6e5));
+  const local = mine.filter(x => !x.gone && !seen.has(x.id) && (!RP_OK || x.t > RP_READ - 6e5));
   return [...VD_SHEET, ...local].filter(v => !gone.has(v.id)).sort((a, b) => new Date(b.at) - new Date(a.at));
 }
 const rpKeys = names => new Set(names.filter(Boolean).map(cnSorted));
@@ -5052,11 +5062,15 @@ function rpChips(f){
   return c.filter(Boolean).map(t => `<span>${esc(t)}</span>`).join("");
 }
 const RP_PLAY = `<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M8 5v14l11-7z"/></svg>`;
+const RP_LINK = `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M10 14a4.5 4.5 0 0 0 6.4 0l3.2-3.2a4.5 4.5 0 0 0-6.4-6.4L12 5.6"/><path d="M14 10a4.5 4.5 0 0 0-6.4 0l-3.2 3.2a4.5 4.5 0 0 0 6.4 6.4l1.2-1.2"/></svg>`;
 const RP_CAM = `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="2" y="6" width="14" height="12" rx="2"/><path d="M16 10l6-3v10l-6-3z"/></svg>`;
 // clip tiles: Drive's thumbnail (dropped if it isn't ready yet), who added it and when
 function vdGrid(list, empty){
   if (!list.length) return empty ? `<div class="vd-none">${esc(empty)}</div>` : "";
-  return `<div class="vd-grid">${list.map(v => `<button type="button" class="vd-th" data-vd="${esc(v.id)}" aria-label="Play clip${v.cap ? ": " + esc(v.cap) : ""}"><span class="im"><img src="https://drive.google.com/thumbnail?id=${encodeURIComponent(v.id)}&sz=w480" alt="" loading="lazy"><i>${RP_PLAY}</i></span>
+  const pic = v => { if (!v.url) return `<img src="https://drive.google.com/thumbnail?id=${encodeURIComponent(v.id)}&sz=w480" alt="" loading="lazy">`;
+    const L = vdParse(v.url) || { k: "web" };
+    return (L.k === "yt" ? `<img src="https://i.ytimg.com/vi/${encodeURIComponent(L.vid)}/hqdefault.jpg" alt="" loading="lazy">` : "") + `<em class="vd-src ${L.k}">${esc(vdSrc(v.url))}</em>`; };
+  return `<div class="vd-grid">${list.map(v => `<button type="button" class="vd-th" data-vd="${esc(v.id)}" aria-label="Play clip${v.cap ? ": " + esc(v.cap) : ""}"><span class="im">${pic(v)}<i>${RP_PLAY}</i></span>
     <small>${v.cap ? `<b>${esc(v.cap)}</b>` : ""}${esc([v.by, rpDay(v.at)].filter(Boolean).join(" · "))}</small></button>`).join("")}</div>`;
 }
 document.addEventListener("error", e => { if (e.target.matches?.(".vd-th img")) e.target.remove(); }, true);
@@ -5074,7 +5088,7 @@ function rpBlock(names, who){
     ${mine.map(rpDraftRow).join("")}${reps.map(r => rpRow(r)).join("")}
     ${vdGrid(vids)}
     ${!reps.length && !vids.length && !mine.length ? `<div class="vd-none">No scouting report or clips yet.</div>` : ""}
-    <div class="rp-btns"><button type="button" class="rp-go" data-rpnew="${d}">＋ Write a report</button><button type="button" class="rp-go ln" data-vdadd="${d}">${RP_CAM}Add videos</button></div></div>`;
+    <div class="rp-btns"><button type="button" class="rp-go" data-rpnew="${d}">＋ Write a report</button><button type="button" class="rp-go ln" data-vdadd="${d}">${RP_CAM}Add videos</button><button type="button" class="rp-go ln" data-vdlink="${d}">${RP_LINK}Paste a link</button></div></div>`;
 }
 
 /* the form */
@@ -5131,9 +5145,9 @@ function rpFormHtml(){
     </section>
     ${RP_SEC.map(([h, fs]) => `<section><h4>${esc(h)}</h4>${fs.map(rpField).join("")}</section>`).join("")}
     <section><h4>Videos</h4>
-      <p class="rp-hint">Short clips from your phone or computer. Everyone with the app can watch them on this player's reports and profile.</p>
+      <p class="rp-hint">Upload clips from your phone or computer, or paste a link to a YouTube, Instagram, TikTok or Vimeo video. Everyone with the app can watch them on this player's reports and profile.</p>
       ${vdGrid(vids)}${ups.map(vdJob).join("")}
-      <button type="button" class="rp-go ln" data-vdform="1">${RP_CAM}Add videos</button>
+      <div class="rp-btns"><button type="button" class="rp-go ln" data-vdform="1">${RP_CAM}Add videos</button><button type="button" class="rp-go ln" data-vdform="link">${RP_LINK}Paste a link</button></div>
     </section>
     <div class="rp-save"><span id="rpErr" role="alert" class="${RPF.note ? "ok" : ""}">${esc(RPF.note)}</span><button type="button" class="rp-go ln" data-rpdraft="1">Save draft</button><button type="submit" class="rp-go">${RPF.pub ? "Publish changes" : "Publish report"}</button></div>
     </form>`;
@@ -5179,7 +5193,7 @@ function rpViewHtml(r){
     ${notes.map(n => `<div class="rp-note"><div><b>${esc(n.by || "Someone")}</b><small>${esc(rpWhen(n.at))}</small></div><p>${esc(n.text)}</p></div>`).join("") || `<div class="vd-none">No comments yet.${mine ? "" : ` Only ${esc(first || "the writer")} can change the report itself, but anyone can add a comment.`}</div>`}
     <form class="rp-nf" data-rid="${esc(r.id)}"><textarea class="sq-in" name="t" rows="2" maxlength="2000" placeholder="Add a comment on this report${rpBy() ? ` as ${esc(rpBy())}` : ""}">${esc(draft)}</textarea><button type="submit" class="rp-go">Add comment</button></form>
     <h4>Videos</h4>${vdGrid(vids, "No clips yet.")}
-    <div class="rp-btns">${mine ? `<button type="button" class="rp-go" data-rpedit="${esc(r.id)}">${dr ? "Carry on with your changes" : "Edit your report"}</button>` : ""}<button type="button" class="rp-go ln" data-vdadd="${esc(JSON.stringify({ name: r.name, rid: r.id }))}">${RP_CAM}Add videos</button>
+    <div class="rp-btns">${mine ? `<button type="button" class="rp-go" data-rpedit="${esc(r.id)}">${dr ? "Carry on with your changes" : "Edit your report"}</button>` : ""}<button type="button" class="rp-go ln" data-vdadd="${esc(JSON.stringify({ name: r.name, rid: r.id }))}">${RP_CAM}Add videos</button><button type="button" class="rp-go ln" data-vdlink="${esc(JSON.stringify({ name: r.name, rid: r.id }))}">${RP_LINK}Paste a link</button>
     ${rpFor([r.name]).length > 1 ? `<button type="button" class="rp-go ln" data-rpp="${esc(r.name)}">All reports on ${esc(r.name.split(" ")[0])}</button>` : ""}
     ${P && !$("#cnd").open ? `<button type="button" class="rp-go ln" data-rpprof="${esc(P.k)}">Watch list profile</button>` : ""}</div></div>`;
 }
@@ -5194,7 +5208,7 @@ function rpPlayerHtml(name){
     ${mine.length ? `<h4>Your drafts</h4><div class="rp-blk">${mine.map(rpDraftRow).join("")}</div>` : ""}
     <h4>Reports</h4>${reps.length ? `<div class="rp-blk">${reps.map(r => rpRow(r, true)).join("")}</div>` : `<div class="vd-none">No report yet.</div>`}
     <h4>Videos</h4>${vdGrid(vids, "No clips yet.")}
-    <div class="rp-btns"><button type="button" class="rp-go" data-rpnew="${who}">＋ Write a report</button><button type="button" class="rp-go ln" data-vdadd="${who}">${RP_CAM}Add videos</button>
+    <div class="rp-btns"><button type="button" class="rp-go" data-rpnew="${who}">＋ Write a report</button><button type="button" class="rp-go ln" data-vdadd="${who}">${RP_CAM}Add videos</button><button type="button" class="rp-go ln" data-vdlink="${who}">${RP_LINK}Paste a link</button>
     ${P && !$("#cnd").open ? `<button type="button" class="rp-go ln" data-rpprof="${esc(P.k)}">Watch list profile</button>` : ""}</div></div>`;
 }
 function rpShow(mode, id){
@@ -5302,7 +5316,7 @@ $("#rpd").addEventListener("click", e => {
     rpRead();
     const name = cnTidy(RPF.name.replace(/\s+/g, " ").trim());
     if (name.length < 3) { $("#rpErr").textContent = "Type the player's name first, so the clips go in their folder."; $("#rpName").focus(); return; }
-    return vdPick({ name, rid: RPF.id });
+    return e.target.closest("[data-vdform]").dataset.vdform === "link" ? vdLinkForm({ name, rid: RPF.id }) : vdPick({ name, rid: RPF.id });
   }
   const rt = e.target.closest("[data-vdretry]"); if (rt) return vdRetry(Number(rt.dataset.vdretry));
 });
@@ -5322,6 +5336,8 @@ document.addEventListener("click", e => {
   const dr = e.target.closest("[data-rpdo]"); if (dr) return rpForm({ id: dr.dataset.rpdo });
   const a = e.target.closest("[data-vdadd]");
   if (a) { let o = {}; try { o = JSON.parse(a.dataset.vdadd); } catch (err) {} if (o.name) vdPick(o); return; }
+  const ln = e.target.closest("[data-vdlink]");
+  if (ln) { let o = {}; try { o = JSON.parse(ln.dataset.vdlink); } catch (err) {} if (o.name) vdLinkForm(o); return; }
   const v = e.target.closest("[data-vd]"); if (v) return vdOpen(v.dataset.vd);
   const pf = e.target.closest("[data-rpfold]"); if (pf) return rpShow("player", pf.dataset.rpfold);
   if (!e.target.closest("#rpd")) { const o = e.target.closest("[data-rpo]"); if (o) return rpShow("report", o.dataset.rpo); }
@@ -5440,6 +5456,16 @@ function vdOpen(id){
   const v = vdAll().find(x => x.id === id); if (!v) return;
   const mine = vdMineAll().find(x => x.id === id && x.undo && Date.now() - x.t < 864e5);
   const d = $("#vdd");
+  if (v.url) {
+    const L = vdParse(v.url) || { k: "web" }, src = vdEmbed(L), app = vdSrc(v.url);
+    d.innerHTML = `<div class="rs-hd"><button type="button" class="x" data-vdx="1" aria-label="Close">✕</button><div class="k">Scouting video · ${esc(app)}</div><h2>${esc(v.name)}</h2>
+      <div class="mt">${esc([v.cap, v.by ? "added by " + v.by : "", rpDay(v.at)].filter(Boolean).join(" · "))}</div></div>
+      ${src ? `<div class="vd-play${L.k === "ig" || L.k === "tt" || L.short ? " tall" : ""}"><iframe src="${esc(src)}" allow="autoplay; fullscreen; encrypted-media; picture-in-picture" allowfullscreen referrerpolicy="strict-origin-when-cross-origin" title="Video of ${esc(v.name)}"></iframe></div>`
+        : `<div class="vd-out"><a class="rp-go" href="${esc(v.url)}" target="_blank" rel="noopener">${RP_PLAY}Watch on ${esc(app)}</a></div>`}
+      <div class="vd-foot"><span>${src ? `Won't play here (e.g. a private account)? Open it in ${esc(app)} instead.` : "This site can't be played inside 72 Central, so it opens in a new tab."}</span><a href="${esc(v.url)}" target="_blank" rel="noopener">Open in ${esc(app)}</a>${mine ? `<button type="button" class="rp-lnk" data-vdrm="${esc(id)}">Remove this link</button>` : ""}</div>`;
+    if (!d.open) { profLock(true); d.showModal(); }
+    return;
+  }
   d.innerHTML = `<div class="rs-hd"><button type="button" class="x" data-vdx="1" aria-label="Close">✕</button><div class="k">Scouting video</div><h2>${esc(v.name)}</h2>
     <div class="mt">${esc([v.cap, v.by ? "added by " + v.by : "", rpDay(v.at)].filter(Boolean).join(" · "))}</div></div>
     <div class="vd-play"><iframe src="https://drive.google.com/file/d/${encodeURIComponent(id)}/preview" allow="autoplay; fullscreen" allowfullscreen title="Video of ${esc(v.name)}"></iframe></div>
@@ -5450,12 +5476,70 @@ $("#vdd").addEventListener("click", e => {
   const d = $("#vdd");
   if (e.target === d || e.target.closest("[data-vdx]")) return d.close();
   const rm = e.target.closest("[data-vdrm]");
-  if (rm && confirm("Remove this clip for everyone?")) {
+  if (rm && confirm("Remove this video for everyone?")) {
     const list = vdMineAll(), x = list.find(v => v.id === rm.dataset.vdrm);
     if (x) { try { fetch(CORNER_URL, { method: "POST", mode: "no-cors", body: JSON.stringify({ kind: "unvideo", id: x.id, undo: x.undo }) }).catch(() => {}); } catch (err) {} x.gone = true; vdMineSave(list); }
     VD_SHEET = VD_SHEET.filter(v => v.id !== rm.dataset.vdrm);
     d.close(); renderCorner(); rpRedraw();
   }
+});
+/* video links (YouTube, Instagram, TikTok, Vimeo or any other page): pasted in a small form in the #vdd window, saved as a
+   row on the Sheet's "Videos" tab (kind: "vidlink", id "L" + 16 hex, the link in the Link column), shown and removed like clips */
+function vdParse(u){
+  let x; try { x = new URL(String(u || "").trim()); } catch (e) { return null; }
+  if (!/^https?:$/.test(x.protocol) || !x.hostname.includes(".")) return null;
+  const h = x.hostname.replace(/^(www|m|mobile)\./, ""), p = x.pathname; let m;
+  if (h === "youtu.be" && (m = p.match(/^\/([\w-]{11})/))) return { k: "yt", vid: m[1] };
+  if (/(^|\.)youtube(-nocookie)?\.com$/.test(h)) {
+    const q = x.searchParams.get("v"); if (q && /^[\w-]{11}$/.test(q)) return { k: "yt", vid: q };
+    if ((m = p.match(/^\/(shorts|live|embed)\/([\w-]{11})/))) return { k: "yt", vid: m[2], short: m[1] === "shorts" };
+    return { k: "web" };
+  }
+  if (/(^|\.)instagram\.com$/.test(h) && (m = p.match(/^\/(?:[\w.]+\/)?(?:p|reels?|tv)\/([\w-]+)/))) return { k: "ig", vid: m[1] };
+  if (/(^|\.)tiktok\.com$/.test(h) && (m = p.match(/\/video\/(\d+)/))) return { k: "tt", vid: m[1] };
+  if (/(^|\.)vimeo\.com$/.test(h) && (m = p.match(/^\/(?:video\/)?(\d+)/))) return { k: "vm", vid: m[1] };
+  return { k: "web" };
+}
+const vdSrc = u => { const L = vdParse(u); if (!L) return "link"; return { yt: "YouTube", ig: "Instagram", tt: "TikTok", vm: "Vimeo" }[L.k] || new URL(u).hostname.replace(/^www\./, ""); };
+const vdEmbed = L => ({ yt: `https://www.youtube-nocookie.com/embed/${L.vid}?rel=0&playsinline=1`, ig: `https://www.instagram.com/p/${L.vid}/embed/`,
+  tt: `https://www.tiktok.com/embed/v2/${L.vid}`, vm: `https://player.vimeo.com/video/${L.vid}` })[L.k] || "";
+function vdLinkForm(ctx){
+  const d = $("#vdd"); VD.lctx = ctx;
+  d.innerHTML = `<div class="rs-hd"><button type="button" class="x" data-vdx="1" aria-label="Close">✕</button><div class="k">Add a video link</div><h2>${esc(ctx.name)}</h2>
+    <div class="mt">Paste a link to a YouTube, Instagram, TikTok or Vimeo video (in the app: Share, then Copy link). Any other video page works too; it opens in a new tab.</div></div>
+    <form class="vd-lf" autocomplete="off" novalidate>
+      <div class="rp-f"><label for="vdUrl">Link</label><input class="sq-in" id="vdUrl" name="url" type="url" inputmode="url" autocapitalize="off" spellcheck="false" maxlength="500" placeholder="Paste the link here"></div>
+      <div class="rp-f"><label for="vdCap">What's in it? (optional)</label><input class="sq-in" id="vdCap" name="cap" maxlength="120" placeholder="e.g. Final, second set"></div>
+      <p class="vd-lmsg" id="vdLmsg" role="alert"></p>
+      <div class="rp-btns"><button type="submit" class="rp-go">${RP_LINK}Add link</button></div>
+    </form>`;
+  if (!d.open) { profLock(true); d.showModal(); }
+}
+$("#vdd").addEventListener("input", e => {
+  if (e.target.id !== "vdUrl") return;
+  const L = vdParse(e.target.value), m = $("#vdLmsg"); m.className = "vd-lmsg";
+  m.textContent = !e.target.value.trim() ? "" : !L ? "" : L.k === "web" ? `A link to ${vdSrc(e.target.value)}: it will open in a new tab.` : `✓ ${vdSrc(e.target.value)} video: it will play here.`;
+});
+$("#vdd").addEventListener("submit", async e => {
+  if (!e.target.matches(".vd-lf")) return;
+  e.preventDefault();
+  const f = e.target, m = $("#vdLmsg"), ctx = VD.lctx || {}, btn = f.querySelector("[type=submit]");
+  let url = f.elements.url.value.trim(); if (url && !/^https?:\/\//i.test(url) && /^[\w-]+(\.[\w-]+)+\//.test(url)) url = "https://" + url;
+  const cap = f.elements.cap.value.trim(), L = vdParse(url);
+  m.className = "vd-lmsg err";
+  if (!L) { m.textContent = "That doesn't look like a link. In the app, tap Share, then Copy link, and paste it here."; return; }
+  if (vdFor([ctx.name]).some(v => v.url === url)) { m.textContent = `That link is already on ${ctx.name}'s videos.`; return; }
+  const by = rpBy(), x = { kind: "vidlink", id: "L" + rpHex(8), undo: rpHex(16), name: ctx.name, rid: ctx.rid || "", by, cap, url };
+  btn.disabled = true; btn.textContent = "Adding…";
+  let res = "";
+  try { const r = await fetch(CORNER_URL, { method: "POST", body: JSON.stringify(x) }); res = r.ok ? (await r.text()).trim() : ""; } catch (err) {}
+  if (res !== "ok") {
+    btn.disabled = false; btn.innerHTML = `${RP_LINK}Add link`;
+    m.textContent = res === "bad" ? "The Sheet didn't take the link. If this keeps happening, the Sheet script needs its latest version." : "Couldn't reach the Sheet. Check your signal and try again.";
+    return;
+  }
+  vdMineSave([...vdMineAll(), { id: x.id, name: ctx.name, by, rid: x.rid, cap, url, at: new Date().toISOString(), undo: x.undo, t: Date.now() }]);
+  $("#vdd").close(); rpRedraw(); renderCorner();
 });
 $("#vdd").addEventListener("close", () => { $("#vdd").innerHTML = ""; if (!$("#cnd").open && !$("#rpd").open && !$("#resd").open) profLock(false); });
 /* ---------- Settings (the cog in the top corner): first name and time zone, kept on this device ---------- */
