@@ -24,6 +24,8 @@
 // "Draft" rows are unfinished reports, shown only to the person who started them (same first name or same device),
 // who is also the only one who can edit the report. To delete a report, set the Status of its newest row to "Deleted".
 // Comments on reports go on the "Report comments" tab (set Status to "Deleted" to take one down).
+// Event recaps (Scouting reports "By event"): one write-up per event; every save is a row on the "Event recaps" tab
+// (made automatically) and the newest row for an event is the one shown. Set its Status to "Deleted" to take it down.
 // Scouting videos: the clips go into a Google Drive folder, "72 Central scouting videos" (made automatically, one
 // folder per player), and each is a row on the "Videos" tab. Anyone with the link can watch a clip (the links are
 // only on the passcode-protected site). To take a clip down, set its Status to "Removed" (and delete the file in
@@ -91,6 +93,7 @@ function doPost(e) {
   if (d.kind === "light") return setLight(d);
   if (d.kind === "report") return saveReport(d);
   if (d.kind === "rpnote") return addReportNote(d);
+  if (d.kind === "evrecap") return saveEventRecap(d);
   if (d.kind === "vidstart") return videoStart(d);
   if (d.kind === "vidchunk") return videoChunk(d);
   if (d.kind === "unvideo") return videoRemove(d);
@@ -693,7 +696,15 @@ function listReports(e) {
     id: String(r[6]), name: unplain_(r[1]).trim(), cap: unplain_(r[2]), by: unplain_(r[3]), rid: String(r[5] || ""), at: r[0].toISOString(), mb: Number(r[10]) || null,
     url: /^L[a-f0-9]{16}$/.test(String(r[6])) ? unplain_(r[7]) : ""
   }));
-  return json_({ reports, drafts, notes, videos });
+  // event recaps: the newest row for each event (event words + year); none if that row says "Deleted"
+  const es = SpreadsheetApp.getActiveSpreadsheet().getSheetByName("Event recaps");
+  const erows = es && es.getLastRow() > 1 ? es.getRange(2, 1, es.getLastRow() - 1, 8).getValues() : [];
+  const newest = {};
+  erows.filter(r => r[0] instanceof Date).forEach(r => { const k = String(r[1]) + "|" + String(r[3]); if (!newest[k] || r[0] >= newest[k][0]) newest[k] = r; });
+  const recaps = Object.values(newest).filter(r => String(r[6]).trim() !== "Deleted").map(r => ({
+    key: String(r[1]), event: unplain_(r[2]), year: String(r[3]), text: unplain_(r[4]), by: unplain_(r[5]), at: r[0].toISOString()
+  }));
+  return json_({ reports, drafts, notes, videos, recaps });
 }
 
 // A comment on someone's report (the "Comments from the team" box under a report). One row each on the
@@ -717,6 +728,34 @@ function addReportNote(d) {
     }
     if (sh.getLastRow() > 1 && sh.getRange("G:G").createTextFinder(id).matchEntireCell(true).findNext()) return out("dup");
     sh.appendRow([new Date(), rid, plain_(name), plain_(text), plain_(by || "Someone"), "Live", id]);
+  } finally {
+    lock.releaseLock();
+  }
+  return out("ok");
+}
+
+// An event recap (Scouting reports > By event). Anyone on the team can write or update one; each save is a new row
+// on the "Event recaps" tab and the newest row for the event is shown. Set Status to "Deleted" to take it down.
+function saveEventRecap(d) {
+  const key = clean_(d.key).slice(0, 120), year = String(d.year || ""), id = String(d.id || "");
+  const event = clean_(d.event).replace(/\s+/g, " ").slice(0, 80), text = clean_(d.text).slice(0, 6000), by = clean_(d.by).slice(0, 30);
+  if (!/^[a-z0-9]+( [a-z0-9]+)*$/.test(key) || !/^20\d\d$/.test(year) || !/^[a-f0-9]{8}$/.test(id) || !event || !text) return out("bad");
+  const lock = LockService.getScriptLock();
+  lock.waitLock(10000);
+  try {
+    const ss = SpreadsheetApp.getActiveSpreadsheet();
+    let sh = ss.getSheetByName("Event recaps");
+    if (!sh) {
+      sh = ss.insertSheet("Event recaps");
+      sh.getRange(1, 1, 1, 8).setValues([["Saved", "Event key", "Event", "Year", "Recap", "By", "Status", "Recap ID"]]).setFontWeight("bold");
+      sh.setFrozenRows(1);
+      sh.getRange("A:A").setNumberFormat("ddd d mmm yyyy HH:mm");
+      sh.getRange("D:D").setNumberFormat("@");
+      sh.getRange("E:E").setWrap(true);
+      sh.hideColumns(2); sh.hideColumns(8);
+    }
+    if (sh.getLastRow() > 1 && sh.getRange("H:H").createTextFinder(id).matchEntireCell(true).findNext()) return out("ok");
+    sh.appendRow([new Date(), key, plain_(event), year, plain_(text), plain_(by || "Someone"), "Live", id]);
   } finally {
     lock.releaseLock();
   }
