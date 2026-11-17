@@ -458,6 +458,15 @@ select.sq-in option{background:var(--navy-2);color:var(--white)}
 .cn-add{border:1px solid var(--line);border-radius:18px;padding:16px 18px;margin:0 0 18px;background:linear-gradient(180deg,var(--navy-2),rgba(17,27,63,.55))}
 .cn-add h3{font-family:var(--display);font-weight:500;text-transform:uppercase;letter-spacing:.16em;font-size:12px;color:var(--gold);margin:0 0 10px}
 .cn-add h3 button{font:inherit;letter-spacing:inherit;text-transform:inherit;color:inherit;cursor:default;padding:0;height:auto;background:none;border-radius:0}
+/* "Add a prospect" is a drop-down on every screen: closed until its bar is tapped (Tobey's call) */
+.cn-add{padding:0}
+.cn-add.open{padding-bottom:16px}
+.cn-add h3{margin:0}
+.cn-add h3 button{display:flex;align-items:center;justify-content:space-between;width:100%;padding:14px 18px;cursor:pointer}
+.cn-add h3 button::after{content:"+";font-size:20px;line-height:1;font-weight:400;transition:transform .2s}
+.cn-add.open h3 button::after{transform:rotate(45deg)}
+.cn-add:not(.open)>:not(h3){display:none!important}
+.cn-add>:not(h3){margin-inline:18px}
 .cn-add form{display:flex;flex-wrap:wrap;align-items:flex-start;gap:8px}
 .cn-add .sq-in{flex:1 1 150px}
 .cn-add #cnName{flex:2 1 220px}
@@ -1570,6 +1579,7 @@ body.on-home > footer{display:none}
   .cn-add.open h3 button::after{transform:rotate(45deg)}
   .cn-add:not(.open)>:not(h3){display:none!important}
   .cn-add>:not(h3){margin-inline:14px}
+  .cn-add.open{padding-bottom:12px}
   .cn-add form{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:6px}
   .cn-add #cnName,.cn-add #cnG,.cn-opt,.cn-lt,.cn-add .cn-cm,.cn-add button[type=submit]{grid-column:1/-1}
   .cn-lt{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:6px}
@@ -4674,7 +4684,7 @@ function cnNear(name, g, nat){
   }
   return { same, near: near.slice(0, 3) };
 }
-$("#cnAddT").addEventListener("click", () => { const box = $(".cn-add"), on = box.classList.toggle("open"); $("#cnAddT").setAttribute("aria-expanded", on); if (on && matchMedia("(max-width:640px)").matches) $("#cnName").focus(); });
+$("#cnAddT").addEventListener("click", () => { const box = $(".cn-add"), on = box.classList.toggle("open"); $("#cnAddT").setAttribute("aria-expanded", on); if (on) $("#cnName").focus(); });
 $("#cnForm").addEventListener("submit", e => {
   e.preventDefault();
   const msg = $("#cnMsg"), name = cnTidy($("#cnName").value.replace(/\s+/g, " ")), g = $("#cnG").value;
