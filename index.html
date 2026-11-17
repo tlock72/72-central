@@ -744,7 +744,6 @@ a.cn-st.ok:hover{border-color:var(--gold)}
 .vd-lf .rp-go svg,.vd-out .rp-go svg,.rp-btns .rp-go svg{width:17px;height:17px}
 .vd-out{display:grid;place-items:center;padding:40px 22px}
 .vd-out .rp-go svg{fill:currentColor}
-.vd-play.tall iframe{height:min(78dvh,740px)}
 .vd-job{position:relative;display:flex;justify-content:space-between;gap:10px;margin:0 0 6px;padding:8px 12px;border:1px solid var(--line-2);border-radius:10px;font-size:12px;overflow:hidden}
 .vd-job span{min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
 .vd-job em{font-style:normal;color:var(--gold);white-space:nowrap}
@@ -765,6 +764,23 @@ a.cn-st.ok:hover{border-color:var(--gold)}
 .vd-foot{display:flex;flex-wrap:wrap;gap:8px 16px;align-items:center;padding:12px 22px 16px;font-size:12px;color:var(--muted)}
 .vd-foot span{flex:1 1 100%}
 .vd-foot a{color:var(--gold)}
+/* Video player window (vd-on, set by vdOpen): fits the screen exactly, the clip fills whatever height is left, nothing scrolls.
+   Instagram's embed is a whole post (header, clip, caption), so vdFit() shrinks it to fit once Instagram says how tall it is.
+   Phones: full screen, and it re-fits when turned sideways (the header slims down and the notes underneath hide). */
+dialog.vdd.vd-on[open]{display:flex;flex-direction:column;width:min(1000px,calc(100vw - 32px));height:calc(100dvh - 40px);overflow:hidden}
+dialog.vdd.vd-on>*{flex:none}
+dialog.vdd.vd-on .vd-play{flex:1 1 auto;min-height:0;position:relative;overflow:hidden;display:grid;place-items:center}
+dialog.vdd.vd-on .vd-play iframe{width:100%;height:100%}
+dialog.vdd.vd-on .vd-play.ig iframe{position:absolute;left:50%;top:50%;width:min(400px,100%);max-width:none;transform:translate(-50%,-50%);transform-origin:center}
+@media (max-width:640px),(orientation:landscape) and (max-height:500px){
+  dialog.vdd.vd-on[open]{width:100vw;max-width:100vw;height:100dvh;max-height:100dvh;margin:0;border:0;border-radius:0;box-sizing:border-box;padding:env(safe-area-inset-top) env(safe-area-inset-right) env(safe-area-inset-bottom) env(safe-area-inset-left);animation:none}
+}
+@media (orientation:landscape) and (max-height:500px){
+  dialog.vdd.vd-on .rs-hd{padding:6px 56px 6px 14px}
+  dialog.vdd.vd-on .rs-hd .k,dialog.vdd.vd-on .rs-hd .mt,dialog.vdd.vd-on .vd-cap,dialog.vdd.vd-on .vd-foot{display:none}
+  dialog.vdd.vd-on .rs-hd h2{font-size:18px}
+  dialog.vdd.vd-on .rs-hd .x{top:4px;width:30px;height:30px}
+}
 @media (max-width:640px){
   dialog.rpd[open]{width:100vw;max-width:100vw;height:100dvh;max-height:100dvh;margin:0;border-radius:0;border:0}
   .rp-form section,.rp-view{padding-left:14px;padding-right:14px}
@@ -5480,18 +5496,38 @@ function vdOpen(id){
     const L = vdParse(v.url) || { k: "web" }, src = vdEmbed(L), app = vdSrc(v.url);
     d.innerHTML = `<div class="rs-hd"><button type="button" class="x" data-vdx="1" aria-label="Close">✕</button><div class="k">Scouting video · ${esc(app)}</div><h2>${esc(v.name)}</h2>
       <div class="mt">${esc([v.by ? "added by " + v.by : "", rpDay(v.at)].filter(Boolean).join(" · "))}</div></div>${vdCapHtml(v)}
-      ${src ? `<div class="vd-play${L.k === "ig" || L.k === "tt" || L.short ? " tall" : ""}"><iframe src="${esc(src)}" allow="autoplay; fullscreen; encrypted-media; picture-in-picture" allowfullscreen referrerpolicy="strict-origin-when-cross-origin" title="Video of ${esc(v.name)}"></iframe></div>`
+      ${src ? `<div class="vd-play${L.k === "ig" ? " ig" : ""}"><iframe src="${esc(src)}" allow="autoplay; fullscreen; encrypted-media; picture-in-picture" allowfullscreen referrerpolicy="strict-origin-when-cross-origin" title="Video of ${esc(v.name)}"></iframe></div>`
         : `<div class="vd-out"><a class="rp-go" href="${esc(v.url)}" target="_blank" rel="noopener">${RP_PLAY}Watch on ${esc(app)}</a></div>`}
       <div class="vd-foot"><span>${src ? `Won't play here (e.g. a private account)? Open it in ${esc(app)} instead.` : "This site can't be played inside 72 Central, so it opens in a new tab."}</span><a href="${esc(v.url)}" target="_blank" rel="noopener">Open in ${esc(app)}</a>${mine ? `<button type="button" class="rp-lnk" data-vdrm="${esc(id)}">Remove this link</button>` : ""}</div>`;
+    VD_IG = 0; d.classList.toggle("vd-on", !!src);
     if (!d.open) { profLock(true); d.showModal(); }
     return;
   }
+  VD_IG = 0; d.classList.add("vd-on");
   d.innerHTML = `<div class="rs-hd"><button type="button" class="x" data-vdx="1" aria-label="Close">✕</button><div class="k">Scouting video</div><h2>${esc(v.name)}</h2>
     <div class="mt">${esc([v.by ? "added by " + v.by : "", rpDay(v.at)].filter(Boolean).join(" · "))}</div></div>${vdCapHtml(v)}
     <div class="vd-play"><iframe src="https://drive.google.com/file/d/${encodeURIComponent(id)}/preview" allow="autoplay; fullscreen" allowfullscreen title="Video of ${esc(v.name)}"></iframe></div>
     <div class="vd-foot"><span>Just added? Google Drive can take a few minutes to get a clip ready to play.</span><a href="https://drive.google.com/file/d/${encodeURIComponent(id)}/view" target="_blank" rel="noopener">Open in Google Drive</a>${mine ? `<button type="button" class="rp-lnk" data-vdrm="${esc(id)}">Remove this clip</button>` : ""}</div>`;
   if (!d.open) { profLock(true); d.showModal(); }
 }
+/* Instagram's embed tells the page how tall the post is ("MEASURE"); scale it so the whole post fits the window with no scrolling.
+   Until it says (or if it never does) the post just fills the space, as before. */
+let VD_IG = 0;
+function vdFit(){
+  const box = document.querySelector("#vdd.vd-on .vd-play.ig"), f = box && box.querySelector("iframe"); if (!f) return;
+  if (!VD_IG) { f.style.width = f.style.height = f.style.transform = ""; return; }
+  const W = 400, s = Math.min(box.clientWidth / W, box.clientHeight / VD_IG, 1.6);
+  f.style.width = W + "px"; f.style.height = VD_IG + "px"; f.style.transform = `translate(-50%,-50%) scale(${s})`;
+}
+window.addEventListener("message", e => {
+  if (e.origin !== "https://www.instagram.com") return;
+  const f = document.querySelector("#vdd.vd-on .vd-play.ig iframe"); if (!f || e.source !== f.contentWindow) return;
+  let m = e.data; try { if (typeof m === "string") m = JSON.parse(m); } catch (err) { return; }
+  const h = +(m && m.details && m.details.height);
+  if (!m || m.type !== "MEASURE" || !(h > 100) || Math.abs(h - VD_IG) < 2) return;
+  VD_IG = h; vdFit();
+});
+window.addEventListener("resize", vdFit);
 $("#vdd").addEventListener("click", e => {
   const d = $("#vdd");
   if (e.target === d || e.target.closest("[data-vdx]")) return d.close();
@@ -5524,9 +5560,9 @@ function vdParse(u){
 }
 const vdSrc = u => { const L = vdParse(u); if (!L) return "link"; return { yt: "YouTube", ig: "Instagram", tt: "TikTok", vm: "Vimeo" }[L.k] || new URL(u).hostname.replace(/^www\./, ""); };
 const vdEmbed = L => ({ yt: `https://www.youtube-nocookie.com/embed/${L.vid}?rel=0&playsinline=1`, ig: `https://www.instagram.com/p/${L.vid}/embed/`,
-  tt: `https://www.tiktok.com/embed/v2/${L.vid}`, vm: `https://player.vimeo.com/video/${L.vid}` })[L.k] || "";
+  tt: `https://www.tiktok.com/player/v1/${L.vid}?rel=0&description=1&music_info=0`, vm: `https://player.vimeo.com/video/${L.vid}` })[L.k] || "";
 function vdLinkForm(ctx){
-  const d = $("#vdd"); VD.lctx = ctx;
+  const d = $("#vdd"); VD.lctx = ctx; d.classList.remove("vd-on");
   d.innerHTML = `<div class="rs-hd"><button type="button" class="x" data-vdx="1" aria-label="Close">✕</button><div class="k">Add a video link</div><h2>${esc(ctx.name)}</h2>
     <div class="mt">Paste a link to a YouTube, Instagram, TikTok or Vimeo video (in the app: Share, then Copy link). Any other video page works too; it opens in a new tab.</div></div>
     <form class="vd-lf" autocomplete="off" novalidate>
@@ -5584,7 +5620,7 @@ $("#vdd").addEventListener("submit", async e => {
   vdMineSave([...vdMineAll(), { id: x.id, name: ctx.name, by, rid: x.rid, cap, url, at: new Date().toISOString(), undo: x.undo, t: Date.now() }]);
   $("#vdd").close(); rpRedraw(); renderCorner();
 });
-$("#vdd").addEventListener("close", () => { $("#vdd").innerHTML = ""; if (!$("#cnd").open && !$("#rpd").open && !$("#resd").open) profLock(false); });
+$("#vdd").addEventListener("close", () => { $("#vdd").innerHTML = ""; $("#vdd").classList.remove("vd-on"); if (!$("#cnd").open && !$("#rpd").open && !$("#resd").open) profLock(false); });
 /* ---------- Settings (the cog in the top corner): first name and time zone, kept on this device ---------- */
 // "Europe/London" -> "Europe / London · 14:05" so the right zone is easy to spot by its time now
 function tzLabel(tz){
