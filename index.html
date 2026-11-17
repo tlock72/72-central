@@ -594,6 +594,17 @@ dialog.cnd .cn-pf{border:0;border-radius:0;background:none;overflow:visible}
 .cn-pf h4{font-family:var(--display);font-weight:500;text-transform:uppercase;letter-spacing:.16em;font-size:11px;color:var(--gold);margin:0;padding:14px 20px 8px}
 .cn-pf .cn-acts{margin-top:10px}
 .cn-view{margin:0 0 16px}
+/* Scouting Corner's two areas: Watch list / Scouting reports, one big switch at the top */
+.cn-areas{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin:0 0 18px}
+.cn-area{display:grid;grid-template-columns:auto 1fr;grid-template-rows:auto auto;column-gap:12px;align-items:center;text-align:left;padding:14px 18px;border-radius:16px;border:1px solid var(--line);background:var(--navy-2);color:var(--muted);cursor:pointer}
+.cn-area svg{grid-row:1/3;width:28px;height:28px}
+.cn-area b{font-family:var(--display);font-weight:600;text-transform:uppercase;letter-spacing:.14em;font-size:15px;color:var(--text)}
+.cn-area small{font-size:12px;color:var(--muted-2)}
+.cn-area:hover{border-color:var(--gold)}
+.cn-area.on{background:var(--gold);border-color:var(--gold);color:var(--navy)}
+.cn-area.on b,.cn-area.on small{color:var(--navy)}
+#page-corner.rep-area .cn-view,#page-corner.rep-area #cnSortLine{display:none}
+@media (max-width:640px){.cn-areas{gap:8px;margin-bottom:14px}.cn-area{padding:10px 12px;column-gap:8px}.cn-area svg{width:22px;height:22px}.cn-area b{font-size:12px;letter-spacing:.08em}.cn-area small{font-size:10.5px}}
 .sg-sec{display:grid;gap:10px;grid-template-columns:repeat(2,minmax(0,1fr));align-items:stretch}
 /* every suggestion tile the same size: the Scout button sits in the top corner, and all tiles get the height of the fullest one */
 .sg-sec .cn{position:relative;min-height:var(--sg-h,0);display:flex;flex-direction:column}
@@ -664,6 +675,7 @@ a.cn-st.ok:hover{border-color:var(--gold)}
 .rp-new{display:flex;align-items:center;justify-content:center;gap:10px;width:100%;margin:0 0 14px;padding:14px 20px;border-radius:16px;border:1px solid var(--gold);background:var(--gold);color:var(--navy);font-family:var(--display);text-transform:uppercase;letter-spacing:.14em;font-size:14px;font-weight:600;cursor:pointer}
 .rp-new span{font-size:20px;line-height:1}
 .rp-new:hover{background:var(--gold-2)}
+.rp-new[hidden]{display:none}
 .rp-form section,.rp-view{padding:4px 22px 6px}
 .rp-form section+section{border-top:1px solid var(--line-2)}
 .rp-form h4,.rp-view h4{font-family:var(--display);font-weight:500;text-transform:uppercase;letter-spacing:.16em;font-size:11px;color:var(--gold);margin:0;padding:16px 0 8px}
@@ -2065,11 +2077,16 @@ dialog.tmd[open]{animation:pop .28s ease}
       <div>
         <div class="eyebrow">SeventyTwo Sports Group</div>
         <h1>Scouting Corner</h1>
-        <p class="sub">Prospects we're watching, ATP/WTA first, then ITF juniors and Tennis Europe. <b>Check</b> means more than one player fits.</p>
+        <p class="sub" id="cnSub">Prospects we're watching, ATP/WTA first, then ITF juniors and Tennis Europe. <b>Check</b> means more than one player fits.</p>
       </div>
     </div>
-    <button type="button" class="rp-new" data-rpnew="{}"><span aria-hidden="true">＋</span>Add scouting report</button>
-    <div class="chips cn-view" role="group" aria-label="Show"><button class="chip cnv on" data-v="">Watch list</button><button class="chip cnv" data-v="rep">Reports &amp; videos</button><button class="chip cnv" data-v="sug">Computerised suggestions</button></div>
+    <!-- Two separate areas (Tobey's call): the Watch list (with computerised suggestions inside it) and Scouting reports -->
+    <div class="cn-areas" role="tablist" aria-label="Scouting Corner area">
+      <button type="button" class="cn-area on" role="tab" aria-selected="true" data-a="watch"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M2 12s3.6-7 10-7 10 7 10 7-3.6 7-10 7S2 12 2 12z"/><circle cx="12" cy="12" r="3"/></svg><b>Watch list</b><small>Prospects &amp; computerised suggestions</small></button>
+      <button type="button" class="cn-area" role="tab" aria-selected="false" data-a="rep"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M14 3H6a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V9z"/><path d="M14 3v6h6M8 13h8M8 17h5"/></svg><b>Scouting reports</b><small>Written reports &amp; videos</small></button>
+    </div>
+    <button type="button" class="rp-new" data-rpnew="{}" hidden><span aria-hidden="true">＋</span>Add scouting report</button>
+    <div class="chips cn-view" role="group" aria-label="Show"><button class="chip cnv on" data-v="">Our watch list</button><button class="chip cnv" data-v="sug">Computerised suggestions</button></div>
     <div class="cn-add">
       <h3><button type="button" id="cnAddT" aria-expanded="false">Add a prospect</button></h3>
       <form id="cnForm" autocomplete="off">
@@ -2248,7 +2265,7 @@ let logoSpins = 0;
 window.spinLogo = () => { LOGO.src = "data:image/svg+xml;base64," + btoa(LOGO_SVG.replace("</svg>", "<!--" + (++logoSpins) + "--></svg>")); };
 function route(){
   const hash = location.hash;
-  const tab = hash === "#rankings" ? "rankings" : hash === "#scouting" ? "scouting" : hash === "#schedule" ? "schedule" : hash === "#corner" || hash === "#report" ? "corner" : hash === "#news" ? "news" : hash === "#scores" ? "scores" : hash.startsWith("#players") ? "players" : hash.startsWith("#team") ? "team" : "home";
+  const tab = hash === "#rankings" ? "rankings" : hash === "#scouting" ? "scouting" : hash === "#schedule" ? "schedule" : hash === "#corner" || hash === "#report" || hash === "#reports" ? "corner" : hash === "#news" ? "news" : hash === "#scores" ? "scores" : hash.startsWith("#players") ? "players" : hash.startsWith("#team") ? "team" : "home";
   $("#page-home").hidden = tab !== "home";
   document.body.classList.toggle("on-home", tab === "home");
   $("#page-scores").hidden = tab !== "scores";
@@ -2285,9 +2302,10 @@ function route(){
     if (SCHED) renderSchedule();
   }
   // coming to Scouting Corner from another tab always starts on the watch list
-  if (tab === "corner" && window._tab && window._tab !== "corner" && CN.view) { CN.view = ""; CN.add = ""; renderCorner(); }
-  // #report (the home page's "Scouting report" button, or a bookmark on a phone's home screen): straight to a new report
-  if (hash === "#report") { history.replaceState(null, "", "#corner"); setTimeout(() => rpForm(), 0); }
+  // (#reports opens the Scouting reports area instead)
+  if (tab === "corner") { const v = hash === "#reports" || hash === "#report" ? "rep" : window._tab && window._tab !== "corner" ? "" : CN.view; if (v !== CN.view) { CN.view = v; CN.add = ""; renderCorner(); } }
+  // #report (the home page's "Scouting report" button, or a bookmark on a phone's home screen): straight to a new report, in the reports area
+  if (hash === "#report") { history.replaceState(null, "", "#reports"); setTimeout(() => rpForm(), 0); }
   if (window._tab && window._tab !== tab) window.scrollTo(0, 0);
   window._tab = tab;
 }
@@ -4380,6 +4398,14 @@ function renderCorner(){
   if (!$("#page-corner")) return;
   const sug = CN.view === "sug", rep = CN.view === "rep";
   document.querySelectorAll(".cnv").forEach(b => b.classList.toggle("on", b.dataset.v === CN.view));
+  // the two areas: Watch list (incl. computerised suggestions) and Scouting reports
+  document.querySelectorAll(".cn-area").forEach(b => { const on = (b.dataset.a === "rep") === rep; b.classList.toggle("on", on); b.setAttribute("aria-selected", on); });
+  $("#page-corner").classList.toggle("rep-area", rep);
+  $("#page-corner .rp-new").hidden = !rep;
+  $("#page-corner .hero h1").textContent = rep ? "Scouting Reports" : "Scouting Corner";
+  $("#cnSub").innerHTML = rep ? "Written scouting reports and videos, one folder per player. Your drafts sit at the top until you publish them."
+    : sug ? "Young players climbing the rankings fastest, picked by the computer. Press <b>Scout</b> to add one to the watch list."
+    : "Prospects we're watching, ATP/WTA first, then ITF juniors and Tennis Europe. <b>Check</b> means more than one player fits.";
   $(".cn-add").hidden = sug || rep; $("#cnSortLine").hidden = sug || rep;
   $("#cnQ").placeholder = sug ? "Search players" : rep ? "Search reports" : "Search prospect";
   $("#cnList").classList.toggle("cn-two", !sug);  // watch list and reports: two tiles side by side
@@ -4563,6 +4589,14 @@ document.querySelectorAll(".cng").forEach(b => b.addEventListener("click", () =>
 $("#cnSort").addEventListener("change", e => { CN.s = e.target.value; renderCorner(); });
 $("#cnLight").addEventListener("change", e => { CN.lt = e.target.value; renderCorner(); });
 document.querySelectorAll(".cnv").forEach(b => b.addEventListener("click", () => { CN.view = b.dataset.v; CN.add = ""; renderCorner(); }));
+// the area switch: #corner = Watch list, #reports = Scouting reports (so either can be bookmarked)
+document.querySelectorAll(".cn-area").forEach(b => b.addEventListener("click", () => {
+  const rep = b.dataset.a === "rep";
+  if (rep === (CN.view === "rep")) return;
+  CN.view = rep ? "rep" : ""; CN.add = "";
+  history.replaceState(null, "", rep ? "#reports" : "#corner");
+  renderCorner(); window.scrollTo(0, 0);
+}));
 $("#cnQ").addEventListener("input", e => { CN.q = e.target.value; renderCorner(); });
 /* Nation box: a dropdown of nations that narrows as you type (name or 3-letter code). The code is what gets sent (ITF/IOC style, e.g. GBR, SUI, GER). */
 const CN_NATS = ("AFG Afghanistan|ALB Albania|ALG Algeria|AND Andorra|ANG Angola|ARG Argentina|ARM Armenia|ARU Aruba|AUS Australia|AUT Austria|AZE Azerbaijan|BAH Bahamas|BRN Bahrain|BAN Bangladesh|BAR Barbados|BLR Belarus|BEL Belgium|BEN Benin|BER Bermuda|BOL Bolivia|BIH Bosnia and Herzegovina|BOT Botswana|BRA Brazil|BUL Bulgaria|BUR Burkina Faso|BDI Burundi|CAM Cambodia|CMR Cameroon|CAN Canada|CHI Chile|CHN China|TPE Chinese Taipei|COL Colombia|CRC Costa Rica|CIV Côte d'Ivoire|CRO Croatia|CUB Cuba|CYP Cyprus|CZE Czechia|DEN Denmark|DOM Dominican Republic|ECU Ecuador|EGY Egypt|ESA El Salvador|EST Estonia|ETH Ethiopia|FIJ Fiji|FIN Finland|FRA France|GAB Gabon|GEO Georgia|GER Germany|GHA Ghana|GBR Great Britain|GRE Greece|GUA Guatemala|HAI Haiti|HON Honduras|HKG Hong Kong|HUN Hungary|ISL Iceland|IND India|INA Indonesia|IRI Iran|IRQ Iraq|IRL Ireland|ISR Israel|ITA Italy|JAM Jamaica|JPN Japan|JOR Jordan|KAZ Kazakhstan|KEN Kenya|KOR Korea, South|KOS Kosovo|KUW Kuwait|KGZ Kyrgyzstan|LAT Latvia|LIB Lebanon|LBA Libya|LIE Liechtenstein|LTU Lithuania|LUX Luxembourg|MAC Macau|MAD Madagascar|MAS Malaysia|MLT Malta|MRI Mauritius|MEX Mexico|MDA Moldova|MON Monaco|MGL Mongolia|MNE Montenegro|MAR Morocco|MOZ Mozambique|NAM Namibia|NEP Nepal|NED Netherlands|NZL New Zealand|NCA Nicaragua|NGR Nigeria|MKD North Macedonia|NOR Norway|OMA Oman|PAK Pakistan|PAN Panama|PAR Paraguay|PER Peru|PHI Philippines|POL Poland|POR Portugal|PUR Puerto Rico|QAT Qatar|ROU Romania|RUS Russia|RWA Rwanda|SMR San Marino|KSA Saudi Arabia|SEN Senegal|SRB Serbia|SGP Singapore|SVK Slovakia|SLO Slovenia|RSA South Africa|ESP Spain|SRI Sri Lanka|SUD Sudan|SWE Sweden|SUI Switzerland|SYR Syria|TJK Tajikistan|TAN Tanzania|THA Thailand|TOG Togo|TTO Trinidad and Tobago|TUN Tunisia|TUR Türkiye|TKM Turkmenistan|UGA Uganda|UKR Ukraine|UAE United Arab Emirates|USA United States|URU Uruguay|UZB Uzbekistan|VEN Venezuela|VIE Vietnam|ZAM Zambia|ZIM Zimbabwe")
@@ -5275,7 +5309,7 @@ async function rpSave(st){
   VD.q.filter(j => j.rid === RPF.id).forEach(j => j.name = name);  // clips added here keep the final spelling of the name
   if (st === "Discarded") { RP_DRAFTS = RP_DRAFTS.filter(d => d.id !== RPF.id); $("#rpd").close(); renderCorner(); return; }
   if (st === "Draft") {
-    Object.assign(RPF, { name, edit: true, firstBy: RPF.firstBy || by, msg: "", note: `Draft saved ${rpWhen(at)}. Finish it any time from Reports & videos > Your drafts${by ? ", on any device signed in as " + by : ""}.` });
+    Object.assign(RPF, { name, edit: true, firstBy: RPF.firstBy || by, msg: "", note: `Draft saved ${rpWhen(at)}. Finish it any time from Scouting reports > Your drafts${by ? ", on any device signed in as " + by : ""}.` });
     rpShow(); renderCorner(); return;
   }
   // published: the traffic light also goes on the watch list; a new name can be added to the watch list at the same time
