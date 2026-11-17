@@ -719,6 +719,8 @@ a.cn-st.ok:hover{border-color:var(--gold)}
 .rp-row3{display:grid;grid-template-columns:auto minmax(0,1fr) 110px;gap:8px;align-items:center;margin:0 0 8px}
 .rp-pills{display:flex;flex-wrap:wrap;gap:6px}
 .rp-pills button{min-height:38px;padding:6px 14px;border:1px solid var(--line);border-radius:999px;background:transparent;color:var(--text);font:inherit;font-size:13px;cursor:pointer}
+.rp-oth{margin-top:8px}
+.rp-oth[hidden],.rp-agn[hidden]{display:none}
 .rp-pills button.on{background:var(--gold);border-color:var(--gold);color:var(--navy);font-weight:600}
 .rp-sc{display:grid;grid-template-columns:repeat(5,minmax(0,1fr))}
 .rp-sc button{border-radius:12px;padding:6px 4px;display:flex;flex-direction:column;align-items:center;gap:1px}
@@ -729,6 +731,13 @@ a.cn-st.ok:hover{border-color:var(--gold)}
 .rp-lt .g i{background:var(--lt-g)}.rp-lt .a i{background:var(--lt-a)}.rp-lt .r i{background:var(--lt-r)}
 .rp-lt button.on{background:transparent;color:var(--text)}.rp-lt button.on i{opacity:1}
 .rp-lt button.g.on{border-color:var(--lt-g)}.rp-lt button.a.on{border-color:var(--lt-a)}.rp-lt button.r.on{border-color:var(--lt-r)}
+.rp-ac{position:relative}
+.rp-sug{position:absolute;left:0;right:0;top:100%;z-index:5;margin-top:4px;max-height:260px;overflow-y:auto;background:var(--navy-2);border:1px solid var(--line);border-radius:10px;box-shadow:0 8px 24px rgba(0,0,0,.25)}
+.rp-sug[hidden]{display:none}
+.rp-sug button{display:flex;justify-content:space-between;align-items:center;gap:10px;width:100%;min-height:44px;padding:8px 12px;border:0;border-bottom:1px solid var(--line);background:transparent;color:var(--text);font:inherit;font-size:14px;text-align:left;cursor:pointer}
+.rp-sug button:last-child{border-bottom:0}
+.rp-sug button:hover,.rp-sug button:focus{background:rgba(212,175,55,.15)}
+.rp-sug small{color:var(--muted);font-size:11px;white-space:nowrap}
 .rp-wl{font-size:12px;color:var(--muted);margin:0 0 8px}
 .rp-wl label{display:flex;gap:8px;align-items:flex-start;line-height:1.4}
 .rp-wl input{margin-top:2px;accent-color:var(--gold)}
@@ -5064,7 +5073,7 @@ function cmPost(name, text, by){
    The Reports view lists one card per player (their reports and clips together, the player's "folder"). */
 const RP_PICK = {
   hand: ["Right-handed", "Left-handed"], bh: ["One-handed", "Two-handed"],
-  style: ["Aggressive baseliner", "Counter-puncher", "All-court", "Big server", "Serve and volley"],
+  style: ["Aggressive baseliner", "Counter-puncher", "All-court", "Big server", "Serve and volley", "Other"],
   rank: ["Top 5", "Top 10", "Top 20", "Top 50", "Top 100", "Top 200", "Top 500", "Outside 500"],
   major: ["Yes", "Possibly", "Unlikely", "No"], agency: ["No agency", "Has an agency", "Not sure"]
 };
@@ -5082,10 +5091,14 @@ const RP_SEC = [
     ["str", "Strengths", "long"], ["weak", "Weaknesses", "long"], ["tech", "Technical observations", "long", "Serve, return, forehand, backhand, net, footwork"],
     ["phys", "Physicality", "long", "Height, build, speed, endurance, injuries"], ["pers", "Personality", "long", "Competitiveness, body language, maturity, coachability"]]],
   ["Team and family", [["team", "Team structure", "long", "Coach, fitness, physio, academy, federation support"], ["fam", "Family involvement", "long", "Who travels, who decides, how involved they are"]]],
-  ["Commercial", [["comm", "Commercial already in place", "long", "Kit, racquet, sponsors, other deals"], ["mkt", "How marketable", "scale"], ["agency", "Agency", "pick"], ["agName", "Agency name", "text", "If they have one"]]],
+  ["Commercial", [["comm", "Commercial already in place", "long", "Kit, racquet, sponsors, other deals"], ["mkt", "How marketable", "scale"], ["agency", "Agency", "pick"], ["agName", "Agency name", "text"]]],
   ["Anything else", [["other", "Other comments", "long"]]]
 ];
 const RP_LABEL = Object.fromEntries(RP_SEC.flatMap(s => s[1]).map(f => [f[0], f[1]]));
+// Style "Other": the form keeps the pill ("Other") and the typed words (styleOther) apart; the Sheet gets one
+// answer, "Other: <typed words>" (or just "Other"), so no new column is needed
+const rpStyleOut = v => { const o = { ...v }; if (o.style === "Other" && (o.styleOther || "").trim()) o.style = "Other: " + o.styleOther.trim().slice(0, 200); delete o.styleOther; return o; };
+const rpStyleIn = f => { const o = { ...f }, m = /^Other:\s*(.*)$/s.exec(o.style || ""); if (m) { o.style = "Other"; if (m[1].trim()) o.styleOther = m[1].trim(); } return o; };
 let RP_RECAPS = [], RP_SHEET = [], RP_DRAFTS = [], RP_NOTES = [], VD_SHEET = [], RP_OK = false, RP_READ = 0;  // RP_READ = when the Sheet list was last read
 try { const c = JSON.parse(localStorage.getItem("72c-rplist") || "{}"); RP_SHEET = c.reports || []; RP_DRAFTS = c.drafts || []; RP_NOTES = c.notes || []; VD_SHEET = c.videos || []; RP_RECAPS = c.recaps || []; } catch (e) {}
 const rpHex = n => Array.from(crypto.getRandomValues(new Uint8Array(n)), b => b.toString(16).padStart(2, "0")).join("");
@@ -5237,7 +5250,7 @@ function rpForm(o = {}){
   const pub = o.id ? rpAll().find(r => r.id === o.id) : null, sd = o.id ? rpSaved().find(r => r.id === o.id) : null, dev = o.id ? rpDev()[o.id] : null;
   const src = [sd, pub].filter(Boolean).sort((a, b) => new Date(b.at) - new Date(a.at))[0];
   if (src && !rpMineOk(pub || sd)) return rpShow("report", o.id);  // not yours: read it instead
-  if (src) Object.assign(RPF, { id: src.id, name: src.name, g: src.g || "", nat: src.nat || "", born: src.born || "", v: { ...src.f }, firstBy: src.firstBy || src.by || "" });
+  if (src) Object.assign(RPF, { id: src.id, name: src.name, g: src.g || "", nat: src.nat || "", born: src.born || "", v: rpStyleIn(src.f || {}), firstBy: src.firstBy || src.by || "" });
   else if (dev) Object.assign(RPF, { ...dev });
   else Object.assign(RPF, { id: rpHex(6), name: o.name || "", g: o.g || "", nat: o.nat || "", born: o.born || "", v: {}, firstBy: "", own: rpHex(16) });
   RPF.edit = !!src; RPF.pub = !!pub; RPF.add = true; RPF.msg = ""; RPF.note = ""; RPF.dirty = false;
@@ -5251,15 +5264,16 @@ function rpForm(o = {}){
 }
 function rpField([k, label, kind, hint]){
   const v = RPF.v[k] || "";
-  if (kind === "pick") return `<div class="rp-f"><label>${esc(label)}</label><div class="rp-pills" data-k="${k}">${RP_PICK[k].map(o => `<button type="button" class="${v === o ? "on" : ""}" data-val="${esc(o)}" aria-pressed="${v === o}">${esc(o)}</button>`).join("")}</div></div>`;
+  if (kind === "pick") return `<div class="rp-f"><label>${esc(label)}</label><div class="rp-pills" data-k="${k}">${RP_PICK[k].map(o => `<button type="button" class="${v === o ? "on" : ""}" data-val="${esc(o)}" aria-pressed="${v === o}">${esc(o)}</button>`).join("")}</div>${k === "style" ? `<input class="sq-in rp-oth" id="rp-styleOther" name="styleOther" maxlength="200" aria-label="Other style" placeholder="Type their style" value="${esc(RPF.v.styleOther || "")}"${v === "Other" ? "" : " hidden"}>` : ""}</div>`;
   if (kind === "scale") return `<div class="rp-f"><label>${esc(label)}</label><div class="rp-pills rp-sc" data-k="${k}">${[1, 2, 3, 4, 5].map(n => `<button type="button" class="${v === String(n) ? "on" : ""}" data-val="${n}" aria-pressed="${v === String(n)}"><b>${n}</b><small>${RP_SCALE[k][n]}</small></button>`).join("")}</div></div>`;
   if (kind === "light") return `<div class="rp-f"><label>${esc(label)}</label><div class="rp-pills rp-lt" data-k="${k}">${["g", "a", "r"].map(c => `<button type="button" class="${c}${v === RP_LT[c] ? " on" : ""}" data-val="${RP_LT[c]}" aria-pressed="${v === RP_LT[c]}"><i></i>${LT_MEAN[c]}</button>`).join("")}</div></div>`;
   if (kind === "long") return `<div class="rp-f"><label for="rp-${k}">${esc(label)}</label><textarea class="sq-in" id="rp-${k}" name="${k}" rows="3" maxlength="4000" placeholder="${esc(hint || "")}">${esc(v)}</textarea></div>`;
   if (kind === "date") return `<div class="rp-f"><label for="rp-${k}">${esc(label)}</label><input class="sq-in" type="date" id="rp-${k}" name="${k}" value="${esc(v)}" max="${myDate()}"></div>`;
-  return `<div class="rp-f"><label for="rp-${k}">${esc(label)}</label><input class="sq-in" id="rp-${k}" name="${k}" maxlength="200" value="${esc(v)}" placeholder="${esc(hint || "")}"></div>`;
+  const hide = k === "agName" && RPF.v.agency !== "Has an agency";  // the agency name only drops down once "Has an agency" is picked
+  return `<div class="rp-f${k === "agName" ? " rp-agn" : ""}"${hide ? " hidden" : ""}><label for="rp-${k}">${esc(label)}</label><input class="sq-in" id="rp-${k}" name="${k}" maxlength="200" value="${esc(v)}" placeholder="${esc(hint || "")}"></div>`;
 }
 function rpFormHtml(){
-  const p = rpProspect(RPF.name), names = [...new Set(Object.values(cnShown()).map(x => x.name))].sort();
+  const p = rpProspect(RPF.name);
   const vids = vdAll().filter(v => v.rid === RPF.id), ups = VD.q.filter(j => j.rid === RPF.id && j.st !== "done");
   const natOpts = `<option value="">Nation</option>` + CN_NATS.map(x => `<option value="${x.c}"${RPF.nat === x.c ? " selected" : ""}>${esc(x.n)}</option>`).join("");
   const others = RPF.edit ? [] : rpDrafts().filter(d => d.id !== RPF.id), me = rpBy();
@@ -5271,7 +5285,7 @@ function rpFormHtml(){
     ${hasDraft && RPF.edit ? `<div class="mt"><button type="button" class="rp-lnk" data-rpdisc="1">${RPF.pub ? "Throw away these changes" : "Delete this draft"}</button></div>` : ""}</div>
     <form class="rp-form" id="rpForm" autocomplete="off" novalidate>
     <section><h4>Player</h4>
-      <div class="rp-f"><label for="rpName">Full name</label><input class="sq-in" id="rpName" name="rpName" list="rpNames" maxlength="60" required value="${esc(RPF.name)}" placeholder="Start typing: watch list names come up"${RPF.pub ? " readonly" : ""}><datalist id="rpNames">${names.map(n => `<option value="${esc(n)}">`).join("")}</datalist></div>
+      <div class="rp-f rp-ac"><label for="rpName">Player's full name</label><input class="sq-in" id="rpName" name="rpq" maxlength="60" required autocomplete="off" autocorrect="off" autocapitalize="words" spellcheck="false" data-1p-ignore data-lpignore="true" aria-autocomplete="list" aria-controls="rpSug" value="${esc(RPF.name)}" placeholder="Start typing: watch list names come up"${RPF.pub ? " readonly" : ""}><div class="rp-sug" id="rpSug" role="listbox" hidden></div></div>
       <div class="rp-row3"><div class="rp-pills" data-k="_g">${[["M", "Male"], ["F", "Female"]].map(([c, t]) => `<button type="button" class="${RPF.g === c ? "on" : ""}" data-val="${c}" aria-pressed="${RPF.g === c}">${t}</button>`).join("")}</div>
         <select class="sq-in" id="rpNat" name="rpNat" aria-label="Nation">${natOpts}</select>
         <input class="sq-in" id="rpBorn" name="rpBorn" inputmode="numeric" maxlength="4" placeholder="Birth year" aria-label="Birth year" value="${esc(RPF.born)}"></div>
@@ -5285,6 +5299,25 @@ function rpFormHtml(){
     </section>
     <div class="rp-save"><span id="rpErr" role="alert" class="${RPF.note ? "ok" : ""}">${esc(RPF.note)}</span><button type="button" class="rp-go ln" data-rpdraft="1">Save draft</button><button type="submit" class="rp-go">${RPF.pub ? "Publish changes" : "Publish report"}</button></div>
     </form>`;
+}
+/* Name suggestions under the player box (our own list, not the browser's datalist: that didn't show watch list names
+   on phones and fought with the browser's own autofill on computers). Watch list names first, then anyone with a
+   report; every word typed must start a word of the name, in any order, accents ignored. */
+function rpSugNames(){
+  const out = new Map();
+  Object.values(cnShown()).forEach(x => x.name && out.set(cnSorted(x.name), { n: x.name, w: "Watch list" }));
+  rpAll().forEach(r => r.name && !out.has(cnSorted(r.name)) && out.set(cnSorted(r.name), { n: r.name, w: "Has a report" }));
+  return [...out.values()];
+}
+function rpSugShow(){
+  const box = $("#rpSug"), inp = $("#rpName"); if (!box || !inp) return;
+  const q = tzFold(inp.value).split(" ").filter(Boolean);
+  const hits = RPF.pub || !q.length || q.join("").length < 2 ? [] : rpSugNames().filter(x => {
+    const w = tzFold(x.n).split(" ");
+    return tzFold(x.n) !== q.join(" ") && q.every(t => w.some(a => a.startsWith(t)));
+  }).sort((a, b) => (a.w > b.w) - (a.w < b.w) || a.n.localeCompare(b.n)).slice(0, 8);
+  box.innerHTML = hits.map(x => `<button type="button" role="option" data-rpsug="${esc(x.n)}">${esc(x.n)}<small>${x.w}</small></button>`).join("");
+  box.hidden = !hits.length;
 }
 function rpWlNote(p){
   if (!RPF.name.trim()) return "";
@@ -5368,7 +5401,7 @@ async function rpSave(st){
   if (RPF.born && !/^(19|20)\d\d$/.test(RPF.born)) { err.textContent = "Birth year should be four digits, e.g. 2011."; $("#rpBorn").focus(); return; }
   if (st === "Live" && !Object.keys(RPF.v).length) { err.textContent = "Fill in at least one part of the report, or save it as a draft."; return; }
   const by = rpBy(), btn = $(st === "Live" ? "#rpForm [type=submit]" : st === "Draft" ? "#rpForm [data-rpdraft]" : "[data-rpdisc]"), label = btn?.textContent;
-  const body = { kind: "report", id: RPF.id, name, g: RPF.g, nat: RPF.nat, born: RPF.born, by, own: RPF.own, status: st, f: RPF.v };
+  const body = { kind: "report", id: RPF.id, name, g: RPF.g, nat: RPF.nat, born: RPF.born, by, own: RPF.own, status: st, f: rpStyleOut(RPF.v) };
   if (btn) { btn.disabled = true; btn.textContent = "Saving…"; }
   err.textContent = "";
   let res = "";
@@ -5382,13 +5415,13 @@ async function rpSave(st){
   rpOwnSet(RPF.id, RPF.own);
   RPF.dirty = false; if ($("#rpName")) $("#rpName").value = name;  // saved: the tidied name from now on
   const at = new Date().toISOString(), old = rpAll().find(r => r.id === RPF.id);
-  rpMineSave([...rpMine().filter(x => !(x.id === RPF.id && x.st === st)), { id: RPF.id, name, g: RPF.g, nat: RPF.nat, born: Number(RPF.born) || null, by, at, firstBy: old?.firstBy || RPF.firstBy || by, firstAt: old?.firstAt || at, f: { ...RPF.v }, st, pub: !!old, t: Date.now() }]);
+  rpMineSave([...rpMine().filter(x => !(x.id === RPF.id && x.st === st)), { id: RPF.id, name, g: RPF.g, nat: RPF.nat, born: Number(RPF.born) || null, by, at, firstBy: old?.firstBy || RPF.firstBy || by, firstAt: old?.firstAt || at, f: rpStyleOut(RPF.v), st, pub: !!old, t: Date.now() }]);
   rpDraftDrop();
   VD.q.filter(j => j.rid === RPF.id).forEach(j => j.name = name);  // clips added here keep the final spelling of the name
   if (st === "Discarded") { RP_DRAFTS = RP_DRAFTS.filter(d => d.id !== RPF.id); $("#rpd").close(); renderCorner(); return; }
   if (st === "Draft") {
-    Object.assign(RPF, { name, edit: true, firstBy: RPF.firstBy || by, msg: "", note: `Draft saved ${rpWhen(at)}. Finish it any time from Scouting reports > Your drafts${by ? ", on any device signed in as " + by : ""}.` });
-    rpShow(); renderCorner(); return;
+    // saved: the report closes; it's under Scouting reports > Your drafts to carry on with
+    $("#rpd").close(); renderCorner(); return;
   }
   // published: the traffic light also goes on the watch list; a new name can be added to the watch list at the same time
   const P = rpProspect(name), lt = RP_LT_K[RPF.v.light];
@@ -5414,7 +5447,7 @@ $("#rpd").addEventListener("input", e => {
   if (RPD.mode !== "form" || !e.target.closest("#rpForm")) return;
   rpRead(); rpDraftSave();
   if (e.target.id === "rpName") {
-    $("#rpErr").textContent = "";
+    $("#rpErr").textContent = ""; rpSugShow();
     const p = rpProspect(RPF.name)?.p;
     if (p) {  // picked from the watch list: fill in what we know
       if (!RPF.g && p.g) { RPF.g = p.g; $("#rpd").querySelectorAll('[data-k="_g"] button').forEach(b => { b.classList.toggle("on", b.dataset.val === p.g); b.setAttribute("aria-pressed", b.dataset.val === p.g); }); }
@@ -5424,15 +5457,23 @@ $("#rpd").addEventListener("input", e => {
     $("#rpWl").innerHTML = rpWlNote(p);
   }
 });
+// the suggestions close when you leave the box or press Escape (a tap on one counts first: mousedown keeps the focus)
+$("#rpd").addEventListener("mousedown", e => { if (e.target.closest("[data-rpsug]")) e.preventDefault(); });
+$("#rpd").addEventListener("focusout", e => { if (e.target.id === "rpName") setTimeout(() => { const b = $("#rpSug"); if (b && document.activeElement?.id !== "rpName") b.hidden = true; }, 200); });
+$("#rpd").addEventListener("keydown", e => { if (e.target.id === "rpName" && e.key === "Escape" && !$("#rpSug").hidden) { e.preventDefault(); e.stopPropagation(); $("#rpSug").hidden = true; } });
 $("#rpd").addEventListener("change", e => { if (RPD.mode === "form" && e.target.closest("#rpForm")) { rpRead(); rpDraftSave(); } });
 $("#rpd").addEventListener("click", e => {
   const d = $("#rpd");
   if (e.target === d || e.target.closest("[data-rpx]")) return rpClose();
+  const sg = e.target.closest("[data-rpsug]");
+  if (sg) { const inp = $("#rpName"); inp.value = sg.dataset.rpsug; $("#rpSug").hidden = true; inp.dispatchEvent(new Event("input", { bubbles: true })); $("#rpSug").hidden = true; return; }
   const pill = e.target.closest(".rp-pills button");
   if (pill) {  // tap to pick, tap again to clear
     const box = pill.parentElement, k = box.dataset.k, on = !pill.classList.contains("on");
     box.querySelectorAll("button").forEach(b => { b.classList.toggle("on", on && b === pill); b.setAttribute("aria-pressed", on && b === pill); });
     if (k === "_g") RPF.g = on ? pill.dataset.val : ""; else if (on) RPF.v[k] = pill.dataset.val; else delete RPF.v[k];
+    if (k === "style") { const ob = $("#rp-styleOther"), oth = RPF.v.style === "Other"; ob.hidden = !oth; if (oth) ob.focus(); else { ob.value = ""; delete RPF.v.styleOther; } }
+    if (k === "agency") { const ab = $("#rpd .rp-agn"), has = RPF.v.agency === "Has an agency"; ab.hidden = !has; if (has) ab.querySelector("input").focus(); else { ab.querySelector("input").value = ""; delete RPF.v.agName; } }
     rpDraftSave(); return;
   }
   if (e.target.closest("[data-rpdraft]")) return rpSave("Draft");
