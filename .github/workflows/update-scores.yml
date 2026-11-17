@@ -87,8 +87,24 @@ jobs:
           git add data.json players.json itf.json $(ls titles.json itfm.json itfm_sc.json itfoop.json te.json te_sc.json scouting.json scouting_history.json best.json 2>/dev/null)
           if git diff --cached --quiet; then echo "No changes"; exit 0; fi
           git commit -q -m "Update scores"
-          if git pull -q --rebase -X theirs; then git push
-          else git rebase --abort; echo "Another update saved first - skipping, the next run will catch up"; fi
+          if git pull -q --rebase -X theirs; then
+            if git push -q; then exit 0; fi
+            failed=1
+          else
+            git rebase --abort; failed=0
+          fi
+          echo "Another update saved first - skipping, the next run will catch up"
+          # The scores wait for the next run, but the feed calls this run spent are still added
+          # to today's count, so the daily limit checks stay true
+          for i in 1 2 3; do
+            git fetch -q origin main && git reset -q --hard origin/main
+            python3 scripts/update.py --add-calls
+            if git diff --quiet data.json; then break; fi
+            git commit -q -m "Count feed calls" data.json
+            if git push -q; then break; fi
+            sleep 5
+          done
+          exit $failed
       - name: Tell Tobey about anything missed (GitHub issue + email)
         if: always()
         continue-on-error: true

@@ -677,7 +677,32 @@ def main():
     with open("data.json", "w") as f:
         json.dump(data, f, ensure_ascii=False, separators=(",", ":"))
     print(f"done: {len(merged)} matches, {CALLS} API calls")
+    # Kept outside data.json so the save step can still add these calls to the day's count
+    # if this run's data can't be saved (another update saved first). See add_calls().
+    with open(".calls_run.json", "w") as f:
+        json.dump({"date": uk_today, "n": CALLS, "quotaHit": data.get("quotaHit")}, f)
+
+
+def add_calls():
+    """Save step fallback: this run's data wasn't saved, so add only its feed calls to the
+    day's count in the newest data.json. Without this the count drifts low and the
+    'stop searching at 40' check thinks there are calls left when the feed has none."""
+    try:
+        run = json.load(open(".calls_run.json"))
+    except (OSError, ValueError):
+        return
+    if not run.get("n"):
+        return
+    data = json.load(open("data.json"))
+    day = data.get("callsDay", {})
+    n = day.get("n", 0) if day.get("date") == run["date"] else 0
+    data["callsDay"] = {"date": run["date"], "n": n + run["n"]}
+    if run.get("quotaHit") and run["quotaHit"] > (data.get("quotaHit") or ""):
+        data["quotaHit"] = run["quotaHit"]
+    with open("data.json", "w") as f:
+        json.dump(data, f, ensure_ascii=False, separators=(",", ":"))
+    print(f"added {run['n']} feed calls to today's count (now {n + run['n']})")
 
 
 if __name__ == "__main__":
-    main()
+    add_calls() if "--add-calls" in sys.argv else main()

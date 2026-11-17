@@ -71,7 +71,7 @@ Roster ids are short surnames (`deminaur`, `svitolina`, `mmakarova`…). **Addin
 ## Workflows (`.github/workflows/`)
 - `update-scores.yml`: runs every 30 minutes (cron `13,43 6-22 * * *` UTC, plus cron-job.org dispatches with `source=timer`). It runs update.py, then ITF ranks if due, scouting, ITF matches, ITF order of play for pros, TE, save, and alert.
   - Checkout uses `ref: main`, because a run queued behind another must start from the newest data.
-  - The save step does `pull --rebase -X theirs`, and on failure aborts and skips (the next run catches up).
+  - The save step does `pull --rebase -X theirs`, and on failure aborts and skips (the next run catches up). It still adds that run's feed calls to `callsDay` in the newest `data.json` (`update.py --add-calls`, from `.calls_run.json`, commit "Count feed calls"), so the day's count never drifts low.
 - `itf-juniors.yml`: Mondays at 08:20, 11:20 and 14:20 UK. Also runs `itf_jr_list.py` (Filtered Rankings' junior lists).
 - `schedule.yml`: daily at 06:37 UK. Has its own concurrency group (it must not hold up live scores); it only saves `schedule.json`, so its pull-rebase save can't clash with the score updates. Takes about 30–40 minutes (ITF and Tennis Europe lists, one every 4 seconds).
 - `prospects.yml`: Scouting Corner, every 30 minutes (`7,37`) and on dispatch from the Sheet. Own concurrency group; saves only `corner.json` and the Tennis Europe U14 lists (`terank.json`, `te_rank_list.py`). Ticking "force" on Run workflow sets `FORCE=1`: everyone is refreshed at once, even if already done today.
