@@ -720,7 +720,7 @@ a.cn-st.ok:hover{border-color:var(--gold)}
 .rp-pills{display:flex;flex-wrap:wrap;gap:6px}
 .rp-pills button{min-height:38px;padding:6px 14px;border:1px solid var(--line);border-radius:999px;background:transparent;color:var(--text);font:inherit;font-size:13px;cursor:pointer}
 .rp-oth{margin-top:8px}
-.rp-oth[hidden]{display:none}
+.rp-oth[hidden],.rp-agn[hidden]{display:none}
 .rp-pills button.on{background:var(--gold);border-color:var(--gold);color:var(--navy);font-weight:600}
 .rp-sc{display:grid;grid-template-columns:repeat(5,minmax(0,1fr))}
 .rp-sc button{border-radius:12px;padding:6px 4px;display:flex;flex-direction:column;align-items:center;gap:1px}
@@ -5084,7 +5084,7 @@ const RP_SEC = [
     ["str", "Strengths", "long"], ["weak", "Weaknesses", "long"], ["tech", "Technical observations", "long", "Serve, return, forehand, backhand, net, footwork"],
     ["phys", "Physicality", "long", "Height, build, speed, endurance, injuries"], ["pers", "Personality", "long", "Competitiveness, body language, maturity, coachability"]]],
   ["Team and family", [["team", "Team structure", "long", "Coach, fitness, physio, academy, federation support"], ["fam", "Family involvement", "long", "Who travels, who decides, how involved they are"]]],
-  ["Commercial", [["comm", "Commercial already in place", "long", "Kit, racquet, sponsors, other deals"], ["mkt", "How marketable", "scale"], ["agency", "Agency", "pick"], ["agName", "Agency name", "text", "If they have one"]]],
+  ["Commercial", [["comm", "Commercial already in place", "long", "Kit, racquet, sponsors, other deals"], ["mkt", "How marketable", "scale"], ["agency", "Agency", "pick"], ["agName", "Agency name", "text"]]],
   ["Anything else", [["other", "Other comments", "long"]]]
 ];
 const RP_LABEL = Object.fromEntries(RP_SEC.flatMap(s => s[1]).map(f => [f[0], f[1]]));
@@ -5262,7 +5262,8 @@ function rpField([k, label, kind, hint]){
   if (kind === "light") return `<div class="rp-f"><label>${esc(label)}</label><div class="rp-pills rp-lt" data-k="${k}">${["g", "a", "r"].map(c => `<button type="button" class="${c}${v === RP_LT[c] ? " on" : ""}" data-val="${RP_LT[c]}" aria-pressed="${v === RP_LT[c]}"><i></i>${LT_MEAN[c]}</button>`).join("")}</div></div>`;
   if (kind === "long") return `<div class="rp-f"><label for="rp-${k}">${esc(label)}</label><textarea class="sq-in" id="rp-${k}" name="${k}" rows="3" maxlength="4000" placeholder="${esc(hint || "")}">${esc(v)}</textarea></div>`;
   if (kind === "date") return `<div class="rp-f"><label for="rp-${k}">${esc(label)}</label><input class="sq-in" type="date" id="rp-${k}" name="${k}" value="${esc(v)}" max="${myDate()}"></div>`;
-  return `<div class="rp-f"><label for="rp-${k}">${esc(label)}</label><input class="sq-in" id="rp-${k}" name="${k}" maxlength="200" value="${esc(v)}" placeholder="${esc(hint || "")}"></div>`;
+  const hide = k === "agName" && RPF.v.agency !== "Has an agency";  // the agency name only drops down once "Has an agency" is picked
+  return `<div class="rp-f${k === "agName" ? " rp-agn" : ""}"${hide ? " hidden" : ""}><label for="rp-${k}">${esc(label)}</label><input class="sq-in" id="rp-${k}" name="${k}" maxlength="200" value="${esc(v)}" placeholder="${esc(hint || "")}"></div>`;
 }
 function rpFormHtml(){
   const p = rpProspect(RPF.name), names = [...new Set(Object.values(cnShown()).map(x => x.name))].sort();
@@ -5440,6 +5441,7 @@ $("#rpd").addEventListener("click", e => {
     box.querySelectorAll("button").forEach(b => { b.classList.toggle("on", on && b === pill); b.setAttribute("aria-pressed", on && b === pill); });
     if (k === "_g") RPF.g = on ? pill.dataset.val : ""; else if (on) RPF.v[k] = pill.dataset.val; else delete RPF.v[k];
     if (k === "style") { const ob = $("#rp-styleOther"), oth = RPF.v.style === "Other"; ob.hidden = !oth; if (oth) ob.focus(); else { ob.value = ""; delete RPF.v.styleOther; } }
+    if (k === "agency") { const ab = $("#rpd .rp-agn"), has = RPF.v.agency === "Has an agency"; ab.hidden = !has; if (has) ab.querySelector("input").focus(); else { ab.querySelector("input").value = ""; delete RPF.v.agName; } }
     rpDraftSave(); return;
   }
   if (e.target.closest("[data-rpdraft]")) return rpSave("Draft");
