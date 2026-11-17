@@ -3933,7 +3933,7 @@ $("#schP").addEventListener("change", e => { SCH.p = e.target.value; renderSched
 $("#schQ").addEventListener("input", e => { SCH.q = e.target.value; renderSchedule(); });
 async function loadSchedule(){
   try { const r = await fetch("schedule.json?t=" + Date.now(), { cache: "no-store" }); if (r.ok) SCHED = await r.json(); else if (!SCHED) SCHED = { events: [] }; } catch (e) { if (!SCHED) SCHED = { events: [] }; }
-  renderSchedule(); renderHome();
+  renderSchedule(); if (STATE && dayOnly(STATE)) render(); else renderHome();
   if (CORNER) renderCorner();  // the watch list's "Scores & results" (coming up) and an open profile's "Next tournaments"
 }
 async function loadScouting(){
@@ -6129,6 +6129,21 @@ async function espnLive(){
 /* ---------- boot ---------- */
 route();
 render();
+// The score feed gives a match with no start time yet a start of midnight where it's played (Trnava 00:00 = 23:00 UK
+// the night before). So a Live Tennis API match not started yet at exactly 00:00 local time = that local day, "Time TBC".
+// Needs schedule.json to place the event, so it runs again once that loads; an event it can't place is left as it is.
+function dayOnly(st){
+  let n = 0;
+  for (const m of st?.matches || []) {
+    if (m.src || m.status !== "scheduled" || !m.time || m.oop) continue;
+    const z = evZone(m); if (!z) continue;
+    const d = ukMoment(m.date, m.time);
+    if (clock(d, z.tz) !== "00:00") continue;
+    m.date = new Intl.DateTimeFormat("en-CA", { timeZone: z.tz, year:"numeric", month:"2-digit", day:"2-digit" }).format(d);
+    m.time = ""; n++;
+  }
+  return n;
+}
 async function load(){
   try {
     const r = await fetch("data.json?t=" + Date.now(), { cache: "no-store" });
@@ -6145,6 +6160,7 @@ async function load(){
     try { const ri = await fetch("itf.json?t=" + Date.now(), { cache: "no-store" }); if (ri.ok) ITF = await ri.json(); } catch (e) {}
     try { const rl = await fetch("titles.json?t=" + Date.now(), { cache: "no-store" }); if (rl.ok) TITLES = await rl.json(); } catch (e) {}
     normalizeMatches(STATE);
+    dayOnly(STATE);
     applyLive(STATE);
     render();
     if (!liveAt && !liveErr) espnLive();  // first load: read live scores straight away
