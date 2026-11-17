@@ -851,6 +851,12 @@ dialog.vdd.vd-on .vd-play.ig iframe{position:absolute;left:50%;top:50%;width:min
 .rp-drs button{display:inline-flex;flex-direction:column;align-items:flex-start;padding:5px 12px;border:1px dashed var(--gold);border-radius:12px;background:transparent;color:var(--gold);font:inherit;font-size:12px;cursor:pointer;text-align:left}
 .rp-drs button small{font-size:10px;color:var(--muted)}
 .rp-dr{border-style:dashed;border-color:rgba(208,165,121,.5)}
+.rp-drw{display:flex;gap:6px;align-items:stretch;margin:0 0 6px}
+.rp-drw > .rp-row{margin:0;flex:1 1 auto;min-width:0}
+.rp-del{flex:none;width:46px;display:grid;place-items:center;border:1px solid rgba(232,144,143,.45);border-radius:12px;background:rgba(232,144,143,.06);color:#E8908F;cursor:pointer}
+.rp-del:hover{background:rgba(232,144,143,.18);border-color:#E8908F}
+.rp-del svg{width:19px;height:19px}
+.rp-del.wait{opacity:.45;cursor:progress}
 .rp-dr em{display:inline-block;margin-right:8px;font-style:normal;font-size:9.5px;letter-spacing:.08em;text-transform:uppercase;border:1px solid var(--gold);color:var(--gold);border-radius:999px;padding:1px 8px;vertical-align:1px}
 .cn-list .rp-drafts{grid-column:1/-1;margin:0 0 6px}
 .rp-drafts h3{font-family:var(--display);font-weight:500;text-transform:uppercase;letter-spacing:.16em;font-size:12px;color:var(--gold);margin:0 0 8px}
@@ -5194,7 +5200,31 @@ function rpRow(r, chips){
   return `<button type="button" class="rp-row" data-rpo="${esc(r.id)}"><span class="t">${r.f?.light ? `<span class="lt-dot ${RP_LT_K[r.f.light]}"></span>` : ""}Report by ${esc(r.firstBy || r.by || "someone")}<small>${esc(rpDay(r.firstAt || r.at))}${r.f?.seen ? " · " + esc(r.f.seen) : ""}${edited ? " · edited " + esc(rpDay(r.at)) : ""}${n ? ` · ${n} comment${n === 1 ? "" : "s"}` : ""}</small>${chips ? `<span class="rp-chips">${rpChips(r.f || {})}</span>` : ""}</span><span class="ar" aria-hidden="true">›</span></button>`;
 }
 // one of your drafts: tap to carry on with it
-const rpDraftRow = d => `<button type="button" class="rp-row rp-dr" data-rpdo="${esc(d.id)}"><span class="t"><em>${d.pub ? "Unpublished changes" : "Draft"}</em>${esc(d.name || "No name yet")}<small>${d.local ? (d.had ? "Latest changes only on this device" : "Not saved yet, only on this device") : "Saved"} · ${esc(rpWhen(d.at))}</small></span><span class="ar" aria-hidden="true">›</span></button>`;
+// each draft has its own bin button beside it, so it can be deleted without opening it (rpDelDraft)
+const rpDraftRow = d => `<div class="rp-drw"><button type="button" class="rp-row rp-dr" data-rpdo="${esc(d.id)}"><span class="t"><em>${d.pub ? "Unpublished changes" : "Draft"}</em>${esc(d.name || "No name yet")}<small>${d.local ? (d.had ? "Latest changes only on this device" : "Not saved yet, only on this device") : "Saved"} · ${esc(rpWhen(d.at))}</small></span><span class="ar" aria-hidden="true">›</span></button><button type="button" class="rp-del" data-rpdel="${esc(d.id)}" aria-label="${d.pub ? "Throw away these changes" : "Delete this draft"}" title="${d.pub ? "Throw away these changes" : "Delete this draft"}"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 6h18M8 6V4h8v2M6 6l1 14h10l1-14M10 11v6M14 11v6"/></svg></button></div>`;
+// the bin button on a draft: one question, then it's gone from this device and (if it was saved) from the Sheet, as status "Discarded"
+async function rpDelDraft(id, btn){
+  const d = rpDrafts().find(x => x.id === id); if (!d) return;
+  const who = d.name ? ` for ${d.name}` : "";
+  if (!confirm(d.pub ? `Throw away your unpublished changes${who}? The published report stays as it is.` : `Delete the draft${who}? This can't be undone.`)) return;
+  const sd = rpSaved().find(x => x.id === id);
+  if (sd) {
+    if (btn) { btn.disabled = true; btn.classList.add("wait"); }
+    const body = { kind: "report", id, name: sd.name, g: sd.g || "", nat: sd.nat || "", born: sd.born || "", by: rpBy(), own: rpOwn()[id] || rpDev()[id]?.own || "", status: "Discarded", f: sd.f || {} };
+    let res = "";
+    try { const r = await fetch(CORNER_URL, { method: "POST", body: JSON.stringify(body) }); res = r.ok ? (await r.text()).trim() : ""; } catch (e) {}
+    if (res !== "ok") {
+      if (btn) { btn.disabled = false; btn.classList.remove("wait"); }
+      return alert(res === "notyours" ? "This draft was started by someone else, so only they can delete it." : "Couldn't reach the Sheet, so the draft wasn't deleted. Check your signal and try again.");
+    }
+    rpMineSave([...rpMine().filter(x => !(x.id === id && x.st === "Discarded")), { id, name: sd.name, by: rpBy(), at: new Date().toISOString(), st: "Discarded", t: Date.now() }]);
+    RP_DRAFTS = RP_DRAFTS.filter(x => x.id !== id);
+  }
+  rpDraftDrop(id);
+  document.querySelectorAll(".rp-drw").forEach(r => { if (r.querySelector("[data-rpdel]")?.dataset.rpdel === id) r.remove(); });  // also in an open profile window
+  renderCorner();
+  if ($("#rpd").open) rpRedraw();
+}
 // the block in a watch list / suggestion profile window: the player's reports, your drafts on them, their clips, and buttons to add more
 function rpBlock(names, who){
   const k = rpKeys(names), reps = rpFor(names), vids = vdFor(names), mine = rpDrafts().filter(d => k.has(cnSorted(d.name || ""))), d = esc(JSON.stringify(who));
@@ -5447,6 +5477,7 @@ $("#rpd").addEventListener("close", () => { RPD.mode = ""; RPD.note = {}; if (!$
 document.addEventListener("click", e => {
   const n = e.target.closest("[data-rpnew]");
   if (n) { let o = {}; try { o = JSON.parse(n.dataset.rpnew || "{}"); } catch (err) {} return rpForm(o); }
+  const del = e.target.closest("[data-rpdel]"); if (del) return rpDelDraft(del.dataset.rpdel, del);
   const dr = e.target.closest("[data-rpdo]"); if (dr) return rpForm({ id: dr.dataset.rpdo });
   const a = e.target.closest("[data-vdadd]");
   if (a) { let o = {}; try { o = JSON.parse(a.dataset.vdadd); } catch (err) {} if (o.name) vdPick(o); return; }
