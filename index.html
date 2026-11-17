@@ -2227,7 +2227,6 @@ dialog.tmd[open]{animation:pop .28s ease}
 const ROSTER = [
   { id:"deminaur", first:"Alex", last:"de Minaur", tour:"ATP", country:"AUS", sofa:"https://www.sofascore.com/team/tennis/de-minaur-alex/201239" },
   { id:"rublev", first:"Andrey", last:"Rublev", tour:"ATP", country:"RUS", sofa:"https://www.sofascore.com/team/tennis/rublev-andrey/106755" },
-  { id:"buse", first:"Ignacio", last:"Buse", tour:"ATP", country:"PER", sofa:"https://www.sofascore.com/team/tennis/buse-ignacio/322082" },
   { id:"altmaier", first:"Daniel", last:"Altmaier", tour:"ATP", country:"GER", sofa:"https://www.sofascore.com/team/tennis/altmaier-daniel/127208" },
   { id:"monfils", first:"Gael", last:"Monfils", tour:"ATP", country:"FRA", sofa:"https://www.sofascore.com/team/tennis/monfils-gael/14844" },
   { id:"svitolina", first:"Elina", last:"Svitolina", tour:"WTA", country:"UKR", sofa:"https://www.sofascore.com/team/tennis/svitolina-elina/51293" },
@@ -2243,7 +2242,6 @@ const ROSTER = [
   { id:"kuzuhara", first:"Bruno", last:"Kuzuhara", tour:"ATP", country:"USA", sofa:"https://www.sofascore.com/team/tennis/kuzuhara-bruno/328075" },
   { id:"ivanov", first:"Ivan", last:"Ivanov", tour:"ATP", country:"BUL", sofa:"https://www.sofascore.com/team/tennis/ivanov-ivan/460276" },
   { id:"bonding", first:"Oliver", last:"Bonding", tour:"ATP", country:"GBR", sofa:"https://www.sofascore.com/team/tennis/bonding-oliver/478944" },
-  { id:"mackenzie", first:"Jamie", last:"Mackenzie", tour:"ATP", country:"GER", sofa:"https://www.sofascore.com/team/tennis/mackenzie-jamie/549693" },
   { id:"choi", first:"Fu Wang", last:"Choi", tour:"ATP", country:"HKG", sofa:"https://www.sofascore.com/team/tennis/fu-wang-choi/1162829" },
   { id:"qi", first:"Hongjin", last:"Qi", tour:"ATP", country:"CHN", sofa:"https://www.sofascore.com/team/tennis/qi-hongjin/1120615" },
   { id:"chavez", first:"Tito", last:"Chávez", tour:"ATP", country:"ESP", sofa:"https://www.sofascore.com/team/tennis/chavez-tito/1122785" },
@@ -2839,10 +2837,6 @@ const PROFILES = [
     partners:["adidas","Artengo","Royaltiz","Decathlon"],
     social:{ Instagram:345*K, TikTok:19*K, X:44*K, YouTube:70*K },
     quote:["It's really incredible that she's coming out and she's standing for what she believes in.","Naomi Osaka"] },
-  { id:"buse", age:22, nat:"Peruvian", plays:BH,
-    titles:[{ k:"ATP titles", n:3, p:[["500",1],["Challenger 125",1],["Challenger 100",1]] }],
-    partners:["Banco Falabella","Herbalife","TEC","Carles Ferrer Salat","ISDIN","Peugeot","ETNA","Wilson","Lotto"],
-    social:{ Instagram:199*K, TikTok:55*K } },
   { id:"altmaier", age:28, nat:"German", plays:BH,
     titles:[{ k:"ATP Challenger titles", n:7, p:[["Challenger",7]] }],
     partners:["Yonex"], social:{ Instagram:48*K } },
@@ -2901,9 +2895,6 @@ const JUNIOR_PROFILES = [
   { id:"bonding", grp:"U18", born:2007, nat:"British", ig:"oliverbonding", head:["Highest ITF junior ranking",8],
     partners:["Dunlop"],
     res:{2026:["Columbia, USA ITF M15","Lakewood, USA ITF M15"],2025:["Wimbledon (Doubles RU)","Roehampton, GB ITF J300","U18 British National Championships","Lannion, France ITF M15"],2024:["U18 British National Championships","Blumenau, Brazil ITF J500"],2023:["Barranquilla, Colombia ITF G1","Indian Wells, USA ITF G1 (RU)","Oslo, Norway ITF G5","Aldershot, GB ITF G4","Johannesburg, South Africa ITF G3","Pretoria, South Africa ITF G3","U16 Junior Davis Cup & European Championships"]} },
-  { id:"mackenzie", grp:"U18", born:2008, nat:"German", ig:"jamie_mackenzie_tennis", head:["Highest ITF junior ranking",2],
-    partners:["HEAD"],
-    res:{2026:["US Open Junior (SF)","Bonn, Germany ATP Challenger 75 (RU)","Roehampton, GB ITF J300 (Doubles)","Roland Garros Junior (Doubles)","Milan, Italy ITF J500","Offenbach, Germany ITF J500"],2025:["Osaka, Japan ITF J500","Beijing, China ITF J300","Bamberg, Germany ITF J300","Milan, Italy ITF J500","Benicarló, Spain ITF J300","Valencia, Spain ITF J200"],2024:["Vigo, Spain ITF J200","Rutesheim, Germany ITF J200","Maaseik, Belgium ITF J100","Basel, Switzerland ITF J200","Szczecin, Poland ITF J60"]} },
   { id:"chavez", grp:"U18", born:2008, nat:"Spanish", ig:"titochavez_official", head:["Highest ITF junior ranking",19],
     partners:["HEAD","ASICS"],
     res:{2026:["Kranjska Gora, Slovenia ITF M15 (RU)","Cairo, Egypt ITF J300"],2025:["Osaka, Japan ITF J500","Beijing, China ITF J300","Bamberg, Germany ITF J300","Prato, Italy ITF J200"],2024:["Parma, Italy TEJT U16","El Prat de Llobregat, Spain ITF J100","Barcelona, Spain ITF J100","Barcelona, Spain ITF J100"],2023:["Cairo, Egypt ITF J30","Alexandria, Egypt ITF J30"]} },
@@ -2986,11 +2977,11 @@ const ALL_PROFILES = [...PROFILES, ...JUNIOR_PROFILES];
 const profById = Object.fromEntries(ALL_PROFILES.map(p => [p.id, p]));
 /* exact dates of birth (official ATP/WTA records via Tennis Abstract and the WTA): ages work themselves out from these */
 const DOB = {
-  deminaur:"1999-02-17", rublev:"1997-10-20", buse:"2004-03-25", altmaier:"1998-09-12", monfils:"1986-09-01", coric:"1996-11-14",
+  deminaur:"1999-02-17", rublev:"1997-10-20", altmaier:"1998-09-12", monfils:"1986-09-01", coric:"1996-11-14",
   schwaerzler:"2006-01-27", kym:"2003-02-12", kuzuhara:"2004-04-01", ivanov:"2008-10-30", bonding:"2007-06-18", chavez:"2008-02-01",
   qi:"2010-05-04", svitolina:"1994-09-12", bejlek:"2006-01-31", starodubtseva:"2000-02-17", kasatkina:"1997-05-07", sawangkaew:"2002-07-10",
   jones:"2000-09-19", romero:"2002-04-06", ristic:"2006-05-17", rajeshwaran:"2009-06-12", dotsenko:"2011-10-07", newman:"2010-02-11",
-  lin:"2010-06-10", mackenzie:"2008-01-15", dudeney:"2003-05-28", jabeur:"1994-08-28", pinera:"2010-09-28", kanabar:"2011-11-30", mmakarova:"2010-01-14",
+  lin:"2010-06-10", dudeney:"2003-05-28", jabeur:"1994-08-28", pinera:"2010-09-28", kanabar:"2011-11-30", mmakarova:"2010-01-14",
   luchetti:"2012-08-06", guslinskaia:"2014-02-13",
 };
 const ageOn = iso => { const d = new Date(iso + "T12:00:00Z"), n = new Date(ukDate() + "T12:00:00Z");
@@ -3005,7 +2996,7 @@ JUNIOR_PROFILES.forEach(x => { if (x.born >= new Date().getFullYear() - 12) x.gr
 const RACKET = ["wilson","yonex","head","babolat","dunlop","tecnifibre","prince","artengo","solinco","prokennex","volkl","diadem"];
 const APPAREL = ["nike","adidas","asics","lotto","k-swiss","joma","ea7","castore","lacoste","fila","on","diadora","ellesse","hydrogen","le coq sportif","uniqlo","new balance","mizuno","sergio tacchini","australian","bidi badu"];
 // players whose racket brand also dresses them (one brand for both)
-const SAME_KIT = new Set(["deminaur", "altmaier", "dotsenko", "iwasa", "lin", "kym", "mackenzie"]);
+const SAME_KIT = new Set(["deminaur", "altmaier", "dotsenko", "iwasa", "lin", "kym"]);
 function partnersHtml(list, id){
   const lc = n => String(n).toLowerCase().trim();
   const r = list.find(n => RACKET.includes(lc(n))), a = list.find(n => n !== r && APPAREL.includes(lc(n)));
@@ -3434,7 +3425,7 @@ function sqRows(){
   const year = (SCOUT.minYear || new Date().getFullYear() - 21) + 21;
   const q = sqKey(SQ.q);
   return T.players.map(p => ({ rank:p[0], name:p[1], raw:p[1], cty:p[2], born:p[3], w:p[4], m3:p[5], m12:p[6], url:p[7], pts:p[9] ?? null,
-      is72: sqJr() ? !!p[8] : SQ72.has(SQ.t + ":" + sqKey(p[1])), rid: p[8] }))
+      is72: sqJr() ? !!byId[p[8]] : SQ72.has(SQ.t + ":" + sqKey(p[1])), rid: p[8] }))
     .map(p => { if (p.rid && byId[p.rid]) p.name = `${byId[p.rid].first} ${byId[p.rid].last}`;  // ITF juniors: 72 players matched by ITF id
       else if (p.is72 && !sqJr()) { const r = ROSTER.find(x => x.tour.toLowerCase() === SQ.t && sqKey(x.first + x.last) === sqKey(p.name)); if (r) p.name = `${r.first} ${r.last}`; } return p; })
     .filter(p => (sqBy() === "year" ? !SQ.yr || p.born === SQ.yr : !SQ.age || p.born >= year - SQ.age) && (!SQ.top || p.rank <= SQ.top) && (!q || sqKey(p.name).includes(q)) && (!SQ.c || p.cty === SQ.c) && (!SQ.o72 || p.is72));
@@ -3933,6 +3924,7 @@ $("#schP").addEventListener("change", e => { SCH.p = e.target.value; renderSched
 $("#schQ").addEventListener("input", e => { SCH.q = e.target.value; renderSchedule(); });
 async function loadSchedule(){
   try { const r = await fetch("schedule.json?t=" + Date.now(), { cache: "no-store" }); if (r.ok) SCHED = await r.json(); else if (!SCHED) SCHED = { events: [] }; } catch (e) { if (!SCHED) SCHED = { events: [] }; }
+  for (const e of SCHED.events || []) if (e.e72) e.e72 = e.e72.filter(x => byId[x.id]);  // players who have left the roster
   renderSchedule(); if (STATE && dayOnly(STATE)) render(); else renderHome();
   if (CORNER) renderCorner();  // the watch list's "Scores & results" (coming up) and an open profile's "Next tournaments"
 }

@@ -26,10 +26,10 @@ MAX_CALLS = 45  # hard stop per run, protects the daily allowance
 
 # Roster: id -> (full name used for the API search, tour)
 ROSTER = {
-    "deminaur": ("Alex de Minaur", "atp"), "rublev": ("Andrey Rublev", "atp"), "buse": ("Ignacio Buse", "atp"),
+    "deminaur": ("Alex de Minaur", "atp"), "rublev": ("Andrey Rublev", "atp"),
     "altmaier": ("Daniel Altmaier", "atp"), "monfils": ("Gael Monfils", "atp"), "coric": ("Borna Coric", "atp"),
     "schwaerzler": ("Joel Schwaerzler", "atp"), "kym": ("Jerome Kym", "atp"), "kuzuhara": ("Bruno Kuzuhara", "atp"),
-    "ivanov": ("Ivan Ivanov", "atp"), "bonding": ("Oliver Bonding", "atp"), "mackenzie": ("Jamie Mackenzie", "atp"),
+    "ivanov": ("Ivan Ivanov", "atp"), "bonding": ("Oliver Bonding", "atp"),
     "choi": ("Fu Wang Choi", "atp"), "qi": ("Hongjin Qi", "atp"), "chavez": ("Tito Chavez", "atp"),
     "mateo": ("Jorge Mateo", "atp"), "drijver": ("Laurens Drijver", "atp"), "davies": ("Fletcher Davies", "atp"),
     "tarlazzi": ("Diego Tarlazzi", "atp"), "fazekas": ("Vencel Fazekas", "atp"), "farkxodov": ("Saidaslam Farkxodov", "atp"),
@@ -244,6 +244,7 @@ def main():
         if NOW - last < timedelta(minutes=20):
             print("ran", int((NOW - last).total_seconds() // 60), "min ago - skipping"); return
     players = load("players.json", {})          # roster id -> {"apiId": int|None, "checked": iso}
+    players = {k: v for k, v in players.items() if k in ROSTER}  # a player who has left the roster is forgotten
     data.setdefault("matches", [])
     data.setdefault("rankings", {})
     data.setdefault("status", {})
@@ -321,6 +322,13 @@ def main():
             "winner": winner_from(sc) if status == "finished" else None,
         }
 
+    # players who have left the roster: their saved matches and ranking go straight away
+    for m in data["matches"]:
+        for side in ("p1Id", "p2Id"):
+            if m.get(side) and m[side] not in ROSTER:
+                m[side] = None
+    data["matches"] = [m for m in data["matches"] if m.get("p1Id") or m.get("p2Id")]
+    data["rankings"] = {k: v for k, v in (data.get("rankings") or {}).items() if k in ROSTER}
     old = {m["apiId"]: m for m in data["matches"] if m.get("apiId")}
     new = {}
 

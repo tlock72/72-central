@@ -18,7 +18,7 @@ PAUSE = 6  # seconds between requests
 # id -> (name as the ITF spells it, ITF player id or None to look it up, "B" boys / "G" girls)
 JUNIORS = {
     "ivanov": ("Ivan Ivanov", 800586822, "B"), "bonding": ("Oliver Bonding", 800544649, "B"),
-    "mackenzie": ("Jamie Mackenzie", 800570117, "B"), "chavez": ("Tito Chavez", 800590474, "B"),
+    "chavez": ("Tito Chavez", 800590474, "B"),
     "qi": ("Hongjin Qi|Hongjing Qi", None, "B"), "fazekas": ("Vencel Fazekas", 800703915, "B"),
     "choi": ("Fu Wang Choi", 800740257, "B"), "drijver": ("Laurens Drijver", 800695508, "B"),
     "daraban": ("Luca Daraban", 800678733, "B"), "tarlazzi": ("Diego Tarlazzi", 800708323, "B"),
@@ -73,6 +73,8 @@ def main():
     except (FileNotFoundError, json.JSONDecodeError):
         data = {}
     players = data.setdefault("players", {})
+    for pid in [k for k in players if k not in JUNIORS]:
+        del players[pid]  # left the roster
     if data.get("checked") == today and not data.get("pending") and os.environ.get("FORCE") != "1":
         print("Already refreshed today"); return
 
