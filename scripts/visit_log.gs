@@ -596,6 +596,10 @@ function setupReports() {
 // Hidden last column: a secret code from the device that started the report. That device can always edit it; any
 // other device can only if it's signed in with the same first name as the person who started it.
 const REPORT_OWN_COL = REPORT_FIXED.length + REPORT_FIELDS.length + 1;
+// Answers added later (Nov 2026) go after the Owner code column, so the columns already on the Sheet never move
+const REPORT_MORE = [["insta", "Instagram"], ["contact", "Contacts"]];
+const REPORT_COLS = REPORT_OWN_COL + REPORT_MORE.length;
+const igHandle_ = t => { const m = clean_(t).replace(/^(https?:\/\/)?(www\.)?instagram\.com\//i, "").replace(/^@/, "").split(/[/?#\s]/)[0]; return /^[A-Za-z0-9._]{1,30}$/.test(m) ? "@" + m : ""; };
 function reportSheet_() {
   const ss = SpreadsheetApp.getActiveSpreadsheet();
   let sh = ss.getSheetByName("Reports");
@@ -610,12 +614,14 @@ function reportSheet_() {
   }
   if (sh.getMaxColumns() < REPORT_OWN_COL) sh.insertColumnsAfter(sh.getMaxColumns(), REPORT_OWN_COL - sh.getMaxColumns());
   if (!sh.getRange(1, REPORT_OWN_COL).getValue()) { sh.getRange(1, REPORT_OWN_COL).setValue("Owner code").setFontWeight("bold"); sh.hideColumns(REPORT_OWN_COL); }
+  if (sh.getMaxColumns() < REPORT_COLS) sh.insertColumnsAfter(sh.getMaxColumns(), REPORT_COLS - sh.getMaxColumns());
+  REPORT_MORE.forEach(([, h], i) => { const c = sh.getRange(1, REPORT_OWN_COL + 1 + i); if (!c.getValue()) { c.setValue(h).setFontWeight("bold"); sh.getRange(2, REPORT_OWN_COL + 1 + i, sh.getMaxRows() - 1, 1).setWrap(true).setVerticalAlignment("top"); } });
   return sh;
 }
 // Every row of every report, oldest first per report: { id: [rows] }
 function reportRows_() {
   const sh = SpreadsheetApp.getActiveSpreadsheet().getSheetByName("Reports");
-  const rows = sh && sh.getLastRow() > 1 ? sh.getRange(2, 1, sh.getLastRow() - 1, REPORT_OWN_COL).getValues() : [];
+  const rows = sh && sh.getLastRow() > 1 ? sh.getRange(2, 1, sh.getLastRow() - 1, Math.min(REPORT_COLS, sh.getMaxColumns())).getValues() : [];
   const by = {};
   rows.forEach(r => { const id = String(r[1]); if (id && r[0] instanceof Date) (by[id] = by[id] || []).push(r); });
   Object.values(by).forEach(l => l.sort((a, b) => a[0] - b[0]));
@@ -644,6 +650,7 @@ function saveReport(d) {
     if (k === "seenOn") return /^20\d\d-\d\d-\d\d$/.test(v) ? v : "";
     return plain_(v.slice(0, 4000));
   });
+  const more = REPORT_MORE.map(([k]) => k === "insta" ? igHandle_(f[k]) : plain_(clean_(f[k]).slice(0, 1000)));
   const lock = LockService.getScriptLock();
   lock.waitLock(10000);
   try {
@@ -655,7 +662,7 @@ function saveReport(d) {
       if (!(sameName_(by, unplain_(first[6])) || (own && own === String(first[REPORT_OWN_COL - 1])))) return out("notyours");
       code = String(first[REPORT_OWN_COL - 1] || own);
     }
-    sh.appendRow([new Date(), id, plain_(name), g, nat, born, plain_(by), status].concat(vals, [code]));
+    sh.appendRow([new Date(), id, plain_(name), g, nat, born, plain_(by), status].concat(vals, [code], more));
   } finally {
     lock.releaseLock();
   }
@@ -674,6 +681,7 @@ function listReports(e) {
       if (v instanceof Date) v = Utilities.formatDate(v, TZ, "yyyy-MM-dd");  // a typed date the Sheet turned into a date
       v = unplain_(v).trim(); if (v) f[k] = v;
     });
+    REPORT_MORE.forEach(([k], i) => { const v = unplain_(r[REPORT_OWN_COL + i]).trim(); if (v) f[k] = v; });
     return { id: String(r[1]), name: unplain_(r[2]).trim(), g: { Male: "M", Female: "F" }[r[3]] || "", nat: String(r[4] || ""), born: r[5] ? Number(r[5]) : null,
       by: unplain_(r[6]), at: r[0].toISOString(), firstBy: unplain_(first[6]), firstAt: (firstLive || r)[0].toISOString(), f };
   };

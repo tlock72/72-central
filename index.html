@@ -743,6 +743,8 @@ a.cn-st.ok:hover{border-color:var(--gold)}
 .rp-wl input{margin-top:2px;accent-color:var(--gold)}
 .rp-wl .ok{color:var(--up)}
 .rp-hint{margin:0 0 10px;font-size:12px;color:var(--muted);line-height:1.45}
+.rp-tx a{color:var(--gold)}
+.rp-ig{display:inline-flex;align-items:center;gap:7px;font-weight:600;text-decoration:none}.rp-ig svg{width:18px;height:18px}
 .rp-lnk{background:none;border:0;padding:0;color:var(--gold);font:inherit;text-decoration:underline;cursor:pointer}
 .rp-save{position:sticky;bottom:0;display:flex;align-items:center;gap:12px;padding:12px 22px calc(12px + env(safe-area-inset-bottom));background:linear-gradient(180deg,rgba(11,18,48,.85),#0B1230 40%);border-top:1px solid var(--line);z-index:2}
 .rp-save span{flex:1 1 auto;font-size:12px;color:var(--down);line-height:1.35}
@@ -5092,8 +5094,22 @@ const RP_SEC = [
     ["phys", "Physicality", "long", "Height, build, speed, endurance, injuries"], ["pers", "Personality", "long", "Competitiveness, body language, maturity, coachability"]]],
   ["Team and family", [["team", "Team structure", "long", "Coach, fitness, physio, academy, federation support"], ["fam", "Family involvement", "long", "Who travels, who decides, how involved they are"]]],
   ["Commercial", [["comm", "Commercial already in place", "long", "Kit, racquet, sponsors, other deals"], ["mkt", "How marketable", "scale"], ["agency", "Agency", "pick"], ["agName", "Agency name", "text"]]],
+  ["Contact details", [["insta", "Instagram", "text", "@handle"], ["contact", "Contacts", "long", "Phone numbers or emails: player, parent, coach (one per line, with who it is)"]]],
   ["Anything else", [["other", "Other comments", "long"]]]
 ];
+// Instagram: whatever was typed ("@name", "name", an instagram.com link) down to the bare handle, or "" if it isn't one
+const rpIg = t => { const m = String(t || "").trim().replace(/^(https?:\/\/)?(www\.)?instagram\.com\//i, "").replace(/^@/, "").split(/[/?#\s]/)[0]; return /^[A-Za-z0-9._]{1,30}$/.test(m) ? m : ""; };
+// Contacts: plain text, with emails as mailto: links and phone numbers (7+ digits) as tel: links
+function rpContactHtml(t){
+  const re = /([^\s@<>,;]+@[^\s@<>,;]+\.[A-Za-z]{2,})|(\+?\d[\d ()\-.]{5,}\d)/g;
+  let out = "", i = 0, m;
+  while ((m = re.exec(t))) {
+    out += esc(t.slice(i, m.index)); i = re.lastIndex;
+    if (m[1]) out += `<a href="mailto:${esc(m[1])}">${esc(m[1])}</a>`;
+    else { const n = m[2].replace(/[^\d+]/g, ""); out += n.replace(/\D/g, "").length >= 7 ? `<a href="tel:${esc(n)}">${esc(m[2])}</a>` : esc(m[2]); }
+  }
+  return out + esc(t.slice(i));
+}
 const RP_LABEL = Object.fromEntries(RP_SEC.flatMap(s => s[1]).map(f => [f[0], f[1]]));
 // Style "Other": the form keeps the pill ("Other") and the typed words (styleOther) apart; the Sheet gets one
 // answer, "Other: <typed words>" (or just "Other"), so no new column is needed
@@ -5186,6 +5202,7 @@ function rpChips(f){
 }
 const RP_PLAY = `<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M8 5v14l11-7z"/></svg>`;
 const RP_LINK = `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M10 14a4.5 4.5 0 0 0 6.4 0l3.2-3.2a4.5 4.5 0 0 0-6.4-6.4L12 5.6"/><path d="M14 10a4.5 4.5 0 0 0-6.4 0l-3.2 3.2a4.5 4.5 0 0 0 6.4 6.4l1.2-1.2"/></svg>`;
+const RP_IG = `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="3" width="18" height="18" rx="5"/><circle cx="12" cy="12" r="4"/><circle cx="17.5" cy="6.5" r=".8" fill="currentColor"/></svg>`;
 const RP_CAM = `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="2" y="6" width="14" height="12" rx="2"/><path d="M16 10l6-3v10l-6-3z"/></svg>`;
 // clip tiles: Drive's thumbnail (dropped if it isn't ready yet), who added it and when
 function vdGrid(list, empty){
@@ -5270,7 +5287,7 @@ function rpField([k, label, kind, hint]){
   if (kind === "long") return `<div class="rp-f"><label for="rp-${k}">${esc(label)}</label><textarea class="sq-in" id="rp-${k}" name="${k}" rows="3" maxlength="4000" placeholder="${esc(hint || "")}">${esc(v)}</textarea></div>`;
   if (kind === "date") return `<div class="rp-f"><label for="rp-${k}">${esc(label)}</label><input class="sq-in" type="date" id="rp-${k}" name="${k}" value="${esc(v)}" max="${myDate()}"></div>`;
   const hide = k === "agName" && RPF.v.agency !== "Has an agency";  // the agency name only drops down once "Has an agency" is picked
-  return `<div class="rp-f${k === "agName" ? " rp-agn" : ""}"${hide ? " hidden" : ""}><label for="rp-${k}">${esc(label)}</label><input class="sq-in" id="rp-${k}" name="${k}" maxlength="200" value="${esc(v)}" placeholder="${esc(hint || "")}"></div>`;
+  return `<div class="rp-f${k === "agName" ? " rp-agn" : ""}"${hide ? " hidden" : ""}><label for="rp-${k}">${esc(label)}</label><input class="sq-in" id="rp-${k}" name="${k}" maxlength="200" value="${esc(v)}" placeholder="${esc(hint || "")}"${k === "insta" ? ` autocapitalize="off" autocorrect="off" spellcheck="false"` : ""}></div>`;
 }
 function rpFormHtml(){
   const p = rpProspect(RPF.name);
@@ -5344,7 +5361,9 @@ function rpViewHtml(r){
   const f = r.f || {}, fact = (k, v) => v ? `<div><span>${esc(RP_LABEL[k])}</span><b>${esc(v)}</b></div>` : "";
   const sc = k => f[k] ? `${f[k]}/5 · ${RP_SCALE[k][f[k]] || ""}` : "";
   const facts = [fact("hand", f.hand), fact("bh", f.bh), fact("style", f.style), fact("rank", f.rank), fact("major", f.major), fact("mkt", sc("mkt")), fact("agency", [f.agency, f.agName].filter(Boolean).join(": "))].join("");
-  const txt = RP_SEC.flatMap(s => s[1]).filter(x => x[2] === "long" && f[x[0]]).map(x => `<h4>${esc(x[1])}</h4><p class="rp-tx">${esc(f[x[0]])}</p>`).join("");
+  const txt = RP_SEC.flatMap(s => s[1]).filter(x => x[2] === "long" && f[x[0]] && x[0] !== "contact").map(x => `<h4>${esc(x[1])}</h4><p class="rp-tx">${esc(f[x[0]])}</p>`).join("");
+  const ig = rpIg(f.insta);
+  const cont = ig || f.contact ? `<h4>Contact details</h4>${ig ? `<p class="rp-tx"><a class="rp-ig" href="https://www.instagram.com/${esc(ig)}/" target="_blank" rel="noopener" data-ig="${esc(ig)}">${RP_IG}@${esc(ig)}</a></p>` : ""}${f.contact ? `<p class="rp-tx">${rpContactHtml(f.contact)}</p>` : ""}` : "";
   const P = rpProspect(r.name), vids = vdFor([r.name]), first = r.firstBy || r.by, lt = RP_LT_K[f.light];
   const seen = [f.seen, f.seenOn ? rpDay(f.seenOn + "T12:00:00Z") : ""].filter(Boolean).join(", ");
   const mine = rpMineOk(r), dr = mine && rpDrafts().find(d => d.id === r.id), notes = rpNotes(r.id), draft = RPD.note?.[r.id] || "";
@@ -5355,7 +5374,7 @@ function rpViewHtml(r){
     <div class="rp-view">
     ${lt ? `<div class="rp-ltv ${lt}"><i></i>${esc(LT_MEAN[lt])}</div>` : ""}
     ${facts ? `<div class="rp-facts">${facts}</div>` : ""}
-    ${txt || (facts ? "" : `<p class="rp-tx">Nothing written yet.</p>`)}
+    ${txt || (facts || cont ? "" : `<p class="rp-tx">Nothing written yet.</p>`)}${cont}
     <h4>Comments from the team</h4>
     ${notes.map(n => `<div class="rp-note"><div><b>${esc(n.by || "Someone")}</b><small>${esc(rpWhen(n.at))}</small></div><p>${esc(n.text)}</p></div>`).join("") || `<div class="vd-none">No comments yet.${mine ? "" : ` Only ${esc(first || "the writer")} can change the report itself, but anyone can add a comment.`}</div>`}
     <form class="rp-nf" data-rid="${esc(r.id)}"><textarea class="sq-in" name="t" rows="2" maxlength="2000" placeholder="Add a comment on this report${rpBy() ? ` as ${esc(rpBy())}` : ""}">${esc(draft)}</textarea><button type="submit" class="rp-go">Add comment</button></form>
@@ -5484,6 +5503,14 @@ $("#rpd").addEventListener("click", e => {
     return RPF.pub ? rpShow("report", RPF.id) : d.close();
   }
   const o = e.target.closest("[data-rpo]"); if (o) return rpShow("report", o.dataset.rpo);
+  const ig = e.target.closest("[data-ig]");
+  if (ig && matchMedia("(pointer: coarse)").matches) {  // phones/tablets: try the Instagram app, else the website
+    e.preventDefault();
+    const web = ig.href, t = setTimeout(() => { if (!document.hidden) window.open(web, "_blank", "noopener"); }, 1200);
+    addEventListener("visibilitychange", () => { if (document.hidden) clearTimeout(t); }, { once: true });
+    location.href = "instagram://user?username=" + encodeURIComponent(ig.dataset.ig);
+    return;
+  }
   const ed = e.target.closest("[data-rpedit]"); if (ed) return rpForm({ id: ed.dataset.rpedit });
   const pp = e.target.closest("[data-rpp]"); if (pp) return rpShow("player", pp.dataset.rpp);
   const pr = e.target.closest("[data-rpprof]"); if (pr) { d.close(); return cnOpen(pr.dataset.rpprof); }
