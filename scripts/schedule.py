@@ -37,7 +37,9 @@ NOW = datetime.now(timezone.utc)
 T = NOW.astimezone(UK).date()
 YEAR = T.year
 FROM = T - timedelta(days=T.weekday())          # Monday of this week
-TO = date(YEAR, 12, 31)
+# To 31 Dec, but always at least 8 weeks ahead: from early November it runs on into next year, so January's events
+# (United Cup, Brisbane, Australian Open...) and their entry lists show before New Year
+TO = max(date(YEAR, 12, 31), T + timedelta(weeks=8))
 ENTRY_DAYS = 28   # entry lists come out about 3-4 weeks before an event, so 72 entries are shown up to 4 weeks ahead
 OUT = "schedule.json"
 UA = "72CentralSchedule/1.0 (+https://github.com/tlock72/72-central; once a day, one request every few seconds)"
@@ -109,8 +111,8 @@ def tier(tour, cat):
 MONTHS = {m: i for i, m in enumerate(["jan", "feb", "mar", "apr", "may", "jun", "jul", "aug", "sep", "oct", "nov", "dec"], 1)}
 
 
-def wiki_week(s):
-    """'5 Jan', 'January 5' or '12 October' -> date in YEAR."""
+def wiki_week(s, year=YEAR):
+    """'5 Jan', 'January 5' or '12 October' -> date in that season's year."""
     m = re.match(r"(\d{1,2})\s+([A-Za-z]{3})", s) or None
     if m:
         d, mo = int(m.group(1)), m.group(2)
@@ -120,7 +122,7 @@ def wiki_week(s):
             return None
         mo, d = m.group(1), int(m.group(2))
     mo = MONTHS.get(mo.lower())
-    return date(YEAR, mo, d) if mo else None
+    return date(year, mo, d) if mo else None
 
 
 def unlink(s):
@@ -130,19 +132,30 @@ def unlink(s):
     return html.unescape(re.sub(r"\s+", " ", s)).strip(" ,'")
 
 
-def atp_wiki(page, tour):
-    w = get(WIKI + "?" + urllib.parse.urlencode({"action": "parse", "page": page, "prop": "wikitext", "format": "json", "formatversion": 2}))
-    text = json.loads(w)["parse"]["wikitext"]
-    out, week, weeks = [], None, 1
+class NoPage(Exception):
+    pass
+
+
+def atp_wiki(page, tour, year=YEAR):
+    w = json.loads(get(WIKI + "?" + urllib.parse.urlencode({"action": "parse", "page": page, "prop": "wikitext", "format": "json", "formatversion": 2})))
+    if (w.get("error") or {}).get("code") == "missingtitle":
+        raise NoPage(page)
+    text = w["parse"]["wikitext"]
+    out, week, weeks, early = [], None, 1, False
     for line in text.split("\n"):
         if not line.startswith("|") or line.startswith(("|-", "|+", "|}")):
             continue
         cells = line[1:].split("||")
         first = re.sub(r'^\s*(?:rowspan="?\d+"?\s*\|)?', "", cells[0]).strip()
-        wk = wiki_week(re.sub(r"<br\s*/?>.*", "", first))
+        wk = wiki_week(re.sub(r"<br\s*/?>.*", "", first), year)
         if wk:
+            early = early or wk.month <= 6
+            if wk.month == 12 and not early:
+                wk = wk.replace(year=year - 1)  # a season can start in the last days of December of the year before
             week = wk
-            last = wiki_week(re.split(r"<br\s*/?>", first)[-1].strip())  # two-week events list both Mondays
+            last = wiki_week(re.split(r"<br\s*/?>", first)[-1].strip(), year)  # two-week events list both Mondays
+            if last and last.month == 12 and not early:
+                last = last.replace(year=year - 1)
             weeks = max(1, ((last - wk).days // 7 + 1) if last and last > wk else 1)
             cells = cells[1:]
         if not week or not cells:
@@ -171,6 +184,24 @@ def atp_wiki(page, tour):
                     "end": (week + timedelta(days=7 * weeks - 1)).isoformat(), "surface": surface, "weekOnly": True,
                     "link": "https://en.wikipedia.org/wiki/" + urllib.parse.quote(link.group(1).replace(" ", "_")) if link else ""})
     return out
+
+
+def atp_season(name, tour):
+    """This year's Wikipedia season page, plus next year's once TO runs into it. If next year's page isn't up yet,
+    this year's events still show and a check is alerted (once)."""
+    out = atp_wiki(f"{YEAR}_{name}", tour)
+    if TO.year > YEAR:  # from early November
+        try:
+            out += atp_wiki(f"{YEAR + 1}_{name}", tour, YEAR + 1)
+        except NoPage:
+            CHECKS.append(f"Wikipedia has no '{YEAR + 1} {name.replace('_', ' ')}' page yet, so next year's {'ATP Tour' if tour == 'atp' else 'Challenger'} events "
+                          "aren't on the Tour Schedule until it is up.")
+    seen, keep = set(), []
+    for e in out:  # an event on both pages (e.g. one starting at the turn of the year) is listed once
+        if (e["name"], e["start"]) not in seen:
+            seen.add((e["name"], e["start"]))
+            keep.append(e)
+    return keep
 
 
 # ---------------- WTA Tour and WTA 125 (WTA feed) ----------------
@@ -563,7 +594,7 @@ def sp_entries(events, men, everyone, listed=None):
             want = place_words(city)
             same = [k for k in window if want and want <= place_words(byk[k]["name"]) | place_words(byk[k]["place"])]
             score = sorted(((len(main & everyone.get(k, set())), k) for k in same), reverse=True)
-            alone = (len(same) == 1 and not everyone.get(same[0]) and str(YEAR) in f"{title} {head}" and posted
+            alone = (len(same) == 1 and not everyone.get(same[0]) and byk[same[0]]["start"][:4] in f"{title} {head}" and posted
                      and (date.fromisoformat(byk[same[0]]["start"]) - timedelta(days=70)).isoformat() <= posted <= byk[same[0]]["start"]
                      and T.isoformat() < byk[same[0]]["start"])  # once an event has started, its draw is the better source
             if alone:
@@ -786,8 +817,8 @@ def main():
     def tag(src, fn):
         return lambda: [dict(e, src=src) for e in fn()]
 
-    part("atp", ["atp"], tag("atp", lambda: atp_wiki(f"{YEAR}_ATP_Tour", "atp")))
-    part("challenger", ["ch"], tag("challenger", lambda: atp_wiki(f"{YEAR}_ATP_Challenger_Tour", "ch")))
+    part("atp", ["atp"], tag("atp", lambda: atp_season("ATP_Tour", "atp")))
+    part("challenger", ["ch"], tag("challenger", lambda: atp_season("ATP_Challenger_Tour", "ch")))
     part("wta", ["wta", "itfw"], tag("wta", wta_events))
     itf_ok = True
     for circuit, tour, name in (("MT", "itfm", "itf-men"), ("WT", "itfw", "itf-women"), ("JT", "jun", "itf-juniors")):
