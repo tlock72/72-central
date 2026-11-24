@@ -558,7 +558,9 @@ def prospects(removed):
             p["born"] = int(p.get("born")) if p.get("born") else None
         except (TypeError, ValueError):
             p["born"] = None
-    out = {k: p for k, p in out.items() if key_of(p["name"]) not in removed}
+    # signed players (on the 72 roster, i.e. the junior list in te_matches.py) leave the watch list by themselves
+    signed = {key_of(n) for names in TE.PLAYERS.values() for n in names.split("|")}
+    out = {k: p for k, p in out.items() if key_of(p["name"]) not in removed and key_of(p["name"]) not in signed}
     return out, errors, removed
 
 

@@ -43,6 +43,7 @@ ROSTER = {
     "dudeney": ("Alicia Dudeney", "wta"), "mmakarova": ("Mariia Makarova", "wta"), "vmakarova": ("Varvara Makarova", "wta"),
     "momot": ("Henry Momot", "atp"), "kanabar": ("Jensi Kanabar", "wta"), "liu": ("Xichen Liu", "atp"),
     "luchetti": ("Giulia Luchetti", "wta"), "guslinskaia": ("Arina Guslinskaia", "wta"),
+    "kiran": ("Srishti Kiran", "wta"),
 }
 # Other spellings tried in the player search when the roster name finds nobody (e.g. Uzbek "x" written "kh")
 # other spellings, tried in turn by the score feed search and also matched on ESPN / the Tour Schedule draws

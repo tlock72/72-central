@@ -2281,10 +2281,12 @@ const ROSTER = [
   { id:"liu", first:"Xichen", last:"Liu", tour:"ATP", country:"CHN" },
   { id:"luchetti", first:"Giulia", last:"Luchetti", tour:"WTA", country:"ITA" },
   { id:"guslinskaia", first:"Arina", last:"Guslinskaia", tour:"WTA", country:"RUS" },
+  { id:"kiran", first:"Srishti", last:"Kiran", tour:"WTA", country:"IND" },
 ];
 /* new signings banner: each name shows for 5 days from the day signed (UK date, YYYY-MM-DD), then drops off by itself.
    To add one, copy a line and change the name, date and id (the roster id, which makes the name open their profile). */
 const SIGNINGS = [
+  { name:"Srishti Kiran", id:"kiran", date:"2026-11-24" },
   { name:"Arina Guslinskaia", id:"guslinskaia", date:"2026-10-26" },
   { name:"Giulia Luchetti", id:"luchetti", date:"2026-10-26" },
 ];
@@ -2954,6 +2956,9 @@ const JUNIOR_PROFILES = [
   { id:"kanabar", grp:"U16", born:2012, nat:"Indian", head:["Highest ITF junior ranking",49],
     partners:[],
     res:{2026:["Astana, Kazakhstan ITF J200","Pune, India ITF J300"],2025:["Guwahati, India ITF J60","Ahmedabad, India ITF J30"]} },
+  { id:"kiran", grp:"U14", born:2012, nat:"Indian", head:["Best Tennis Europe U14 ranking",208], head2:["Best ITF junior ranking",307],
+    partners:["HEAD","Nike"],
+    res:{2026:["Santiago, Chile ITF J200 (QF)","Internationale Deutsche Tennismeisterschaften U14, TE Super Category (SF)","Tennis Europe U14 d'Annecy, TE U14 Cat. 2 (SF)","World Tennis 14&U Junior Team Finals, Prostějov","Guatemala ITF J100 (RU)","Santa Tecla, El Salvador ITF J60 (Champion)","Huamantla, Mexico ITF J30 (Champion, two weeks running)"]} },
   { id:"farkxodov", grp:"U14", born:2012, nat:"Uzbek", ig:"farkhodovsaidaslam", head:["Tennis Europe U14 ranking",76], head2:["National ranking",1],
     partners:[],
     res:{2026:["Wimbledon U14 (6th place)","ATF U14 Category A (Central Asia)","TE U14 Cat. 2 International Championships of Romania","TE U14 Cat. 3 Ahmet Ergüden Cup"],2025:["TE U14 Cat. 3 Karen Kureghyan Memorial Cup","TE U14 Cat. 3 Autumn Cup","TE U14 Cat. 3 Rena & Dato Cup"]} },
@@ -3459,7 +3464,7 @@ function sqWatch(){
     for (const n of [p.name, p.typed]) if (n) names.set(cnSorted(n), "on");
   }
   // added on the site but not looked up yet
-  const gone = new Set(CN_REMOVED.map(cnKey));
+  const gone = cnGone();
   for (const x of [...CN_SHEET, ...cnLocal()]) if (x.name && !gone.has(cnKey(x.name)) && !names.has(cnSorted(x.name))) names.set(cnSorted(x.name), "wait");
   return { ids, names };
 }
@@ -4303,8 +4308,10 @@ function cnRemoval(k, name){
     <button class="go" type="submit">Send request</button><button class="no" type="button" data-rmx="1">Cancel</button></form>`;
 }
 // approved removals, and names taken off the Sheet, disappear at once (GitHub's next run takes them out of corner.json)
+// approved removals plus signed players (on the 72 roster), who leave the watch list by themselves
+function cnGone(){ return new Set([...CN_REMOVED, ...ROSTER.map(r => r.first + " " + r.last)].map(cnKey)); }
 function cnShown(){
-  const gone = new Set(CN_REMOVED.map(cnKey)), onSheet = new Set(CN_SHEET.map(x => cnKey(x.name)));
+  const gone = cnGone(), onSheet = new Set(CN_SHEET.map(x => cnKey(x.name)));
   // p.typed: the name as typed on the Sheet, when GitHub corrected its spelling from the ITF
   return Object.fromEntries(Object.entries(CORNER?.players || {}).filter(([k, p]) => !gone.has(cnKey(p.typed || p.name)) && !(CN_SHEET_OK && p.src === "site" && !onSheet.has(cnKey(p.typed || p.name)))));
 }
@@ -4486,7 +4493,7 @@ function renderCorner(){
     if ($("#cnd").open) cnOpen(CN.open);  // closes a watch list profile; a suggestion's is redrawn
     return;
   }
-  const P = cnShown(), gone = new Set(CN_REMOVED.map(cnKey));
+  const P = cnShown(), gone = cnGone();
   document.querySelectorAll(".cng").forEach(b => b.classList.toggle("on", b.dataset.g === CN.g));
   $("#cnSort").value = CN.s; $("#cnLight").value = CN.lt;
   $("#cnLight").classList.toggle("on", !!CN.lt);  // gold while it's filtering
