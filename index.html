@@ -3941,6 +3941,13 @@ $("#schQ").addEventListener("input", e => { SCH.q = e.target.value; renderSchedu
 async function loadSchedule(){
   try { const r = await fetch("schedule.json?t=" + Date.now(), { cache: "no-store" }); if (r.ok) SCHED = await r.json(); else if (!SCHED) SCHED = { events: [] }; } catch (e) { if (!SCHED) SCHED = { events: [] }; }
   for (const e of SCHED.events || []) if (e.e72) e.e72 = e.e72.filter(x => byId[x.id]);  // players who have left the roster
+  // a prospect just signed: until schedule.py's next daily run lists them as a 72 player, their prospect entries
+  // (esc, keyed by name like cnKey) count as 72 entries under their roster id
+  const signed = Object.fromEntries(ROSTER.map(r => [cnKey(r.first + " " + r.last), r.id]));
+  for (const e of SCHED.events || []) for (const x of e.esc || []) {
+    const id = signed[x.id];
+    if (id && !(e.e72 || []).some(y => y.id === id)) (e.e72 = e.e72 || []).push({ ...x, id });
+  }
   renderSchedule(); if (STATE && dayOnly(STATE)) render(); else renderHome();
   if (CORNER) renderCorner();  // the watch list's "Scores & results" (coming up) and an open profile's "Next tournaments"
 }
