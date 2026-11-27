@@ -1,5 +1,5 @@
 {
-"updated": "2026-11-26T15:30:22Z",
+"updated": "2026-11-27T00:42:29Z",
 "markets": {
 "AU": {
 "brands": [
@@ -23,7 +23,7 @@
 "local": true,
 "more": 0,
 "cool": false,
-"score": 2.61
+"score": 2.49
 },
 {
 "b": "Google",
@@ -45,7 +45,7 @@
 "local": true,
 "more": 0,
 "cool": false,
-"score": 2.11
+"score": 1.99
 },
 {
 "b": "BYD",
@@ -67,7 +67,7 @@
 "local": true,
 "more": 0,
 "cool": false,
-"score": 2.08
+"score": 1.96
 },
 {
 "b": "Chery",
@@ -89,7 +89,7 @@
 "local": true,
 "more": 0,
 "cool": false,
-"score": 1.7
+"score": 1.59
 }
 ],
 "other": [
@@ -210,7 +210,7 @@
 "local": false,
 "more": 0,
 "cool": false,
-"score": 1.24
+"score": 1.13
 },
 {
 "b": "Porsche",
@@ -232,29 +232,7 @@
 "local": false,
 "more": 0,
 "cool": false,
-"score": 1.19
-},
-{
-"b": "Yandex",
-"sec": "Tech",
-"sig": [
-"money"
-],
-"h": [
-{
-"t": "Russia's Yandex acquires Israeli e-scooter company",
-"u": "https://news.google.com/rss/articles/CBMisgFBVV95cUxNNmlYOTlzTDJCajRuZXRNdHVLTEVvam1ibGpMV3lhY09EZnlxX1NhU2pxcnpzWGNKSmRLSmFGSXJUQlRxSjN1RTE4RnlfMFptN3hLN0tlNkZISkVjWTMxMTVXczdMLXJxQldCRnpHUW5xb3hIMXA4eGpSbTlwcGRCaTNsZ0lnTWpWVS1tOUNtTzVrTHJVTXFfMm9idmd6VVJkZnV0dElWYkxNNHZnZmpQcWZ30gGsAUFVX3lxTE5aRUVEMHlYZVpReG5XNk1WdXVCdmtJMGdQWkROb1BERVFEcWtaV0V1Wl9DQ3V6THVMWlI4VWxmT3A0UERId3VKOGd4UGZQU2phdkNYUHBSTGdjbnY4NlV4SzdwM2dmWW1pRF9vc1ZNVDlFMEY1bWN0RG1FUjZ1MXE5QmdPU0I1aEdVTWhzRWVDQzdJRlBNcEVhSjJrWHZUTkpGX2FEUERxTTJIWDQ?oc=5",
-"s": "ET Auto",
-"at": "2026-11-19T17:10:42Z",
-"sig": [
-"money"
-]
-}
-],
-"local": true,
-"more": 0,
-"cool": false,
-"score": 0.92
+"score": 1.07
 }
 ],
 "other": [
@@ -313,24 +291,6 @@
 ]
 },
 {
-"t": "Foxes announce new sponsor after porn actress row",
-"u": "https://news.google.com/rss/articles/CBMiXkFVX3lxTE9qXzhwdl9lc01NaHdXQkpLZEtzR1ZZSkVoZXBXMU9TcDBOc2xUS3FQU1BoSGNMUG95SVpzNWlHaVVENzZOSEpRWHg2TVBsV2dSR1dJWmtjc0o2aXJZQUE?oc=5",
-"s": "BBC",
-"at": "2026-11-20T12:38:45Z",
-"sig": [
-"sponsor"
-]
-},
-{
-"t": "European Commission restricts Russia’s participation in Erasmus+ from 2027 and strips sports organizations of funding over Russian symbols",
-"u": "https://news.google.com/rss/articles/CBMikgFBVV95cUxQd0wwc1FuVXNnWGpDWlp5NV95MGxxSHdjRUhLUWdoNVloVHozQW91Sy1HdjgyaW0tdjRUSVRLZVdrcjlvaVgwanJqUEVCbkZpenFNN19zSFR5Z0MtRnEyRXZycW1wWjBJdEp1RVhSRTdNVzQyOEFBR1lPc3FtY1M0UERiQmcwZXVWdUtoZzlOZjd0QQ?oc=5",
-"s": "Mezha.net",
-"at": "2026-11-19T21:37:05Z",
-"sig": [
-"money"
-]
-},
-{
 "t": "New Haval Jolion Max launches in SA with petrol, hybrid and PHEV options",
 "u": "https://news.google.com/rss/articles/CBMipwFBVV95cUxQZzE2WTJHaXZDQ0h1RHl2OGlKZDY5U3Jya0pHNENGSDYtLTJQN2FMZkduMUtyeThLd3Z4UU5SN0h0bnB5Nlh5VmdBeEJDNlhBelBEZllkZEJJSWdLLU9QdVk0Y1FqN1h5LUJ5UE92Y2VmVEhER05XNHY0UFVBQmF5eUVxVDV2SGJTU1NOU3hzZHBIRFpCd1FjZjJYeG0ydlVBcGE5cEhDWQ?oc=5",
 "s": "EWN",
@@ -347,9 +307,18 @@
 "sig": [
 "expand"
 ]
+},
+{
+"t": "Firm Prioritises Compliance In African Expansion Strategy",
+"u": "https://news.google.com/rss/articles/CBMihgFBVV95cUxNYmJ6c0xCblJsb3pEMzdRRXRFdVBheU9zdmVRby05TWR6OXBNckUxYXk1U1QzMjliN2FzQlU1cTFWZVZSdzZaUTlfUkp6WDRFQS1KODNyR1hyUmlJSU1YUmI5M0NMbVdpcHJBYkEzdnVjQzM0MGN2VWY0WUVQb1gxMmcwRzFQdw?oc=5",
+"s": "News Agency of Nigeria",
+"at": "2026-11-20T10:03:47Z",
+"sig": [
+"expand"
+]
 }
 ],
-"n": 3
+"n": 2
 },
 "PE": {
 "brands": [],
@@ -444,7 +413,7 @@
 "local": false,
 "more": 0,
 "cool": false,
-"score": 2.31
+"score": 2.2
 },
 {
 "b": "ABB",
@@ -466,7 +435,7 @@
 "local": true,
 "more": 0,
 "cool": false,
-"score": 2.27
+"score": 2.16
 },
 {
 "b": "Google",
@@ -488,7 +457,7 @@
 "local": true,
 "more": 0,
 "cool": false,
-"score": 1.64
+"score": 1.52
 },
 {
 "b": "Bayer",
@@ -651,7 +620,7 @@
 "local": true,
 "more": 0,
 "cool": false,
-"score": 2.89
+"score": 2.78
 },
 {
 "b": "Xpeng",
@@ -673,7 +642,7 @@
 "local": true,
 "more": 0,
 "cool": false,
-"score": 2.52
+"score": 2.41
 }
 ],
 "other": [
@@ -750,21 +719,21 @@
 ]
 },
 {
-"t": "France's OVHcloud launches AI cloud products hosted in Europe",
-"u": "https://news.google.com/rss/articles/CBMimgFBVV95cUxOcnV6Z1NtSzlGTWp0ZnVxTjBKbUF3U011RmtiMDRFcmNNbFU2LTltRmViZHUtbjFjSWJVdGw0ckpmWUZ3WVNfbWFEUi13NkVoVC1TaXNFVkdDRnNPZGh3S0NsaEt2WU95RnRrOXZvbFRtTTk2Y2JtVFVpbHFMOVhheE9fWVZrSWZuUV9FUkYyNm5WR3pCWm9VdEZn?oc=5",
-"s": "Reuters",
-"at": "2026-11-19T18:41:08Z",
-"sig": [
-"expand"
-]
-},
-{
 "t": "Netcompany INEOS face setback as sponsor leaves",
 "u": "https://news.google.com/rss/articles/CBMisgFBVV95cUxNT3pCaWtablUzVGhuUHFMT2F4UzdBTzdOYkFtX2o5VE10Y2M0WGRKVGV0QmR4NmNlclM4SnV3S1lTRjE5VkdzYUMxRFI5SWFSQjZjRHktRnJPeDVXV3MxT3c0SnU3NWE2S1lBdTd3NUVQX1lNZXFhdFlTaVVIMWhZTzBKVktGZnZmOFJfdThUZFd5MS1iaG1sN0tDVTVIc3hQZFN6OXd1eEdPRFdrQXhYSUtR?oc=5",
 "s": "IDLprocycling.com",
 "at": "2026-11-20T09:41:00Z",
 "sig": [
 "sponsor"
+]
+},
+{
+"t": "Le Must Launches in Europe at Les Places d'Or, Hôtel Le Meurice",
+"u": "https://news.google.com/rss/articles/CBMixwFBVV95cUxNeHc5MkxVemFxNDZ1bEFUczBOd0lxdjJHVTJ5dDVheW1iU0VVZ0dOZnRQdDlVS0dwYlBsUE5JdVZhN3RvbHNLUkZ4RHMtdS1hMXN6RThua2tLMTh4SmxicW10QW9TYldZMkR5NTNlUnRYUkM5X2g5cHR1TGgxaVpPR2ZCQ0VhV0h5WF91YTRjMXJXX3FJSm90WExid0g5d09jUDMwVVltU2hIU3JwQkxKUnk2aV9jSDlEb2NJZ1h3V09mN3hKVFNZ?oc=5",
+"s": "StreetInsider",
+"at": "2026-11-22T15:59:34Z",
+"sig": [
+"expand"
 ]
 }
 ],
@@ -792,7 +761,7 @@
 "local": true,
 "more": 0,
 "cool": false,
-"score": 1.69
+"score": 1.58
 }
 ],
 "other": [
@@ -945,7 +914,7 @@
 "local": true,
 "more": 0,
 "cool": false,
-"score": 2.45
+"score": 2.33
 },
 {
 "b": "Nvidia",
@@ -967,7 +936,7 @@
 "local": false,
 "more": 0,
 "cool": false,
-"score": 1.36
+"score": 1.25
 },
 {
 "b": "DHL",
@@ -981,28 +950,6 @@
 "u": "https://news.google.com/rss/articles/CBMitAFBVV95cUxQSk9WUG5LTjNwVUVaQi05TlcyUHJnak13ZjJ3MnJkR1hMOTdNaFhud2RBZnpJcGxLYWZGYzhTRUduVDRqaVFLRHpYYWlkYkQ1eERWN3dkMlZkVGtlZ1d1VG43b0hTbEtDblR0Rm5oX0hNS1UtYmFyWUdIWjI3bVNTU0pLSVlaUTdlX0gtdTdRMEs3STN4aEpEZF9sZEl2UVowU3BTMlFWaTNiXzNLR2VGeGlEbFc?oc=5",
 "s": "Bangkok Post",
 "at": "2026-11-20T02:41:00Z",
-"sig": [
-"expand"
-]
-}
-],
-"local": false,
-"more": 0,
-"cool": false,
-"score": 0.5
-},
-{
-"b": "Danone",
-"sec": "Food & drink",
-"sig": [
-"expand"
-],
-"h": [
-{
-"t": "Danone expands Southeast Asia consumer research hub",
-"u": "https://news.google.com/rss/articles/CBMiqAFBVV95cUxQeS1PeE1SQ3B1TjdzakRwM1NWOFAtZ3cta1RjZEowREhRZ25oVTI1ZG44TXNqb0xQOHdFVThtdXc5SWhucUlSbllBMmpTelFvMjFFSXoxeEpaS3dYaldqRVpwUFZHSXc5MHJFOUFpMGpiR2R6RDBXTElmd2xMODB3WUtqSVBKYVhlUERUMVlaZWFHNktrUURNTGtVSFVrdVRJNUF2ZkFzczY?oc=5",
-"s": "Research Live",
-"at": "2026-11-19T17:04:46Z",
 "sig": [
 "expand"
 ]
@@ -1107,7 +1054,7 @@
 ]
 }
 ],
-"n": 4
+"n": 3
 },
 "GB": {
 "brands": [
@@ -1140,7 +1087,7 @@
 "local": true,
 "more": 0,
 "cool": false,
-"score": 6.49
+"score": 6.26
 },
 {
 "b": "Meta",
@@ -1162,29 +1109,7 @@
 "local": false,
 "more": 0,
 "cool": false,
-"score": 2.46
-},
-{
-"b": "Chubb",
-"sec": "Insurance",
-"sig": [
-"sponsor"
-],
-"h": [
-{
-"t": "Chubb joins Intact as principal sponsor of BIBA 2027",
-"u": "https://news.google.com/rss/articles/CBMiswFBVV95cUxQUkxpbElJXzVURkg1Nm9YWDUyaE42c09YaFBiUGVyWmlsazlIR1g2VXhvd2JpdzNYR3VLUkc2NWsyVWJmNHlVblN3WGJDVmJHTnYxQ3hXdDAxcHU5MXFoaC03N1FYR2RfMjkzMU5LN2M3aWJON1JqSVh2MnBUa3VYWVF0dnRNNFRvbUU0encyUkpuLUZwa3ByeUh1Qm4wM2ZMcVNFSXVwakJWVzh0YmwzaW1fUQ?oc=5",
-"s": "Insurance Business",
-"at": "2026-11-24T08:32:37Z",
-"sig": [
-"sponsor"
-]
-}
-],
-"local": false,
-"more": 0,
-"cool": false,
-"score": 2.31
+"score": 2.35
 },
 {
 "b": "KKR",
@@ -1302,7 +1227,7 @@
 ]
 }
 ],
-"n": 3
+"n": 2
 },
 "TN": {
 "brands": [],
@@ -1440,21 +1365,12 @@
 ]
 },
 {
-"t": "Croatia raises 1.46 bln euro in retail T-bill offering",
-"u": "https://news.google.com/rss/articles/CBMikAFBVV95cUxPdjBOenFpSVVKTElrWWtIVEdZaFBPcVREcXBlbzFSWERWV3FXdU4zcUE5cHA3cWxkb1VhRVRPMmRrZHI4cHhxeEVNRXRtTThfUzlvN0JIaTBVMUl0QTlJZnMxNVdSX1JUbTZHSU5ldmVrMW5ZZkN0cU9WcDlRQlBsRzlNLVBFTmExRXhxSkJGLXo?oc=5",
-"s": "SeeNews",
-"at": "2026-11-19T17:05:35Z",
+"t": "Adroit Infotech board to decide name change and Verso Altima acquisition",
+"u": "https://news.google.com/rss/articles/CBMiuwFBVV95cUxNRHIxWFZNOGZlMldxcG1zWWVfN244ck9Mb0tXR0pkVmhINW5mV2Q2NmtSLXN4d1FRdTQtRTdWT2FKUjd6U3lhbnhNN21EV3pQZ2xZUm9hd0dRVW9RdHMyUm43a3lPUkQxdVhpeFJxRGlaUUxFSXpkcjVlQlFNaktQdmpQcGIxbjFjOUYyN1lfdWREM2wxUm5zN2V4ZXU3Mzhkdm9SOGNWUVppbzhXSWxwQXhDeGFJZXdKU0Jr?oc=5",
+"s": "scanx.trade",
+"at": "2026-11-21T06:49:27Z",
 "sig": [
 "money"
-]
-},
-{
-"t": "HEP launches EUR 480 million tender for Kosinj hydropower system",
-"u": "https://news.google.com/rss/articles/CBMioAFBVV95cUxOZmZUeUh4d21aQ2pudWdVaUJreG9LTE5aYUFNSzFiaXlhMWJ4R2Q1YlpYLVNlUDJ3dmUzSFZIUEVUUmROcmxhcmt1YVpXblhvUGNoS0M2WFNkaFYwMjdkdnFhRHM5aWVKS3NHeHR1Q3haZDY2ZHJfZElQZG9vZmw0U3ZBbEtVa1pjMDBsd0dVX0pzb25EYUtvRGhpLTEwU0da?oc=5",
-"s": "Balkan Green Energy News",
-"at": "2026-11-19T15:47:55Z",
-"sig": [
-"expand"
 ]
 }
 ],
@@ -1482,7 +1398,7 @@
 "local": false,
 "more": 0,
 "cool": false,
-"score": 1.68
+"score": 1.57
 },
 {
 "b": "KKR",
@@ -1504,7 +1420,7 @@
 "local": false,
 "more": 0,
 "cool": false,
-"score": 1.36
+"score": 1.24
 }
 ],
 "other": [
@@ -1625,7 +1541,7 @@
 "local": true,
 "more": 0,
 "cool": false,
-"score": 7.85
+"score": 7.62
 },
 {
 "b": "Bank of America",
@@ -1656,7 +1572,7 @@
 "local": true,
 "more": 0,
 "cool": false,
-"score": 6.24
+"score": 6.01
 },
 {
 "b": "Nestlé",
@@ -1698,7 +1614,7 @@
 "local": true,
 "more": 0,
 "cool": false,
-"score": 6.23
+"score": 5.88
 },
 {
 "b": "ABN Amro",
@@ -1720,7 +1636,7 @@
 "local": false,
 "more": 0,
 "cool": false,
-"score": 2.64
+"score": 2.53
 },
 {
 "b": "Coca-Cola",
@@ -1752,7 +1668,7 @@
 "local": false,
 "more": 0,
 "cool": false,
-"score": 1.83
+"score": 1.6
 },
 {
 "b": "Anta",
@@ -1774,7 +1690,7 @@
 "local": false,
 "more": 0,
 "cool": false,
-"score": 1.58
+"score": 1.46
 },
 {
 "b": "UBS",
@@ -1796,7 +1712,7 @@
 "local": false,
 "more": 0,
 "cool": false,
-"score": 1.17
+"score": 1.06
 },
 {
 "b": "Julius Baer",
@@ -1918,8 +1834,180 @@
 "n": 8
 },
 "US": {
-"brands": [],
+"brands": [
+{
+"b": "IBM",
+"sec": "Tech",
+"sig": [
+"sponsor"
+],
+"h": [
+{
+"t": "IBM Ends Visa Sponsorship for Most US Consulting Roles, Putting Indian Workers’ Futures in Doubt",
+"u": "https://news.google.com/rss/articles/CBMiugFBVV95cUxNRkdBck01SEVmYXNvbmIzdVBmekNKQ1o2ZHlWemJBVXlsZUE3R3c1OWcyWEF2VVZlSkttRzI3ZHNuMWY2VTdNenNRTjNucE9vQTBpeFRpMlJrZG9PaWRLN2xLUW4tLTlWZXRaWWpTbS1IUGg4aVRYYlk5MjdfdTNJQzFJdDRzYmhlNm5fNDZPZHM1UFFqVW1sdmViN3lWbGpPdmVRWDJxZ1MyWm1wX0lnRGtuYkg1RkR2QlE?oc=5",
+"s": "Sri Lanka Guardian",
+"at": "2026-11-27T00:16:24Z",
+"sig": [
+"sponsor"
+]
+},
+{
+"t": "IBM discontinues H-1B, green card sponsorship for most consulting roles; employees face December 31 deadline",
+"u": "https://news.google.com/rss/articles/CBMi6AFBVV95cUxNWTlBcWhvSm1KUDhQTFdPNTZkVFBvR2JDaXdjcU16ODh4YWJ6MFNyQWpiVk1uWmJvdm1sT1pHX1U2WnhvSEtYTG5ZSXFsWWpuTWRzVjU3V3p6QWlFOGlXR1BfRjNvalVPaUFDek1CTDZaLXdfdUwzTjJtMmZ4RlF0V1cxQ0hfZmI0WUw4dHpOSFk2bnhoYW1CSTNVaXlnZ3ZibnV3VE01ckR5NGJXR0RmdzJPVkk5SnVDNE04STZRc1hqTXVfdEJvZ0JuUG1qUTBfRzkyYkV6VnFFNkwxVGlWaVA3NnRQYlBO0gHuAUFVX3lxTE9yV2Q4NXlaTktjQlB4d3JCcS1qUXJSNGt2Q2tnaEF0UDktdmxWZndTTnFvdVREQTBxNGhrdi1tQ3dpZTdlZ1JhUzhISGlMRUh1bk5YZFcyNmVLbFdoN0lfQ2NiQnJ3ZEpmSkEzN19OdFd2T0JRU1d2UG5MT0t3cGJIVUQ3R01Mc3JyNTdtUjdnTXp4aWJYeGJCOHVMa09Qam9ZQTlvdDNnZUpzYTd2SzVVd0cxaUNzcndEeGpLa1lyV0Jac0tzbVRyMW5lYkN4WDZqQWFJb2hUM0RsZEZFUUR6UjVYa0tUbEZSc01Uc1E?oc=5",
+"s": "CNBC TV18",
+"at": "2026-11-26T18:06:01Z",
+"sig": [
+"sponsor"
+]
+},
+{
+"t": "‘Client needs have evolved’: IBM discontinues H-1B sponsorship, sets US relocation deadline for...",
+"u": "https://news.google.com/rss/articles/CBMijgJBVV95cUxNTWdCbmhlbGZXYWpLVTFLYzZYaDdYOERRbkRNUUdRbU1GLU1iVTlubTI1SXFhak5uT1BYdTVHeEFkUEM4d0ZnMklzXzBjLXZncS1KLVJXZ2trc3RiZFZmd05iRkIwTWlCSklqdmFELUY5RTV6VllaTktJT2FDX1JoWXpDTHJiS1lfU3BYMy02RVdIS3N3RWNfYXBJbmFNX3JBUDRQOXlrSmZoU1ZfZ1Zoa2RQTzNkY0ZjTVk3WFJ0bUdEOUxWV0FoSVhaZTVBdURGclJFdmIwSmoxLS1xYUVhTUh3WHVpb0dfVjlsRVZKakY5Q3ZaYnRqOTBhb0h2c1MwWTA2SW5TZ0RpX2pxVGfSAZMCQVVfeXFMUGFsYUd5dnV2TGJYY3dpZDdXUUhGRDZSaUV4NjhINEo1YzZSd1V0U192MldTSEx0UGNSTUhISHF6VHNHNFQwTTE1bVRCaENUSFY0SDJtVFdlRUhjTkZmWDZBdkU5cW9ZNUhSb1NsNzdIYzBlcFotanNwUlR6NWtVcXA5eDRUTUhNZFFNYVhIS2wwZi1yS08tZzdJY0tCUmVQYVhiY3E5aXBwNWJkYkRpeU10NnNCTGhsc3FwMlY4TVpYMjVEa21BNEdUVDRGenJGeVA3MTZtQVBaYmtCb0RXd0t2RXhIZUhzRkZEOUNXS2NVb1FoZnBaZGkxS2FvcjlRdnpiU0MybDJJaGpVTXpaTjJKMDg?oc=5",
+"s": "Moneycontrol.com",
+"at": "2026-11-26T16:44:50Z",
+"sig": [
+"sponsor"
+]
+}
+],
+"local": false,
+"more": 2,
+"cool": false,
+"score": 14.45
+},
+{
+"b": "Visa",
+"sec": "Payments & crypto",
+"sig": [
+"sponsor"
+],
+"h": [
+{
+"t": "IBM Ends Visa Sponsorship for Most US Consulting Roles, Putting Indian Workers’ Futures in Doubt",
+"u": "https://news.google.com/rss/articles/CBMiugFBVV95cUxNRkdBck01SEVmYXNvbmIzdVBmekNKQ1o2ZHlWemJBVXlsZUE3R3c1OWcyWEF2VVZlSkttRzI3ZHNuMWY2VTdNenNRTjNucE9vQTBpeFRpMlJrZG9PaWRLN2xLUW4tLTlWZXRaWWpTbS1IUGg4aVRYYlk5MjdfdTNJQzFJdDRzYmhlNm5fNDZPZHM1UFFqVW1sdmViN3lWbGpPdmVRWDJxZ1MyWm1wX0lnRGtuYkg1RkR2QlE?oc=5",
+"s": "Sri Lanka Guardian",
+"at": "2026-11-27T00:16:24Z",
+"sig": [
+"sponsor"
+]
+}
+],
+"local": false,
+"more": 0,
+"cool": false,
+"score": 2.99
+},
+{
+"b": "Ferrari / HP",
+"sec": "Cars & motoring",
+"sig": [
+"sponsor"
+],
+"h": [
+{
+"t": "Ferrari title sponsor HP could renegotiate its €75 million-a-year F1 agreement in 2027",
+"u": "https://news.google.com/rss/articles/CBMisgFBVV95cUxQS25jY0JleGxaYmhlWkE5R2pCbFhETjRCS210Y3V0cWI4Y0ZSSG5oUFNkdFdDbWprXzR0T0FFeHhnUWw3MW4wZnNRX1VJX05ld0NoamtOWlpNNkFiQVhSbzFvajdrMEdPMHVBaVp0X05GRXpFM1ZoSTV0SlBrcExRTlVhMWI2VldyQmZXLWhKOWhHek1jWngyVTJrQ1FIcDBiVmlISk9iNmx3M1VnSFd6azZn?oc=5",
+"s": "ScuderiaFans",
+"at": "2026-11-26T14:45:58Z",
+"sig": [
+"sponsor"
+]
+}
+],
+"local": false,
+"more": 0,
+"cool": false,
+"score": 2.88
+},
+{
+"b": "BlackRock",
+"sec": "Investors & funds",
+"sig": [
+"money"
+],
+"h": [
+{
+"t": "Feds approve BlackRock acquisition of Indiana, Ohio power company",
+"u": "https://news.google.com/rss/articles/CBMi1wJBVV95cUxOQUU2Y1dxUVY3ZGc3UFR3eV9RUEJfb2ppQ202ajBXLXhjNnY2TUJqSlJhR3JoWVBidGdaMmRZWmVNMUJEdUxHZDRyV25QZ2xFeHVvcmJ5d0hGN2xuVDc0MnpMaVZDTkFvZ3EzT3prejFKNnliUk5Xd3dPcXJtbmd2QlVzTnltZWQzamRld3c4QjltdkpENjVBbnJPd2RBeG1Uc0J2Z2ZkNU5EaWFiVXJGTDNJN1F5NUt3Mk50Qk55Y1NIOFUwZHhuR0I0T1RPd3lGUFprMGRRZkRLOVJEd1VNOHBsb29oVUhCMGwyZnJzcTFIUFRITDI0Y29TeUdjYkVUUFhQcE1wV0FudF9IRnNMZU95SFBaRzJudTZRLTVRNzhkbEg4c0NqZ0hLQy02OVAyX2FraXZRNENYTVJ3Zk0tdGk1bVBNVmN6WVdsbGtGQ2dxVmh6OUZr?oc=5",
+"s": "WKRC",
+"at": "2026-11-26T05:38:47Z",
+"sig": [
+"money"
+]
+}
+],
+"local": false,
+"more": 0,
+"cool": false,
+"score": 1.26
+}
+],
 "other": [
+{
+"t": "BlackJet Marketing Joins GNEX 2027 as Bronze Sponsor, Bringing Expertise in Data-Driven Customer Acquisition",
+"u": "https://news.google.com/rss/articles/CBMingFBVV95cUxNZ1NWTUFEeU1vMXVyOUtqSGNpS3FGWjRHN1Q0Vi1FZDk2WkNVZUo2SjYzdnNPR1N5T18welI1VlM1Zlk5cDk5cFN1Z1pMd1pLMndjakxjTUREaE8xTFY0SEVYNzBFQXJXSXJ3TWFkN3hJZElYenJ0MmJWM0FkZkhtWDNGc0lPMWhFbjZPUmxJTmYtdU5UZmtiRTI0X3NBZw?oc=5",
+"s": "openPR.com",
+"at": "2026-11-25T21:40:02Z",
+"sig": [
+"sponsor",
+"money"
+]
+},
+{
+"t": "Nutifood Launches U.S.-Vietnam Strategic Partnerships, Starting With New California Dairy Brand",
+"u": "https://news.google.com/rss/articles/CBMi3gFBVV95cUxPV3V6QjIyRTdJSGpkQUFVMFdLMmVjVC0wWlQ5cnNPY2NPM250ajdQRGpjaDVpVW9RWHdmNTBrMWJaa3NxVi02RFpHLTJ1VHVZUW9fRzhkUVlvcVFaVFlLYk5BLXRuQml1c0hWUFM3Z0M5ZkNUSGVNYTVNZXhoMkpoRGhPV210N09WVGE0ckxlelNPUTJRYTNCU0FVbXBKQXpDWm9YRUF5am8yZkZOSnlDeGhRckVNUkxjc00xTUNKazdRbG9UOWwybEhZRW9ra2QyQktWUl9UMjBmVTlvamc?oc=5",
+"s": "USA Today",
+"at": "2026-11-25T15:59:07Z",
+"sig": [
+"expand"
+]
+},
+{
+"t": "US Labor Department Revises PERM Form for Green Card Sponsorship",
+"u": "https://news.google.com/rss/articles/CBMibEFVX3lxTE1EM2JOd203Rm5vNGxnYi13dXFtN21MU0lveS1QOXRMb0VkRkR3aDg5Qmt0YVlxUzh1dUVKNmVUZTg3azg5SWJGejI1OTJtTUx1aHphYVNhOG92UXZ4SHROTEdSbWpaV0phRlRZSw?oc=5",
+"s": "Demokratis.co.id",
+"at": "2026-11-26T13:23:04Z",
+"sig": [
+"sponsor"
+]
+},
+{
+"t": "Independent sponsors come of age: What’s driving the next phase of growth?",
+"u": "https://news.google.com/rss/articles/CBMiuAFBVV95cUxPc3luOEpYWHBsNzhpVmt1TWFPQlRleldHZG1oaEVRb2VEX2ZRQWJjMkF3eHRDYjJjMlhNQ0M3MFJXZ29jeENFeGE3VktkZU13YVFNallqWTdpNzRlR28zaDEtdlkwVmNLdEk2TTNZYlY3cWlZVW1nNHhsU19ieFk4TEU3TF90TTZrdVdEbzJrSGlWaGQyNUpwVkp5dkNUZVd4Q0VZV2lJUFJhTVpFTUxDNFBXdFpyeFBM?oc=5",
+"s": "PEI Private Equity",
+"at": "2026-11-26T11:03:26Z",
+"sig": [
+"sponsor"
+]
+},
+{
+"t": "Supercars title sponsor Bendix sold in $240 million deal",
+"u": "https://news.google.com/rss/articles/CBMivwFBVV95cUxQa0VCTHZJM3p4b0k4NHBfbW1yYzBPekRxUUlfQkF6NzEycUpRandYUTF4S3RwbGJ5Z3JkUld3OXVLZTNEU2ZYeTNyQnlidDFPd3oxUDl4dVVTbmY4Z25EeHNQQTEyYVdaaHpSQkRWYkhfNDhxTE1feFF1T20wd0ZfdGZVc28wcnFtWFp6NDcwZlRmR1kxcGlDU21IaXdUQXI5ZzBJbW11MVFDSnE4YmR1Y1pjMk9SeS0xazVCcDJPbw?oc=5",
+"s": "Speedcafe.com",
+"at": "2026-11-25T22:17:13Z",
+"sig": [
+"sponsor"
+]
+},
+{
+"t": "Ohio State Opts Out Of Big Ten's Sponsorship With Apparel Brand Over Unfortunate Name Linked To Abuse Scandal",
+"u": "https://news.google.com/rss/articles/CBMimgFBVV95cUxOTHZZX0JZZ1NYOERhTS1vYnZIN0kyTV9UUWxoSU9jS2tyNmRPeVpRZ1IydDlhZ0k2dmZ2T1ZjOU5hX3NvcFhMeWhKUjVjS1YzblMzTzI2Nm5LZWF1eTBka3poRExYOGxldGdQNnVCem1uSjIzS05rMk5fYVhNT2xuejk4UGZoVTZrbUVQN09tMXVvOXZ4Y3Zvd0V3?oc=5",
+"s": "BroBible",
+"at": "2026-11-25T19:31:55Z",
+"sig": [
+"sponsor",
+"cool"
+]
+},
+{
+"t": "Lakers Name Kalshi Official Prediction Market Sponsor",
+"u": "https://news.google.com/rss/articles/CBMimgFBVV95cUxPa0hLNEZPQlNUNjROY0FFbjNKRmNYR0wzc0U1WGxlVlZKaDF3Yy1uRUFzbXoweWpVY3lrdlJRLUpwTXQ3aDg1SDVfMmlZZTFBVXpHeTdIdmJwTnNacWJNNUhRV3dZQUdGRjVlQmpLWnlNblBBV2xYVXUzT0JoNXNFUHBfeV96SzZOUWxGQ3lhRnl6RzZ0S3h6a19R?oc=5",
+"s": "RG.org",
+"at": "2026-11-25T07:31:31Z",
+"sig": [
+"sponsor"
+]
+},
 {
 "t": "Malibu Boats Begins US Production of Saxdor Yachts in Florida as North American Expansion Accelerates",
 "u": "https://news.google.com/rss/articles/CBMinwFBVV95cUxPaUtnQjBCMEtFUE41bFhvOHI0WVI0VmlneVlSWjRvOFdvNFlpcDlqRFRKaVVLMTVaTWhWREVGN0VwSF85T1FyLUhIT3hvUzBScEZzaU9zNk9LeFFiRmV1SEpwbk5ja29yTUd3bWJSSlVudnV1a29vMUtaUEYwd2R1SzItX2d1Y3p2OHZjUmpDRUZVVG9JSEJGQ0dVcXJOcnc?oc=5",
@@ -1927,6 +2015,15 @@
 "at": "2026-11-23T13:45:17Z",
 "sig": [
 "expand"
+]
+},
+{
+"t": "Weightlifting and Wrestling Sign Sponsorship Deals Worth Up to 1.4 Billion Won Over Three Years with IBK",
+"u": "https://news.google.com/rss/articles/CBMiZkFVX3lxTE16S3VxLTFtdlBzZVNBQzh0SVRudDFhRU55ZnhzS3lub05OTEE5V0x4VDA2b0hFUkF0bVAtVW82R09saWxCNUlaYUpoYlpVOFlXU1dqOEtoWW4wY2Y2b1JxWDFQaHdxZw?oc=5",
+"s": "news.sbs.co.kr",
+"at": "2026-11-25T05:05:00Z",
+"sig": [
+"sponsor"
 ]
 },
 {
@@ -1938,86 +2035,76 @@
 "expand",
 "money"
 ]
+}
+],
+"n": 4
 },
+"BG": {
+"brands": [],
+"other": [
 {
-"t": "Twilight Zone Creator Rod Serling Said TV Sponsors Ruined One Of His Early Stories",
-"u": "https://news.google.com/rss/articles/CBMingFBVV95cUxObXZVLVN6bkFOeEhOeWdnR3hNMUM2MV9RVnV1R0RuOUkybTlyZVhkUHJ5aTctTld2Y25PUjZPUmIxS3FmcHAwTkNzbDJLT3NtQVp5ZVhab2tJUHRPcHdsT0t1S09PUVpGbkc5Nk03dmx6Y1k5ZlBJVHk5TFY5aG1tYzRyQzRIanhiVTlTUzBwY2tBZE1LXzM4d29IUUVsZw?oc=5",
-"s": "TVLine",
-"at": "2026-11-22T21:52:00Z",
-"sig": [
-"sponsor"
-]
-},
-{
-"t": "AlUla Tour 2027 cancelled, Jayco-AlUla to lose a sponsor",
-"u": "https://news.google.com/rss/articles/CBMigAFBVV95cUxNN1pMbUpYaU1PUGtSRExkQjQzYmQtOE0tU0VBdXVwWmxOWGhIbmM4TDIyUWtpMnN4M243UEFTS2R2YTZsdmdKNXBXR2FZbDdVWlExczBSM2JlbWloQ1Y0WVJhNUwyZGU2RnVTZXhVQXp1V1dhY01kQWNyUVF1X0VaOQ?oc=5",
-"s": "www.velodisco.com",
-"at": "2026-11-22T10:55:00Z",
-"sig": [
-"sponsor"
-]
-},
-{
-"t": "Living Water Resorts Returns as Gold Sponsor of GNEX 2027, Strengthening Commitment to Industry Growth and Collaboration",
-"u": "https://news.google.com/rss/articles/CBMiqwJBVV95cUxON1BWVWxCekRtNWcxbTlTdzh4aGF4dEJCdkdGTUItT3UzeHQxWGswTmY0SnotWXZJb2s5UGhmRTQtLTdrblgzcXNrZHNUaWl2QkV3VFhEVGJ4RUUwMlNsbXBZVXg1WUlsYVFZcDlMVVFyV1ItTEFCMmRLanB5a2ZVaDBuc0lCV3JWaVJFM0JVemtsNmhWOEVFT0xZRDdGZ29mWXo5SVlGUEZhTEVnUDBvQ3AwWkJrWGtOelBVVlNvOENqd3ZVaVVnSy13dFF3Rk52WVZLV2JZWHpiSHZoTC1xTkVSMV9tbmdQQlNmR28yYlZFQUIzTmM2TWcwYWJvVlZ0Zzg4N3V0SWRYeF9vaFpIeHJLUlkyZW1VZVQ3dElhU3pCWVVTcVFyeEg5NA?oc=5",
-"s": "WBOC TV",
-"at": "2026-11-21T06:30:02Z",
-"sig": [
-"sponsor"
-]
-},
-{
-"t": "MLR Named Presenting Sponsor of 2026 USRF Hall of Fame Induction Ceremony",
-"u": "https://news.google.com/rss/articles/CBMirAFBVV95cUxNbXEtb08xUzZLa3VWX1d1SUdFN1RyWm80WDkzOUJMbWRsV3RjZWdId242SUx1bUwtcHhGNWVBeFZMZkhlcVNBUE1PYUpqZFdHSzBVcDhQTzM1cDVjZl9YY0hhay03dTBoN2ZuREJraDBja29rbTVxX2RBVHVaWnZZbFZROC11OVo1YjBZcXM4MGcxWGQ0NnU1WVBic3g5Q09JYk9pZWRoN2dxSFpf?oc=5",
-"s": "Major League Rugby",
-"at": "2026-11-20T09:12:24Z",
-"sig": [
-"sponsor"
-]
-},
-{
-"t": "Trading Firms Fill Premier League Front-of-Shirt Sponsorship Gap as Betting Logos Exit",
-"u": "https://news.google.com/rss/articles/CBMiWEFVX3lxTE14S2VFQWpVUXNJQXhpQWRoWTlBZk9hQ1FVLUdMaUotbUdGcGVQUHVuQ09RZlBlaU9ROUpXUnVwcUtsUmZQazVnOXllaG10ZURRcHpNU0E1bUM?oc=5",
-"s": "www.tokenpost.com",
-"at": "2026-11-20T07:25:18Z",
-"sig": [
-"sponsor",
-"cool"
-]
-},
-{
-"t": "Realbotix Expands into AI-Powered Hospitality and Event Automation",
-"u": "https://news.google.com/rss/articles/CBMiwAFBVV95cUxQYTE4ZXdzdTZUeFhVbkhQN0JfTUVtSWRUTzYwQldqbkJxeFE0QVk5a2dxcFpiV0ltNXFMRnRMTEpoOWJDS1R3M25aTGN4RVU4RUdoUHFuam9CT05PUnVsUDNRenNQSlprTnZTcnJnd1pkclVjQVZqX1p4cHRvNHVONkhzb0ppTWprZk1LNW9jZEpjd3ppeDRRc0NFY0JOX0x5a0ROcV8xN3A0enI2ZllFNXdia1cxcWdYRy00VGlXX0Y?oc=5",
-"s": "Business Wire",
-"at": "2026-11-23T12:30:00Z",
+"t": "Teklas to expand Bulgarian plant's production capacity",
+"u": "https://news.google.com/rss/articles/CBMijwFBVV95cUxPTko3cUROS2RxTGdOcjVIdV9PMHNkd0hXS25rWld5cU9BZHBBNVAxRFlGTVVrOUhXMnZTZUZTM0V3NERYVEdpeHdmbVVxdEtEaU5KMGtYOW51bDBRZ0diOFN3WmdJYmRMd2dDa2hlazRRaG9rRFZkajdLeWM2ZVV3Vy1oYnA4RVdYSU5LOGloWQ?oc=5",
+"s": "SeeNews",
+"at": "2026-11-26T15:18:55Z",
 "sig": [
 "expand"
 ]
 },
 {
-"t": "SailGP is bringing its big San Francisco Bay sailing event back with a new sponsor",
-"u": "https://news.google.com/rss/articles/CBMirAFBVV95cUxQX0dfQ0pzR1B4LUNhak9LZllTTXhLRjR4Z2ZGTkNaQTJmUDZncFVYemZ2Yjh5V3I1S2pOWFF3QUJpVW9tTEswbUFBSTI1WDU5ZF9LTmI0eTBPcDJrdlJNOGRodXFfVDJ4VG1zNkxPcGV3MFlhbjhnRVZfQnp3YWp3Z1JuRFpUTE5Ddkc5dGNEM0cxUEpxdF9BVUJCMXdqeVcyVXJyc29EdWxKamhG?oc=5",
-"s": "The Business Journals",
-"at": "2026-11-19T22:33:00Z",
+"t": "Sibiu based Solar Art-Overall Company enters partnership with 2R Bulgaria to expand outdoor lighting solutions range",
+"u": "https://news.google.com/rss/articles/CBMi8AFBVV95cUxPMkhsWVBYUGxkMnF1Tzd5X2w5c2ZLSEl3djdJa1RwRzBqanQtLTcwU2NlUGM1cEJPOFk1SWFQS2U0ckFmc1pYNVdWLWdDVUUyOUFnZGNDTWlWZl9FZkV1cW53MXRFMTdhc29UanB2LVl4c1pvWHJXX0ZUZGNsUXR6al83a3RqMzNtQzJubDhXYmI3U1lUWTRQcGxFT3p1eEhYd0tSOUhkRGVsRzRzZjVxYl9QRXhNd1cwQXlsWmpieUNpZUF6c3FZendOeS1zSkhZc1R1Z21vRlpoOGZXWUdld01VUnlfdk9ydFVZOHcxLTA?oc=5",
+"s": "Business Review",
+"at": "2026-11-26T15:05:18Z",
 "sig": [
-"sponsor"
+"expand"
 ]
 },
 {
-"t": "Sponsor CEO charged in $600 million ponzi scheme",
-"u": "https://news.google.com/rss/articles/CBMieEFVX3lxTE0teUtsNmNnNjREdTl0WmE2UHVnQ2szQmdjeXZNajl0UG14OFlKdGtzcGF6aE1nZVQzbHR6MDV6N01BMW96Vy1VQkxOamZ6SEFVYzFEWHlGZHhUOUZDc21VWk9sSGFrNTR4Y1RFclM0a1NCcG1ERS1HRg?oc=5",
-"s": "RACER - Racing News",
-"at": "2026-11-19T15:31:00Z",
+"t": "Zitro Digital expands Bulgaria presence through ImperiaBet deal",
+"u": "https://news.google.com/rss/articles/CBMiwgFBVV95cUxOZXNPNE1kOXdOMGpOU1psV2pqYnBfenNVeVdHcFdEZ01xRXpxUlhod2VsTHNPanFGVHZ5b1RsQnNWeEh5S3hQMDAtZ3R0cUZSdmdKNUpfNnhoTmE5Sy1BZWJXZl9aTlNERnc4dXZRdEdSeXJPbWtCajZJS3J2SWJpdDd2RTNJYTZwd0ZkWUxKTVlIYVlHbndKaE1TaGtXSW1UZXZCbmFQWFNpbV9TNy1KaWN1dmQxM2MtSTZNazd5ZTlNdw?oc=5",
+"s": "Yogonet",
+"at": "2026-11-26T11:48:59Z",
 "sig": [
-"sponsor"
+"expand"
 ]
-}
-],
-"n": 0
 },
-"BG": {
-"brands": [],
-"other": [
+{
+"t": "Kyrgyzstan and Bulgaria Discussed the Expansion of Agricultural Product Exports",
+"u": "https://news.google.com/rss/articles/CBMiswFBVV95cUxNTk5CR2VVMGdhQXA5N0pSSkFRNmJaN0dYalZTc2FMQXVPVmNiU3hycUdOQ0NCdU1mdlFFTDhxN1NvLUlkWTJrYWJNV1Q1Y0VDRmpHWEJDWlJTdHY4ZTlRZlE0UTdnY1FRNlphM2d5WlJJTlE1ZDEzNGR3S2dMX01TeWRXTXJhTlhQNG9rMlFTRXBOMkhxeFJVbkQ4ZDV5clQzb2xOd3I3dWlOZzkyWVhkWWtGcw?oc=5",
+"s": "open.kg",
+"at": "2026-11-26T08:03:52Z",
+"sig": [
+"expand"
+]
+},
+{
+"t": "Bulgaria's EnduroSat signs multi-launch deal with Blue Origin",
+"u": "https://news.google.com/rss/articles/CBMimAFBVV95cUxPMzhqcURrMGlxUktKUWpLdTZwUkx0UWN4RjVHX0JMcGRhekRGVEh6TDF3dHUzLWd3QUJQRnhoOGh0dGJvZk01NTN4MFg0d0lORDc5NVh0Z0treW44Wm9KQ28zVnVkekVuYXhIS0laYkltcWlZMDZUSHZxWmxHRWRpT3BfandNSW54Mi1ZSjE0SmVRNjhiclpoTw?oc=5",
+"s": "SeeNews",
+"at": "2026-11-25T13:32:33Z",
+"sig": [
+"expand"
+]
+},
+{
+"t": "Bulgaria’s road and highway expansion plan",
+"u": "https://news.google.com/rss/articles/CBMie0FVX3lxTFBuSV8wazlHeHFGdnpZcTVPS3l1U1pGQUFOTHEzeW9XNk9BcWczR25aaHh4VmpZQWQta2NSd3RWTzJwREZkazBZUmROUXNNRmZSMm5SMFI5bXB1Uks1MGFLMDV6ZjZlU0RKZ3c4MWh0bEVoQWQ0bk9Yd0U5aw?oc=5",
+"s": "Global Highways",
+"at": "2026-11-24T04:23:17Z",
+"sig": [
+"expand"
+]
+},
+{
+"t": "Bulgaria's Eleven Capital raises 7.63 mln euro in cap hike",
+"u": "https://news.google.com/rss/articles/CBMilAFBVV95cUxNXzNTWDJaUmhsa0ZDZkU3OTVCOGVjWFo1VmU2M3ZBd0VKblhEWWpLWlFBWDBGa0Zabm9pazUzX2hVOG55UXJ3QXZrZzRCN0FmZFRJWFFaMEdRaEJvOFNrYU1GelQxVVBsMUt1a3JpcThCS0pLSG9GRm90NTJVMXpUelplWFhEc2R4OUV2SUxjcmJfa1pV?oc=5",
+"s": "SeeNews",
+"at": "2026-11-25T14:43:31Z",
+"sig": [
+"money"
+]
+},
 {
 "t": "Amusnet becomes official sponsor of PFC CSKA at new Sofia stadium as supplier marks 10 years",
 "u": "https://news.google.com/rss/articles/CBMi0gFBVV95cUxOajVyUG1OZWlmSXN2OXVwaERQNE1PTld0WjFmNXR0a2IyTkROMWU3VUFjU2JkNGJleFdyUGkxS2ktQ1JyMENaSFFrTFM2WEJVYllRZTFrcUFTQVhxbGFyTGF0czZtcGdyYldCZnM2ajQ4UmRmMlNDSGs3RkNHZ0ZsTDEwRWdoVnVKUVBQbHdFXzB5V05EOGY3a3MyZjM2S09pcTFXRUVUZlZlQzU4Nk5JWHFDNHF2UXhHWEJtUXBucWQ1ZEFwS29mbjJwemNzcURPSUHSAdcBQVVfeXFMTUlzQnNFWW5KVXVVeExfYmFMOGh2SE5seUUwSjctSkpvdy1YX0RSaFFUcHZJb3YybmdqTUszZDRsM3hpNUxJaks1ZnVmNXpVRG5yUHZfSl9BQXNMR0RmaXp3Q0VaYnh3ZmRkc1U4VGdwd3NCNEVsdF9YTHNnOEtxNFNvWkUzY21vMXFwMTYwM1dTc25JWXZpWUxpRkRCT3VWUVkydHQ1eGxlZDJPZXlOc05EZVJGUktfcVFZMzdacmZ0M1VLSzlTa1Q2YXpMaHowSVRvY1F1d28?oc=5",
@@ -2044,15 +2131,6 @@
 "sig": [
 "expand"
 ]
-},
-{
-"t": "CEE Tech Weekly: Plural Raises €1B, Payhawk Secures €241M",
-"u": "https://news.google.com/rss/articles/CBMiqwFBVV95cUxOMTI0ZlhHWHgxY3NDeERobnEtVG8xZlIzalBOX0pVUndxMThTajJyLXd3a3BUclFKOXNCVkdZUTlyVEhNZ01weHBFOEdhbEtFTkdwajJ1M050RzNiVGh1S2N4WVhHV2NCQkdhd0FRNXJ1TDVDQ0xWcDJKUzRFbG41cDdqMGIxTkhxTG5EdXhvTzlhSDA3aVA3enlPR1BhZWZEbTVSa2dJUVZ0TjA?oc=5",
-"s": "The Recursive",
-"at": "2026-11-20T15:35:56Z",
-"sig": [
-"money"
-]
 }
 ],
 "n": 0
@@ -2060,26 +2138,48 @@
 "HK": {
 "brands": [
 {
-"b": "Lavazza",
-"sec": "Food & drink",
+"b": "Colgate",
+"sec": "Beauty & consumer goods",
 "sig": [
 "expand"
 ],
 "h": [
 {
-"t": "Lavazza expands to five stores in Hong Kong and launches signature Buffalo Milk Latte",
-"u": "https://news.google.com/rss/articles/CBMitwFBVV95cUxQZTJ1UkMxaUVZcUVaQTdpNWVaeFd6ZmxLcDRnQzc2TzYxdWZxT1NqSHJuOUtSRkNuYUQ0c0pZa0xPV0NOMkNDeE5yT3k1TGRHVE84RFJFOEl0RW9vMnNrN3lYN2xNb3ZFQjVKSHhWLVlyUzJXVUlpWlZhY2p3SFgzWjdyWGJhUmstVUdJYjM2aDZPYXExd3NTUzZMTGVjYWlmQTgySi1TR2ZtY1piV2s4VEhWMUlvRWc?oc=5",
-"s": "Comunicaffe International",
-"at": "2026-11-19T23:50:05Z",
+"t": "Colgate and Watsons Announce a Major Partnership to Launch the First Dentist Co-Developed \"Miracle Repair+ Anti-Aging Oral Care\" Collection",
+"u": "https://news.google.com/rss/articles/CBMikgJBVV95cUxOVzlGSjFZZjJWLUVMYkUycUNyYmNIZDBMQkxydUVKRU9SU3NCWEh3VkkwblFpVzUyUkRIZS1zdi1GUng3aC1RdWFPa29hZWIwa0pSNjQySFExb0o0NVNfOWF0czZQNmFKT2JXSjJVd2RMRzR3SElZYWhHcDJxQVZvNVlob0dfV1lLSi1QY2NTN3VxU1NaTTk0VUxldkxpWjlOVzBRLVVwUE9fOW1kUl9MLV9wY3BEM21RVXo2XzJvcFc3SzV0NGhEc00tMFBtWmhWN1FuSkFudmh6TUFQM2VnTjI4eW0tZXlfYzdDYXNWTmVHTndTLV8xd2w1VC1ubmQxUmx1ODh2cjhjZUlwd1liTWh3?oc=5",
+"s": "The Malaysian Reserve",
+"at": "2026-11-25T09:00:10Z",
 "sig": [
 "expand"
 ]
 }
 ],
-"local": true,
+"local": false,
 "more": 0,
 "cool": false,
 "score": 1.5
+},
+{
+"b": "Mubadala",
+"sec": "Investors & funds",
+"sig": [
+"expand"
+],
+"h": [
+{
+"t": "SailGP adds 14th team as Bake, Mubadala back UAE expansion franchise",
+"u": "https://news.google.com/rss/articles/CBMinwFBVV95cUxQWDJHN18zTmwtNVg2dF90UTVpZ1QydDNLWmJqWEs3bV9OOGpXSmtRb25Vd0lrenA3YUhTN2xGZlF5ZnJKcG1lUWhBQkxXWGpCSWVsVEdLUGdMeC1ncV9sUUN5UGdjTG1jbFpldHlsalNWZzBjbG9rZDJGVmlHSHdTaDNJV01jQnJHSFBZNXQ3MXd1b19wOFNia2NVaEYyLTQ?oc=5",
+"s": "Sportcal",
+"at": "2026-11-24T15:23:11Z",
+"sig": [
+"expand"
+]
+}
+],
+"local": false,
+"more": 0,
+"cool": false,
+"score": 1.28
 }
 ],
 "other": [
@@ -2091,6 +2191,15 @@
 "sig": [
 "expand",
 "money"
+]
+},
+{
+"t": "Hong Kong AI Robotics Centre Launches One-Day AI Robotics Controller Certification Course with EdUHK and Cyberport as Supporting Partners",
+"u": "https://news.google.com/rss/articles/CBMimwJBVV95cUxNdXNpNFhYZFRFSlRYM1hoYnVPWEJNM2VGYktsUXBkeTE3UWJmT1pCX0RwSjIzck50V0ItQXAyQTBpTkk4SjRISmd2NnhabExCYXBZanVwZ3ZHM05tdFNXRkI5dmxGN00yOWhHbW9BUFV6dkJTTVJhRmIyMlQ2WW5yZVN1bGdkZElTMWZvemdldGE3alNJcVFvMU9OMGlBSjd1Z3ZNdjdYcmVSUFA2WU85RF9Ua2Mzd1NScFp5LWRiUWFaX0J5cjhiSXl1UlF4TUUxRVVHNzZ6M1VfTG0yM2liN1RPNEZqdTZRZjQydkxDSU9YZG1GWmZfTEpUVjFBeUR5RGZoRXJBQWF1ckxQQnBiYVVweWxFTWVENjFn?oc=5",
+"s": "iHarare News",
+"at": "2026-11-23T13:50:10Z",
+"sig": [
+"expand"
 ]
 },
 {
@@ -2122,12 +2231,12 @@
 ]
 },
 {
-"t": "Hong Kong AI Robotics Centre Launches One-Day AI Robotics Controller Certification Course with EdUHK and Cyberport as Supporting Partners",
-"u": "https://news.google.com/rss/articles/CBMiigJBVV95cUxPbWx4R09TN2lEX1ZaQzZOUUZ2dzd0SjFWa0czVzZoX0F4bFhhN0dOUHZ6LWJ5cmNlTDV2SXktWmNoaHJJWWF1TlNULXFjcXNJN2xOQUZoRWlNYlpWeTJmZmM1LWtkcHU0aVpoRXhXVnpDLUNDUnNUZlZLcXpES3JwdjJoYVg5azYxQm9zRHU4RGtsWGMxdUtZVzE4YzNWb3JPcWM1Y0hveDVfZVVzWWdPVF9PTHRlb01OZHRGZ0ZLWDREejNHTFVjcWlKV2loT0xlNlZ6aU5DTC13X1BjaDJ2UmpUN1pZT1g3V21xQ0VoNUlMc2RvWGcxRXRybkx1VG1LZ0dKdnY0V2Jxdw?oc=5",
-"s": "DagangNews",
-"at": "2026-11-23T05:32:37Z",
+"t": "FROM THE NOVEMBER ISSUE: With IPO record in sight, Hong Kong eyes higher deal thresholds for listed firms",
+"u": "https://news.google.com/rss/articles/CBMixgFBVV95cUxQUWRDY2R3V20zbHd4ZG5QSjFiWS1qMDU1cHlRMEJyaWhZVVhTRFhvMnhKdnQ3ZURnQllrbjNsRkZWM0FReTFnc2lhaHcySDdVNmE3WXVURHNINEw0OUU5TlJGR1RHNEpUdjBJWW1vS01HNGpVV2pvTktjaktmQ0dTWExHYUxhd0x0dHMyLWF0V3RTNTIwd3dBaVFlRFBhZU1nR2t0UGM3dEFwMHB1S2FSVGx5ZXFmOEZRcUxOcmg2QlJJcWFsRFE?oc=5",
+"s": "| Asian Legal Business",
+"at": "2026-11-24T12:00:00Z",
 "sig": [
-"expand"
+"money"
 ]
 },
 {
@@ -2166,18 +2275,9 @@
 "sig": [
 "sponsor"
 ]
-},
-{
-"t": "SailGP brings in MassMutual as title sponsor for San Francisco return",
-"u": "https://news.google.com/rss/articles/CBMiogFBVV95cUxQNkZxMFJwdUVISS1ESXNsUF9jNGQ0SG1BaE85SUxtcngycXkxT2l4ZWVES0pJMVpWYzlhSTY1LTVoYjNpcENqX215eXdJZUtZNEloaHBTUE5ReGcyVDlILXJLZ2dkdDZaa3ZCcGRMd2FiZ1BGaTFDSkwtSXZxTWY3YnRibjhaTEdfTm5vN1J0MXpCYXZCaHBrRk5yOUR0VnNnQWc?oc=5",
-"s": "Sportcal",
-"at": "2026-11-20T11:46:47Z",
-"sig": [
-"sponsor"
-]
 }
 ],
-"n": 1
+"n": 2
 },
 "CN": {
 "brands": [
@@ -2219,7 +2319,7 @@
 "local": true,
 "more": 2,
 "cool": false,
-"score": 7.3
+"score": 6.84
 },
 {
 "b": "Nvidia",
@@ -2260,7 +2360,7 @@
 "local": true,
 "more": 1,
 "cool": false,
-"score": 4.52
+"score": 4.06
 },
 {
 "b": "Xiaomi",
@@ -2284,7 +2384,7 @@
 "local": true,
 "more": 0,
 "cool": false,
-"score": 3.22
+"score": 3.1
 },
 {
 "b": "Kirin",
@@ -2306,7 +2406,7 @@
 "local": true,
 "more": 0,
 "cool": false,
-"score": 1.85
+"score": 1.73
 },
 {
 "b": "Chery",
@@ -2328,7 +2428,7 @@
 "local": true,
 "more": 0,
 "cool": false,
-"score": 1.64
+"score": 1.53
 },
 {
 "b": "Xpeng",
@@ -2350,29 +2450,7 @@
 "local": true,
 "more": 0,
 "cool": false,
-"score": 1.52
-},
-{
-"b": "Kia",
-"sec": "Cars & motoring",
-"sig": [
-"expand"
-],
-"h": [
-{
-"t": "Kia Film Follows Young Tennis Talent to Rafa Nadal Academy as Junior Tennis Program Expands to China",
-"u": "https://news.google.com/rss/articles/CBMi2gFBVV95cUxQdEgweEN0LW1Jdy1XdFVDN0dmRFhmSHpOZkVFMVdIUGVnaEtVcmFmNVo3UDkxU2c2cFhBaFNfcTJMY1pxb1Jabll1bmRzLUFqczVuTnA2RklsbF9RQnk3SFBYZDlFbHRUeTBwMjFySWpNb3NGUzBCeXRYbmJicENMdTJpT2ZoR2thd3pHZ0VFaHV5YnFDYS0ydFB3UUM5UmY0eVJ6VUtGRVZfSF9RTnNSR2l5S3g2eUFOVmNzMGQ5S0ZhV2RnQkhIWXcwazg0aWVRTkhZNXhHYlpwUQ?oc=5",
-"s": "Hyundai Motor Group",
-"at": "2026-11-19T23:30:00Z",
-"sig": [
-"expand"
-]
-}
-],
-"local": true,
-"more": 0,
-"cool": false,
-"score": 1.5
+"score": 1.4
 },
 {
 "b": "AMD",
@@ -2394,7 +2472,7 @@
 "local": true,
 "more": 0,
 "cool": false,
-"score": 1.12
+"score": 1.0
 }
 ],
 "other": [
@@ -2490,7 +2568,7 @@
 ]
 }
 ],
-"n": 8
+"n": 7
 },
 "ES": {
 "brands": [
@@ -2523,7 +2601,7 @@
 "local": true,
 "more": 0,
 "cool": false,
-"score": 4.59
+"score": 4.36
 },
 {
 "b": "Hyatt",
@@ -2545,7 +2623,7 @@
 "local": false,
 "more": 0,
 "cool": false,
-"score": 1.63
+"score": 1.52
 },
 {
 "b": "Nike / El Corte Inglés",
@@ -2567,7 +2645,7 @@
 "local": false,
 "more": 0,
 "cool": false,
-"score": 1.37
+"score": 1.25
 }
 ],
 "other": [
@@ -2591,42 +2669,12 @@
 ]
 },
 {
-"t": "Portugal's Bloop raises €2M crowdfunding ahead of Spain launch",
-"u": "https://news.google.com/rss/articles/CBMimwFBVV95cUxNb2ZGUkE4YjJ0M3hJdlpRMDNTYjRkZF9EdndlSTA0RThseURHYUxUZnVyMmNKbkN2cXhoUmhpM1hkSjUweFRQTEJfNnA0ZHVqSGVYaXMtSkprU2NxRTNQdjQ4OHpSWU56SnhiOWNnMGNwS2g2eWlEMTFGOHlCckQtRlJNaVhTQWUyVFU2NHFjQW5qREsydlNBUWJTcw?oc=5",
-"s": "Dealroom",
-"at": "2026-11-19T18:24:48Z",
-"sig": [
-"expand",
-"money"
-]
-},
-{
-"t": "Solaria Launches Spain’s Largest Hybrid Battery Platform, Raises 2029 EBITDA Target to €560 Million",
-"u": "https://news.google.com/rss/articles/CBMixgFBVV95cUxOT3NLQTF0dF9TLWJCOENZb1dobUQ3ZHR1YUR5UmV3VUxWZlJlRmZDV2h5emZlYjNSLXM3QmNXMy1uSzRKSGVnTjdsRDZxT254aXU0dm5XQUppZm1nRjRudTNFZEc4WG5Rek94aGZNTkk0NHAwZFdXVGh1UWZia1VWdG12aTNWUXBqQnA2cTh1bkx4eEdTa204MmlnRmVqRF84bGxnSFJPb2ZwMUlha2pPUnBJV1V4N2loZnRXano2aE94NkpyUVE?oc=5",
-"s": "Solaria – Energía y Medio Ambiente",
-"at": "2026-11-19T17:24:20Z",
-"sig": [
-"expand",
-"money"
-]
-},
-{
 "t": "Trops opens new facility as Spain’s avocado business expands",
 "u": "https://news.google.com/rss/articles/CBMirgFBVV95cUxQcWNGc3JYTGFlN1lmQnAzTEduLXZsUG1mVHBFcGJlVkZqQVp5aEpRUTVxRldvY2M5QjQ3VlR4VUY3TFhONzBhWWZPTk9SSUM2dmlQUndGRnEwNGtrbUdqd052LUJ1NjBXQjJaRkhUMG9qblMtTlhlOV9sMlJhd0h6RldjQVQtLUNvRVlZWWdYVW55d3U1amxTSW0tVVhfZDlkbkhuWjVxRUV2V0l1VXc?oc=5",
 "s": "Fruitnet",
 "at": "2026-11-24T17:02:15Z",
 "sig": [
 "expand"
-]
-},
-{
-"t": "Spain’s €22.45m Fisheries Producer Organisation Funding Opens",
-"u": "https://news.google.com/rss/articles/CBMivAFBVV95cUxNQzVMbHNzWHQwcUdxdC1HME5oNDROVE1fVm5pUm1OeDRjUUJvNWJMQjlVRC1GcUk3NmIwTW5lR1NKbkcyaXBkbmZwWDZ5RmlvNjVidUNaZUN4Rl9YdmEwaVFESWpyMzN2MXZ4cVNoZXlWaUl3NjBqWWgzY2JhQVlpVDh0czNLWjFTanlQUVdvM0ZnbXA3ZVAxRTJpR2lwclJUcXU1aWRUZENMNTAyMHVuTTZTZGZ6U3dGS25Mcw?oc=5",
-"s": "The Fishing Daily",
-"at": "2026-11-19T15:36:34Z",
-"sig": [
-"expand",
-"money"
 ]
 },
 {
@@ -2665,6 +2713,33 @@
 "sig": [
 "expand"
 ]
+},
+{
+"t": "Rescue Funding for Distressed Businesses: A 2026 Guide to DIP Financing in Spain",
+"u": "https://news.google.com/rss/articles/CBMihgFBVV95cUxObU5PZHo4QkZBZWxwTm9saUVEY1BMcjM4U2JqM0tNNF9vYlBhRHhtUUJUdlJlYkJGaVlNQXFSOVZnWlJlUm5SRlVtejJfVmpIa1lMMWMwSGJBMEJlLUVSbE11ekcxaUVMRWlGSFNqc0xhOTZMYmI5Q3lCRGtzT3Z4YkZESnZfUQ?oc=5",
+"s": "Global Advisory Experts",
+"at": "2026-11-24T08:58:04Z",
+"sig": [
+"money"
+]
+},
+{
+"t": "Portugal company acquires nine Mercadona supermarkets in Spain",
+"u": "https://news.google.com/rss/articles/CBMiugFBVV95cUxNTkFfeUxtQUViWHV1dko4RUh0VjJ4OFJPQWhURDJZVTFHa2tpVUp5VHNwTUZaMlhpOFZacjhhNkNQNnVjTVQwMGozVUU2RldWeGFFVXFSeTNkYkFIcm52N00tT1FSemV6Zmh2amMzMFZMYlVRdldFRFQ0bFpMYl9OWWZLMVVCNlBHNHlIZ21Tejk0ZlI3Q0VWV2JLUXdfZkpHYWJJSEpsWVY5a0EzUWtYYklhdm5QWTUzMVE?oc=5",
+"s": "The Portugal News",
+"at": "2026-11-22T23:08:22Z",
+"sig": [
+"money"
+]
+},
+{
+"t": "Escelco Launches 250 W ESM250-48F-M2-ST Agrivoltaic Solar Module - News and Statistics",
+"u": "https://news.google.com/rss/articles/CBMikAFBVV95cUxPV1lCa1V4dnJtUy02eER3eXVBMlNSRTRxYzJOblJHVU1VMDdyNmFFRVJsX3B3V2dNQWNrWHBRN0c2bmkxTXNNZVdHbHNyV21TM3hqQW85d3JabDdmY050SUJPekJacC1nUlhPa1lXTWVuMW9xZVpTeUVlendzSVVNR1psRy1ReFJ1X01ZNzAtRWc?oc=5",
+"s": "IndexBox",
+"at": "2026-11-25T11:40:56Z",
+"sig": [
+"expand"
+]
 }
 ],
 "n": 3
@@ -2691,7 +2766,7 @@
 "local": true,
 "more": 0,
 "cool": false,
-"score": 2.98
+"score": 2.87
 },
 {
 "b": "Apple",
@@ -2713,7 +2788,7 @@
 "local": true,
 "more": 0,
 "cool": false,
-"score": 2.93
+"score": 2.82
 },
 {
 "b": "ABN Amro",
@@ -2735,7 +2810,7 @@
 "local": false,
 "more": 0,
 "cool": false,
-"score": 2.37
+"score": 2.26
 },
 {
 "b": "Coca-Cola",
@@ -2757,7 +2832,7 @@
 "local": false,
 "more": 0,
 "cool": false,
-"score": 1.13
+"score": 1.02
 }
 ],
 "other": [
@@ -3000,7 +3075,7 @@
 "local": true,
 "more": 0,
 "cool": false,
-"score": 4.69
+"score": 4.57
 },
 {
 "b": "BMW",
@@ -3022,7 +3097,7 @@
 "local": true,
 "more": 0,
 "cool": false,
-"score": 1.89
+"score": 1.78
 },
 {
 "b": "Klarna",
@@ -3044,7 +3119,7 @@
 "local": false,
 "more": 0,
 "cool": false,
-"score": 1.72
+"score": 1.6
 },
 {
 "b": "Gedeon Richter",
@@ -3108,16 +3183,6 @@
 ]
 },
 {
-"t": "CBIZ launches standalone company after acquisition",
-"u": "https://news.google.com/rss/articles/CBMi_wFBVV95cUxQaS1xUFdkbjYyWFhqZXpVeHlhbWxMRTZ3Yk9tYjJ4Qnhqa1JONDlIX3NmQVMxRVhpZlZyaWlUdFg5TFZzLW5Cb2xjVlZEczl6Unl5MFpuU2tVeWdhQXl0QV8tOG5DOGEzejVpblNQUnhYemhjSW9qblIzYW5YTlVtYzVJd1pJSlVmUGxmTWdzSjNld2lyanAzcFl6QWZOS0toR0RxZ1QtbnRxbkxCVHQzMVdnd0FFRFU2YjZuZmlmeHV6NFI2aTk1a0R2UVF0TE1KWTAwTzNMRVVfODZzWnBfZjJ0SWk1TjZWb3dZbWlXQm1XTGMzTWotSE90ZHlhTmPSAYQCQVVfeXFMTlFxMXRkQXNidEl2ZW1xVDV5YnAxVk9hTzdvajAwc1A4YTd0YnRxN1g2SmxnSHFaSVVzcVVRWExFUXdqY0tUdlFaaDR2Zjc3T28tWXdCX19kVUh2NGNzT1V4Ullwa1UzR3liYjNIVk90QmtJLWZ1YWZZNU55VWgybnRFdEFxLXRwT1Y4VG10Mm1PRWtmSk5KeG9oaUNzVUJnVjlmaTdkSlFyZXFPYnhVRVA2Z3FJdjhXdlFiZ1ROVXRON2dsaE1PMlh2YkxxbmVFLTdxeDBKbERPLVFXZDVOY25PUUxld1RWbi1vYVVYRk1LT0NnS3lMaXVPMUs4QU1IT0djc3Q?oc=5",
-"s": "Cleveland Jewish News",
-"at": "2026-11-20T00:00:00Z",
-"sig": [
-"expand",
-"money"
-]
-},
-{
 "t": "Bank Acquisition Hungary 2026: Approvals, Timeline, Costs and Deal Structure",
 "u": "https://news.google.com/rss/articles/CBMikAFBVV95cUxNak5CQURqTldzMVlMSndkSGNjMk9aU3FuV1RFZEEtM1NkakRic2RqUGNia1pFam05WkZucGtsTTQwWlVEUVJKUGtFTk9MbkU5YW15MG5odjhOY3VvMHpsRGdFOEdsWUE0anBaSWdsd3FTZWo5Y3ZlMzVIUzJUcUxkNVlsMHVmbGZZRDJEY1BNb1I?oc=5",
 "s": "Global Advisory Experts",
@@ -3167,7 +3232,30 @@
 "n": 4
 },
 "UZ": {
-"brands": [],
+"brands": [
+{
+"b": "Hyundai",
+"sec": "Cars & motoring",
+"sig": [
+"money"
+],
+"h": [
+{
+"t": "Hyundai Motor Securities raises ROBOTIS target on growth prospects",
+"u": "https://news.google.com/rss/articles/CBMigAFBVV95cUxPTHYxNmkyQVlVSnZRWVZmS2p2aVI4elRRSmlob3p4QlhsRk42aVlscmNRYUNSTHBtZVp1SFN3bUpWR1dkRHRpOGpVZnM2UmxoYkIzNHZDOVRvZVVLZE8zeHNnNGdOUlVMcWZGcFU2UEJ0Vl8xc3RZbHlEcFdveU1NMNIBlAFBVV95cUxQS0Q0NVR4WjRaNGZiZzNEQWVqb2Z3ZjRHZGlYX21WenhaQXNLdWNZTHljVjFJcnRPekNJMWZPak1ITFBuWldGWUdhTVlSbjJwVTZWQjdqb1BYamM1WWV5WXRBYWhpX1VwLWcxRTJMMXdLY0RVMGt2ZFF5XzZ2X1ZmNnJfejNTMVAyNjlsdXgtUmxuR0l4?oc=5",
+"s": "Chosunbiz",
+"at": "2026-11-26T23:38:00Z",
+"sig": [
+"money"
+]
+}
+],
+"local": false,
+"more": 0,
+"cool": false,
+"score": 1.49
+}
+],
 "other": [
 {
 "t": "Walt opens access to international IPOs for Uzbek investors",
@@ -3189,6 +3277,51 @@
 ]
 },
 {
+"t": "UK TNE expands amid Uzbekistan’s higher education boom",
+"u": "https://news.google.com/rss/articles/CBMigwFBVV95cUxQd0dsLUJud3ZzNGFFYVlQV1ZhME1mR25lTGhQa0JmWlJlSFVZWEJOUldrVVNhOTdyX193Z2tmbFBVc3huaU1aMmJTQ190cWszU1NVcWpabDVsNW5VOXRlYUdlRFhBLTNFSmhlTEZYMm5PaFMydWlqbXJFemxwYjdJWUczTQ?oc=5",
+"s": "The PIE News",
+"at": "2026-11-26T09:31:51Z",
+"sig": [
+"expand"
+]
+},
+{
+"t": "Uzbekistan expands digitalisation of healthcare system",
+"u": "https://news.google.com/rss/articles/CBMiiAFBVV95cUxNamZ6RFlxMTNKeWZtY0Fsc3VjbkpvUF96NnRQVE5hN00ySU1CQkhqRldyTTQteDJRa0RXS3p2NGVaQ3YyR3ZpQm5fbi1aMzFjNFVoTnBpLXVmSVJBTGFseVhPWWJCZ3ktVTFUUzBfQy1nanZBUmhMX0pUXzVqS21oWDhjSlF6Q2wx?oc=5",
+"s": "UzDaily",
+"at": "2026-11-25T05:30:00Z",
+"sig": [
+"expand"
+]
+},
+{
+"t": "Uzbekistan connects investors with 225 local manufacturers through new platform",
+"u": "https://news.google.com/rss/articles/CBMisAFBVV95cUxPOGs2bDYxWUJ1UFlqbTB0NnJ0OF95MzFsN0E3enNKUTNiZVFNRC0tQUFQdk1KaENacmZLejF3TG9nbnd6SDdzUFc2RkRySnRVQkd3TlJqZ0pWamI5d2J1MXZiZVQwV043VkVRc0tBeGluN29WNmxtZ3dMcFhrSmx4ZG5FUjRKMjNfOE9PNVRkSDE4NnViOEptUGVXQU53aU1NWG5JNzdzVmJPS2Z3QjR2Sg?oc=5",
+"s": "Daryo",
+"at": "2026-11-25T18:04:48Z",
+"sig": [
+"money"
+]
+},
+{
+"t": "Seismic Risk Resilience: SeRISK-IU Launches, Bringing Italy and Uzbekistan Together",
+"u": "https://news.google.com/rss/articles/CBMitAFBVV95cUxNUWhUVTBoUXBWM2JIaXk5dTk2eldXQThTWnNNR1JUc1ItMzhaakUtU1VBZzZ1eVFYOTJxMjkycm9ObmRScHlMZzlqM1g5MDlzWVo5MWVuOG50MGIwekE2UTZiUWtqQmY0eDVqa0VjMGFvMzVtQlVGWWpQd2VLN2M2cWI1UFVQX3cwc2dvUWdoSEY5bFpzWDZpSVB6Zlhka0VSNnV3QjVORmJLNnRhenRRUUxzelk?oc=5",
+"s": "UniTS",
+"at": "2026-11-23T12:00:00Z",
+"sig": [
+"expand"
+]
+},
+{
+"t": "Uzbekistan launches 550 MW power plant in Jizzakh Region",
+"u": "https://news.google.com/rss/articles/CBMiiwFBVV95cUxOR0lackVnaTJmWVpkSmJFTTF3UmtMeEFZdFBKaE4tQ2xrc0RLMUxvZDJUb1ZneWJWUGo4MlRFYm1YMTE0Tm1kbW1JNEczRmpDUERtdi1WWVI3SUhqNGppZ1k1Xzl6cHBnMmEtVWJCMVlPaFhVU3lDbDAwQVpsbkZvalNWUzJqbkxnVERr?oc=5",
+"s": "UzDaily",
+"at": "2026-11-20T15:50:00Z",
+"sig": [
+"expand"
+]
+},
+{
 "t": "[Exclusive] KT&G Pushes for Direct Sales in Uzbekistan After Kazakhstan, Accelerating Central Asia Strategy",
 "u": "https://news.google.com/rss/articles/CBMibkFVX3lxTFBvQjlXNU5zSW1FeVMzMm1MaFBkb0pUZlBYNnRnbGdndllzdzJKTmxZak94OHoxczVtbWJuX0s0NjdaUVZoMHFyQWd3MXpYcWswRXlGejdKaWY3ZHpxOGNIMkxVRzd0NFNYZlBkdmZR?oc=5",
 "s": "머니투데이",
@@ -3205,9 +3338,18 @@
 "sig": [
 "money"
 ]
+},
+{
+"t": "Uzbekistan, ADB agree on grant funding for procurement training",
+"u": "https://news.google.com/rss/articles/CBMiX0FVX3lxTE9BN2w2QmFtQkszQkxJUVlWaGFlUTlWc0RZRW04MnJ6Z0hkLWlZM0R6V050NldnN3oxTWxOT3NsSU81dklVU3JCdmtLVmlSdkZheW8tSkFSYTlHY1RBM1hv?oc=5",
+"s": "Trend News Agency",
+"at": "2026-11-21T09:31:00Z",
+"sig": [
+"money"
+]
 }
 ],
-"n": 0
+"n": 1
 },
 "RO": {
 "brands": [
@@ -3215,7 +3357,6 @@
 "b": "Vodafone",
 "sec": "Telecoms",
 "sig": [
-"expand",
 "money"
 ],
 "h": [
@@ -3227,43 +3368,12 @@
 "sig": [
 "money"
 ]
-},
-{
-"t": "Vodafone opens innovation hub in Romania's Cluj-Napoca",
-"u": "https://news.google.com/rss/articles/CBMijwFBVV95cUxOclFvQmdvZWNFS3pqenFyRlVFTnRDTkhrWG53WjhaTnFUX0laQlNqLXZnTjVZWU54MVJEckpYRm94aTZ0Ri1QQVA0RlVMdV91ajBWMlNUQk4tbXJjUDVGU3JlX0d4eU5URkdXclpYUWppWjB2TDRkX01QNzdPUW1pNVVWZDhxT0prV0ZnSlJGaw?oc=5",
-"s": "SeeNews",
-"at": "2026-11-19T15:50:13Z",
-"sig": [
-"expand"
-]
 }
 ],
 "local": true,
 "more": 0,
 "cool": false,
-"score": 3.71
-},
-{
-"b": "Turkish Airlines",
-"sec": "Airlines & travel",
-"sig": [
-"expand"
-],
-"h": [
-{
-"t": "Turkish Airlines launches flights to Cluj, Romania",
-"u": "https://news.google.com/rss/articles/CBMikgFBVV95cUxQMmVOcFlYUE51VHFBRDNMSkF1RmtlZTM5aThERy1OUHpCRVAtQzhjOGw5ZndXMjFTWGJHci1CUjhuVE5HdWpzTjZ5d1ZMcHRKNi1SUkoxNzZ6Q09jcUdQVnVnVDVJTzVRTHJTdjFXMWNRTXlzVE1uX3AzM1dsRU1kQ3A4ck5mdUtXZlJyTDlIYnlxQQ?oc=5",
-"s": "Yeni Safak English",
-"at": "2026-11-20T00:21:48Z",
-"sig": [
-"expand"
-]
-}
-],
-"local": true,
-"more": 0,
-"cool": false,
-"score": 1.51
+"score": 2.19
 }
 ],
 "other": [
@@ -3363,7 +3473,7 @@
 ]
 }
 ],
-"n": 2
+"n": 1
 },
 "RS": {
 "brands": [],
@@ -3439,9 +3549,9 @@
 }
 ],
 "local": true,
-"more": 8,
+"more": 5,
 "cool": false,
-"score": 32.94
+"score": 23.55
 },
 {
 "b": "Visa",
@@ -3484,7 +3594,7 @@
 "local": false,
 "more": 0,
 "cool": false,
-"score": 8.7
+"score": 8.35
 },
 {
 "b": "Uniqlo",
@@ -3506,7 +3616,7 @@
 "local": true,
 "more": 0,
 "cool": false,
-"score": 3.15
+"score": 3.04
 },
 {
 "b": "Honda",
@@ -3528,7 +3638,7 @@
 "local": true,
 "more": 0,
 "cool": false,
-"score": 1.96
+"score": 1.84
 },
 {
 "b": "Suzuki / Maruti Suzuki",
@@ -3550,7 +3660,7 @@
 "local": true,
 "more": 0,
 "cool": false,
-"score": 1.75
+"score": 1.64
 },
 {
 "b": "Intel",
@@ -3572,7 +3682,7 @@
 "local": true,
 "more": 0,
 "cool": false,
-"score": 1.71
+"score": 1.59
 },
 {
 "b": "JSW",
@@ -3594,7 +3704,7 @@
 "local": false,
 "more": 0,
 "cool": false,
-"score": 1.59
+"score": 1.47
 },
 {
 "b": "KKR",
@@ -3616,7 +3726,7 @@
 "local": true,
 "more": 0,
 "cool": false,
-"score": 1.58
+"score": 1.46
 }
 ],
 "other": [
@@ -3756,7 +3866,7 @@
 "local": true,
 "more": 0,
 "cool": false,
-"score": 7.03
+"score": 6.68
 }
 ],
 "other": [
@@ -3857,31 +3967,7 @@
 "local": true,
 "more": 0,
 "cool": false,
-"score": 2.67
-},
-{
-"b": "Anthropic",
-"sec": "Tech",
-"sig": [
-"expand",
-"money"
-],
-"h": [
-{
-"t": "Anthropic CEO vows to ensure AI systems 'remain under human control' as company launches IPO",
-"u": "https://news.google.com/rss/articles/CBMieEFVX3lxTE80ZEpoalZEYmxXNngxYmphVi01bXZCQ1lzU1pVeVkxT0NJcHVzdnhOOXhPNDVSSTdaMHdDV0dZaDYzMWxOdzBsV2llYlR0N0FGc3RlbkxfZG1Kb2xCX0F3c0FDbUluRERiTFdEdVBJT0t5RWVPcnU1Qg?oc=5",
-"s": "Yahoo News Canada",
-"at": "2026-11-19T16:17:03Z",
-"sig": [
-"expand",
-"money"
-]
-}
-],
-"local": false,
-"more": 0,
-"cool": false,
-"score": 1.41
+"score": 2.56
 },
 {
 "b": "Costco",
@@ -3895,28 +3981,6 @@
 "u": "https://news.google.com/rss/articles/CBMidkFVX3lxTE9YeEJtVU1nMjRqeVdNTU91YTAyLTFBdThGaFI1UlkzNTJLa29kOExpVkdCNElFZVpPMGF0OFNhQ2E5X2ZQMUlqYk1nd1A0dFFxTXo4eUt5QlF6NzhYalBPc0ZnZ2RocnRsSkxQMU1KWWU2ODQyOGc?oc=5",
 "s": "insauga.com",
 "at": "2026-11-21T21:58:49Z",
-"sig": [
-"expand"
-]
-}
-],
-"local": false,
-"more": 0,
-"cool": false,
-"score": 0.58
-},
-{
-"b": "Amazon",
-"sec": "Fashion & retail",
-"sig": [
-"expand"
-],
-"h": [
-{
-"t": "Amazon launches new way to return packages in parts of Ontario and B.C.",
-"u": "https://news.google.com/rss/articles/CBMimwFBVV95cUxOVEJpMXZlc3ZFTXhkc1g2eEFrT0tMUnNxVG5DcURhejBSaGREcjZnU1lYTFgzWDNEeE5pQ3hhVjhnUTlKci1YdHRlcDhtd0NaOHFTSm8temM1ejI5SU53RExrVUIxaTcwQ01XSDdxWE1iT2dJeXJVd1plLXhqdXpwUlJzQWxqcjk2SElLZk1EeE4zSFZ1ZDJtYV85VQ?oc=5",
-"s": "insauga.com",
-"at": "2026-11-19T17:52:12Z",
 "sig": [
 "expand"
 ]
@@ -3985,15 +4049,6 @@
 ]
 },
 {
-"t": "The Charming Taste of Europe Returns as Major Sponsor of the European Union Film Festival in Toronto",
-"u": "https://news.google.com/rss/articles/CBMi6AFBVV95cUxPaWI5bXpNbTRYdkVZR3RETzRIZ2lIcHNvWW44cXRZa25weWtjNmg0bENwWW1PMVZBdWFLVF90eFlrRFRBSW5sTFZ1aE5VdTFkWkVYdEFNXzYzak42QVBteVNsbWJWT0dydFdkQzZaeHNXVjh6WnNQX0IzUTA3ekNtaVl6Y2k4eGluQ1drU1I3REVhaWRULUIyeHJJQTJwYk9UYy1HVy04SGthZF85MWdvN3YyRXJyek15TWdleUp3d3MzM08tOU1BMF96ck5tOVZCOXRRQWZPR2J3QXR1MVhNZ2xOTWJNQW1P?oc=5",
-"s": "PR Newswire Canada",
-"at": "2026-11-19T16:00:00Z",
-"sig": [
-"sponsor"
-]
-},
-{
 "t": "Is Cogeco (TSX:CCA) Advancing Its Wireless Expansion Across Canada?",
 "u": "https://news.google.com/rss/articles/CBMisgFBVV95cUxQTEl6ZFM1VG9pcEQ0MFhqNDJ4TnF3ZHZpS1YxbzV1akQ1UHp0RGE5VEZ5X2x4c1dsd1pfaFR4UG55TTU3UXMwdFI5NHpkYkVwalliUWxvYjlUaWsxQU8yTG0wY0N1dC1jc0kwRlJwNGFWMVNOMUtqQWlFVkRUcUVhT3pGVmlnbU0xZG9PVGdBcG5uVVlHdnRSWWt2dW8yRnRTX3dsUEFUM3QzaEJqVDgzcEJn?oc=5",
 "s": "Kalkine Media",
@@ -4019,9 +4074,18 @@
 "sig": [
 "money"
 ]
+},
+{
+"t": "Purebread Targets 50 New Locations in Five Years as It Expands Canadian Bakery-Café Business",
+"u": "https://news.google.com/rss/articles/CBMi2wFBVV95cUxPVE5fM0k0Nk5GUHM3Q2hicWRUUXlyNkw3cER3d0lnUTFUMVhuNzlycXdkVklWU0hxdmtGN1JTaTBmdDhqMnQ1aVRuTjhJODc1UkI4aGhYM0VVb1RWdi1BYTdoSXl5MVNXYnVGMVhkd0xlT1ptZ3BvUmtJc3dUc3dwcFA5alBDX0U4S3JrcVVHU0VVM29UMEhZM2h6UE41UERCN2NXSFNPejduN2JkcU5RMzM1ZG50b2NwY2tCdnNSOUNONXVtc3ZsdGhCZDdjeERyMHgyTHRUTlZ0akk?oc=5",
+"s": "Retail Insider",
+"at": "2026-11-21T13:00:00Z",
+"sig": [
+"expand"
+]
 }
 ],
-"n": 4
+"n": 2
 },
 "BR": {
 "brands": [
@@ -4045,7 +4109,7 @@
 "local": false,
 "more": 0,
 "cool": false,
-"score": 2.16
+"score": 2.05
 },
 {
 "b": "BYD",
@@ -4067,7 +4131,7 @@
 "local": true,
 "more": 0,
 "cool": false,
-"score": 1.91
+"score": 1.79
 },
 {
 "b": "Meta",
@@ -4089,7 +4153,7 @@
 "local": true,
 "more": 0,
 "cool": false,
-"score": 1.54
+"score": 1.43
 },
 {
 "b": "Petrobras",
@@ -4111,7 +4175,7 @@
 "local": false,
 "more": 0,
 "cool": false,
-"score": 0.85
+"score": 0.74
 }
 ],
 "other": [
@@ -4189,22 +4253,12 @@
 ]
 },
 {
-"t": "Brazil’s rare earth exports plunge as sole producer expands",
-"u": "https://news.google.com/rss/articles/CBMilwFBVV95cUxQUnJNS00yWmZoZDRUUUNydGViUUdZWml0a2ptTXFnWDVjQWw2OE9JdmxYSFU0M2VudzFfbWxVckg5SlVHZUEtcHhiUDJjbzBsdmVjMXBqX083Zlh1TjJ1ZkNibE9QWFhSUmRfODNUc1J2MG5EbjE3TWxiaW1HLUp2blJ5U19oNWUzLVhDWm1WWHEtVmExSV9J?oc=5",
-"s": "DatamarNews",
-"at": "2026-11-19T20:40:22Z",
+"t": "Better Collective names Jesper Søgaard as sole CEO",
+"u": "https://news.google.com/rss/articles/CBMifkFVX3lxTE1kWWMxWlFaamF5WS12N3V1cVdlNGUxZnl1VDJUYlpHdEVyeG0yOVZJaXF2WnU4MlZES2tsVFNnc1RmcWlWc1lGaG5oQ3psbGM1aXVIQXN6anJMV2o5ekJESDA0S3RFRTlwT2pNR2RHZmdoX25zd1Fmc2o5alFfQQ?oc=5",
+"s": "AffPapa",
+"at": "2026-11-20T08:42:39Z",
 "sig": [
-"expand",
-"cool"
-]
-},
-{
-"t": "Better Collective Earnings Call Highlights Growth Amid Brazil Setback",
-"u": "https://news.google.com/rss/articles/CBMivgFBVV95cUxPNHZDUTEza09XZ3Z0SE9ZVFA3UDZwWWVObkhLVVNxUGc3bGREdkdfcl9oZG5WTU56VmhtWHNTenFiQS1rbjdjd0ZpVW44ZGVSN0ozYndIWGRrQ1VZZDVxbkVNYVNMSVZFWG5sT042cVY2QkVudWNFYjJaN2VqaXRucE0wWUdkbTdQY0x2MVlxMWtxWHlyMUpzOTdPWFFEWmVMV2dmUXR3QWVDbU5TMlV6c3VMMjh6dXctVjhTSHZ3?oc=5",
-"s": "TipRanks",
-"at": "2026-11-19T18:34:49Z",
-"sig": [
-"money"
+"people"
 ]
 }
 ],
@@ -4232,29 +4286,7 @@
 "local": false,
 "more": 0,
 "cool": false,
-"score": 2.07
-},
-{
-"b": "Mastercard",
-"sec": "Payments & crypto",
-"sig": [
-"expand"
-],
-"h": [
-{
-"t": "Mastercard Expands Its Payment Network in Mexico",
-"u": "https://news.google.com/rss/articles/CBMijwFBVV95cUxQWnVtVDM1OVRuZ2YxaWduOGtWUFVjc2hLWS1jRXVWTFJ4aXgyanFCbWxiMDd6TTg3VGtoUmtsUWcxaDBtOEZPa2hQTU1UYlNQdG94YXNrYTB4UVpROW1SN3dWcmRnYUxBd2JOdXhDTVJ0NXdxbm5pQTF6VjhCcjlLQ013VEFtc004ZEhPUUhzRQ?oc=5",
-"s": "Mexico Business News",
-"at": "2026-11-19T21:18:02Z",
-"sig": [
-"expand"
-]
-}
-],
-"local": true,
-"more": 0,
-"cool": false,
-"score": 1.47
+"score": 1.95
 },
 {
 "b": "Ferrari / WHOOP",
@@ -4276,29 +4308,7 @@
 "local": false,
 "more": 0,
 "cool": false,
-"score": 1.09
-},
-{
-"b": "Anthropic",
-"sec": "Tech",
-"sig": [
-"money"
-],
-"h": [
-{
-"t": "Anthropic Raises US$81 Billion in Record AI IPO",
-"u": "https://news.google.com/rss/articles/CBMikwFBVV95cUxOZGVkQ1QxMEdtOGhJUXhzMmZtUERJTE0tRTVrLVlrTmVkX0I0LURHSkdQeS1TVnZLb3ZJazhIOUJCTGV3bkFaQ1FyUXloSmhSQ0tKeEpGaEJZZ0hudjVITEhoalFteWI0Skx0cDBfdkV3bllHSXVuVURjUENsZkVXeGk5M2VxM2hva1ZraV9yUTNfYW8?oc=5",
-"s": "Mexico Business News",
-"at": "2026-11-19T22:04:02Z",
-"sig": [
-"money"
-]
-}
-],
-"local": false,
-"more": 0,
-"cool": false,
-"score": 0.5
+"score": 0.98
 }
 ],
 "other": [
@@ -4393,7 +4403,7 @@
 ]
 }
 ],
-"n": 4
+"n": 2
 },
 "AR": {
 "brands": [
@@ -4435,7 +4445,7 @@
 "local": true,
 "more": 3,
 "cool": false,
-"score": 10.94
+"score": 10.25
 }
 ],
 "other": [
@@ -4447,15 +4457,6 @@
 "sig": [
 "expand",
 "money"
-]
-},
-{
-"t": "Argentina expands its soybean meal supply chain to Vietnam.",
-"u": "https://news.google.com/rss/articles/CBMijwFBVV95cUxQUVJycGxLc0RIV0FrR0JnMl9BUXZVRDdnTWlTZ0pxUlRJczhYd21CYlRtOFhBeUhtQ0xpWklMaVlmWDZpSFdScjJNMVlBRnRxZkVob1Q5V1IwMFFsaHlNMl9VcUkxVTlBMFM2U1F3SHpBQW9fYURkNU5PQ1hlTXlZZm9GWEZzLU5YcHJDRFVEZw?oc=5",
-"s": "Vietnam.vn",
-"at": "2026-11-19T17:23:50Z",
-"sig": [
-"expand"
 ]
 },
 {
@@ -4472,15 +4473,6 @@
 "u": "https://news.google.com/rss/articles/CBMi6gFBVV95cUxQQVV3R3lpeTlaREw4cnU5RUN5c1BWNXdKQm1XQm0xdU9GSjdELXVJc3VRNUdpa2plUGllRzVlMnMzb0RuQjR2Z00zM3RmMWhKS2FVdU1sQ2JXcDBoeTJfemw3Y3dPZnF4S0YyT1l4VE9FdjlIMnliOFE1eEV0MmhSRnNmVkRYRGRUNXg1Wi0tVFlVWHJpSFdsNGkwcUZTRV9Ka2lRTG1RSXFKWVVtUURxeG9NV3NvUmVNSHVsOWRZU29XdkpwUlFNcm1TY21SU3dJX21OOE50VWlGc1ZoNG9LaTExVF96TUdzd1E?oc=5",
 "s": "The Globe and Mail",
 "at": "2026-11-20T22:37:37Z",
-"sig": [
-"expand"
-]
-},
-{
-"t": "Cirion Launches Datrix as Standalone Data Center Firm",
-"u": "https://news.google.com/rss/articles/CBMigAFBVV95cUxOZEtDR2VXajNhVHZ1NUFybHRyN3NjTl9ETzY5Z1hLMjlKdmVEcU1OMWIxRFBwRkVybjBQMVJuTG5vaUx2cDB2OWE2MGFndHJlSG9xX0RqSW81eThtcHdjM3ZobUdYVW5oX1RXYXdkOXZ1U0p0SWNRLXpla0dfbmJOZA?oc=5",
-"s": "Wisevoter",
-"at": "2026-11-19T18:30:44Z",
 "sig": [
 "expand"
 ]
@@ -4521,7 +4513,7 @@
 "local": false,
 "more": 0,
 "cool": false,
-"score": 1.58
+"score": 1.47
 }
 ],
 "other": [
@@ -4617,7 +4609,7 @@
 "local": false,
 "more": 0,
 "cool": false,
-"score": 2.12
+"score": 2.01
 }
 ],
 "other": [
@@ -4655,15 +4647,6 @@
 "at": "2026-11-22T07:57:46Z",
 "sig": [
 "money"
-]
-},
-{
-"t": "Morrison Expands Middle East Footprint with Renewables Focus",
-"u": "https://news.google.com/rss/articles/CBMikwFBVV95cUxQNnU1M05IZG1ndTFfSUU1M2RfU2k2SEg0SnE0ZUdSc1NFWTNnZXdzZnZNV2N4S1VlQkNqNjZFaDRQOUx0TFo1dXZkY2tGSTlUekFGNDQ0ZWw2bmpaTFhuVXkxU3czeW9vbWZJRVFEV2hUNWVyYXBfV0J1TW5CaWZzZG4xaUNiaVEzM3JMTU9XMFZpOVk?oc=5",
-"s": "UPPERNEWS",
-"at": "2026-11-19T18:50:52Z",
-"sig": [
-"expand"
 ]
 }
 ],
@@ -4725,7 +4708,7 @@
 "local": true,
 "more": 0,
 "cool": false,
-"score": 2.54
+"score": 2.43
 },
 {
 "b": "SoftBank",
@@ -4847,64 +4830,278 @@
 "n": 2
 },
 "SG": {
-"brands": [],
-"other": [
+"brands": [
 {
-"t": "Regenerative Aesthetics brand LÖVISELLE Launches at National Gallery Singapore, Under the Theme \"Beyond Stimulation, True Regeneration\"",
-"u": "https://news.google.com/rss/articles/CBMi7wFBVV95cUxPMzE5T1YzT1labWJxYWU1UTRna1ViLU5uTVpYMXRuVXVlVXRDTjZSLUR0MkRLUWVqUk1tS3pJd0s0RWg4dXc1ZkI5NlBkTFlYbnktUjhVekM2dEZON0dnQnphVmtvcUJFR291OFhSZDhIeGJYSlhVUmRheTY0VHU1b01MZHp2eU1rM29ndzZySDBlbEVjM3Byd0YwNzhTUVVmc0ZrQ21ta2JfUVd6emlaNlFFZHhqQnN4eGZqYVh5WG1GT2t6VWZOUTZ2dENiV2ZCWFVPTVZzNXR6OXg3QTJScmp4WkhQMDNlUzhOOWF4cw?oc=5",
-"s": "Macau Business",
-"at": "2026-11-20T02:45:47Z",
+"b": "LG Electronics",
+"sec": "Tech",
+"sig": [
+"expand"
+],
+"h": [
+{
+"t": "LG Electronics opens AI home experience space in Singapore",
+"u": "https://news.google.com/rss/articles/CBMiekFVX3lxTE5sMW9CMVdsQ2l1OExjUWdjUWZzR3JadWw4cXhySUotZUZoRXJnNThRelNQdGgyTUJRdkpjdWdRbjg5UEpCNnd0aG9UWW1zbjM1MTJIVlQwbjVLRVRKYVViYU1KUDNhd3BQSDlKWnNjWkstSGhRYjFtekVR0gGOAUFVX3lxTFBYUzJPTy12eWRpTjU0N0hqRkdDNGVHUXNMbDlydXptb294V2FEbl9mcTRDNW1lU191djJBTF8yY3hpV2hSU0tsYUFYT1lKX2p1RjdlaDE5dDd1MDE3OXp3dGxfX0s1a1pfeDlfem9ibzFlN1VfZmRCQkE4REl0RWJLaGg0RzZ2aHNSakQyUGc?oc=5",
+"s": "Chosunbiz",
+"at": "2026-11-23T06:16:00Z",
 "sig": [
 "expand"
 ]
 },
 {
-"t": "Leicester Agree New Sponsorship, Just Hours After BC Game Deal was Terminated",
-"u": "https://news.google.com/rss/articles/CBMisAFBVV95cUxPM0MtYzJzaTJYWENBS1U1Rmt0d1RzZk9yeVBSYzZQbFA5NW5xeEJJUUpIUFp6b1l2eEJoeC1WY29jYTlGSGNVSDE5NzluOGpYdjUxblNkbkY1V3o4aTlPM19oMVdhcVplbS1aMGstYkFkMlR0MnpJMVU5U3hKQlNKZ19vTjZRMXNoNk9yNzlkai11ZFRYdF9JN0o0ME1DdTJxaHpPNzFrNjVhUF9pVW9zOA?oc=5",
-"s": "tcf - filbert way",
-"at": "2026-11-20T16:05:27Z",
+"t": "LG Electronics opens AI home experience center in Singapore",
+"u": "https://news.google.com/rss/articles/CBMiqAFBVV95cUxNMVJ6bjJVY1hXWTk4cVBVZVFBMjZjTU44SmlIV0hwaC1DWHNmSXRQc0l3NGNTREhlSXJuRkthd2lZcXN5Ukd3eVQybXJwMlpYQjJtWmZ2N1pTb0RqdmNub3Y4cTZWSHRGMU9lbXRjRXpFZ3JhQ1ZmZzhBdUQ2SWpGLVM4d2lqRHRNRUs5UGtQaUpkVTJMaFczNGlqeTBQUHhITVktd213Vno?oc=5",
+"s": "디지털투데이",
+"at": "2026-11-23T02:01:09Z",
+"sig": [
+"expand"
+]
+}
+],
+"local": true,
+"more": 0,
+"cool": false,
+"score": 4.69
+},
+{
+"b": "Paytm",
+"sec": "Payments & crypto",
+"sig": [
+"money"
+],
+"h": [
+{
+"t": "After Indonesia, Paytm takes its tech to Singapore with Rs 200 crore Funding Societies partnership",
+"u": "https://news.google.com/rss/articles/CBMi2AFBVV95cUxNb1g3UlduWmxhcFpJN2w3MTJ6WURDZDdpOFFYSU12akZwZ3RVUnNXTFBDdkJaQzRTRlRWYk9ucGxURC1pM2FwcWVIVjFPeWtVQkloTlRwZ1hLbEQ1LXBwM0FkY0tUMDVsUHp2ZFc5UHZXNzBsVzRScnNZbDBtN2ZzdW1nal9LVFJzS1B5T2tNUzRnYUU5NGFKQ01LaTdKSno5bWRBWFI4SndOM2ZqUGpwS2dyaGE1ckpzS3RCVXlEclVyTGRnMXpjNUtFbmUwdEVoRUpJbVZUSG7SAdgBQVVfeXFMTW9YN1JXblpsYXBaSTdsNzEyellEQ2Q3aThRWElNdmpGcGd0VVJzV0xQQ3ZCWkM0U0ZUVmJPbnBsVEQtaTNhcHFlSFYxT3lrVUJJaE5UcGdYS2xENS1wcDNBZGNLVDA1bFB6dmRXOVB2VzcwbFc0UnJzWWwwbTdmc3VtZ2pfS1RSc0tQeU9rTVM0Z2FFOTRhSkNNS2k3Skp6OW1kQVhSOEp3TjNmalBqcEtncmhhNXJKc0t0QlV5RHJVckxkZzF6YzVLRW5lMHRFaEVKSW1WVEhu?oc=5",
+"s": "Indian Startup News",
+"at": "2026-11-20T11:24:25Z",
+"sig": [
+"money"
+]
+},
+{
+"t": "Nomura maintains 'buy' on Paytm post-Singapore acquisition; target signals 33% upside",
+"u": "https://news.google.com/rss/articles/CBMiwwFBVV95cUxPT2FFek9qc3FSUzlRTjdFRTY5NHN0ZFNBNEt5Q3kyZG82VUxUN3NfT1FnMnNwcDhoWnZheVA2cGF2OWR6bmtoTHUxTG1ONTJsUVBWTS05eVlJakJaUWdIa1hFcFlyMWVpR3V1YVgyY2o1bVhFRm5BWHRYcHo3MXU2NnQzMlVRa1BNV1NRVXV3MXE2OUFvbjBaUXpZZ01sWFVGS1o3UlhUOUVDTndxRHQzZnM5anRFWEJkSi1aM01WNllFdTQ?oc=5",
+"s": "Zee Business",
+"at": "2026-11-20T04:55:15Z",
+"sig": [
+"money"
+]
+},
+{
+"t": "India's Paytm takes 19.1% stake in Singapore's CardUp",
+"u": "https://news.google.com/rss/articles/CBMirgFBVV95cUxQVTZXVzVacWhOZXcxNTVrbGhXb19OZ0dUZW50UmJzRWJTN1dKVFlPV2IxcXBuSEpFNmQ4RmVlRTcxaUtNWFd2SkFZcHJjNndsRWs3QXR6N1dQTFlBYnowN2l4TUxSR0psVmNIV1hITUNGTFl1Rlk4MzZwcnFsNFh0MmxVbjZydE10cDhXQktLV1JFdUZ3UjROMThYd1E2X0NRdENySEVWeHAtcDhxTlE?oc=5",
+"s": "TradingView",
+"at": "2026-11-20T03:44:00Z",
+"sig": [
+"money"
+]
+}
+],
+"local": true,
+"more": 0,
+"cool": false,
+"score": 2.92
+},
+{
+"b": "Nomura",
+"sec": "Banking & finance",
+"sig": [
+"money"
+],
+"h": [
+{
+"t": "Nomura maintains 'buy' on Paytm post-Singapore acquisition; target signals 33% upside",
+"u": "https://news.google.com/rss/articles/CBMiwwFBVV95cUxPT2FFek9qc3FSUzlRTjdFRTY5NHN0ZFNBNEt5Q3kyZG82VUxUN3NfT1FnMnNwcDhoWnZheVA2cGF2OWR6bmtoTHUxTG1ONTJsUVBWTS05eVlJakJaUWdIa1hFcFlyMWVpR3V1YVgyY2o1bVhFRm5BWHRYcHo3MXU2NnQzMlVRa1BNV1NRVXV3MXE2OUFvbjBaUXpZZ01sWFVGS1o3UlhUOUVDTndxRHQzZnM5anRFWEJkSi1aM01WNllFdTQ?oc=5",
+"s": "Zee Business",
+"at": "2026-11-20T04:55:15Z",
+"sig": [
+"money"
+]
+}
+],
+"local": true,
+"more": 0,
+"cool": false,
+"score": 0.95
+}
+],
+"other": [
+{
+"t": "Singapore opens permanent residency route for foreigners without sponsor",
+"u": "https://news.google.com/rss/articles/CBMitwFBVV95cUxNT181aGk5WjQ4Vms3TW1RY0xHQXp4YjZFNGlkM184SUVxSDZhZEVwNFBMQjBIZVhlVnFlcmhKZ1FzbkVBUDFDdHlMS2lfYmdUX1ZBUTBPQ3o3TE5KbXNablRydVFQRmY4akV6TGgtR0lKbGlCUTR5d0hlX0ZMUWFSNlZNUlFSbVdJdkxIY3dSQXI0Zkd3UllfdWE5cUpJVzVsaUM5Wl9TNUVRQVEzTGRqcHJNYzctQk0?oc=5",
+"s": "Yen News",
+"at": "2026-11-24T12:06:59Z",
+"sig": [
+"sponsor",
+"expand"
+]
+},
+{
+"t": "Panadol maker Haleon launches innovation hub in Singapore, to invest S$100 million annually in Apac R&D",
+"u": "https://news.google.com/rss/articles/CBMi9AFBVV95cUxORU1HeHdnWEtKTS00RWU3N2tEXzd2a2JiT2NLRnFDXzF3czl2V19aUlNHaDJLYW9Ic0JpNkE3ckFHNURWWHUwa3p2U2lCTTRhaEctTWZVTkt2SGEzZWczRVF1SkRDNFJsLUJuV2t5aU9TbkN0dEw4ZG9uaExyam4weExBOVJDa1dRUlVjUG50d2g0OFZTZ1RDaHJhSktpY0FpOTZBODJUOHFiMllRLW9mbmhSem51NnpWZE1lcWxZMEVEeVBwUFcwRmF5MF9ZSHBFaWR4UmJETjVTQXZua3VyaFNvdjNjUDhxTDI2UGRMZXo5WWZG?oc=5",
+"s": "The Business Times",
+"at": "2026-11-25T09:00:00Z",
+"sig": [
+"expand",
+"money"
+]
+},
+{
+"t": "Singapore Mentions 3 Categories of Foreigners Who Need Sponsor for Permanent Residence",
+"u": "https://news.google.com/rss/articles/CBMiqAFBVV95cUxPOU4wQmp1dFc4TFBKTFNLcGFYRFlBWWhjYnhobFRlcEJET2g5TVRQRnV5b1dLRkp6U0xQQjVLcWNZamZnczdEV2NlVWlFYU9MRTN0dVpuTXdVUVd5aWZVTEE4dDNzZHRhelRaTTBuTlNFRTZLbWd5WUNtaUJDTjBUa0VfT2hlckNkNUZQTWo3Y1RGeTZHUU9udFR1eGxnM2YxWklsbkZQczE?oc=5",
+"s": "Legit News",
+"at": "2026-11-25T14:46:42Z",
 "sig": [
 "sponsor"
 ]
 },
 {
-"t": "Mary Chia Holdings’ continuing sponsor to step down next February",
-"u": "https://news.google.com/rss/articles/CBMi1wFBVV95cUxOaExyeXpnS1hYSThvTndSN1hqS2dJSlFidzBXOGgzV2F3RF80SDhjYy1HMGczU0FWa2YtbFBCdndjSkxLcXg3aE1GVENaaEg1b1dDWnFQU0J0OXBIdWhlSU8wMlZkMTZpdHFwcWpaUUY2TThUQktYbmkyRVkzZGl2WnkzeURmX1AxRHhlUFRub3pXT1Q4Z1VIRjhvNEZaRjY1OWNVNVZMRWY1MkJGRFhLZnZYUkRwTDRLOERJRVh6QTNhVjV1Y19qelE5eFh6WEtCVENGTldXMA?oc=5",
+"t": "Cariflex opens world’s largest polyisoprene latex plant in Singapore, following over US$350 million investment",
+"u": "https://news.google.com/rss/articles/CBMimwFBVV95cUxNenpDMm92MXJkeDRETU41N2ppZk8zcnlwaDZXOUhKMFVQQl9wenlZMi1Qb3hZSkVBalA5dHUwMFZkSDJ2RDJpcnF2WE9FMTVBcWxHYXROTUxRdk9EX0lsNlZPdXI2SktTWGZpcU1pOW5ZOTBKQ09ub05XeVkya2txUnhPVlVieHNyd1MwZnBNTGhGOC0yZUV6SkMxNA?oc=5",
+"s": "Singapore Economic Development Board (EDB)",
+"at": "2026-11-23T08:00:00Z",
+"sig": [
+"expand",
+"money"
+]
+},
+{
+"t": "German speciality chemicals maker Wevo invests S$14 million in first Asian plant in Singapore",
+"u": "https://news.google.com/rss/articles/CBMizgFBVV95cUxQUV9IemJfcXlYWnBncGlfSS1telNTR2ZiV1dITVozTjJUVHFJSTVKMDBvU3pWMWRyRzVjaUJqOUlQdThSTEVkR2Q0LXZNRWYxYTlLemRfRlhsVXRSME80anJpeFhuVlJ2Y3VHcm1VV2hyR3BDY2pGLUJZYkV0eUJGR0JsbFBnNS1UeU9pV05BaDVKR1MyNzI5YXlaN0VUUXBQaXhVTDB5dXNSWE41TDVac0FuU0JYS0ZuTEpOaUNnR0xuSWZLLUcxbjYzUFEyZw?oc=5",
 "s": "联合早报",
-"at": "2026-11-20T13:29:03Z",
+"at": "2026-11-26T11:17:11Z",
 "sig": [
-"sponsor"
+"expand"
 ]
 },
 {
-"t": "Hankyu Hanshin REIT to swap two ageing assets for sponsor-built office building",
-"u": "https://news.google.com/rss/articles/CBMiugFBVV95cUxOZHhkWVJGZXNfVllqMFNIWFFrQzdsb2lpVGEyYnVpdUJBRjlVVF9WcEVYdVhmRFFiNjFDMjRZSzVGQkRfaGc5NV9kNHZxNHRaaE1GN1RHVFBkUkExWUt0V0tFOEFQSEhiazBiZjE5eVhDM2NmRlZGM0luRkdiWFo2b2lqZnZTdEtCUzZDbHd5NEtQSkZzVHZZWE40SE5xS19GMkpkU3I3TUZiRWtlbEtDRE5XSWphM2JQb3c?oc=5",
-"s": "reitsweek",
-"at": "2026-11-20T11:30:38Z",
+"t": "BioPIPS consortium in Singapore expands membership, seeks to enhance productivity and sustainability in biologics manufacturing",
+"u": "https://news.google.com/rss/articles/CBMilgFBVV95cUxOVHBwcEF5cEdFRnVIRWVFVmxyWmZVYnZERmcwVXR4RGc5NmV5YVdYYTR4cm1pWmY2bVhPekdsdU43cDZ4WHJMTUk3b2RkUTcxOUxJSkMwWHB5TGpzbDZtSHEyUWpmWUlBWjM3Y1JVOW1MX3RrdUY4VV9UcUJfNEhVUmZOTzFZQldmWGJ4aHZXcVdLVGRMTHc?oc=5",
+"s": "Singapore Economic Development Board (EDB)",
+"at": "2026-11-26T07:53:48Z",
 "sig": [
-"sponsor"
+"expand"
 ]
 },
 {
-"t": "Mary Chia Announces Continuing Sponsor Cessation Notice",
-"u": "https://news.google.com/rss/articles/CBMiqwFBVV95cUxPcFBQTDhpcWRQSDA0enRuWGdGTTNDZ2pRQVdaZ0hlcXdDYjVhX2I4NTY0ZjYzdGZBNEFSSzRmemowN3hoR1ZaaDk0RWJkVDJhVXNZY0tNcFlzY1BaM1lKQTFYYklURVEybFJubFdfbXVwNDdEZms4bTNVakMtcTYwVkVhd0tYeVNNZzNzRWdPZ2RWcGRoTGNucUZwTnFCUVgwVU5ONGZDQU96MXM?oc=5",
-"s": "TipRanks",
-"at": "2026-11-19T17:58:28Z",
+"t": "Jet Aviation invests in major Singapore hangar expansion",
+"u": "https://news.google.com/rss/articles/CBMilAFBVV95cUxNV3hzN3hhMVE1UzlFaXZwUW00VEVWQXYxdDZYd19fRHBzcENaZVh0NmZUUE9lZmNNVk9UNUlZSG9qcXNrdGRIcUk3anZFZzYwUWdrVDUxdXl0UGY4djdYdnlfSDl2VVhwMzNKbEVJdzhVVElvcFhLTVJTR2pBNk95MlQ3d0draUFuSE81QUE4enVGcnNo?oc=5",
+"s": "AviTrader Aviation News",
+"at": "2026-11-25T12:46:56Z",
+"sig": [
+"expand"
+]
+},
+{
+"t": "Asia’s AI race heads offshore with launch of Floating Data Centres in Singapore",
+"u": "https://news.google.com/rss/articles/CBMixAFBVV95cUxPREt3Rk90STdoQlFjeGVtd0sxTGhyZkd6Mm1oTlRWY2RvNExxU2I0a0RreV9YNDg0dWQwbTVXRy0zUWtxcHlkYTBZc1FGSVBjXzBjeXZ1TEFYeHdmSmFVS1FVQ0w0YjdoY3FLNXpBbV91ZXdXQUQwTktzRHlETjRRTW9lc3R5VUEteE9Jb1ZCeG84akZGM2hNaEs3b0lYMk1LVjB5eWVNWXN3SUVMdXROcGhpZVlac0NDcmhjd1l6QndMM3oz?oc=5",
+"s": "The Malaysian Reserve",
+"at": "2026-11-25T10:06:29Z",
+"sig": [
+"expand"
+]
+},
+{
+"t": "Urban Space Launches ‘Store and Workspace’ as Singapore’s SME Count Hits Record",
+"u": "https://news.google.com/rss/articles/CBMiuwFBVV95cUxQSGd2VFE1RVgzWUNQdUdGdnh6X3c0SXVqZWxXbXVrN1VFeGcwOG5SUzQ4eHhhcFNOM0JNaXdUUW54a3U4S2I1S3AzaXB6T1ExdGRqaHM4U3ZJejljSGdwVmMxVFFQLUpMQnZscE9VeG4wcWJkalNQd1lQM05Ua0hrOFdOVWJyRVRzWlo4QUY5cU9HWXoxVlIweGl0dTlWREctcXU5aUNyUFliV2R2UThjSXhRUks0dTNpbFZj?oc=5",
+"s": "The Sun Malaysia",
+"at": "2026-11-25T08:41:53Z",
+"sig": [
+"expand"
+]
+},
+{
+"t": "Amos Food Group Showcased Innovation at APEC 2026 as Official Sponsor, with Leadership Attending CEO Summit",
+"u": "https://news.google.com/rss/articles/CBMijgFBVV95cUxOOFpVV1RNaVo3NXBEYl9rQVlIVlhXV19CYTB0M3l5Tkx1WGhUNWFMcjBFanE0ckM1UVc2NFhEbXdpckdJV3ZBZ3kta0V0NDY1bnFRalY3cWp5M1VERGlaeTZoWDJ1WWc4SVFHa3pnNTgyZ1Fad1pmV2hVcjRMWVhsWHFuUV9XRFhteDFPYTJR?oc=5",
+"s": "Yahoo Finance Singapore",
+"at": "2026-11-26T10:18:00Z",
 "sig": [
 "sponsor"
 ]
 }
 ],
-"n": 0
+"n": 3
 },
 "SE": {
 "brands": [],
 "other": [
 {
-"t": "Swedish group buys Irish contractor Brian A Flynn",
-"u": "https://news.google.com/rss/articles/CBMilwFBVV95cUxPVC1uUU5mcVRPTFpqMnpvMVZyb0hpcngtX2pKWTlXdGgzcjc1OEdFZnRETzgwLW5iRmJveXkzMDVOTmo5VDFzeWZnU2gyZElTeVdtR2VRYWZBMUVqRnZXd1E2dm9KZWVLUDZZeDVNZ29BVVlxNkU5REVfVW1vMGxrbERhSnRLM1ByeVc4M0RyQ3VLVXFWSmJz?oc=5",
-"s": "Cooling Post",
-"at": "2026-11-19T17:10:05Z",
+"t": "Aira launches Aira for Visma Spiris, expanding from one to two of Sweden's largest accounting platforms",
+"u": "https://news.google.com/rss/articles/CBMi_AFBVV95cUxNa045Z1RIc3B4TUtnNlU0TElIaUxlTU9SMFYyUkg5UWQxXzhyTklfVEhyVE5iVFIxYzFnYzBVSUNqeEtkbTItRGtlbURWOTB4TEx4d0ZXWW9MVTdycTNyN0Z3aUEzZmdSckNYTGJ5UXdpSVhackZSVDdjbkRXR2tfM2daWlBzeTFVU3ZETXhTeGl4Ry1rNm15blNnX25PN2gycUxjTmYtV1RrSW1ZdUNHWmFwYnZXSDhnWGNvSkE1dVl4T3ByNExLOGFaeFNVeDU1dWsxMlNaOHdYS2NXcjQ2QldYRmNERmhiMGpobW9jaUZkM2FzTFNaMHdvTko?oc=5",
+"s": "TradingView",
+"at": "2026-11-26T14:45:00Z",
+"sig": [
+"expand"
+]
+},
+{
+"t": "Product | PMI's ZYN Launches BEYOND Limited-Edition Series in Sweden With Two 9mg Nicotine Pouches",
+"u": "https://news.google.com/rss/articles/CBMiwwFBVV95cUxObmlmS3dLanJHLWl6ZE1OLWVVbTRJZGNYYXlzak5FQ0dwM2N4UTIwOWJLajk4UTNRWFJ4TW1lUV9jZ19wNmozVE04TW5HOERoMVRKQkEwWDZVMFpMR3VrLWo1bkprOUg0WmRTa0pDeHdwUkFlWlFON1U4dkhBSGxxSXBLQlZOeXd2YTd1NkRwaXJlWWlwYVFjM0EwYW1XY1lCallsTXkwYko0alZTQVJoaXA5cEJjUU5jWUlJa3JGbHlKc1U?oc=5",
+"s": "2Firsts",
+"at": "2026-11-26T02:56:40Z",
+"sig": [
+"expand"
+]
+},
+{
+"t": "Cerberus buys Swedish fintech company Brocc Finance",
+"u": "https://news.google.com/rss/articles/CBMimwFBVV95cUxOY2VpajlfWUkxVThCcGtfMFJXbjF0dFpOR1ppQzRHclJ3a3JnckVEWEIyNFVyc1RETjdFSkhBRlNIQ2tYLTJCcVNHTHdVLXh4UWhuSVkwNFlFZ3pXUFdOU2stejBsT3Z0bFBSOFlPU1Z3WUlpYXpubWhwcHZhVWY3UU5sTHc0Tk1qZ3VoNzBYSjRhOW1BWTFEdS1Jdw?oc=5",
+"s": "PEI Private Equity",
+"at": "2026-11-25T14:20:10Z",
+"sig": [
+"money"
+]
+},
+{
+"t": "Kaizen Gaming secures licence to enter the Philippines and plots Sweden launch",
+"u": "https://news.google.com/rss/articles/CBMiswFBVV95cUxNUGxkc3VsX2txQkk0QVdybVRfVkJiLXltUVpRdURLcWdpUlNFeS16RFBLaUJmUzgzTk5XTG9SU3B6SjAwd083VGxDTTFFWjd3WTEzdTNaajZSMWp4YzJKaTE0N3VmZVpDaVBxNFJ5eDFUSXZTaWI1aTcxWXQ4dFF5aFBaSG43TDdJMVNUa1VxUWJxcXA4c3hxU3VvY2pGVzdQZC1TeG5IaWtzeUtTMHJYR2Fqdw?oc=5",
+"s": "egr.global",
+"at": "2026-11-23T11:18:25Z",
+"sig": [
+"expand"
+]
+},
+{
+"t": "Mandatum launches new ETF as part of product range expansion",
+"u": "https://news.google.com/rss/articles/CBMib0FVX3lxTFBua2NYOG1nbmRCa3hhZHBPZ25BcHg3eGxyWnNYQ1lnbW9ZTmhmQWxvWTlHSEY1WEdQVnNZYWxkVEQ3UmU5TFNwQUwzc0o4aTIzWVBpVUs4VkNiMmIxZVpQenQ0dWJDbUFyU1Fzei1Raw?oc=5",
+"s": "AMWatch",
+"at": "2026-11-26T13:01:06Z",
+"sig": [
+"expand"
+]
+},
+{
+"t": "Bellman Group completes the acquisition of Vägsäk AB",
+"u": "https://news.google.com/rss/articles/CBMiugFBVV95cUxNbVVETG02V3Q5aDhhbnJpSnQ3eEQ1b3N5cXhmZDZrZDEySElOQjRqUGU3c2VWMXU4UEQzNHFuaXF3STMxYnljclhMWC00aHJLVzQtbHdQb2lYVUlCVmFRVWsxMnVrT3NpYzVvd3YzUHJNS3BScml0VnFfb0JjUW1YcGZDMVVGYmtxalMtUDVJNlNUaXcweUFOclFLeVlDalFUYnM5ZkE4Qk1UVFY0WVVHZ2tDNUdSWUlpeHc?oc=5",
+"s": "TradingView",
+"at": "2026-11-26T07:35:00Z",
+"sig": [
+"money"
+]
+},
+{
+"t": "Stegra needs to raise at least $2 billion in additional funding – Bloomberg",
+"u": "https://news.google.com/rss/articles/CBMiogFBVV95cUxPbjZlQkdreFVEYzZIbTlkdTVJblJrREhqQmhkU3R0SnkybWpYcUpvaE1fclJhc2NVMVBnSGs4TzNob2pMMlQwd1MzSjZOX1RSZFd1U2hzVHhlODM4Q0ZuV1ZsWjJ3Mmh4aXFJbXZicndDMzFDeFZFUlhLR21UYVMyV3hLbjdZdm4xUmk5OG9SaEI3eUNmNGhjem5ZQzNKeEFpQ0HSAacBQVVfeXFMTW9GV2lGQWVkUHBfMVNqc1JXSnFqWXVDcko4bUtJbkxLTHdQTjltTkZYN1NuNXlWdGdjQmxSalFHRm9RU2N5U2NCLVR4VHJQdTh2dUFvT0VCekxmbjh4SVNkV25SbTVBWjdBVTdvRWoxV09QcDlnU1A5MFNaNHkyZ19uaWctMFJBRHV2b2J0QjduTFE4T2llRjlFamRWNm1wME1DbDR1cU0?oc=5",
+"s": "GMK Center",
+"at": "2026-11-25T09:09:03Z",
+"sig": [
+"money"
+]
+},
+{
+"t": "Leicester split with sponsor after row over porn actor partnership",
+"u": "https://news.google.com/rss/articles/CBMingFBVV95cUxNaVF5Zl82TDJMcGNEY01XR2t1eWRiVEVqOXdvM1M5dWtZMVl5ck5oSG5Ba25oVHg2UlprY3pSZ05OOF8xdHVxdjI3d2dyaVpvQjNFMDNER3l3M2VsZlJaQ1o4MnRWaXd1a2t5Wmw4cnl6MC1Td3djRmZoTlh0bDRZeUY3MzI2VDlwcXpMTGVUQTU3cVlSN1BRYzY4MlpJQQ?oc=5",
+"s": "Soccer America",
+"at": "2026-11-20T02:30:41Z",
+"sig": [
+"sponsor"
+]
+},
+{
+"t": "Trustly Raises $60M in Funding",
+"u": "https://news.google.com/rss/articles/CBMidEFVX3lxTE13RGNhV3lscmhBVngyY0hVSnk5ZWxZVDN5OURrZGwwT2JXQ3FpdGlkTXJYc1FYRFNqdUVkQ0UwNnNQRE1UNXBkREdmV3ZEZEFyLXF6VEVVeDM1X3h0SUNKcWQwdXRvQlROM3oycm02cVBJMGto?oc=5",
+"s": "FinSMEs",
+"at": "2026-11-24T15:08:40Z",
 "sig": [
 "money"
 ]
@@ -4975,11 +5172,11 @@
 "AT:1": "2026-11-26T15:30:22Z",
 "CH:0": "2026-11-26T15:30:22Z",
 "CH:1": "2026-11-26T15:30:22Z",
-"US:0": "2026-11-23T16:14:14Z",
-"US:1": "2026-11-23T16:14:14Z",
-"BG:0": "2026-11-23T16:14:14Z",
-"BG:1": "2026-11-23T16:14:14Z",
-"HK:0": "2026-11-24T02:59:20Z",
+"US:0": "2026-11-27T00:42:29Z",
+"US:1": "2026-11-27T00:42:29Z",
+"BG:0": "2026-11-27T00:42:29Z",
+"BG:1": "2026-11-27T00:42:29Z",
+"HK:0": "2026-11-27T00:42:29Z",
 "HK:1": "2026-11-24T02:59:20Z",
 "CN:0": "2026-11-25T15:50:15Z",
 "CN:1": "2026-11-25T15:50:15Z",
@@ -4992,7 +5189,7 @@
 "HU:0": "2026-11-26T00:33:50Z",
 "HU:1": "2026-11-26T00:33:50Z",
 "UZ:0": "2026-11-24T02:59:20Z",
-"UZ:1": "2026-11-23T16:14:14Z",
+"UZ:1": "2026-11-27T00:42:29Z",
 "RO:0": "2026-11-24T02:59:20Z",
 "RO:1": "2026-11-24T16:01:39Z",
 "RS:0": "2026-11-25T00:55:49Z",
@@ -5017,10 +5214,10 @@
 "QA:1": "2026-11-22T20:47:54Z",
 "KR:0": "2026-11-25T00:55:49Z",
 "KR:1": "2026-11-25T00:55:49Z",
-"SG:0": "2026-11-20T21:54:32Z",
-"SG:1": "2026-11-20T21:54:32Z",
-"SE:0": "2026-11-20T21:54:32Z",
-"SE:1": "2026-11-20T21:54:32Z"
+"SG:0": "2026-11-27T00:42:29Z",
+"SG:1": "2026-11-27T00:42:29Z",
+"SE:0": "2026-11-27T00:42:29Z",
+"SE:1": "2026-11-27T00:42:29Z"
 },
 "errors": {}
 }
